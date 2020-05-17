@@ -1,5 +1,12 @@
 Manifest-Version: 1.0
 Built-By: Jhonny
 Build-Jdk: 12.0.2
+Class-Path: lib/AnimateFX-1.2.1.jar lib/jfoenix-9.0.8.jar lib/javafx-gra
+ phics-13-ea+5.jar lib/javafx-graphics-13-ea+5-win.jar lib/javafx-base-1
+ 3-ea+5.jar lib/javafx-base-13-ea+5-win.jar lib/javafx-controls-13-ea+5.
+ jar lib/javafx-controls-13-ea+5-win.jar lib/javafx-fxml-11.0.2.jar lib/
+ javafx-fxml-11.0.2-win.jar lib/mysql-connector-java-8.0.15.jar lib/prot
+ obuf-java-3.6.1.jar
+Main-Class: org.jisho.textosJapones.App
 Created-By: Maven Integration for Eclipse
 
