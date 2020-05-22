@@ -13,7 +13,7 @@ public class Animacao {
 
 	final public Timeline tmLineImageBanco = new Timeline();
 
-	synchronized public void animaImageBanco(ImageView img, Image img1, Image img2, int with, int height) {
+	synchronized public void animaImageBanco(ImageView img, Image img1, Image img2) {
 
 		if (img1 == null || img2 == null)
 			return;
@@ -22,15 +22,11 @@ public class Animacao {
 			@Override
 			public void handle(ActionEvent t) {
 				img.setImage(img1);
-				img.setFitWidth(with);
-				img.setFitHeight(height);
 			}
 		}), new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent t) {
 				img.setImage(img2);
-				img.setFitWidth(with);
-				img.setFitHeight(height);
 			}
 		}));
 		tmLineImageBanco.setCycleCount(Animation.INDEFINITE);

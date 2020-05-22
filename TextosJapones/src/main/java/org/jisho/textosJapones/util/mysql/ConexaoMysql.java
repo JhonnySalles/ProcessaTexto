@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.jisho.textosJapones.Run;
+
 public class ConexaoMysql {
 
 	private static String server = "";
@@ -21,6 +23,7 @@ public class ConexaoMysql {
 			props.load(fs);
 			return props;
 		} catch (IOException e) {
+			Run.getMainController().setImagemBancoErro("Erro ao carregar o properties");
 			e.printStackTrace();
 		}
 		return null;

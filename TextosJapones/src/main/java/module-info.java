@@ -12,6 +12,7 @@ module TextosJapones {
 	exports org.jisho.textosJapones.model.services;
 	exports org.jisho.textosJapones;
 	exports org.jisho.textosJapones.util.alert;
+	exports org.jisho.textosJapones.util.enuns;
 	exports org.jisho.textosJapones.model.entities;
 
 	requires transitive com.jfoenix;
@@ -22,6 +23,7 @@ module TextosJapones {
 	requires javafx.graphics;
 	requires kuromoji.core;
 	requires kuromoji.ipadic;
+	requires transitive sudachi;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base;

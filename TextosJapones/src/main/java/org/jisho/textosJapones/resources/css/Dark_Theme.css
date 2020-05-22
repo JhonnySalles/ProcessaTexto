@@ -114,8 +114,18 @@
 
 
 /*---------- Estilos de fonte ----------*/
-.texto-stilo-1{
+.texto-stilo {
     -fx-text-fill: white;
+    -fx-prompt-text-fill: #bfbfbf;
+}
+
+.comboBox-stilo {
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #bfbfbf;
+}
+
+.comboBox-stilo > .list-cell {
+	-fx-text-fill: white;
 }
 
 /*----------  Titulo background ----------*/
@@ -130,45 +140,6 @@
 
 .paneBorder:focused{
     -fx-border-color: #0078d4;
-}
-
-.paneBorderRounded{
-    -fx-border-color: #005a9e;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-}
-
-.paneBorderRounded|:focused{
-    -fx-border-color: #0078d4;
-}
-
-/*---------- Estilos do menu ----------*/
-.menu-bar {
-    -fx-background-color: #212121;
-}
-
-.menu .label, .menu-item .label {
-    -fx-text-fill: #eee;
-}
-.menu:hover, .menu:focused, .menu:pressed {
-    -fx-background-color: #005a9e;
-}
-.menu-item:hover {
-    -fx-background-color: #005a9e;
-}
-.context-menu {
-    -fx-fill: white;
-    -fx-background-color: linear-gradient(#212121 0%, #212121  100%);
-    -fx-effect: dropshadow( one-pass-box , rgba(75,75,75,0.8) , 0, 0.0 , 2, 2);
-}
-
-/* Cor da letra de atalho do teclado */
-.context-menu .accelerator-text {
-    -fx-text-fill: #42A5F5;
-}
-
-.mnemonic-underline {
-    -fx-stroke: #ffffff;
 }
 
 /*----------  Panels de rolagens ----------*/
@@ -187,63 +158,6 @@
     -fx-box-border: #000000;
     -fx-padding: 1;
 }
-
-
-/*----------  Tab panels ----------*/
-
-/* Remove a borda de selecao da tab */
-.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.tab-header-area .tab-header-background {
-    -fx-background-color: #00cc00;
-    -fx-background-radius: 4px 4px 0px 0px;
-}
-
-.tab-pane {
-    -fx-tab-min-height: 1.5em;
-    -fx-tab-max-height: 2em;
-    -fx-tab-min-width: 4em;
-    -fx-padding: 0 0 0 0;
-}
-
-.tab-pane:top *.tab-header-area  {
-    -fx-background-insets: 0, 0 0 10;
-    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
-}
-
-.tab{
-    -fx-background-color: #e6e6e6;
-    -fx-background-insets: 0.0 0.5 0.0 0.5;
-    -fx-background-radius: 0.0;
-    -fx-padding: 0 10 0 10;
-    -fx-background-radius: 3px 3px 0px 0px;
-}
-
-.tab:selected  {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-border-width: 0 0 2 0;
-    -fx-border-color: #000000;
-
-    -fx-background-radius: 4px 4px 0px 0px;
-}
-
-.tab .tab-label {
-    -fx-alignment: CENTER;
-    -fx-text-fill: #999999;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-}
-
-.tab:selected .tab-label {
-    -fx-alignment: CENTER;
-    -fx-text-fill: #008000;
-}
-
 
 /*---------- Estilos do scroll ----------*/
 .scroll-pane {
@@ -346,6 +260,7 @@
     -fx-background-color: -fx-table-cell-border-color, #333333;
     -fx-table-border-color: #000000;
     -fx-table-cell-border-color:#000000;
+    -fx-alignment: CENTER-RIGHT;
 }
 
 .table-row-cell:odd{
@@ -445,15 +360,6 @@
     -fx-background-color: #106ebe;
     -fx-background-insets: 1;
 }
-
-.barraVerde {
-    -fx-background-color: #8BC34A;
-}
-
-.barraVerde .bar {
-    -fx-background-color: #8BC34A;
-}
-
 
 /*----------------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------------*/

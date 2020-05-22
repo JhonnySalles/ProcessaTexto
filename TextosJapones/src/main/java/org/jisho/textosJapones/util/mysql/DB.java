@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import org.jisho.textosJapones.Run;
+
 public class DB {
 
 	private static Connection conn = null;
@@ -46,6 +48,7 @@ public class DB {
 			props.load(fs);
 			return props;
 		} catch (IOException e) {
+			Run.getMainController().setImagemBancoErro("Erro ao carregar o properties");
 			e.printStackTrace();
 		}
 		return null;

@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 public class Run extends Application {
-	
+
 	private static Scene mainScene;
 	private static TelaProcessarFrasesController mainController;
 
@@ -33,7 +33,7 @@ public class Run extends Application {
 			primaryStage.getIcons()
 					.add(new Image(getClass().getResourceAsStream("resources/images/icoTextoJapones_128.png")));
 			primaryStage.initStyle(StageStyle.DECORATED);
-			//primaryStage.setMaximized(true);
+			// primaryStage.setMaximized(true);
 			primaryStage.setMinWidth(500);
 			primaryStage.setMinHeight(400);
 

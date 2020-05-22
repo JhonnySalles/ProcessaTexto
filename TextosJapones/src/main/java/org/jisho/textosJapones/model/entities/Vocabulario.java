@@ -40,11 +40,24 @@ public class Vocabulario {
 	}
 
 	public Vocabulario() {
-
+		this.vocabulario = "";
+		this.formaBasica = "";
+		this.leitura = "";
+		this.traducao = "";
 	}
 
 	public Vocabulario(String vocabulario) {
 		this.vocabulario = vocabulario;
+		this.formaBasica = "";
+		this.leitura = "";
+		this.traducao = "";
+	}
+
+	public Vocabulario(String vocabulario, String traducao) {
+		this.vocabulario = vocabulario;
+		this.traducao = traducao;
+		this.leitura = "";
+		this.formaBasica = "";
 	}
 
 	public Vocabulario(String vocabulario, String formaBasica, String leitura, String traducao) {
