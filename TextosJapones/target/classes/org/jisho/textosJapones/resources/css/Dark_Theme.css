@@ -254,13 +254,13 @@
 
 .table-view .table-cell{
     -fx-text-fill: white;
+    -fx-alignment: CENTER-LEFT;
 }
 
 .table-row-cell{
     -fx-background-color: -fx-table-cell-border-color, #333333;
     -fx-table-border-color: #000000;
     -fx-table-cell-border-color:#000000;
-    -fx-alignment: CENTER-RIGHT;
 }
 
 .table-row-cell:odd{
@@ -269,7 +269,6 @@
 
 .table-row-cell:selected {
     -fx-background-color: #4052ab;
-    -fx-background-radius: 1;
 }
 
 .table-view > .virtual-flow > .scroll-bar > .increment-button,
@@ -325,25 +324,6 @@
 .table-row-cell:sinaliza:selected {
     -fx-background-color: #4052ab;
 }
-
-.table-row-cell:traduzido {
-    -fx-background-color: #995c00;
-    -fx-effect: dropshadow( one-pass-box , #000000, 4, 4, 0, 0);
-}
-
-.table-row-cell:traduzido:selected {
-    -fx-background-color: #4052ab;
-}
-
-.table-row-cell:checada {
-    -fx-background-color: #008000;
-    -fx-effect: dropshadow( one-pass-box , #000000, 4, 4, 0, 0);
-}
-
-.table-row-cell:checada:selected {
-    -fx-background-color: #4052ab;
-}
-
 
 /*---------- Progress Bar ----------*/
 .progress-bar {

@@ -188,7 +188,6 @@ public class TelaProcessarFrasesController implements Initializable {
 	}
 
 	private void salvaExclusao() {
-
 		if (!txtExclusoes.getText().isEmpty()) {
 			try {
 				excluido = vocabServ.insertExclusao(txtExclusoes.getText()).selectExclusao();
@@ -222,6 +221,8 @@ public class TelaProcessarFrasesController implements Initializable {
 				vocabServ.insert(vocabNovo);
 				vocabNovo.clear();
 				vocabNovo.add(new Vocabulario());
+				obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
+				tbVocabulario.setItems(obsLVocabulario);
 				lblAviso.setText("Salvamento concluído.");
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
