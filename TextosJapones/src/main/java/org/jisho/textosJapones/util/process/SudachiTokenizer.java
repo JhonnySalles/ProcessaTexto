@@ -5,7 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +28,9 @@ import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
 import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class SudachiTokenizer {
 
@@ -72,9 +79,9 @@ public class SudachiTokenizer {
 
 		cnt.setPalavra(texto[0]);
 		
-		String settings_path = App.class.getClassLoader().getResource("sudachi_fulldict.json").getPath();
+		String settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";
 		try (FileInputStream input = new FileInputStream(settings_path);
-				Dictionary dict = new DictionaryFactory().create("src/main/resources", readAll(input))) {
+				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
 			tokenizer = dict.create();
 
 			SplitMode mode;
@@ -130,6 +137,9 @@ public class SudachiTokenizer {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			Alert erro = new Alert(AlertType.INFORMATION);
+			erro.setContentText(e.getMessage());
+			erro.showAndWait();
 		} catch (ExcessaoBd e) {
 			System.out.println("Erro ao processar. Erro ao carregar informações do banco.");
 			e.printStackTrace();
