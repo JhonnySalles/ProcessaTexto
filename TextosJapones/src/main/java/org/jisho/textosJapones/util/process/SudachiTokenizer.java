@@ -99,6 +99,7 @@ public class SudachiTokenizer {
 								&& !repetido.contains(m.dictionaryForm())
 								&& !cnt.getExcluido().contains(m.dictionaryForm())) {
 
+							
 							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
 							if (palavra != null) {
 								processado += m.dictionaryForm() + " " + palavra.getTraducao() + " ";

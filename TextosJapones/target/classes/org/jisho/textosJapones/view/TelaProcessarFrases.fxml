@@ -17,7 +17,6 @@
    <children>
       <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="45.0" styleClass="tituloBackground" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblAviso" layoutX="167.0" layoutY="2.0" prefWidth="300.0" textFill="WHITE" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="5.0" />
             <JFXButton fx:id="btnBanco" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="40.0" layoutY="2.0" onAction="#onBtnVerificaConexao" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
                <graphic>
                   <ImageView fx:id="imgConexaoBase" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -27,6 +26,8 @@
                   </ImageView>
                </graphic>
             </JFXButton>
+            <Label fx:id="lblAviso" layoutX="167.0" layoutY="2.0" prefWidth="300.0" textFill="WHITE" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="5.0" />
+            <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="369.0" layoutY="10.0" prefHeight="25.0" prefWidth="131.0" promptText="Modo" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="195.0" AnchorPane.topAnchor="12.0" />
             <JFXButton fx:id="btnProcessar" layoutX="568.0" layoutY="9.0" onAction="#onBtnProcessar" styleClass="background-White1" text="Processar" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="12.0">
                <graphic>
                   <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
@@ -45,13 +46,13 @@
                   </ImageView>
                </graphic>
             </JFXButton>
-            <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="369.0" layoutY="10.0" prefHeight="25.0" prefWidth="131.0" promptText="Modo" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="195.0" AnchorPane.topAnchor="12.0" />
          </children>
       </AnchorPane>
       <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
         <items>
           <AnchorPane>
                <children>
+                  <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" layoutX="107.0" layoutY="10.0" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulario" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />
                   <JFXTextArea fx:id="txtAreaOrigem" focusColor="#71afe5" labelFloat="true" promptText="Texto de origem" unFocusColor="#106ebe" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="65.0">
                      <styleClass>
                         <String fx:value="background-Blue3" />
@@ -59,7 +60,6 @@
                      </styleClass>
                   </JFXTextArea>
                   <JFXTextField fx:id="txtExclusoes" focusColor="#71afe5" labelFloat="true" layoutX="117.0" layoutY="20.0" prefHeight="25.0" prefWidth="228.0" promptText="Exclusões" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-                  <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" layoutX="107.0" layoutY="10.0" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulario" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />
                </children>
                <styleClass>
                   <String fx:value="background-Black2" />
@@ -82,8 +82,8 @@
                         </AnchorPane>
                         <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                            <columns>
-                              <TableColumn fx:id="tcVocabulario" prefWidth="50.0" text="Palavra" />
-                              <TableColumn fx:id="tcTraducao" prefWidth="500.0" text="Tradução" />
+                              <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
+                              <TableColumn fx:id="tcTraducao" prefWidth="260.0" text="Tradução" />
                            </columns>
                            <styleClass>
                               <String fx:value="accelerator-text" />
