@@ -1,7 +1,10 @@
 package org.jisho.textosJapones.util.mysql;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,13 +14,17 @@ import org.jisho.textosJapones.Run;
 
 public class ConexaoMysql {
 
-	private static String server = "";
-	private static String port = "";
-	private static String dataBase = "";
-	private static String user = "";
-	private static String psswd = "";
+	private static String SERVER = "";
+	private static String PORT = "";
+	private static String DATA_BASE = "";
+	private static String USER = "";
+	private static String PASSWORD = "";
 
 	private static Properties loadProperties() {
+		File f = new File("db.properties");
+		if (!f.exists())
+			createProperties();
+		
 		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();
 			props.load(fs);
@@ -28,14 +35,59 @@ public class ConexaoMysql {
 		}
 		return null;
 	}
+	
+	private static void createProperties() {
+		try (OutputStream os = new FileOutputStream("db.properties")) {
+			Properties props = new Properties();
+			
+			props.setProperty("server", SERVER);
+			props.setProperty("port", PORT);
+			props.setProperty("dataBase", DATA_BASE);
+			props.setProperty("user", USER);
+			props.setProperty("password", PASSWORD);
+			props.store(os, "");
+		} catch (IOException e) {
+			Run.getMainController().setAviso("Erro ao salvar o properties.");
+			e.printStackTrace();
+		}
+	}
+	
+	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd) {
+		SERVER = server;
+		PORT = port;
+		DATA_BASE = dataBase;
+		USER = user;
+		PASSWORD = psswd;
+		createProperties();
+	}
+
+	public static String getServer() {
+		return SERVER;
+	}
+
+	public static String getPort() {
+		return PORT;
+	}
+
+	public static String getDataBase() {
+		return DATA_BASE;
+	}
+
+	public static String getUser() {
+		return USER;
+	}
+	
+	public static String getPassword() {
+		return PASSWORD;
+	}
 
 	public static void getDadosConexao() {
 		Properties props = loadProperties();
-		server = props.getProperty("server");
-		port = props.getProperty("port");
-		dataBase = props.getProperty("dataBase");
-		user = props.getProperty("user");
-		psswd = props.getProperty("password");
+		SERVER = props.getProperty("server");
+		PORT = props.getProperty("port");
+		DATA_BASE = props.getProperty("dataBase");
+		USER = props.getProperty("user");
+		PASSWORD = props.getProperty("password");
 	}
 
 	public static String testaConexaoMySQL() {
@@ -47,12 +99,12 @@ public class ConexaoMysql {
 			String driverName = "com.mysql.cj.jdbc.Driver";
 			Class.forName(driverName);
 
-			String url = "jdbc:mysql://" + server + ":" + port + "/" + dataBase
+			String url = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATA_BASE
 					+ "?useTimezone=true&serverTimezone=UTC";
-			connection = DriverManager.getConnection(url, user, psswd);
+			connection = DriverManager.getConnection(url, USER, PASSWORD);
 
 			if (connection != null) {
-				conecta = dataBase;
+				conecta = DATA_BASE;
 			}
 
 			connection.close();

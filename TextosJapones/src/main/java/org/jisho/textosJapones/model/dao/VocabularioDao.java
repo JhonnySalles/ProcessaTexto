@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.util.exception.ExcessaoBd;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 public interface VocabularioDao {
 
