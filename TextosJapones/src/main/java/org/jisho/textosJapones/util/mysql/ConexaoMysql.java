@@ -19,6 +19,7 @@ public class ConexaoMysql {
 	private static String DATA_BASE = "";
 	private static String USER = "";
 	private static String PASSWORD = "";
+	private static String CAMINHO_MYSQL = "";
 
 	private static Properties loadProperties() {
 		File f = new File("db.properties");
@@ -45,6 +46,7 @@ public class ConexaoMysql {
 			props.setProperty("dataBase", DATA_BASE);
 			props.setProperty("user", USER);
 			props.setProperty("password", PASSWORD);
+			props.setProperty("caminho_mysql", CAMINHO_MYSQL);
 			props.store(os, "");
 		} catch (IOException e) {
 			Run.getMainController().setAviso("Erro ao salvar o properties.");
@@ -52,12 +54,13 @@ public class ConexaoMysql {
 		}
 	}
 	
-	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd) {
+	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd, String mysql) {
 		SERVER = server;
 		PORT = port;
 		DATA_BASE = dataBase;
 		USER = user;
 		PASSWORD = psswd;
+		CAMINHO_MYSQL = mysql;
 		createProperties();
 	}
 
@@ -80,6 +83,10 @@ public class ConexaoMysql {
 	public static String getPassword() {
 		return PASSWORD;
 	}
+	
+	public static String getCaminhoMysql() {
+		return CAMINHO_MYSQL;
+	}
 
 	public static void getDadosConexao() {
 		Properties props = loadProperties();
@@ -88,6 +95,7 @@ public class ConexaoMysql {
 		DATA_BASE = props.getProperty("dataBase");
 		USER = props.getProperty("user");
 		PASSWORD = props.getProperty("password");
+		CAMINHO_MYSQL = props.getProperty("caminho_mysql");
 	}
 
 	public static String testaConexaoMySQL() {

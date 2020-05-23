@@ -16,6 +16,7 @@ import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.animation.Animacao;
+import org.jisho.textosJapones.util.mysql.Backup;
 import org.jisho.textosJapones.util.mysql.ConexaoMysql;
 import org.jisho.textosJapones.util.notification.Alertas;
 import org.jisho.textosJapones.util.notification.Notificacoes;
@@ -26,9 +27,12 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,7 +41,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
@@ -54,17 +60,39 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
+import javafx.util.Duration;
 
 public class ProcessarFrasesController implements Initializable {
 
 	final static Image imgAnimaBanco = new Image(
 			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataBase_48.png"));
-	final static Image imgAnimaBancoConec = new Image(
+	final static Image imgAnimaBancoEspera = new Image(
 			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataEspera_48.png"));
 	final static Image imgAnimaBancoErro = new Image(Animacao.class
 			.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataSemConexao_48.png"));
 	final static Image imgAnimaBancoConectado = new Image(
 			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataConectado_48.png"));
+
+	final static Image imgAnimaBackup = new Image(
+			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_48.png"));
+
+	final static Image imgAnimaExporta = new Image(Animacao.class
+			.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_48.png"));
+	final static Image imgAnimaExportaEspera = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Espera_48.png"));
+	final static Image imgAnimaExportaErro = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Erro_48.png"));
+	final static Image imgAnimaExportaConcluido = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Concluido_48.png"));
+
+	final static Image imgAnimaImporta = new Image(Animacao.class
+			.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_48.png"));
+	final static Image imgAnimaImportaEspera = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Espera_48.png"));
+	final static Image imgAnimaImportaErro = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Erro_48.png"));
+	final static Image imgAnimaImportaConcluido = new Image(Animacao.class.getResourceAsStream(
+			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Concluido_48.png"));
 
 	@FXML
 	private AnchorPane apGlobal;
@@ -82,13 +110,19 @@ public class ProcessarFrasesController implements Initializable {
 	private JFXButton btnBanco;
 
 	@FXML
+	private ImageView imgConexaoBase;
+
+	@FXML
+	private JFXButton btnBackup;
+
+	@FXML
+	private ImageView imgBackup;
+
+	@FXML
 	private JFXComboBox<Modo> cbModo;
 
 	@FXML
 	private JFXComboBox<Dicionario> cbDicionario;
-
-	@FXML
-	private ImageView imgConexaoBase;
 
 	@FXML
 	private JFXTextField txtVocabulario;
@@ -121,15 +155,11 @@ public class ProcessarFrasesController implements Initializable {
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 	private Vocabulario vocabulario;
 	private PopOver pop;
+	private Timeline tmlImagemBackup;
 
 	@FXML
 	private void onBtnSalvar() {
 		salvarTexto();
-	}
-
-	@FXML
-	private void onBtnProcessar() {
-		processaTexto();
 	}
 
 	@FXML
@@ -162,33 +192,41 @@ public class ProcessarFrasesController implements Initializable {
 		return this;
 	}
 
-	private ProcessarFrasesController iniciaConfiguracao() {
-		pop = new PopOver();
-		URL url = ConfiguracaoController.getFxmlLocate();
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(url);
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(3));// 10px padding todos os lados
-		try {
-			vbox.getChildren().add(loader.load());
+	public void cancelaBackup() {
+		animacao.tmLineImageBackup.stop();
+		imgBackup.setImage(imgAnimaBackup);
+	}
 
-			ConfiguracaoController cntConfiguracao = loader.getController();
-			cntConfiguracao.setControllerPai(this);
-			pop.setTitle("Configuração banco de dados");
-			pop.setContentNode(vbox);
-			pop.setCornerRadius(5);
-			pop.setHideOnEscape(true);
-			pop.setAutoFix(true);
-			pop.setAutoHide(true);
-			pop.setOnHidden(e -> cntConfiguracao.salvar());
-			pop.setOnShowing(e -> cntConfiguracao.carregar());
-			pop.getRoot().getStylesheets().add(ProcessarFrasesController.class
-					.getResource("/org/jisho/textosJapones/resources/css/Dark_PopOver.css").toExternalForm());
+	public void importaBackup() {
+		animacao.animaImageBackup(imgBackup, imgAnimaImporta, imgAnimaImportaEspera);
+		animacao.tmLineImageBackup.play();
+		Backup.importarBackup(this);
+	}
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return this;
+	public void importaConcluido(boolean erro) {
+		animacao.tmLineImageBackup.stop();
+		if (erro)
+			imgBackup.setImage(imgAnimaImportaErro);
+		else
+			imgBackup.setImage(imgAnimaImportaConcluido);
+
+		tmlImagemBackup.play();
+	}
+
+	public void exportaBackup() {
+		animacao.animaImageBackup(imgBackup, imgAnimaExporta, imgAnimaExportaEspera);
+		animacao.tmLineImageBackup.play();
+		Backup.exportarBackup(this);
+	}
+
+	public void exportaConcluido(boolean erro) {
+		animacao.tmLineImageBackup.stop();
+		if (erro)
+			imgBackup.setImage(imgAnimaExportaErro);
+		else
+			imgBackup.setImage(imgAnimaExportaConcluido);
+
+		tmlImagemBackup.play();
 	}
 
 	public void setPalavra(String palavra) {
@@ -246,6 +284,10 @@ public class ProcessarFrasesController implements Initializable {
 
 	public Dicionario getDicionario() {
 		return cbDicionario.getSelectionModel().getSelectedItem();
+	}
+
+	public PopOver getPopPup() {
+		return pop;
 	}
 
 	private void salvaVocabulario() {
@@ -358,6 +400,83 @@ public class ProcessarFrasesController implements Initializable {
 		t.start();
 	}
 
+	private void criaMenuBackup() {
+		ContextMenu menuBackup = new ContextMenu();
+		
+		MenuItem miBackup = new MenuItem("Backup");
+		ImageView imgExporta = new ImageView(imgAnimaExporta);
+		imgExporta.setFitHeight(20);
+		imgExporta.setFitWidth(20);
+		miBackup.setGraphic(imgExporta);
+		miBackup.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				exportaBackup();
+			}
+		});
+
+		MenuItem miRestaurar = new MenuItem("Restaurar");
+		ImageView imgImporta = new ImageView(imgAnimaImporta);
+		imgImporta.setFitHeight(20);
+		imgImporta.setFitWidth(20);
+		miRestaurar.setGraphic(imgImporta);
+		miRestaurar.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				importaBackup();
+			}
+		});
+
+		menuBackup.getItems().addAll(miBackup, miRestaurar);
+
+		btnBackup.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				Scene scene = btnBanco.getScene();
+				Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+				Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
+				Point2D nodeCoord = btnBanco.localToScene(0.0, 0.0);
+				double cordenadaX = Math.round(windowCoord.getX() + sceneCoord.getX() + nodeCoord.getX());
+				double cordenadaY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+				menuBackup.show(btnBackup, cordenadaX + 95, cordenadaY + 30);
+			}
+		});
+
+		tmlImagemBackup = new Timeline(new KeyFrame(Duration.millis(5000), ae -> cancelaBackup()));
+	}
+
+	private ProcessarFrasesController criaConfiguracao() {
+		pop = new PopOver();
+		URL url = ConfiguracaoController.getFxmlLocate();
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(url);
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(3));// 10px padding todos os lados
+		try {
+			vbox.getChildren().add(loader.load());
+
+			ConfiguracaoController cntConfiguracao = loader.getController();
+			cntConfiguracao.setControllerPai(this);
+			pop.setTitle("Configuração banco de dados");
+			pop.setContentNode(vbox);
+			pop.setCornerRadius(5);
+			pop.setHideOnEscape(true);
+			pop.setAutoFix(true);
+			pop.setAutoHide(true);
+			pop.setOnHidden(e -> cntConfiguracao.salvar());
+			pop.setOnShowing(e -> cntConfiguracao.carregar());
+			pop.getRoot().getStylesheets().add(ProcessarFrasesController.class
+					.getResource("/org/jisho/textosJapones/resources/css/Dark_PopOver.css").toExternalForm());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+
 	private void adicionaUltimaLinha() {
 		tbVocabulario.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			@Override
@@ -454,10 +573,11 @@ public class ProcessarFrasesController implements Initializable {
 	}
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoConec);
+		animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera);
 		linkaCelulas();
 		configuraListenert();
-		iniciaConfiguracao();
+		criaConfiguracao();
+		criaMenuBackup();
 
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);
@@ -471,10 +591,6 @@ public class ProcessarFrasesController implements Initializable {
 		Notificacoes.setRootStackPane(apGlobal);
 
 		verificaConexao();
-	}
-
-	public void setMessagemErro(String erro) {
-
 	}
 
 	public void setImagemBancoErro(String erro) {

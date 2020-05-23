@@ -32,6 +32,15 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
+                        <JFXButton fx:id="btnBackup" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="50.0" layoutY="12.0" onMouseClicked="#onBtnConexaoOnMouseClicked" prefHeight="45.0" prefWidth="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="0.0">
+                           <graphic>
+                              <ImageView fx:id="imgBackup" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/images/export/icoBDBackup_48.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
                         <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" layoutX="379.0" layoutY="20.0" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="205.0" AnchorPane.topAnchor="12.0" />
                         <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="369.0" layoutY="10.0" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="12.0" />
                         <JFXButton fx:id="btnSalvar" layoutX="637.0" layoutY="9.0" onAction="#onBtnSalvar" styleClass="background-White1" text="Salvar" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="12.0">

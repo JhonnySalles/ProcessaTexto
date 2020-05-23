@@ -24,7 +24,7 @@ module TextosJapones {
 	requires transitive sudachi;
 	requires java.desktop;
 	requires AnimateFX;
-	requires org.controlsfx.controls;
+	requires transitive org.controlsfx.controls;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base;

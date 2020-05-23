@@ -31,5 +31,27 @@ public class Animacao {
 		}));
 		tmLineImageBanco.setCycleCount(Animation.INDEFINITE);
 	}
+	
+	final public Timeline tmLineImageBackup = new Timeline();
+
+	synchronized public void animaImageBackup(ImageView img, Image img1, Image img2) {
+
+		if (img1 == null || img2 == null)
+			return;
+
+		tmLineImageBackup.getKeyFrames().clear();
+		tmLineImageBackup.getKeyFrames().addAll(new KeyFrame(Duration.millis(250), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent t) {
+				img.setImage(img1);
+			}
+		}), new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent t) {
+				img.setImage(img2);
+			}
+		}));
+		tmLineImageBackup.setCycleCount(Animation.INDEFINITE);
+	}
 
 }

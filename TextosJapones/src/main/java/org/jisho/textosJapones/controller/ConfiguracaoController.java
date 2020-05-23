@@ -1,16 +1,19 @@
 package org.jisho.textosJapones.controller;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.util.constraints.Validadores;
 import org.jisho.textosJapones.util.mysql.ConexaoMysql;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.stage.DirectoryChooser;
 
 public class ConfiguracaoController implements Initializable {
 
@@ -29,11 +32,24 @@ public class ConfiguracaoController implements Initializable {
 	@FXML
 	public JFXTextField txtDataBase;
 
+	@FXML
+	public JFXTextField txtCaminhoMysql;
+
+	@FXML
+	public JFXButton btnCaminho;
+
 	private ProcessarFrasesController controller;
+
+	@FXML
+	private void onBtnCarregarCaminhoMysql() {
+		controller.getPopPup().setDetached(true);
+		String caminho = selecionaPasta(txtCaminhoMysql.getText());
+		txtCaminhoMysql.setText(caminho);
+	}
 
 	public void salvar() {
 		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtDataBase.getText(),
-				txtUsuario.getText(), pswSenha.getText());
+				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText());
 		controller.verificaConexao();
 	}
 
@@ -44,6 +60,21 @@ public class ConfiguracaoController implements Initializable {
 		txtDataBase.setText(ConexaoMysql.getDataBase());
 		txtUsuario.setText(ConexaoMysql.getUser());
 		pswSenha.setText(ConexaoMysql.getPassword());
+		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
+	}
+
+	private String selecionaPasta(String pasta) {
+		DirectoryChooser fileChooser = new DirectoryChooser();
+		fileChooser.setTitle("Selecione a pasta do mysql");
+
+		if (pasta != null && !pasta.isEmpty())
+			fileChooser.setInitialDirectory(new File(pasta));
+		File caminho = fileChooser.showDialog(null);
+		
+		if (caminho == null)
+			return "";
+		else
+			return caminho.getAbsolutePath();
 	}
 
 	public void setControllerPai(ProcessarFrasesController cnt) {
