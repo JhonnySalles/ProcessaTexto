@@ -59,6 +59,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.robot.Robot;
 import javafx.stage.Screen;
 import javafx.util.Duration;
 
@@ -156,6 +157,7 @@ public class ProcessarFrasesController implements Initializable {
 	private Vocabulario vocabulario;
 	private PopOver pop;
 	private Timeline tmlImagemBackup;
+	private Robot robot;
 
 	@FXML
 	private void onBtnSalvar() {
@@ -299,15 +301,19 @@ public class ProcessarFrasesController implements Initializable {
 					Notificacoes.notificacao(Notificacao.SUCESSO, "",
 							"Salvamento vocabulário concluído. " + txtVocabulario.getText());
 					txtVocabulario.setUnFocusColor(Color.LIME);
+					txtVocabulario.setEditable(false);
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
 					Notificacoes.notificacao(Notificacao.ERRO, "Erro",
 							"Erro ao salvar vocabulario. " + txtVocabulario.getText());
 					txtVocabulario.setUnFocusColor(Color.RED);
+					txtVocabulario.setEditable(true);
 				}
 
-			} else if (!txtAreaOrigem.getText().isEmpty())
+			} else if (!txtAreaOrigem.getText().isEmpty()) {
 				txtVocabulario.setUnFocusColor(Color.RED);
+				txtVocabulario.setEditable(true);
+			}
 	}
 
 	private void salvaExclusao() {
@@ -558,6 +564,7 @@ public class ProcessarFrasesController implements Initializable {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					salvaVocabulario();
+					robot.keyPress(KeyCode.TAB);
 				}
 			}
 		});
@@ -567,6 +574,7 @@ public class ProcessarFrasesController implements Initializable {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					salvaExclusao();
+					robot.keyPress(KeyCode.TAB);
 				}
 			}
 		});
@@ -578,6 +586,7 @@ public class ProcessarFrasesController implements Initializable {
 		configuraListenert();
 		criaConfiguracao();
 		criaMenuBackup();
+		robot = new Robot();
 
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);

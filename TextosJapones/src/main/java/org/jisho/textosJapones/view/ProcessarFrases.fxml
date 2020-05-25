@@ -41,17 +41,8 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" layoutX="379.0" layoutY="20.0" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="205.0" AnchorPane.topAnchor="12.0" />
-                        <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="369.0" layoutY="10.0" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="12.0" />
-                        <JFXButton fx:id="btnSalvar" layoutX="637.0" layoutY="9.0" onAction="#onBtnSalvar" styleClass="background-White1" text="Salvar" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="12.0">
-                           <graphic>
-                              <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../resources/images/icoSalvar_48.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </JFXButton>
+                        <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" layoutX="445.0" layoutY="10.0" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="10.0" />
+                        <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="586.0" layoutY="10.0" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
                      </children>
                   </AnchorPane>
                   <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
@@ -65,11 +56,20 @@
                                  </styleClass>
                               </JFXTextArea>
                               <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" layoutX="107.0" layoutY="10.0" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulário" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-                              <JFXTextField fx:id="txtExclusoes" focusColor="#71afe5" labelFloat="true" layoutX="117.0" layoutY="20.0" prefHeight="25.0" prefWidth="228.0" promptText="Exclusões" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                              <JFXTextField fx:id="txtExclusoes" focusColor="#71afe5" labelFloat="true" layoutX="12.0" layoutY="20.0" prefHeight="25.0" prefWidth="230.0" promptText="Exclusões" styleClass="texto-stilo" unFocusColor="#106ebe" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="90.0" />
                               <Label fx:id="lblExclusoes" layoutX="12.0" layoutY="523.0" textFill="#71afe5" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                  <font>
                                     <Font size="10.0" />
                                  </font></Label>
+                              <JFXButton fx:id="btnSalvar" focusTraversable="false" layoutX="339.0" layoutY="472.0" onAction="#onBtnSalvar" styleClass="background-White1" text="Salvar" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="10.0">
+                                 <graphic>
+                                    <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/images/icoSalvar_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
                            </children>
                            <styleClass>
                               <String fx:value="background-Black2" />
