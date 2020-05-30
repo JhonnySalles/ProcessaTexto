@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+
+<AnchorPane fx:id="apGlobal" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.EstatisticaController">
+   <children>
+      <StackPane fx:id="rootStackPane" layoutX="4.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane fx:id="root" minHeight="400.0" minWidth="300.0" prefHeight="600.0" prefWidth="700.0" stylesheets="@../resources/css/Dark_Theme.css">
+               <children>
+                  <AnchorPane layoutX="24.0" layoutY="24.0" prefHeight="45.0" styleClass="tituloBackground" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <JFXButton fx:id="btnBanco" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="40.0" layoutY="2.0" onAction="#onBtnVerificaConexao" onMouseClicked="#onBtnConexaoOnMouseClicked" prefHeight="45.0" prefWidth="2.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
+                           <graphic>
+                              <ImageView fx:id="imgConexaoBase" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/images/bd/icoDataBase_48.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                        <JFXTextField fx:id="txtVocabulario" focusColor="#d9d9d9" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulario" styleClass="texto-stilo" unFocusColor="BLACK" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton fx:id="btnProcessar" layoutX="316.0" layoutY="10.0" onAction="#onBtnProcessar" styleClass="background-White1" text="Processar" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton fx:id="btnGerarTabelas" layoutX="377.0" layoutY="10.0" onAction="#onBtnGerarTabela" styleClass="background-White1" text="Gerar tabelas" AnchorPane.leftAnchor="380.0" AnchorPane.topAnchor="10.0" />
+                     </children>
+                  </AnchorPane>
+                  <SplitPane dividerPositions="0.5" layoutX="147.0" layoutY="52.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="splitbox" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
+                    <items>
+                      <AnchorPane minHeight="200.0" minWidth="200.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <TreeTableView fx:id="treePalavras" layoutX="-295.0" layoutY="-102.0" prefHeight="345.0" prefWidth="678.0" styleClass="paneBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TreeTableColumn fx:id="treecLeitura" prefWidth="485.0" text="Palavras" />
+                                  <TreeTableColumn fx:id="treecGerar" prefWidth="179.0" text="Gerar" />
+                                </columns>
+                              </TreeTableView>
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane minHeight="200.0" minWidth="200.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <TableView fx:id="tbVocabulario" layoutX="110.0" layoutY="39.0" prefHeight="200.0" prefWidth="200.0" styleClass="paneBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TableColumn fx:id="tcLeitura" prefWidth="155.0" text="Leitura" />
+                                  <TableColumn fx:id="tcTabela" prefWidth="496.0" text="Tabela" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+               <styleClass>
+                  <String fx:value="background-Black2" />
+                  <String fx:value="paneBorder" />
+               </styleClass>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

@@ -16,6 +16,7 @@ import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.animation.Animacao;
+import org.jisho.textosJapones.util.kanjiStatics.ImportaEstatistica;
 import org.jisho.textosJapones.util.mysql.Backup;
 import org.jisho.textosJapones.util.mysql.ConexaoMysql;
 import org.jisho.textosJapones.util.notification.Alertas;
@@ -60,7 +61,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class ProcessarFrasesController implements Initializable {
@@ -149,15 +153,15 @@ public class ProcessarFrasesController implements Initializable {
 	@FXML
 	private TableColumn<Vocabulario, String> tcTraducao;
 	private ObservableList<Vocabulario> obsLVocabulario;
-	private VocabularioServices vocabServ;
-
-	private Animacao animacao = new Animacao();
-	private Set<String> excluido;
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
+	private VocabularioServices vocabServ;
 	private Vocabulario vocabulario;
+	private Set<String> excluido;
+
 	private PopOver pop;
 	private Timeline tmlImagemBackup;
-	private Robot robot;
+	private Robot robot = new Robot();
+	private Animacao animacao = new Animacao();
 
 	@FXML
 	private void onBtnSalvar() {
@@ -175,6 +179,43 @@ public class ProcessarFrasesController implements Initializable {
 			if (!pop.isShowing())
 				mostrarConfiguracao();
 		}
+	}
+
+	@FXML
+	private void onBtnImportar() {
+		ImportaEstatistica.importa();
+	}
+
+	@FXML
+	private void onBtnEstatistica() {
+
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(EstatisticaController.getFxmlLocate());
+			AnchorPane newAnchorPane = loader.load();
+
+			Scene mainScene = new Scene(newAnchorPane); // Carrega a scena
+			mainScene.setFill(Color.BLACK);
+
+			Stage stage = new Stage();
+			stage.setScene(mainScene); // Seta a cena principal
+			stage.setTitle("Gerar estatisticas");
+			stage.initStyle(StageStyle.DECORATED);
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.getIcons().add(new Image(getClass().getResourceAsStream(EstatisticaController.getIconLocate())));
+			stage.show(); // Mostra a tela.
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Erro ao abrir a tela de estatistica.");
+		}
+
+	}
+
+	public void setImagemBancoErro(String erro) {
+		animacao.tmLineImageBanco.stop();
+		imgConexaoBase.setImage(imgAnimaBancoErro);
+		Notificacoes.notificacao(Notificacao.ERRO, "Erro.", erro);
 	}
 
 	public ProcessarFrasesController mostrarConfiguracao() {
@@ -249,7 +290,7 @@ public class ProcessarFrasesController implements Initializable {
 			}
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			Notificacoes.notificacao(Notificacao.ERRO, "Erro", "Erro pesquisar a palavra. " + palavra);
+			Notificacoes.notificacao(Notificacao.ERRO, "Erro pesquisar a palavra.", palavra);
 			txtVocabulario.setUnFocusColor(Color.RED);
 		}
 	}
@@ -267,7 +308,7 @@ public class ProcessarFrasesController implements Initializable {
 	}
 
 	public void setAviso(String aviso) {
-		Notificacoes.notificacao(Notificacao.AVISO, "", aviso);
+		Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", aviso);
 	}
 
 	public void setVocabulario(List<Vocabulario> lista) {
@@ -298,14 +339,13 @@ public class ProcessarFrasesController implements Initializable {
 				vocabulario.setTraducao(txtVocabulario.getText());
 				try {
 					vocabServ.insertOrUpdate(vocabulario);
-					Notificacoes.notificacao(Notificacao.SUCESSO, "",
-							"Salvamento vocabulário concluído. " + txtVocabulario.getText());
+					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento vocabulário concluído.",
+							txtVocabulario.getText());
 					txtVocabulario.setUnFocusColor(Color.LIME);
 					txtVocabulario.setEditable(false);
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
-					Notificacoes.notificacao(Notificacao.ERRO, "Erro",
-							"Erro ao salvar vocabulario. " + txtVocabulario.getText());
+					Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar vocabulario.", txtVocabulario.getText());
 					txtVocabulario.setUnFocusColor(Color.RED);
 					txtVocabulario.setEditable(true);
 				}
@@ -321,14 +361,13 @@ public class ProcessarFrasesController implements Initializable {
 			try {
 				excluido = vocabServ.insertExclusao(txtExclusoes.getText()).selectExclusao();
 				lblExclusoes.setText(excluido.toString());
-				Notificacoes.notificacao(Notificacao.SUCESSO, "",
-						"Salvamento exclusão concluído. " + txtExclusoes.getText());
+				Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento exclusão concluído.", txtExclusoes.getText());
 				txtExclusoes.setUnFocusColor(Color.LIME);
 				txtExclusoes.setText("");
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
-				Notificacoes.notificacao(Notificacao.ERRO, "Erro",
-						"Erro ao salvar vocabulário de exclusão. " + txtExclusoes.getText());
+				Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar vocabulário de exclusão.",
+						txtExclusoes.getText());
 				txtExclusoes.setUnFocusColor(Color.RED);
 			}
 		}
@@ -348,7 +387,7 @@ public class ProcessarFrasesController implements Initializable {
 			tokenizer.processaTexto(this);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			Notificacoes.notificacao(Notificacao.ERRO, "", "Erro ao pesquisar vocabulário excluído.");
+			Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao pesquisar vocabulário excluído.");
 		}
 	}
 
@@ -356,17 +395,17 @@ public class ProcessarFrasesController implements Initializable {
 		if (vocabNovo.size() > 0) {
 			try {
 				vocabServ.insert(vocabNovo);
+				Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.", vocabNovo.toString());
 				vocabNovo.clear();
 				vocabNovo.add(new Vocabulario());
 				obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
 				tbVocabulario.setItems(obsLVocabulario);
-				Notificacoes.notificacao(Notificacao.SUCESSO, "", "Salvamento concluído.");
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
-				Notificacoes.notificacao(Notificacao.ERRO, "Erro", "Erro ao salvar os novos vocabulários.");
+				Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao salvar os novos vocabulários.");
 			}
 		} else
-			Notificacoes.notificacao(Notificacao.AVISO, "", "Lista vazia.");
+			Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", "Lista vazia.");
 	}
 
 	public void verificaConexao() {
@@ -408,7 +447,7 @@ public class ProcessarFrasesController implements Initializable {
 
 	private void criaMenuBackup() {
 		ContextMenu menuBackup = new ContextMenu();
-		
+
 		MenuItem miBackup = new MenuItem("Backup");
 		ImageView imgExporta = new ImageView(imgAnimaExporta);
 		imgExporta.setFitHeight(20);
@@ -586,7 +625,6 @@ public class ProcessarFrasesController implements Initializable {
 		configuraListenert();
 		criaConfiguracao();
 		criaMenuBackup();
-		robot = new Robot();
 
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);
@@ -602,18 +640,12 @@ public class ProcessarFrasesController implements Initializable {
 		verificaConexao();
 	}
 
-	public void setImagemBancoErro(String erro) {
-		animacao.tmLineImageBanco.stop();
-		imgConexaoBase.setImage(imgAnimaBancoErro);
-		Notificacoes.notificacao(Notificacao.ERRO, "Erro", erro);
-	}
-
 	public static URL getFxmlLocate() {
 		return ProcessarFrasesController.class.getResource("/org/jisho/textosJapones/view/ProcessarFrases.fxml");
 	}
 
 	public static String getIconLocate() {
-		return "/org/jisho/textosJapones/resources/images/icoTranslate_128.png";
+		return "/org/jisho/textosJapones/resources/images/icoTextoJapones_128.png";
 	}
 
 }

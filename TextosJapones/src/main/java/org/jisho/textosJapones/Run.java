@@ -31,7 +31,7 @@ public class Run extends Application {
 			primaryStage.setScene(mainScene); // Seta a cena principal
 			primaryStage.setTitle("Processar textos japonês");
 			primaryStage.getIcons()
-					.add(new Image(getClass().getResourceAsStream("resources/images/icoTextoJapones_128.png")));
+					.add(new Image(getClass().getResourceAsStream(ProcessarFrasesController.getIconLocate())));
 			primaryStage.initStyle(StageStyle.DECORATED);
 			// primaryStage.setMaximized(true);
 			primaryStage.setMinWidth(500);

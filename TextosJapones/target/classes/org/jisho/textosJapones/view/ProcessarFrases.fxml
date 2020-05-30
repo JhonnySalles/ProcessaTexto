@@ -43,6 +43,8 @@
                         </JFXButton>
                         <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" layoutX="445.0" layoutY="10.0" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="10.0" />
                         <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" layoutX="586.0" layoutY="10.0" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton buttonType="RAISED" layoutX="375.0" layoutY="10.0" onAction="#onBtnEstatistica" styleClass="background-White1" text="Estatisticas" textFill="#0a0a0a" AnchorPane.rightAnchor="265.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton buttonType="RAISED" layoutX="385.0" layoutY="20.0" onAction="#onBtnImportar" styleClass="background-White1" text="Importar Estat." textFill="#0a0a0a" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="10.0" />
                      </children>
                   </AnchorPane>
                   <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">

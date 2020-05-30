@@ -25,6 +25,9 @@ module TextosJapones {
 	requires java.desktop;
 	requires AnimateFX;
 	requires transitive org.controlsfx.controls;
+	requires java.compiler;
+	requires jsoup;
+	requires com.google.common;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base;
