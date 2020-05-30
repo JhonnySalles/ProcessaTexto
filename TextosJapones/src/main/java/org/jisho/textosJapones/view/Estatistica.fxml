@@ -30,10 +30,10 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXTextField fx:id="txtVocabulario" focusColor="#d9d9d9" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulario" styleClass="texto-stilo-fundo-azul" unFocusColor="BLACK" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="10.0" />
-                        <JFXButton fx:id="btnProcessar" layoutX="316.0" layoutY="10.0" onAction="#onBtnProcessar" styleClass="background-White1" text="Processar" AnchorPane.leftAnchor="315.0" AnchorPane.topAnchor="10.0" />
-                        <JFXButton fx:id="btnGerarTabelas" layoutX="377.0" layoutY="10.0" onAction="#onBtnGerarTabela" styleClass="background-White1" text="Gerar tabelas" AnchorPane.leftAnchor="395.0" AnchorPane.topAnchor="10.0" />
-                        <JFXTextField fx:id="txtPesquisa" focusColor="#d9d9d9" labelFloat="true" prefHeight="25.0" prefWidth="180.0" promptText="Pesquisa" styleClass="texto-stilo-fundo-azul" unFocusColor="BLACK" AnchorPane.leftAnchor="500.0" AnchorPane.topAnchor="10.0" />
+                        <JFXTextField fx:id="txtVocabulario" focusColor="#99cffc" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulario" styleClass="texto-stilo-fundo-azul" unFocusColor="WHITE" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton fx:id="btnProcessar" buttonType="RAISED" layoutX="316.0" layoutY="10.0" onAction="#onBtnProcessar" styleClass="background-White1" text="Processar" AnchorPane.leftAnchor="315.0" AnchorPane.topAnchor="10.0" />
+                        <JFXButton fx:id="btnGerarTabelas" buttonType="RAISED" layoutX="377.0" layoutY="10.0" onAction="#onBtnGerarTabela" styleClass="background-White1" text="Gerar tabelas" AnchorPane.leftAnchor="395.0" AnchorPane.topAnchor="10.0" />
+                        <JFXTextField fx:id="txtPesquisa" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="180.0" promptText="Pesquisa" styleClass="texto-stilo-fundo-azul" unFocusColor="WHITE" AnchorPane.leftAnchor="500.0" AnchorPane.topAnchor="10.0" />
                      </children>
                   </AnchorPane>
                   <SplitPane dividerPositions="0.5" layoutX="147.0" layoutY="52.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="splitbox" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">

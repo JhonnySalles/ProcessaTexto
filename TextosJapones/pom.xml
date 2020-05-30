@@ -56,28 +56,28 @@
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>9.0.8</version>
+			<version>9.0.9</version>
 		</dependency>
 
 		<!-- Biblioteca JavaFX Graphics -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-graphics</artifactId>
-			<version>13-ea+5</version>
+			<version>14.0.1</version>
 		</dependency>
 
 		<!-- Biblioteca JavaFX Controle -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>13-ea+5</version>
+			<version>14.0.1</version>
 		</dependency>
 
 		<!-- Bibliotecas para animacao no javafx -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>11.0.2</version>
+			<version>14</version>
 		</dependency>
 
 		<!-- Biblioteca para popup -->
@@ -91,21 +91,21 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.15</version>
+			<version>8.0.20</version>
 		</dependency>
 
 		<!-- Sudachi - Japones dictionary -->
 		<dependency>
 			<groupId>com.worksap.nlp</groupId>
 			<artifactId>sudachi</artifactId>
-			<version>0.4.0</version>
+			<version>0.4.2</version>
 		</dependency>
 
 		<!-- JSoup, parse html para document -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.10.2</version>
+			<version>1.13.1</version>
 		</dependency>
 
 		<!-- Guava, usado para o plano cartesiano -->
