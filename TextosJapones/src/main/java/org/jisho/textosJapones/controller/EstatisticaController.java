@@ -165,9 +165,24 @@ public class EstatisticaController implements Initializable {
 		}
 	}
 
+	// UNICODE RANGE : DESCRIPTION
+	//
+	// 3000-303F : punctuation
+	// 3040-309F : hiragana
+	// 30A0-30FF : katakana
+	// FF00-FFEF : Full-width roman + half-width katakana
+	// 4E00-9FAF : Common and uncommon kanji
+	//
+	// Non-Japanese punctuation/formatting characters commonly used in Japanese text
+	// 2605-2606 : Stars
+	// 2190-2195 : Arrows
+	// u203B : Weird asterisk thing
+
+	final private String pattern = ".*[\u4E00-\u9FAF].*";
+
 	private void processarVocabulario() {
 		listaPalavra.clear();
-
+		String hiragana = "";
 		String letra;
 		try {
 			TreeItem<Estatistica> root = new TreeItem<>(new Estatistica("Kanjis"));
@@ -175,34 +190,66 @@ public class EstatisticaController implements Initializable {
 
 				letra = txtVocabulario.getText().substring(i, i + 1);
 
-				Estatistica titulo = new Estatistica(letra);
-
-				TreeItem<Estatistica> kanji = new TreeItem<>(titulo);
-
-				List<Estatistica> estatistica = estatisticaServ.select(letra);
-
-				if (estatistica.size() <= 0) {
-					Estatistica novo = new Estatistica();
-					novo.setKanji(letra);
-					novo.setLeitura(letra);
-					novo.setGerar(true);
-					estatistica.add(novo);
-					kanji.getChildren().add(new TreeItem<>(novo));
+				if (!letra.matches(pattern)) {
+					hiragana += letra;
 				} else {
-					for (Estatistica ls : estatistica)
-						kanji.getChildren().add(new TreeItem<>(ls));
+					// Antes de iniciar o processo, verificar se tem hiraganas adicionados
+					if (!hiragana.isEmpty()) {
+						adicionaHiragana(root, hiragana);
+						hiragana = "";
+					}
+
+					Estatistica titulo = new Estatistica(letra);
+
+					TreeItem<Estatistica> kanji = new TreeItem<>(titulo);
+
+					List<Estatistica> estatistica = estatisticaServ.select(letra);
+
+					if (estatistica.size() <= 0) {
+						Estatistica novo = new Estatistica();
+						novo.setKanji(letra);
+						novo.setLeitura(letra);
+						novo.setGerar(true);
+						estatistica.add(novo);
+						kanji.getChildren().add(new TreeItem<>(novo));
+					} else {
+						for (Estatistica ls : estatistica)
+							kanji.getChildren().add(new TreeItem<>(ls));
+					}
+
+					root.getChildren().add(kanji);
+					listaPalavra.add(estatistica);
 				}
 
-				root.getChildren().add(kanji);
-				listaPalavra.add(estatistica);
-
 			}
+			// Caso não possua mais kanjis será necessário adicionar os hiragana
+			if (!hiragana.isEmpty())
+				adicionaHiragana(root, hiragana);
+
 			treePalavras.setRoot(root);
 			treePalavras.setShowRoot(false);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			Alertas.ErroModal(rootStackPane, root, null, "Erro ao processar vocabulario", e.getMessage());
 		}
+	}
+
+	private void adicionaHiragana(TreeItem<Estatistica> root, String hiragana) {
+		Estatistica novo = new Estatistica();
+		novo.setKanji(hiragana);
+		novo.setLeitura(hiragana);
+		novo.setGerar(true);
+
+		Estatistica titulo = new Estatistica(hiragana);
+
+		TreeItem<Estatistica> tree_hiragana = new TreeItem<>(titulo);
+		tree_hiragana.getChildren().add(new TreeItem<>(novo));
+
+		List<Estatistica> estatistica = new ArrayList<>();
+		estatistica.add(novo);
+
+		root.getChildren().add(tree_hiragana);
+		listaPalavra.add(estatistica);
 	}
 
 	public void geraProcessaLista() {
@@ -217,7 +264,7 @@ public class EstatisticaController implements Initializable {
 		Set<List<Estatistica>> result = Sets.cartesianProduct(selecao);
 
 		if (result.size() <= 0)
-			Alertas.ErroModal(rootStackPane, root, null, "Lista vazia.",
+			Alertas.AlertaModal(rootStackPane, root, null, "Lista vazia.",
 					"Necessário selecionar ao menos uma leitura de cada kanji.");
 		else {
 			for (List<Estatistica> ls : result)
