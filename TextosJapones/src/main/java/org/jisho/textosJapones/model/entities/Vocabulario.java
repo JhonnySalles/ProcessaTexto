@@ -67,4 +67,8 @@ public class Vocabulario {
 		this.traducao = traducao;
 	}
 
+	@Override
+	public String toString() {
+		return vocabulario + ", ";
+	}
 }

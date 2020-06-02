@@ -273,8 +273,7 @@
 	-fx-background-color: #4052ab;
 }
 
-.table-view>.virtual-flow>.scroll-bar>.increment-button, .table-view>.virtual-flow>.scroll-bar>.decrement-button
-	{
+.table-view>.virtual-flow>.scroll-bar>.increment-button, .table-view>.virtual-flow>.scroll-bar>.decrement-button {
 	-fx-opacity: 0;
 }
 
@@ -452,53 +451,16 @@
 	-fx-background-insets: 1;
 }
 
-/*----------------------------------------------------------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------------------------------------------------------*/
-/*------------------------------------------------ Estilos do Cadastro -------------------------------------------------------*/
-/*----------------------------------------------------------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------------------------------------------------------*/
+/*---------- Estilo para correção ----------*/
+.jfx-dialog-layout {
+	-fx-background-color: #212121;
+	-fx-border-color: #005a9e;
+}
 
-/*Dialog styling*/
-.dialog-button {
-	-fx-border-color: #000033;
+.jfx-dialog-layout:focused {
+	-fx-border-color: #0078d4;
+}
+
+.jfx-layout-heading {
 	-fx-text-fill: white;
-	-fx-border-radius: 1px;
-	-fx-background-radius: 3px;
-}
-
-.dialog-button:hover {
-	-fx-background-color: #0000cc;
-	-fx-border-color: derive(-fx-color-1, -20%);
-	-fx-text-fill: white;
-}
-
-/*Alert Dialog*/
-.custom-alert {
-	-fx-background-color: white;
-	-fx-text-fill: white;
-}
-
-.custom-alert>*.button-bar>*.container {
-	-fx-background-color: -fx-primary;
-}
-
-.custom-alert>*.label.content {
-	-fx-font-size: 14px;
-	-fx-font-weight: bold;
-	-fx-text-fill: white;
-}
-
-.custom-alert:header *.header-panel {
-	-fx-background-color: #8080ff;
-}
-
-.custom-alert:header  .header-panel .label {
-	-fx-font-style: normal;
-	-fx-text-fill: white;
-}
-
-.custom-alert:header *.header-panel *.label {
-	-fx-font-size: 18px;
-	-fx-font-style: italic;
-	-fx-fill: white;
 }

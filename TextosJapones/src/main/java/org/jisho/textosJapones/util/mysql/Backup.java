@@ -3,7 +3,7 @@ package org.jisho.textosJapones.util.mysql;
 import java.io.File;
 import java.io.IOException;
 
-import org.jisho.textosJapones.controller.ProcessarFrasesController;
+import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.util.notification.Alertas;
 import org.jisho.textosJapones.util.notification.Notificacoes;
@@ -70,7 +70,7 @@ public class Backup {
 		return "Backup importado com sucesso. Tempo decorrido " + time + "s.";
 	}
 
-	public static void importarBackup(ProcessarFrasesController cnt) {
+	public static void importarBackup(FrasesController cnt) {
 		FileChooser backup = new FileChooser();
 		backup.setInitialDirectory(new File(System.getProperty("user.home")));
 		backup.setTitle("Carregar o backup.");
@@ -98,7 +98,7 @@ public class Backup {
 		}
 	}
 
-	public static void exportarBackup(ProcessarFrasesController cnt) {
+	public static void exportarBackup(FrasesController cnt) {
 		DirectoryChooser backup = new DirectoryChooser();
 		backup.setInitialDirectory(new File(System.getProperty("user.home")));
 		backup.setTitle("Carregar o backup.");

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jisho.textosJapones.controller.ProcessarFrasesController;
+import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
@@ -63,7 +63,7 @@ public class SudachiTokenizer {
 		return sb.toString();
 	}
 
-	public void processaTexto(ProcessarFrasesController cnt) throws ExcessaoBd {
+	public void processaTexto(FrasesController cnt) throws ExcessaoBd {
 		setVocabularioServices(new VocabularioServices());
 
 		String[] texto = cnt.getTextoOrigem().split("\n");

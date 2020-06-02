@@ -16,36 +16,48 @@ public class VocabularioServices {
 		return vocabularioDao.selectAll();
 	}
 
-	public void insertOrUpdate(List<Vocabulario> lista) throws ExcessaoBd {
+	public VocabularioServices insertOrUpdate(List<Vocabulario> lista) throws ExcessaoBd {
 		for (Vocabulario obj : lista) {
 			if (vocabularioDao.exist(obj.getVocabulario()))
 				vocabularioDao.update(obj);
 			else
 				vocabularioDao.insert(obj);
 		}
+
+		return this;
 	}
 
-	public void insertOrUpdate(Vocabulario obj) throws ExcessaoBd {
+	public VocabularioServices insertOrUpdate(Vocabulario obj) throws ExcessaoBd {
 		if (vocabularioDao.exist(obj.getVocabulario()))
 			vocabularioDao.update(obj);
 		else
 			vocabularioDao.insert(obj);
+
+		return this;
 	}
 
-	public void insert(Vocabulario obj) throws ExcessaoBd {
+	public VocabularioServices insert(Vocabulario obj) throws ExcessaoBd {
 		if (!obj.getTraducao().isEmpty())
 			vocabularioDao.insert(obj);
+
+		return this;
 	}
 
-	public void insert(List<Vocabulario> lista) throws ExcessaoBd {
+	public VocabularioServices insert(List<Vocabulario> lista) throws ExcessaoBd {
 		for (Vocabulario obj : lista)
 			if (!obj.getTraducao().isEmpty())
 				vocabularioDao.insert(obj);
+
+		return this;
 	}
 
 	public VocabularioServices insertExclusao(String palavra) throws ExcessaoBd {
 		vocabularioDao.insertExclusao(palavra);
 		return this;
+	}
+
+	public boolean existeExclusao(String palavra) throws ExcessaoBd {
+		return vocabularioDao.existeExclusao(palavra);
 	}
 
 	public Set<String> selectExclusao() throws ExcessaoBd {
@@ -66,6 +78,10 @@ public class VocabularioServices {
 
 	public Vocabulario select(String vocabulario) throws ExcessaoBd {
 		return vocabularioDao.select(vocabulario);
+	}
+	
+	public boolean existe(String palavra) throws ExcessaoBd {
+		return vocabularioDao.exist(palavra);
 	}
 
 }

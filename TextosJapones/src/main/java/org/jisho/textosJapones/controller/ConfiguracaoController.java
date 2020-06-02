@@ -38,7 +38,7 @@ public class ConfiguracaoController implements Initializable {
 	@FXML
 	public JFXButton btnCaminho;
 
-	private ProcessarFrasesController controller;
+	private FrasesController controller;
 
 	@FXML
 	private void onBtnCarregarCaminhoMysql() {
@@ -77,7 +77,7 @@ public class ConfiguracaoController implements Initializable {
 			return caminho.getAbsolutePath();
 	}
 
-	public void setControllerPai(ProcessarFrasesController cnt) {
+	public void setControllerPai(FrasesController cnt) {
 		this.controller = cnt;
 	}
 

@@ -1,6 +1,6 @@
 package org.jisho.textosJapones;
 
-import org.jisho.textosJapones.controller.ProcessarFrasesController;
+import org.jisho.textosJapones.controller.FrasesController;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -16,12 +16,12 @@ import javafx.stage.WindowEvent;
 public class Run extends Application {
 
 	private static Scene mainScene;
-	private static ProcessarFrasesController mainController;
+	private static FrasesController mainController;
 
 	public void start(Stage primaryStage) {
 		try {
 			// Classe inicial
-			FXMLLoader loader = new FXMLLoader(ProcessarFrasesController.getFxmlLocate());
+			FXMLLoader loader = new FXMLLoader(FrasesController.getFxmlLocate());
 			AnchorPane scPnTelaPrincipal = loader.load();
 			mainController = loader.getController();
 
@@ -31,7 +31,7 @@ public class Run extends Application {
 			primaryStage.setScene(mainScene); // Seta a cena principal
 			primaryStage.setTitle("Processar textos japonês");
 			primaryStage.getIcons()
-					.add(new Image(getClass().getResourceAsStream(ProcessarFrasesController.getIconLocate())));
+					.add(new Image(getClass().getResourceAsStream(FrasesController.getIconLocate())));
 			primaryStage.initStyle(StageStyle.DECORATED);
 			// primaryStage.setMaximized(true);
 			primaryStage.setMinWidth(500);
@@ -51,7 +51,7 @@ public class Run extends Application {
 		}
 	}
 
-	public static ProcessarFrasesController getMainController() {
+	public static FrasesController getMainController() {
 		return mainController;
 	}
 
