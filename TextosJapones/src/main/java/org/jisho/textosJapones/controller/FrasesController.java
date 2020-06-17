@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -266,8 +267,10 @@ public class FrasesController implements Initializable {
 		animacao.tmLineImageBackup.stop();
 		if (erro)
 			imgBackup.setImage(imgAnimaImportaErro);
-		else
+		else {
 			imgBackup.setImage(imgAnimaImportaConcluido);
+			verificaConexao();
+		}
 
 		tmlImagemBackup.play();
 	}
@@ -351,8 +354,8 @@ public class FrasesController implements Initializable {
 
 	private void salvaVocabulario() {
 		if (txtVocabulario.isEditable())
-			if (!txtVocabulario.getText().isEmpty()) {
-				vocabulario.setTraducao(txtVocabulario.getText());
+			if (!txtVocabulario.getText().trim().isEmpty()) {
+				vocabulario.setTraducao(txtVocabulario.getText().trim());
 				try {
 					vocabServ.insertOrUpdate(vocabulario);
 					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento vocabulário concluído.",
@@ -373,10 +376,10 @@ public class FrasesController implements Initializable {
 	}
 
 	private void salvaExclusao() {
-		if (!txtExclusoes.getText().isEmpty()) {
+		if (!txtExclusoes.getText().trim().isEmpty()) {
 			try {
-				if (!vocabServ.existeExclusao(txtExclusoes.getText())) {
-					excluido = vocabServ.insertExclusao(txtExclusoes.getText()).selectExclusao();
+				if (!vocabServ.existeExclusao(txtExclusoes.getText().trim())) {
+					excluido = vocabServ.insertExclusao(txtExclusoes.getText().trim()).selectExclusao();
 					lblExclusoes.setText(excluido.toString());
 					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento exclusão concluído.",
 							txtExclusoes.getText());
@@ -445,6 +448,7 @@ public class FrasesController implements Initializable {
 
 			@Override
 			protected String call() throws Exception {
+				TimeUnit.SECONDS.sleep(1);
 				return ConexaoMysql.testaConexaoMySQL();
 			}
 
@@ -470,7 +474,6 @@ public class FrasesController implements Initializable {
 		};
 
 		Thread t = new Thread(verificaConexao);
-		t.setDaemon(true);
 		t.start();
 	}
 
@@ -588,13 +591,13 @@ public class FrasesController implements Initializable {
 
 		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcVocabulario.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setVocabulario(e.getNewValue());
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setVocabulario(e.getNewValue().trim());
 			tbVocabulario.requestFocus();
 		});
 
 		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcTraducao.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue());
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
 			tbVocabulario.requestFocus();
 		});
 

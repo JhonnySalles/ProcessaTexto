@@ -70,13 +70,13 @@ public class CorrecaoController implements Initializable {
 	}
 
 	private CorrecaoController procurar() {
-		if (!txtVocabulario.getText().isEmpty()) {
+		if (!txtVocabulario.getText().trim().isEmpty()) {
 			if (vocabServ == null)
 				servico();
 
 			try {
 				if (vocabServ.existe(txtVocabulario.getText())) {
-					vocabulario = vocabServ.select(txtVocabulario.getText());
+					vocabulario = vocabServ.select(txtVocabulario.getText().trim());
 					carregar();
 				} else {
 					txtVocabulario.setUnFocusColor(Color.RED);
@@ -94,7 +94,7 @@ public class CorrecaoController implements Initializable {
 	}
 
 	private CorrecaoController salvar() {
-		if (!txtTraducao.getText().isEmpty()) {
+		if (!txtTraducao.getText().trim().isEmpty()) {
 			if (vocabServ == null)
 				servico();
 
@@ -122,7 +122,7 @@ public class CorrecaoController implements Initializable {
 	}
 
 	private CorrecaoController atualiza() {
-		vocabulario.setTraducao(txtTraducao.getText());
+		vocabulario.setTraducao(txtTraducao.getText().trim());
 		return this;
 	}
 
