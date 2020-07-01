@@ -14,6 +14,7 @@ import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Notificacao;
+import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.animation.Animacao;
@@ -133,6 +134,9 @@ public class FrasesController implements Initializable {
 
 	@FXML
 	private ImageView imgBackup;
+
+	@FXML
+	private JFXComboBox<Tipo> cbTipo;
 
 	@FXML
 	private JFXComboBox<Modo> cbModo;
@@ -667,6 +671,9 @@ public class FrasesController implements Initializable {
 		configuraListenert();
 		criaConfiguracao();
 		criaMenuBackup();
+
+		cbTipo.getItems().addAll(Tipo.values());
+		cbTipo.getSelectionModel().select(Tipo.TEXTO);
 
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);
