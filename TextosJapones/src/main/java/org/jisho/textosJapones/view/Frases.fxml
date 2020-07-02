@@ -7,6 +7,7 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -17,11 +18,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="apGlobal" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.FrasesController">
+<AnchorPane fx:id="apGlobal" minHeight="480.0" minWidth="610.0" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.FrasesController">
    <children>
       <StackPane fx:id="rootStackPane" layoutX="5.0" layoutY="11.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane fx:id="root" minHeight="500.0" minWidth="400.0" prefHeight="600.0" prefWidth="700.0" styleClass="background-Black1" stylesheets="@../resources/css/Dark_Theme.css">
+            <AnchorPane fx:id="root" styleClass="background-Black1" stylesheets="@../resources/css/Dark_Theme.css">
                <children>
                   <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="45.0" styleClass="tituloBackground" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
@@ -49,8 +50,8 @@
                               <Insets right="15.0" />
                            </padding>
                            <children>
-                              <JFXButton fx:id="btnCorrecao" buttonType="RAISED" onAction="#onBtnCorrecao" styleClass="background-White1" text="Correção" textFill="#0a0a0a" />
-                              <JFXButton fx:id="btnEstatistica" buttonType="RAISED" onAction="#onBtnEstatistica" styleClass="background-White1" text="Estatisticas" textFill="#0a0a0a" />
+                              <JFXButton fx:id="btnCorrecao" buttonType="RAISED" onAction="#onBtnCorrecao" prefWidth="70.0" styleClass="background-White1" text="Correção" textFill="#0a0a0a" />
+                              <JFXButton fx:id="btnEstatistica" buttonType="RAISED" onAction="#onBtnEstatistica" prefWidth="80.0" styleClass="background-White1" text="Estatisticas" textFill="#0a0a0a" />
                               <JFXComboBox fx:id="cbTipo" focusColor="#71afe5" labelFloat="true" promptText="Tipo" styleClass="comboBox-stilo" unFocusColor="WHITE" />
                               <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" />
                               <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" />
@@ -58,7 +59,7 @@
                         </HBox>
                      </children>
                   </AnchorPane>
-                  <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
+                  <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
                     <items>
                       <AnchorPane>
                            <children>
@@ -123,6 +124,7 @@
                         </AnchorPane>
                     </items>
                   </SplitPane>
+                  <ProgressBar fx:id="barraProgresso" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
          </children>

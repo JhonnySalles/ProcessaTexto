@@ -37,6 +37,13 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -44,6 +51,14 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Barra de progresso do windows -->
+		<!-- 
+		<dependency>
+			<groupId>com.github.Dansoftowner</groupId>
+			<artifactId>FXTaskbarProgressBar</artifactId>
+			<version>v11.2.7</version>
+		</dependency> -->
 
 		<!-- Bibliotecas para animacao no javafx -->
 		<dependency>
@@ -114,6 +129,5 @@
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>
-
 	</dependencies>
 </project>

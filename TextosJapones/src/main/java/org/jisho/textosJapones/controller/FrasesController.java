@@ -47,6 +47,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableRow;
@@ -167,6 +168,9 @@ public class FrasesController implements Initializable {
 
 	@FXML
 	private TableColumn<Vocabulario, String> tcTraducao;
+
+	@FXML
+	private ProgressBar barraProgresso;
 
 	private ObservableList<Vocabulario> obsLVocabulario;
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
@@ -317,6 +321,13 @@ public class FrasesController implements Initializable {
 			txtVocabulario.setUnFocusColor(Color.RED);
 		}
 	}
+	
+	public void limpaVocabulario() {
+		vocabulario = null;
+		txtVocabulario.setText("");
+		txtVocabulario.setEditable(false);
+		txtVocabulario.setUnFocusColor(Color.web("#106ebe"));
+	}
 
 	public Set<String> getExcluido() {
 		return excluido;
@@ -354,6 +365,10 @@ public class FrasesController implements Initializable {
 
 	public Dicionario getDicionario() {
 		return cbDicionario.getSelectionModel().getSelectedItem();
+	}
+
+	public ProgressBar getBarraProgresso() {
+		return barraProgresso;
 	}
 
 	public PopOver getPopPup() {

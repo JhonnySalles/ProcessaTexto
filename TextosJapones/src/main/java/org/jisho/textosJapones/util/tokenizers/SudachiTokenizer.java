@@ -35,6 +35,53 @@ public class SudachiTokenizer {
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
+	private int i = 0;
+	private int max = 0;
+
+	/*
+	 * private Runnable atualizaBarraWindows = new Runnable() {
+	 * 
+	 * @Override public void run() {
+	 * TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max,
+	 * TaskbarProgressbar.Type.NORMAL); } };
+	 */
+
+	private String getPathSettings() {
+		String settings_path = Paths.get("").toAbsolutePath().toString();
+		switch ((Dicionario) controller.getDicionario()) {
+		case SAMLL:
+			settings_path += "/sudachi_smalldict.json";
+			;
+			break;
+		case CORE:
+			settings_path += "/sudachi_coredict.json";
+			;
+			break;
+		case FULL:
+			settings_path += "/sudachi_fulldict.json";
+			;
+			break;
+		default:
+			settings_path += "/sudachi_fulldict.json";
+			;
+		}
+
+		return settings_path;
+	}
+
+	private SplitMode getModo() {
+		switch ((Modo) controller.getModo()) {
+		case A:
+			return SplitMode.A;
+		case B:
+			return SplitMode.B;
+		case C:
+			return SplitMode.C;
+		default:
+			return SplitMode.C;
+		}
+	}
+
 	// UNICODE RANGE : DESCRIPTION
 	//
 	// 3000-303F : punctuation
@@ -64,10 +111,8 @@ public class SudachiTokenizer {
 		}
 		return sb.toString();
 	}
-	
-	private void processaTexto() throws ExcessaoBd {
-		setVocabularioServices(new VocabularioServices());
 
+	private void processaTexto() throws ExcessaoBd {
 		String[] texto = controller.getTextoOrigem().split("\n");
 		String processado = "";
 
@@ -76,39 +121,13 @@ public class SudachiTokenizer {
 
 		controller.setPalavra(texto[0]);
 
-		String settings_path;
-		switch ((Dicionario) controller.getDicionario()) {
-		case SAMLL:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_smalldict.json";;
-			break;
-		case CORE:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_coredict.json";;
-			break;
-		case FULL:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
-			break;
-		default:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
-		}
-		
-		try (FileInputStream input = new FileInputStream(settings_path);
+		try (FileInputStream input = new FileInputStream(getPathSettings());
 				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
 			tokenizer = dict.create();
 
-			SplitMode mode;
-			switch ((Modo) controller.getModo()) {
-			case A:
-				mode = SplitMode.A;
-				break;
-			case B:
-				mode = SplitMode.B;
-				break;
-			case C:
-				mode = SplitMode.C;
-				break;
-			default:
-				mode = SplitMode.C;
-			}
+			i = 0;
+			max = texto.length;
+			SplitMode mode = getModo();
 
 			for (String txt : texto) {
 				if (txt != texto[0] && !txt.isEmpty()) {
@@ -142,66 +161,42 @@ public class SudachiTokenizer {
 					}
 					processado += "\n\n\n";
 				}
-
+				i++;
+				atualizaProgresso();
 			}
+
+			concluiProgresso(false);
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			concluiProgresso(true);
 			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
 		controller.setVocabulario(vocabNovo);
 		controller.setTextoDestino(processado);
 	}
-	
-	private void processaMusica() throws ExcessaoBd {
-		setVocabularioServices(new VocabularioServices());
 
+	private void processaMusica() throws ExcessaoBd {
 		String[] texto = controller.getTextoOrigem().split("\n");
 		String processado = "";
 
 		vocabNovo.clear();
-		controller.setPalavra(texto[0]);
+		controller.limpaVocabulario();
 
-		String settings_path;
-		switch ((Dicionario) controller.getDicionario()) {
-		case SAMLL:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_smalldict.json";;
-			break;
-		case CORE:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_coredict.json";;
-			break;
-		case FULL:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
-			break;
-		default:
-			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
-		}
-		
-		try (FileInputStream input = new FileInputStream(settings_path);
-				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
+		try (Dictionary dict = new DictionaryFactory().create("", readAll(new FileInputStream(getPathSettings())))) {
 			tokenizer = dict.create();
 
-			SplitMode mode;
-			switch ((Modo) controller.getModo()) {
-			case A:
-				mode = SplitMode.A;
-				break;
-			case B:
-				mode = SplitMode.B;
-				break;
-			case C:
-				mode = SplitMode.C;
-				break;
-			default:
-				mode = SplitMode.C;
-			}
+			i = 1;
+			max = texto.length;
+			SplitMode mode = getModo();
 
 			for (String txt : texto) {
-				if (txt != texto[0] && !txt.isEmpty()) {
+				if (!txt.isEmpty()) {
+					processado += txt + "\n\n";
+
 					for (Morpheme m : tokenizer.tokenize(mode, txt)) {
-						if (m.surface().matches(pattern) && !m.surface().equalsIgnoreCase(texto[0])
-							&& !controller.getExcluido().contains(m.dictionaryForm())) {
+						if (m.surface().matches(pattern) && !controller.getExcluido().contains(m.dictionaryForm())) {
 
 							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
 							if (palavra != null) {
@@ -226,21 +221,45 @@ public class SudachiTokenizer {
 						}
 					}
 					processado += "\n\n\n";
-				}
-
+				} else
+					processado += "\n";
+				i++;
+				atualizaProgresso();
 			}
+			concluiProgresso(false);
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			concluiProgresso(true);
 			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
-		controller.setVocabulario(vocabNovo);
 		controller.setTextoDestino(processado);
+	}
+
+	private void atualizaProgresso() {
+		controller.getBarraProgresso().setProgress(i / max);
+		// Não há necessidade por enquanto.
+		// Platform.runLater(atualizaBarraWindows);
+	}
+
+	public void concluiProgresso(boolean erro) {
+		controller.getBarraProgresso().setProgress(0);
+		// Não há necessidade por enquanto.
+		/*
+		 * if (erro) TaskbarProgressbar.showFullErrorProgress(Run.getPrimaryStage());
+		 * else if (i >= max) TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+		 */
+	}
+
+	private void configura() {
+		setVocabularioServices(new VocabularioServices());
 	}
 
 	public void processa(FrasesController cnt) throws ExcessaoBd {
 		controller = cnt;
+		configura();
+
 		switch ((Tipo) controller.getTipo()) {
 		case TEXTO:
 			processaTexto();

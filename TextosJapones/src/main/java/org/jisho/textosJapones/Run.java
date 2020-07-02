@@ -15,27 +15,29 @@ import javafx.stage.WindowEvent;
 
 public class Run extends Application {
 
-	private static Scene mainScene;
-	private static FrasesController mainController;
+	private static Scene MAIN_SCENE;
+	private static FrasesController MAIN_CONTROLLER;
+	private static Stage PRIMARY_STAGE;
 
 	public void start(Stage primaryStage) {
 		try {
+			PRIMARY_STAGE = primaryStage;
 			// Classe inicial
 			FXMLLoader loader = new FXMLLoader(FrasesController.getFxmlLocate());
 			AnchorPane scPnTelaPrincipal = loader.load();
-			mainController = loader.getController();
+			MAIN_CONTROLLER = loader.getController();
 
-			mainScene = new Scene(scPnTelaPrincipal); // Carrega a scena
-			mainScene.setFill(Color.BLACK);
+			MAIN_SCENE = new Scene(scPnTelaPrincipal); // Carrega a scena
+			MAIN_SCENE.setFill(Color.BLACK);
 
-			primaryStage.setScene(mainScene); // Seta a cena principal
+			primaryStage.setScene(MAIN_SCENE); // Seta a cena principal
 			primaryStage.setTitle("Processar textos japonês");
 			primaryStage.getIcons()
 					.add(new Image(getClass().getResourceAsStream(FrasesController.getIconLocate())));
 			primaryStage.initStyle(StageStyle.DECORATED);
 			// primaryStage.setMaximized(true);
-			primaryStage.setMinWidth(500);
-			primaryStage.setMinHeight(400);
+			primaryStage.setMinWidth(630);
+			primaryStage.setMinHeight(490);
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
@@ -52,11 +54,15 @@ public class Run extends Application {
 	}
 
 	public static FrasesController getMainController() {
-		return mainController;
+		return MAIN_CONTROLLER;
 	}
 
 	public static Scene getMainScene() {
-		return mainScene;
+		return MAIN_SCENE;
+	}
+	
+	public static Stage getPrimaryStage() {
+		return PRIMARY_STAGE;
 	}
 
 	public static void main(String[] args) {
