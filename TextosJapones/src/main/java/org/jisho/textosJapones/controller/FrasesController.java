@@ -348,6 +348,10 @@ public class FrasesController implements Initializable {
 		return cbModo.getSelectionModel().getSelectedItem();
 	}
 
+	public Tipo getTipo() {
+		return cbTipo.getSelectionModel().getSelectedItem();
+	}
+
 	public Dicionario getDicionario() {
 		return cbDicionario.getSelectionModel().getSelectedItem();
 	}
@@ -413,7 +417,7 @@ public class FrasesController implements Initializable {
 				atualizaExclusao();
 
 			SudachiTokenizer tokenizer = new SudachiTokenizer();
-			tokenizer.processaTexto(this);
+			tokenizer.processa(this);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao pesquisar vocabulário excluído.");

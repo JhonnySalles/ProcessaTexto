@@ -17,6 +17,7 @@ import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
+import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.notification.Alertas;
@@ -29,6 +30,7 @@ import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
 
 public class SudachiTokenizer {
 
+	private FrasesController controller;
 	private VocabularioServices vocabServ;
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
@@ -62,20 +64,20 @@ public class SudachiTokenizer {
 		}
 		return sb.toString();
 	}
-
-	public void processaTexto(FrasesController cnt) throws ExcessaoBd {
+	
+	private void processaTexto() throws ExcessaoBd {
 		setVocabularioServices(new VocabularioServices());
 
-		String[] texto = cnt.getTextoOrigem().split("\n");
+		String[] texto = controller.getTextoOrigem().split("\n");
 		String processado = "";
 
 		vocabNovo.clear();
 		repetido.clear();
 
-		cnt.setPalavra(texto[0]);
+		controller.setPalavra(texto[0]);
 
 		String settings_path;
-		switch ((Dicionario) cnt.getDicionario()) {
+		switch ((Dicionario) controller.getDicionario()) {
 		case SAMLL:
 			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_smalldict.json";;
 			break;
@@ -94,7 +96,7 @@ public class SudachiTokenizer {
 			tokenizer = dict.create();
 
 			SplitMode mode;
-			switch ((Modo) cnt.getModo()) {
+			switch ((Modo) controller.getModo()) {
 			case A:
 				mode = SplitMode.A;
 				break;
@@ -113,7 +115,7 @@ public class SudachiTokenizer {
 					for (Morpheme m : tokenizer.tokenize(mode, txt)) {
 						if (m.surface().matches(pattern) && !m.surface().equalsIgnoreCase(texto[0])
 								&& !repetido.contains(m.dictionaryForm())
-								&& !cnt.getExcluido().contains(m.dictionaryForm())) {
+								&& !controller.getExcluido().contains(m.dictionaryForm())) {
 
 							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
 							if (palavra != null) {
@@ -148,9 +150,105 @@ public class SudachiTokenizer {
 			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
-		cnt.setVocabulario(vocabNovo);
-		cnt.setTextoDestino(processado);
+		controller.setVocabulario(vocabNovo);
+		controller.setTextoDestino(processado);
+	}
+	
+	private void processaMusica() throws ExcessaoBd {
+		setVocabularioServices(new VocabularioServices());
 
+		String[] texto = controller.getTextoOrigem().split("\n");
+		String processado = "";
+
+		vocabNovo.clear();
+		controller.setPalavra(texto[0]);
+
+		String settings_path;
+		switch ((Dicionario) controller.getDicionario()) {
+		case SAMLL:
+			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_smalldict.json";;
+			break;
+		case CORE:
+			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_coredict.json";;
+			break;
+		case FULL:
+			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
+			break;
+		default:
+			settings_path = Paths.get("").toAbsolutePath().toString() + "/sudachi_fulldict.json";;
+		}
+		
+		try (FileInputStream input = new FileInputStream(settings_path);
+				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
+			tokenizer = dict.create();
+
+			SplitMode mode;
+			switch ((Modo) controller.getModo()) {
+			case A:
+				mode = SplitMode.A;
+				break;
+			case B:
+				mode = SplitMode.B;
+				break;
+			case C:
+				mode = SplitMode.C;
+				break;
+			default:
+				mode = SplitMode.C;
+			}
+
+			for (String txt : texto) {
+				if (txt != texto[0] && !txt.isEmpty()) {
+					for (Morpheme m : tokenizer.tokenize(mode, txt)) {
+						if (m.surface().matches(pattern) && !m.surface().equalsIgnoreCase(texto[0])
+							&& !controller.getExcluido().contains(m.dictionaryForm())) {
+
+							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
+							if (palavra != null) {
+								processado += m.dictionaryForm() + " " + palavra.getTraducao() + " ";
+
+								if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
+									palavra.setFormaBasica(m.dictionaryForm());
+									palavra.setLeitura(m.readingForm());
+									vocabServ.update(palavra);
+								}
+							} else {
+								List<Vocabulario> existe = vocabNovo.stream()
+										.filter(p -> p.getVocabulario().equalsIgnoreCase(m.surface()))
+										.collect(Collectors.toList());
+
+								processado += m.dictionaryForm() + " ** ";
+								if (existe.size() < 1) {
+									vocabNovo
+											.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
+								}
+							}
+						}
+					}
+					processado += "\n\n\n";
+				}
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
+		}
+
+		controller.setVocabulario(vocabNovo);
+		controller.setTextoDestino(processado);
+	}
+
+	public void processa(FrasesController cnt) throws ExcessaoBd {
+		controller = cnt;
+		switch ((Tipo) controller.getTipo()) {
+		case TEXTO:
+			processaTexto();
+			break;
+		case MUSICA:
+			processaMusica();
+			break;
+		}
 	}
 
 	private void setVocabularioServices(VocabularioServices vocabServ) {

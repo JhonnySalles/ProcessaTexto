@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Built-By: Jhonny
-Build-Jdk: 12.0.2
+Build-Jdk: 11.0.2
 Class-Path: lib/AnimateFX-1.2.1.jar lib/jfoenix-9.0.9.jar lib/javafx-gra
  phics-14.0.1.jar lib/javafx-graphics-14.0.1-win.jar lib/javafx-base-14.
  0.1.jar lib/javafx-base-14.0.1-win.jar lib/javafx-controls-14.0.1.jar l
