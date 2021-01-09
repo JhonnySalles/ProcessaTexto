@@ -36,8 +36,8 @@ public class Run extends Application {
 					.add(new Image(getClass().getResourceAsStream(FrasesController.getIconLocate())));
 			primaryStage.initStyle(StageStyle.DECORATED);
 			// primaryStage.setMaximized(true);
-			primaryStage.setMinWidth(630);
-			primaryStage.setMinHeight(490);
+			primaryStage.setMinWidth(750);
+			primaryStage.setMinHeight(500);
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override

@@ -46,9 +46,9 @@ public class SudachiTokenizer {
 	 * TaskbarProgressbar.Type.NORMAL); } };
 	 */
 
-	private String getPathSettings() {
+	public static String getPathSettings(Dicionario dicionario) {
 		String settings_path = Paths.get("").toAbsolutePath().toString();
-		switch ((Dicionario) controller.getDicionario()) {
+		switch (dicionario) {
 		case SAMLL:
 			settings_path += "/sudachi_smalldict.json";
 			;
@@ -69,8 +69,8 @@ public class SudachiTokenizer {
 		return settings_path;
 	}
 
-	private SplitMode getModo() {
-		switch ((Modo) controller.getModo()) {
+	public static SplitMode getModo(Modo modo) {
+		switch (modo) {
 		case A:
 			return SplitMode.A;
 		case B:
@@ -98,7 +98,7 @@ public class SudachiTokenizer {
 	final private String pattern = ".*[\u4E00-\u9FAF].*";
 	public Tokenizer tokenizer;
 
-	static String readAll(InputStream input) throws IOException {
+	public static String readAll(InputStream input) throws IOException {
 		InputStreamReader isReader = new InputStreamReader(input, StandardCharsets.UTF_8);
 		BufferedReader reader = new BufferedReader(isReader);
 		StringBuilder sb = new StringBuilder();
@@ -121,13 +121,13 @@ public class SudachiTokenizer {
 
 		controller.setPalavra(texto[0]);
 
-		try (FileInputStream input = new FileInputStream(getPathSettings());
+		try (FileInputStream input = new FileInputStream(getPathSettings(controller.getDicionario()));
 				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
 			tokenizer = dict.create();
 
 			i = 0;
 			max = texto.length;
-			SplitMode mode = getModo();
+			SplitMode mode = getModo(controller.getModo());
 
 			for (String txt : texto) {
 				if (txt != texto[0] && !txt.isEmpty()) {
@@ -184,12 +184,13 @@ public class SudachiTokenizer {
 		vocabNovo.clear();
 		controller.limpaVocabulario();
 
-		try (Dictionary dict = new DictionaryFactory().create("", readAll(new FileInputStream(getPathSettings())))) {
+		try (Dictionary dict = new DictionaryFactory().create("",
+				readAll(new FileInputStream(getPathSettings(controller.getDicionario()))))) {
 			tokenizer = dict.create();
 
 			i = 1;
 			max = texto.length;
-			SplitMode mode = getModo();
+			SplitMode mode = getModo(controller.getModo());
 
 			for (String txt : texto) {
 				if (!txt.isEmpty()) {
@@ -273,4 +274,43 @@ public class SudachiTokenizer {
 	private void setVocabularioServices(VocabularioServices vocabServ) {
 		this.vocabServ = vocabServ;
 	}
+
+	public void corrigirLancados(FrasesController cnt) {
+		controller = cnt;
+		vocabServ = new VocabularioServices();
+		
+		List<Vocabulario> lista;
+		try {
+			lista = vocabServ.selectAll();
+		} catch (ExcessaoBd e1) {
+			e1.printStackTrace();
+			return;
+		}
+
+		try (Dictionary dict = new DictionaryFactory().create("",
+				readAll(new FileInputStream(getPathSettings(controller.getDicionario()))))) {
+			tokenizer = dict.create();
+			SplitMode mode = getModo(controller.getModo());
+
+			for (Vocabulario vocabulario : lista) {
+				for(Morpheme mp : tokenizer.tokenize(mode, vocabulario.getVocabulario()))
+					if (mp.dictionaryForm().equalsIgnoreCase(vocabulario.getVocabulario())) {
+						vocabulario.setFormaBasica(mp.dictionaryForm());
+						vocabulario.setLeitura(mp.readingForm());
+					}
+
+			}
+
+			vocabServ.insertOrUpdate(lista);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			concluiProgresso(true);
+			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+		}
+
+	}
+
 }

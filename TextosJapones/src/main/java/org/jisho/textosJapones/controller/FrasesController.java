@@ -113,6 +113,9 @@ public class FrasesController implements Initializable {
 	protected AnchorPane root;
 
 	@FXML
+	private JFXButton btnLegendas;
+
+	@FXML
 	private JFXButton btnSalvar;
 
 	@FXML
@@ -233,6 +236,31 @@ public class FrasesController implements Initializable {
 	}
 
 	@FXML
+	private void onBtnLegendas() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(ProcessarFrasesController.getFxmlLocate());
+			AnchorPane newAnchorPane = loader.load();
+
+			Scene mainScene = new Scene(newAnchorPane); // Carrega a scena
+			mainScene.setFill(Color.BLACK);
+
+			Stage stage = new Stage();
+			stage.setScene(mainScene); // Seta a cena principal
+			stage.setTitle("Gerar estatisticas");
+			stage.initStyle(StageStyle.DECORATED);
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.getIcons().add(new Image(getClass().getResourceAsStream(ProcessarFrasesController.getIconLocate())));
+			stage.show(); // Mostra a tela.
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Erro ao abrir a tela de estatistica.");
+		}
+
+	}
+
+	@FXML
 	private void onBtnCorrecao() {
 		CorrecaoController.abreTelaCorrecao(rootStackPane, root);
 	}
@@ -321,7 +349,7 @@ public class FrasesController implements Initializable {
 			txtVocabulario.setUnFocusColor(Color.RED);
 		}
 	}
-	
+
 	public void limpaVocabulario() {
 		vocabulario = null;
 		txtVocabulario.setText("");
