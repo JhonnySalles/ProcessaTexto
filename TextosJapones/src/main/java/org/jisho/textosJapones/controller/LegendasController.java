@@ -26,6 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -34,7 +35,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 
-public class ProcessarFrasesController implements Initializable {
+public class LegendasController implements Initializable {
 
 	@FXML
 	private AnchorPane apGlobal;
@@ -45,6 +46,9 @@ public class ProcessarFrasesController implements Initializable {
 	@FXML
 	protected AnchorPane root;
 
+	@FXML
+	private Label lblLog;
+	
 	@FXML
 	private JFXButton btnProcessar;
 
@@ -103,6 +107,7 @@ public class ProcessarFrasesController implements Initializable {
 			if (legendas == null)
 				legendas = new ProcessarLegendas(this);
 
+			lblLog.setText("Iniciando o processamento..");
 			legendas.processarLegendas(frases);
 		} else
 			Alertas.AvisoModal(rootStackPane, root, null, "Aviso", "A lista se encontra vazia.");
@@ -124,6 +129,7 @@ public class ProcessarFrasesController implements Initializable {
 	@FXML
 	private void onBtnSalvar() {
 		try {
+			lblLog.setText("Iniciando salvamento.");
 			btnSalvar.setDisable(true);
 			btnAtualizar.setDisable(true);
 			tbVocabulario.setDisable(true);
@@ -141,6 +147,7 @@ public class ProcessarFrasesController implements Initializable {
 			e.printStackTrace();
 			Alertas.ErroModal(rootStackPane, root, null, "Erro", "Erro ao salvar as atualizações.");
 		} finally {
+			lblLog.setText("Salvamento concluido.");
 			btnSalvar.setDisable(false);
 			btnAtualizar.setDisable(false);
 			tbVocabulario.setDisable(false);
@@ -152,6 +159,7 @@ public class ProcessarFrasesController implements Initializable {
 	@FXML
 	private void onBtnAtualizar() {
 		try {
+			lblLog.setText("Atualizando....");
 			revisar = FXCollections.observableArrayList(service.selectRevisar());
 			tbVocabulario.setItems(revisar);
 		} catch (ExcessaoBd e) {
@@ -171,6 +179,11 @@ public class ProcessarFrasesController implements Initializable {
 	public ProgressBar getBarraProgresso() {
 		return barraProgresso;
 	}
+	
+	public Label getLabel() {
+		return lblLog;
+	}
+
 
 	public AnchorPane getRoot() {
 		return root;
@@ -230,7 +243,7 @@ public class ProcessarFrasesController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return ProcessarFrasesController.class.getResource("/org/jisho/textosJapones/view/ProcessarFrases.fxml");
+		return LegendasController.class.getResource("/org/jisho/textosJapones/view/Legendas.fxml");
 	}
 
 	public static String getIconLocate() {

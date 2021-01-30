@@ -239,7 +239,7 @@ public class FrasesController implements Initializable {
 	private void onBtnLegendas() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(ProcessarFrasesController.getFxmlLocate());
+			loader.setLocation(LegendasController.getFxmlLocate());
 			AnchorPane newAnchorPane = loader.load();
 
 			Scene mainScene = new Scene(newAnchorPane); // Carrega a scena
@@ -250,7 +250,7 @@ public class FrasesController implements Initializable {
 			stage.setTitle("Gerar estatisticas");
 			stage.initStyle(StageStyle.DECORATED);
 			stage.initModality(Modality.WINDOW_MODAL);
-			stage.getIcons().add(new Image(getClass().getResourceAsStream(ProcessarFrasesController.getIconLocate())));
+			stage.getIcons().add(new Image(getClass().getResourceAsStream(LegendasController.getIconLocate())));
 			stage.show(); // Mostra a tela.
 
 		} catch (IOException e) {
