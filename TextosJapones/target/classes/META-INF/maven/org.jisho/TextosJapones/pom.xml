@@ -13,27 +13,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>14</maven.compiler.source>
+		<maven.compiler.target>14</maven.compiler.target>
 	</properties>
 
 	<build>
 		<plugins>
-			<plugin>
-				<!-- Build an executable JAR -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>org.jisho.textosJapones.App</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -53,6 +38,18 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
+							<mainClass>org.jisho.PostBot.App</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
 							<mainClass>org.jisho.textosJapones.App</mainClass>
 						</manifest>
 					</archive>
@@ -77,12 +74,11 @@
 		</dependency>
 
 		<!-- Barra de progresso do windows -->
-		<!-- 
 		<dependency>
 			<groupId>com.github.Dansoftowner</groupId>
 			<artifactId>FXTaskbarProgressBar</artifactId>
 			<version>v11.2.7</version>
-		</dependency> -->
+		</dependency>
 
 		<!-- Bibliotecas para animacao no javafx -->
 		<dependency>

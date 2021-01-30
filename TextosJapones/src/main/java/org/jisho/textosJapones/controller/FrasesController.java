@@ -247,7 +247,7 @@ public class FrasesController implements Initializable {
 
 			Stage stage = new Stage();
 			stage.setScene(mainScene); // Seta a cena principal
-			stage.setTitle("Gerar estatisticas");
+			stage.setTitle("Legendas e correção não encontrados");
 			stage.initStyle(StageStyle.DECORATED);
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LegendasController.getIconLocate())));
@@ -255,7 +255,7 @@ public class FrasesController implements Initializable {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Erro ao abrir a tela de estatistica.");
+			System.out.println("Erro ao abrir a tela de legendas e correções.");
 		}
 
 	}
