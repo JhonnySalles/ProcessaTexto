@@ -64,11 +64,11 @@ public class ProcessarLegendas {
 				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
 						"Lista processada com sucesso.");
 				controller.getBarraProgresso().progressProperty().unbind();
-				controller.getLabel().textProperty().unbind();
+				controller.getLog().textProperty().unbind();
 			}
 		};
 		controller.getBarraProgresso().progressProperty().bind(verificaConexao.progressProperty());
-		controller.getLabel().textProperty().bind(verificaConexao.messageProperty());
+		controller.getLog().textProperty().bind(verificaConexao.messageProperty());
 		Thread t = new Thread(verificaConexao);
 		t.start();
 	}

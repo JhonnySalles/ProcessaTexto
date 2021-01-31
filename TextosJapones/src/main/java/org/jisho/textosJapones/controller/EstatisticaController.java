@@ -52,14 +52,13 @@ import javafx.util.Callback;
 
 public class EstatisticaController implements Initializable {
 
-	final static Image imgAnimaBanco = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataBase_48.png"));
+	final static Image imgAnimaBanco = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataBase_48.png"));
 	final static Image imgAnimaBancoEspera = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataEspera_48.png"));
-	final static Image imgAnimaBancoErro = new Image(Animacao.class
-			.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataSemConexao_48.png"));
+			Animacao.class.getResourceAsStream("/images/bd/icoDataEspera_48.png"));
+	final static Image imgAnimaBancoErro = new Image(
+			Animacao.class.getResourceAsStream("/images/bd/icoDataSemConexao_48.png"));
 	final static Image imgAnimaBancoConectado = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataConectado_48.png"));
+			Animacao.class.getResourceAsStream("/images/bd/icoDataConectado_48.png"));
 
 	final private static PseudoClass FOLHA = PseudoClass.getPseudoClass("leaf");
 
@@ -159,7 +158,8 @@ public class EstatisticaController implements Initializable {
 				tbVocabulario.setItems(obsLCombinacoes);
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
-				AlertasPopup.ErroModal(rootStackPane, root, null, "Não foi possível realizar a pesquisa.", e.getMessage());
+				AlertasPopup.ErroModal(rootStackPane, root, null, "Não foi possível realizar a pesquisa.",
+						e.getMessage());
 			}
 
 		}
@@ -550,11 +550,11 @@ public class EstatisticaController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return EstatisticaController.class.getResource("/org/jisho/textosJapones/view/Estatistica.fxml");
+		return EstatisticaController.class.getResource("/view/Estatistica.fxml");
 	}
 
 	public static String getIconLocate() {
-		return "/org/jisho/textosJapones/resources/images/icoTextoJapones_128.png";
+		return "/images/icoTextoJapones_128.png";
 	}
 
 }

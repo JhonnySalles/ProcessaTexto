@@ -5,7 +5,7 @@
 
 	<groupId>org.jisho</groupId>
 	<artifactId>TextosJapones</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>TextosJapones</name>
@@ -148,6 +148,13 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
+		</dependency>
+		
+		<!-- Mostrar barra de progresso windows -->
+		<dependency>
+			<groupId>com.github.Dansoftowner</groupId>
+			<artifactId>FXTaskbarProgressBar</artifactId>
+			<version>v11.2.7</version>
 		</dependency>
 	</dependencies>
 </project>

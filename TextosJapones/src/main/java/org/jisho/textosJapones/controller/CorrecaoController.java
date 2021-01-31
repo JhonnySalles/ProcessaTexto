@@ -38,7 +38,7 @@ import javafx.scene.text.Font;
 public class CorrecaoController implements Initializable {
 
 	final private static String STYLE_SHEET = AlertasPopup.class
-			.getResource("/org/jisho/textosJapones/resources/css/Dark_Theme.css").toExternalForm();
+			.getResource("/css/Dark_Theme.css").toExternalForm();
 
 	@FXML
 	public JFXTextField txtVocabulario;
@@ -220,6 +220,6 @@ public class CorrecaoController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return CorrecaoController.class.getResource("/org/jisho/textosJapones/view/Correcao.fxml");
+		return CorrecaoController.class.getResource("/view/Correcao.fxml");
 	}
 }

@@ -28,6 +28,7 @@ module TextosJapones {
 	requires java.compiler;
 	requires org.jsoup;
 	requires com.google.common;
+	requires nativejavafx.taskbar;
 	//requires nativejavafx.taskbar;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;

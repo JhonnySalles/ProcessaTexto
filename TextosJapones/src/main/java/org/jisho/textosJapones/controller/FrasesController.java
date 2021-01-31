@@ -73,35 +73,34 @@ import javafx.util.Duration;
 
 public class FrasesController implements Initializable {
 
-	final static Image imgAnimaBanco = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataBase_48.png"));
+	final static Image imgAnimaBanco = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataBase_48.png"));
 	final static Image imgAnimaBancoEspera = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataEspera_48.png"));
-	final static Image imgAnimaBancoErro = new Image(Animacao.class
-			.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataSemConexao_48.png"));
+			Animacao.class.getResourceAsStream("/images/bd/icoDataEspera_48.png"));
+	final static Image imgAnimaBancoErro = new Image(
+			Animacao.class.getResourceAsStream("/images/bd/icoDataSemConexao_48.png"));
 	final static Image imgAnimaBancoConectado = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/bd/icoDataConectado_48.png"));
+			Animacao.class.getResourceAsStream("/images/bd/icoDataConectado_48.png"));
 
 	final static Image imgAnimaBackup = new Image(
-			Animacao.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_48.png"));
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_48.png"));
 
-	final static Image imgAnimaExporta = new Image(Animacao.class
-			.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_48.png"));
-	final static Image imgAnimaExportaEspera = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Espera_48.png"));
-	final static Image imgAnimaExportaErro = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Erro_48.png"));
-	final static Image imgAnimaExportaConcluido = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Exportando_Concluido_48.png"));
+	final static Image imgAnimaExporta = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_48.png"));
+	final static Image imgAnimaExportaEspera = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Espera_48.png"));
+	final static Image imgAnimaExportaErro = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Erro_48.png"));
+	final static Image imgAnimaExportaConcluido = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Concluido_48.png"));
 
-	final static Image imgAnimaImporta = new Image(Animacao.class
-			.getResourceAsStream("/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_48.png"));
-	final static Image imgAnimaImportaEspera = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Espera_48.png"));
-	final static Image imgAnimaImportaErro = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Erro_48.png"));
-	final static Image imgAnimaImportaConcluido = new Image(Animacao.class.getResourceAsStream(
-			"/org/jisho/textosJapones/resources/images/export/icoBDBackup_Importando_Concluido_48.png"));
+	final static Image imgAnimaImporta = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_48.png"));
+	final static Image imgAnimaImportaEspera = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Espera_48.png"));
+	final static Image imgAnimaImportaErro = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Erro_48.png"));
+	final static Image imgAnimaImportaConcluido = new Image(
+			Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Concluido_48.png"));
 
 	@FXML
 	private AnchorPane apGlobal;
@@ -568,8 +567,8 @@ public class FrasesController implements Initializable {
 			pop.setAutoHide(true);
 			pop.setOnHidden(e -> cntConfiguracao.salvar());
 			pop.setOnShowing(e -> cntConfiguracao.carregar());
-			pop.getRoot().getStylesheets().add(FrasesController.class
-					.getResource("/org/jisho/textosJapones/resources/css/Dark_PopOver.css").toExternalForm());
+			pop.getRoot().getStylesheets()
+					.add(FrasesController.class.getResource("/css/Dark_PopOver.css").toExternalForm());
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -709,11 +708,11 @@ public class FrasesController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return FrasesController.class.getResource("/org/jisho/textosJapones/view/Frases.fxml");
+		return FrasesController.class.getResource("/view/Frases.fxml");
 	}
 
 	public static String getIconLocate() {
-		return "/org/jisho/textosJapones/resources/images/icoTextoJapones_128.png";
+		return "/images/icoTextoJapones_128.png";
 	}
 
 }

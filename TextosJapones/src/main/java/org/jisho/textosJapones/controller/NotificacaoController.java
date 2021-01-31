@@ -82,6 +82,6 @@ public class NotificacaoController implements Initializable {
 	
 	public static URL getFxmlLocate() {
 		return NotificacaoController.class
-				.getResource("/org/jisho/textosJapones/view/Notificacao.fxml");
+				.getResource("/view/Notificacao.fxml");
 	}
 }

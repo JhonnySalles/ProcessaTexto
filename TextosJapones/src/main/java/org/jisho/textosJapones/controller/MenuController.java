@@ -42,6 +42,6 @@ public class MenuController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MenuController.class.getResource("/org/jisho/textosJapones/view/Menu.fxml");
+		return MenuController.class.getResource("/view/Menu.fxml");
 	}
 }

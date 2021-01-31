@@ -32,15 +32,15 @@ import javafx.stage.Stage;
 public class AlertasPopup {
 
 	public final static ImageView ALERTA = new ImageView(
-			new Image(AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAlerta_48.png")));
+			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoAlerta_48.png")));
 	public final static ImageView AVISO = new ImageView(
-			new Image(AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAviso_48.png")));
+			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoAviso_48.png")));
 	public final static ImageView ERRO = new ImageView(
-			new Image(AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoErro_48.png")));
+			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoErro_48.png")));
 	public final static ImageView CONFIRMA = new ImageView(
-			new Image(AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoConfirma_48.png")));
+			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoConfirma_48.png")));
 
-	public final static String CSS = AlertasPopup.class.getResource("/org/jisho/textosJapones/resources/css/Dark_Alerts.css")
+	public final static String CSS = AlertasPopup.class.getResource("/css/Dark_Alerts.css")
 			.toExternalForm();
 
 	private static StackPane ROOT_STACK_PANE;

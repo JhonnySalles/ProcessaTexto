@@ -1,0 +1,320 @@
+package org.jisho.textosJapones.controller;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.enums.Api;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
+import org.jisho.textosJapones.util.processar.TanoshiJapanese;
+import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
+
+public class RevisarController implements Initializable {
+
+	@FXML
+	private AnchorPane apRoot;
+
+	@FXML
+	private JFXComboBox<Api> cbContaGoolge;
+
+	@FXML
+	private JFXButton btnProcessarTudo;
+
+	@FXML
+	private JFXButton btnTraduzir;
+
+	@FXML
+	private JFXButton btnJapaneseTanoshi;
+
+	@FXML
+	private JFXButton btnSalvar;
+
+	@FXML
+	private JFXButton btnAtualizar;
+
+	@FXML
+	private TableView<Revisar> tbVocabulario;
+
+	@FXML
+	private TableColumn<Revisar, String> tcVocabulario;
+
+	@FXML
+	private TableColumn<Revisar, String> tcIngles;
+
+	@FXML
+	private TableColumn<Revisar, String> tcTraducao;
+
+	@FXML
+	private TableColumn<Revisar, CheckBox> tcRevisado;
+
+	private RevisarServices service = new RevisarServices();
+	private LegendasController controller;
+
+	public void setControllerPai(LegendasController controller) {
+		this.controller = controller;
+	}
+
+	@FXML
+	private void onBtnSalvar() {
+		try {
+			controller.getLog().setText("Iniciando salvamento.");
+
+			btnSalvar.setDisable(true);
+			btnAtualizar.setDisable(true);
+			tbVocabulario.setDisable(true);
+
+			btnProcessarTudo.setDisable(true);
+			btnTraduzir.setDisable(true);
+			btnJapaneseTanoshi.setDisable(true);
+
+			List<Revisar> update = tbVocabulario.getItems().stream()
+					.filter(revisar -> revisar.getRevisado().isSelected()).collect(Collectors.toList());
+			// List<Vocabulario> salvar = update.stream().map(revisar ->
+			// Revisar.toVocabulario(revisar))
+			// .collect(Collectors.toList());
+
+			service.insertOrUpdate(update);
+
+			// VocabularioServices service = new VocabularioServices();
+			// service.insertOrUpdate(salvar);
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao salvar as atualizações.");
+		} finally {
+			controller.getLog().setText("Salvamento concluido.");
+
+			btnSalvar.setDisable(false);
+			btnAtualizar.setDisable(false);
+			tbVocabulario.setDisable(false);
+
+			btnProcessarTudo.setDisable(false);
+			btnTraduzir.setDisable(false);
+			btnJapaneseTanoshi.setDisable(false);
+
+			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
+					"Salvo com sucesso.");
+			onBtnAtualizar();
+		}
+	}
+
+	@FXML
+	private void onBtnAtualizar() {
+		try {
+			controller.getLog().setText("Atualizando....");
+			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectRevisar()));
+
+			controller.getLog().setText("");
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao pesquisar as revisões.");
+		}
+	}
+
+	private static Boolean desativar = false;
+
+	@FXML
+	private void onBtnProcessarTudo() {
+		if (btnProcessarTudo.getAccessibleText().equalsIgnoreCase("PROCESSANDO")) {
+			desativar = true;
+			return;
+		}
+
+		if (tbVocabulario.getItems().isEmpty())
+			return;
+
+		btnSalvar.setDisable(true);
+		btnAtualizar.setDisable(true);
+		tbVocabulario.setDisable(true);
+		btnTraduzir.setDisable(true);
+		btnJapaneseTanoshi.setDisable(true);
+
+		btnProcessarTudo.setAccessibleText("PROCESSANDO");
+		btnProcessarTudo.setText("Pausar");
+
+		desativar = false;
+
+		Task<Void> processarTudo = new Task<Void>() {
+			List<Revisar> lista = null;
+			Integer i = 0;
+
+			@Override
+			public Void call() throws IOException, InterruptedException {
+
+				lista = new ArrayList<Revisar>(tbVocabulario.getItems());
+
+				try {
+
+					for (Revisar item : lista) {
+
+						i++;
+						updateMessage("Processando item " + i + " de " + lista.size());
+						updateProgress(i, lista.size());
+
+						Platform.runLater(() -> {
+							if (TaskbarProgressbar.isSupported())
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size(),
+										Type.NORMAL);
+						});
+
+						if (!item.getRevisado().isSelected()) {
+
+							if (item.getIngles().isEmpty())
+								item.setIngles(TanoshiJapanese.processa(item.getVocabulario()));
+
+							if (item.getTraducao().isEmpty()) {
+								try {
+									item.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+											Language.PORTUGUESE.getSigla(), item.getIngles(),
+											cbContaGoolge.getValue()));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+							item.getRevisado().setSelected(true);
+
+							if (desativar)
+								return null;
+						}
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					Platform.runLater(() -> tbVocabulario.setItems(FXCollections.observableArrayList(lista)));
+
+					Platform.runLater(() -> {
+						btnProcessarTudo.setAccessibleText("PROCESSAR");
+						btnProcessarTudo.setText("Processar tudo");
+
+						btnSalvar.setDisable(false);
+						btnAtualizar.setDisable(false);
+						tbVocabulario.setDisable(false);
+						btnTraduzir.setDisable(false);
+						btnJapaneseTanoshi.setDisable(false);
+
+						controller.getLog().textProperty().unbind();
+						controller.getBarraProgresso().progressProperty().unbind();
+
+						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+
+						tbVocabulario.refresh();
+					});
+				}
+				return null;
+			}
+		};
+
+		Thread processa = new Thread(processarTudo);
+		controller.getLog().textProperty().bind(processarTudo.messageProperty());
+		controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
+		processa.start();
+	}
+
+	@FXML
+	private void onBtnTraduzir() {
+		if (tbVocabulario.getItems().isEmpty())
+			return;
+
+		if (tbVocabulario.getSelectionModel().getSelectedItem() == null
+				|| tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
+			return;
+
+		try {
+			tbVocabulario.getSelectionModel().getSelectedItem()
+					.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(), cbContaGoolge.getValue()));
+
+			tbVocabulario.refresh();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void onBtnJapaneseTanoshi() {
+		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
+			return;
+
+		tbVocabulario.getSelectionModel().getSelectedItem().setIngles(
+				TanoshiJapanese.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
+
+		tbVocabulario.refresh();
+	}
+
+	public AnchorPane getRoot() {
+		return apRoot;
+	}
+
+	private void editaColunas() {
+		tcVocabulario.setCellValueFactory(new PropertyValueFactory<>("vocabulario"));
+		tcIngles.setCellValueFactory(new PropertyValueFactory<>("ingles"));
+		tcTraducao.setCellValueFactory(new PropertyValueFactory<>("traducao"));
+
+		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		tcIngles.setCellFactory(TextFieldTableCell.forTableColumn());
+		tcIngles.setOnEditCommit(e -> {
+			if (!e.getNewValue().trim().isEmpty()) {
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).setIngles(e.getNewValue().trim());
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
+				tbVocabulario.requestFocus();
+			}
+		});
+
+		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
+		tcTraducao.setOnEditCommit(e -> {
+			if (!e.getNewValue().trim().isEmpty()) {
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
+				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
+				tbVocabulario.requestFocus();
+			}
+		});
+
+		tcRevisado.setCellValueFactory(new PropertyValueFactory<>("revisado"));
+	}
+
+	private void linkaCelulas() {
+		editaColunas();
+	}
+
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		linkaCelulas();
+
+		cbContaGoolge.getItems().addAll(Api.values());
+		cbContaGoolge.getSelectionModel().selectFirst();
+
+		btnProcessarTudo.setAccessibleText("PROCESSAR");
+	}
+
+	public static URL getFxmlLocate() {
+		return RevisarController.class.getResource("/view/Revisar.fxml");
+	}
+
+}

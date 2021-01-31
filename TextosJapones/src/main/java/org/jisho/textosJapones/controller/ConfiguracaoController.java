@@ -70,7 +70,7 @@ public class ConfiguracaoController implements Initializable {
 		if (pasta != null && !pasta.isEmpty())
 			fileChooser.setInitialDirectory(new File(pasta));
 		File caminho = fileChooser.showDialog(null);
-		
+
 		if (caminho == null)
 			return "";
 		else
@@ -82,7 +82,7 @@ public class ConfiguracaoController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return ConfiguracaoController.class.getResource("/org/jisho/textosJapones/view/Configuracao.fxml");
+		return ConfiguracaoController.class.getResource("/view/Configuracao.fxml");
 	}
 
 	@Override
