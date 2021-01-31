@@ -12,7 +12,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.EstatisticaServices;
 import org.jisho.textosJapones.util.animation.Animacao;
 import org.jisho.textosJapones.util.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.google.common.collect.Sets;
 import com.jfoenix.controls.JFXButton;
@@ -159,7 +159,7 @@ public class EstatisticaController implements Initializable {
 				tbVocabulario.setItems(obsLCombinacoes);
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
-				Alertas.ErroModal(rootStackPane, root, null, "Não foi possível realizar a pesquisa.", e.getMessage());
+				AlertasPopup.ErroModal(rootStackPane, root, null, "Não foi possível realizar a pesquisa.", e.getMessage());
 			}
 
 		}
@@ -230,7 +230,7 @@ public class EstatisticaController implements Initializable {
 			treePalavras.setShowRoot(false);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			Alertas.ErroModal(rootStackPane, root, null, "Erro ao processar vocabulario", e.getMessage());
+			AlertasPopup.ErroModal(rootStackPane, root, null, "Erro ao processar vocabulario", e.getMessage());
 		}
 	}
 
@@ -264,7 +264,7 @@ public class EstatisticaController implements Initializable {
 		Set<List<Estatistica>> result = Sets.cartesianProduct(selecao);
 
 		if (result.size() <= 0)
-			Alertas.AlertaModal(rootStackPane, root, null, "Lista vazia.",
+			AlertasPopup.AlertaModal(rootStackPane, root, null, "Lista vazia.",
 					"Necessário selecionar ao menos uma leitura de cada kanji.");
 		else {
 			for (List<Estatistica> ls : result)

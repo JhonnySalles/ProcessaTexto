@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane fx:id="apGlobal" minHeight="200.0" minWidth="300.0" prefHeight="200.0" prefWidth="300.0" styleClass="background-Black2" stylesheets="@../resources/css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MenuController">
+   <children>
+      <HBox alignment="CENTER" layoutX="14.0" layoutY="88.0" spacing="50.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+         <children>
+            <JFXButton fx:id="btnTexto" accessibleText="PROCESSAR" focusTraversable="false" onAction="#onBtnTextoAction" prefHeight="50.0" prefWidth="100.0" styleClass="background-White1" text="Texto" />
+            <JFXButton fx:id="btnLegenda" accessibleText="PROCESSAR" focusTraversable="false" onAction="#onBtnLegendaAction" prefHeight="50.0" prefWidth="100.0" styleClass="background-White1" text="Legenda" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

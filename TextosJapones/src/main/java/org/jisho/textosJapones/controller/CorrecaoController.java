@@ -10,7 +10,7 @@ import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.notification.Notificacoes;
 
 import com.jfoenix.controls.JFXButton;
@@ -37,7 +37,7 @@ import javafx.scene.text.Font;
 
 public class CorrecaoController implements Initializable {
 
-	final private static String STYLE_SHEET = Alertas.class
+	final private static String STYLE_SHEET = AlertasPopup.class
 			.getResource("/org/jisho/textosJapones/resources/css/Dark_Theme.css").toExternalForm();
 
 	@FXML

@@ -20,7 +20,7 @@ import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
@@ -170,7 +170,7 @@ public class SudachiTokenizer {
 		} catch (IOException e) {
 			e.printStackTrace();
 			concluiProgresso(true);
-			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
+			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
 		controller.setVocabulario(vocabNovo);
@@ -232,7 +232,7 @@ public class SudachiTokenizer {
 		} catch (IOException e) {
 			e.printStackTrace();
 			concluiProgresso(true);
-			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
+			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
 		controller.setTextoDestino(processado);
@@ -306,7 +306,7 @@ public class SudachiTokenizer {
 		} catch (IOException e) {
 			e.printStackTrace();
 			concluiProgresso(true);
-			Alertas.ErroModal("Erro ao processar textos", e.getMessage());
+			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 		}

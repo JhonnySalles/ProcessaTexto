@@ -25,7 +25,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_PALAVRA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
 	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE 1 > 0;";
-	final private String SELECT_REVISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 100";
+	final private String SELECT_REVISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 1000";
 	
 	public RevisarDaoJDBC(Connection conn) {
 		this.conn = conn;

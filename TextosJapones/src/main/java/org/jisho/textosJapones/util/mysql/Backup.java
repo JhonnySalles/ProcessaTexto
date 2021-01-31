@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.model.enums.Notificacao;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.notification.Notificacoes;
 
 import javafx.stage.DirectoryChooser;
@@ -88,7 +88,7 @@ public class Backup {
 			} catch (IOException e) {
 				e.printStackTrace();
 				cnt.importaConcluido(true);
-				Alertas.ErroModal("Erro ao tentar gerar backup da base", e.getStackTrace().toString());
+				AlertasPopup.ErroModal("Erro ao tentar gerar backup da base", e.getStackTrace().toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 				cnt.importaConcluido(true);
@@ -115,7 +115,7 @@ public class Backup {
 			} catch (IOException e) {
 				e.printStackTrace();
 				cnt.exportaConcluido(true);
-				Alertas.ErroModal("Erro ao tentar gerar backup da base", e.getStackTrace().toString());
+				AlertasPopup.ErroModal("Erro ao tentar gerar backup da base", e.getStackTrace().toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 				cnt.exportaConcluido(true);

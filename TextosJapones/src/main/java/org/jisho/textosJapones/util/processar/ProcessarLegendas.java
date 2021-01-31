@@ -10,7 +10,7 @@ import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.tokenizers.SudachiTokenizer;
 
 import com.worksap.nlp.sudachi.Dictionary;
@@ -52,7 +52,7 @@ public class ProcessarLegendas {
 
 				} catch (IOException e) {
 					e.printStackTrace();
-					Alertas.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 							"Erro ao processar a lista.");
 				}
 
@@ -61,7 +61,7 @@ public class ProcessarLegendas {
 
 			@Override
 			protected void succeeded() {
-				Alertas.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
+				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
 						"Lista processada com sucesso.");
 				controller.getBarraProgresso().progressProperty().unbind();
 				controller.getLabel().textProperty().unbind();

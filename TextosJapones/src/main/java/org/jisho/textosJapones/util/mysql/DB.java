@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.util.notification.Alertas;
 
 public class DB {
 
@@ -48,7 +48,7 @@ public class DB {
 			props.load(fs);
 			return props;
 		} catch (IOException e) {
-			Run.getMainController().setImagemBancoErro("Erro ao carregar o properties");
+			Alertas.Tela_Alerta("Erro ao carregar o properties", e.getMessage());
 			e.printStackTrace();
 		}
 		return null;

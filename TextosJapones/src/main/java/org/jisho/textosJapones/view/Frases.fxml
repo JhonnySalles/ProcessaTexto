@@ -57,7 +57,6 @@
                               <HBox alignment="CENTER_RIGHT" spacing="10.0">
                                  <children>
                                     <JFXButton fx:id="btnImportar" buttonType="RAISED" disable="true" focusTraversable="false" onAction="#onBtnImportar" styleClass="background-White1" text="Importar Estat." textFill="#0a0a0a" visible="false" />
-                                    <JFXButton fx:id="btnLegendas" buttonType="RAISED" onAction="#onBtnLegendas" prefWidth="80.0" styleClass="background-White1" text="Legendas" textFill="#0a0a0a" />
                                     <JFXButton fx:id="btnCorrecao" buttonType="RAISED" onAction="#onBtnCorrecao" prefWidth="80.0" styleClass="background-White1" text="Correção" textFill="#0a0a0a" />
                                     <JFXButton fx:id="btnEstatistica" buttonType="RAISED" onAction="#onBtnEstatistica" prefWidth="90.0" styleClass="background-White1" text="Estatisticas" textFill="#0a0a0a" />
                                  </children>

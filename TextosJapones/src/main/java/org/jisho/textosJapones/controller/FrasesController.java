@@ -21,7 +21,7 @@ import org.jisho.textosJapones.util.animation.Animacao;
 import org.jisho.textosJapones.util.kanjiStatics.ImportaEstatistica;
 import org.jisho.textosJapones.util.mysql.Backup;
 import org.jisho.textosJapones.util.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.notification.Notificacoes;
 import org.jisho.textosJapones.util.tokenizers.SudachiTokenizer;
 
@@ -111,9 +111,6 @@ public class FrasesController implements Initializable {
 
 	@FXML
 	protected AnchorPane root;
-
-	@FXML
-	private JFXButton btnLegendas;
 
 	@FXML
 	private JFXButton btnSalvar;
@@ -231,31 +228,6 @@ public class FrasesController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Erro ao abrir a tela de estatistica.");
-		}
-
-	}
-
-	@FXML
-	private void onBtnLegendas() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(LegendasController.getFxmlLocate());
-			AnchorPane newAnchorPane = loader.load();
-
-			Scene mainScene = new Scene(newAnchorPane); // Carrega a scena
-			mainScene.setFill(Color.BLACK);
-
-			Stage stage = new Stage();
-			stage.setScene(mainScene); // Seta a cena principal
-			stage.setTitle("Legendas e correção não encontrados");
-			stage.initStyle(StageStyle.DECORATED);
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.getIcons().add(new Image(getClass().getResourceAsStream(LegendasController.getIconLocate())));
-			stage.show(); // Mostra a tela.
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Erro ao abrir a tela de legendas e correções.");
 		}
 
 	}
@@ -729,8 +701,8 @@ public class FrasesController implements Initializable {
 		cbDicionario.getSelectionModel().select(Dicionario.FULL);
 
 		/* Setando as variáveis para o alerta padrão. */
-		Alertas.setRootStackPane(rootStackPane);
-		Alertas.setNodeBlur(root);
+		AlertasPopup.setRootStackPane(rootStackPane);
+		AlertasPopup.setNodeBlur(root);
 		Notificacoes.setRootStackPane(apGlobal);
 
 		verificaConexao();

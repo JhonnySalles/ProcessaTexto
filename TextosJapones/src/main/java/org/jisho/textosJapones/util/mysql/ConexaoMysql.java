@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.util.notification.Alertas;
 
 public class ConexaoMysql {
 
@@ -25,22 +25,22 @@ public class ConexaoMysql {
 		File f = new File("db.properties");
 		if (!f.exists())
 			createProperties();
-		
+
 		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();
 			props.load(fs);
 			return props;
 		} catch (IOException e) {
-			Run.getMainController().setImagemBancoErro("Erro ao carregar o properties");
+			Alertas.Tela_Alerta("Erro ao carregar o properties", e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	private static void createProperties() {
 		try (OutputStream os = new FileOutputStream("db.properties")) {
 			Properties props = new Properties();
-			
+
 			props.setProperty("server", SERVER);
 			props.setProperty("port", PORT);
 			props.setProperty("dataBase", DATA_BASE);
@@ -49,12 +49,13 @@ public class ConexaoMysql {
 			props.setProperty("caminho_mysql", CAMINHO_MYSQL);
 			props.store(os, "");
 		} catch (IOException e) {
-			Run.getMainController().setAviso("Erro ao salvar o properties.");
+			Alertas.Tela_Alerta("Erro ao salvar o properties", e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
-	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd, String mysql) {
+
+	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd,
+			String mysql) {
 		SERVER = server;
 		PORT = port;
 		DATA_BASE = dataBase;
@@ -79,11 +80,11 @@ public class ConexaoMysql {
 	public static String getUser() {
 		return USER;
 	}
-	
+
 	public static String getPassword() {
 		return PASSWORD;
 	}
-	
+
 	public static String getCaminhoMysql() {
 		return CAMINHO_MYSQL;
 	}

@@ -10,13 +10,11 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane fx:id="apGlobal" minHeight="480.0" minWidth="610.0" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.LegendasController">
+<AnchorPane fx:id="apGlobal" minHeight="600.0" minWidth="750.0" prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.LegendasController">
    <children>
       <StackPane fx:id="rootStackPane" layoutX="5.0" layoutY="11.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -34,24 +32,8 @@
                                     <Label fx:id="lblLog" textFill="WHITE" wrapText="true" />
                                  </children>
                               </HBox>
-                              <JFXButton fx:id="btnProcessar" focusTraversable="false" onAction="#onBtnProcessar" styleClass="background-White1" text="Processar">
-                                 <graphic>
-                                    <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../resources/images/icoSalvar_48.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </JFXButton>
-                              <JFXButton fx:id="btnPesquisar" focusTraversable="false" onAction="#onBtnPesquisar" styleClass="background-White1" text="Pesquisar">
-                                 <graphic>
-                                    <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../resources/images/icoSalvar_48.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </JFXButton>
+                              <JFXButton fx:id="btnProcessar" buttonType="RAISED" focusTraversable="false" onAction="#onBtnProcessar" prefWidth="100.0" styleClass="background-White1" text="Processar" />
+                              <JFXButton fx:id="btnPesquisar" buttonType="RAISED" focusTraversable="false" onAction="#onBtnPesquisar" prefWidth="100.0" styleClass="background-White1" text="Pesquisar" />
                               <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" />
                               <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" />
                            </children>
@@ -94,24 +76,12 @@
                                     <Insets left="15.0" right="15.0" />
                                  </padding>
                                  <children>
-                                    <JFXButton fx:id="btnSalvar" focusTraversable="false" onAction="#onBtnSalvar" styleClass="background-White1" text="Salvar">
-                                       <graphic>
-                                          <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../resources/images/icoSalvar_48.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </JFXButton>
-                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" onAction="#onBtnAtualizar" styleClass="background-White1" text="Atualizar">
-                                       <graphic>
-                                          <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../resources/images/icoSalvar_48.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </JFXButton>
+                                    <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" minWidth="150.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="WHITE" />
+                                    <JFXButton fx:id="btnProcessarTudo" accessibleText="PROCESSAR" focusTraversable="false" onAction="#onBtnProcessarTudo" prefWidth="120.0" styleClass="background-White1" text="Processar tudo" />
+                                    <JFXButton fx:id="btnTraduzir" focusTraversable="false" onAction="#onBtnTraduzir" prefWidth="100.0" styleClass="background-White1" text="Traduzir" />
+                                    <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" onAction="#onBtnJapaneseTanoshi" prefWidth="100.0" styleClass="background-White1" text="Jap. Tanoshi" />
+                                    <JFXButton fx:id="btnSalvar" focusTraversable="false" onAction="#onBtnSalvar" prefWidth="100.0" styleClass="background-White1" text="Salvar" />
+                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" onAction="#onBtnAtualizar" prefWidth="100.0" styleClass="background-White1" text="Atualizar" />
                                  </children>
                               </HBox>
                               <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0">

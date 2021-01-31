@@ -24,15 +24,15 @@ import javafx.util.Duration;
 public class Notificacoes {
 
 	public final static ImageView IMG_ALERTA = new ImageView(new Image(
-			Alertas.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAlerta_48.png")));
+			AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAlerta_48.png")));
 	public final static ImageView IMG_AVISO = new ImageView(new Image(
-			Alertas.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAviso_48.png")));
+			AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoAviso_48.png")));
 	public final static ImageView IMG_ERRO = new ImageView(new Image(
-			Alertas.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoErro_48.png")));
+			AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoErro_48.png")));
 	public final static ImageView IMG_CONFIRMA = new ImageView(new Image(
-			Alertas.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoConfirma_48.png")));
+			AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/icoConfirma_48.png")));
 	public final static ImageView IMG_SUCESSO = new ImageView(new Image(
-			Alertas.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/btnConfirma_48.png")));
+			AlertasPopup.class.getResourceAsStream("/org/jisho/textosJapones/resources/images/alert/btnConfirma_48.png")));
 
 	private static NotificacaoController CONTROLLER;
 	private static AnchorPane NOTIFICACAO;
