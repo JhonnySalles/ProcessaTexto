@@ -67,6 +67,9 @@ public class LegendasController implements Initializable {
 	
 	@FXML
 	private RevisarController revisarController;
+	
+	@FXML
+	private ProcessarController processarController;
 
 	@FXML
 	private ProgressBar barraProgresso;
@@ -138,6 +141,7 @@ public class LegendasController implements Initializable {
 		linkaCelulas();
 
 		revisarController.setControllerPai(this);
+		processarController.setControllerPai(this);
 		
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);

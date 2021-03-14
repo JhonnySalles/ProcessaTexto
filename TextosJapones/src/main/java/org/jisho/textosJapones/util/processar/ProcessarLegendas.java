@@ -7,6 +7,8 @@ import java.util.List;
 import org.jisho.textosJapones.controller.LegendasController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Dicionario;
+import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
@@ -73,6 +75,35 @@ public class ProcessarLegendas {
 		t.start();
 	}
 
+	public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
+		String vocabulario = "";
+		try (Dictionary dict = new DictionaryFactory().create("",
+				SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
+			tokenizer = dict.create();
+			mode = SudachiTokenizer.getModo(modo);
+
+			vocabulario = gerarVocabulario(frase);
+
+			if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.C))) {
+				mode = SudachiTokenizer.getModo(Modo.B);
+				vocabulario = gerarVocabulario(frase);
+			}
+
+			if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.B))) {
+				mode = SudachiTokenizer.getModo(Modo.C);
+				vocabulario = gerarVocabulario(frase);
+			}
+
+		} catch (IOException | ExcessaoBd e) {
+			vocabulario = "";
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao processar a lista.");
+		}
+
+		return vocabulario.trim();
+	}
+
 	final private String pattern = ".*[\u4E00-\u9FAF].*";
 	private Tokenizer tokenizer;
 	private SplitMode mode;
@@ -88,7 +119,28 @@ public class ProcessarLegendas {
 				}
 			}
 		}
+	}
 
+	private Boolean usarRevisar = true;
+
+	private String gerarVocabulario(String frase) throws ExcessaoBd {
+		String vocabularios = "";
+		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
+			if (m.surface().matches(pattern)) {
+				if (!vocabulario.existeExclusao(m.surface())) {
+					Vocabulario palavra = vocabulario.select(m.surface(), m.dictionaryForm());
+
+					if (palavra != null)
+						vocabularios += palavra.getFormaBasica() + " - " + palavra.getTraducao() + " ";
+					else if (usarRevisar) {
+						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
+						if (revisar != null)
+							vocabularios += revisar.getFormaBasica() + " - " + revisar.getTraducao() + " ";
+					}
+				}
+			}
+		}
+		return vocabularios;
 	}
 
 }

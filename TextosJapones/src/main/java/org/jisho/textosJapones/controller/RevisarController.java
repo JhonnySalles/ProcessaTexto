@@ -432,8 +432,8 @@ public class RevisarController implements Initializable {
 
 		tcIngles.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcIngles.setOnEditCommit(e -> {
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setIngles(e.getNewValue().trim());
 			if (!e.getNewValue().trim().isEmpty()) {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).setIngles(e.getNewValue().trim());
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
 
 				if (e.getTableView().getItems().get(e.getTablePosition().getRow()).getTraducao().isEmpty()) {
@@ -448,18 +448,17 @@ public class RevisarController implements Initializable {
 						ex.printStackTrace();
 					}
 				}
-
-				tbVocabulario.requestFocus();
 			}
+			tbVocabulario.requestFocus();
 		});
 
 		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcTraducao.setOnEditCommit(e -> {
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
 			if (!e.getNewValue().trim().isEmpty()) {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
-				tbVocabulario.requestFocus();
 			}
+			tbVocabulario.requestFocus();
 		});
 
 		tcRevisado.setCellValueFactory(new PropertyValueFactory<>("revisado"));
