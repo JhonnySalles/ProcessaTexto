@@ -24,7 +24,7 @@ public interface VocabularioDao {
 	
 	void insertExclusao(String palavra) throws ExcessaoBd;
 	
-	boolean existeExclusao(String palavra) throws ExcessaoBd;
+	boolean existeExclusao(String palavra, String basico) throws ExcessaoBd;
 	
 	Set<String> selectExclusao() throws ExcessaoBd; 
 

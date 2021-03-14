@@ -10,5 +10,7 @@ public interface ProcessarDao {
 	void update(String update, Processar obj) throws ExcessaoBd;
 	
 	List<Processar> select(String select) throws ExcessaoBd;
+	
+	void exclusao(String exclusao) throws ExcessaoBd;
 
 }

@@ -3,6 +3,7 @@ package org.jisho.textosJapones.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -38,6 +39,9 @@ public class ProcessarController implements Initializable {
 	private AnchorPane apRoot;
 
 	@FXML
+	private JFXButton btnExclusao;
+
+	@FXML
 	private JFXButton btnSalvar;
 
 	@FXML
@@ -54,6 +58,9 @@ public class ProcessarController implements Initializable {
 
 	@FXML
 	private JFXTextArea txtAreaUpdate;
+
+	@FXML
+	private JFXTextArea txtAreaVocabulario;
 
 	@FXML
 	private TableView<Processar> tbLista;
@@ -77,7 +84,8 @@ public class ProcessarController implements Initializable {
 
 	@FXML
 	private void onBtnSalvar() {
-		if (txtAreaUpdate.getText().trim().isEmpty() || txtAreaUpdate.getText().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
+		if (txtAreaUpdate.getText().trim().isEmpty()
+				|| txtAreaUpdate.getText().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
 			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
 					"Necessário informar um update para prosseguir com o salvamento.");
 			return;
@@ -90,6 +98,7 @@ public class ProcessarController implements Initializable {
 			btnAtualizar.setDisable(true);
 			btnProcessar.setDisable(true);
 			btnProcessarTudo.setDisable(true);
+			btnExclusao.setDisable(true);
 
 			List<Processar> update = tbLista.getItems().stream()
 					.filter(revisar -> !revisar.getVocabulario().trim().isEmpty()).collect(Collectors.toList());
@@ -110,6 +119,7 @@ public class ProcessarController implements Initializable {
 			btnAtualizar.setDisable(false);
 			btnProcessar.setDisable(false);
 			btnProcessarTudo.setDisable(false);
+			btnExclusao.setDisable(false);
 		}
 	}
 
@@ -138,10 +148,14 @@ public class ProcessarController implements Initializable {
 		if (tbLista.getItems().isEmpty() || tbLista.getSelectionModel().getSelectedItem() == null)
 			return;
 
-		if (tbLista.getSelectionModel().getSelectedItem().getVocabulario().isEmpty())
+		if (tbLista.getSelectionModel().getSelectedItem().getVocabulario().isEmpty()) {
+			processar.vocabulario.clear();
+
 			tbLista.getSelectionModel().getSelectedItem().setVocabulario(getVocabulario(controller.getDicionario(),
 					controller.getModo(), tbLista.getSelectionModel().getSelectedItem().getOriginal()));
-		
+
+			txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
+		}
 		tbLista.refresh();
 	}
 
@@ -160,13 +174,17 @@ public class ProcessarController implements Initializable {
 		btnSalvar.setDisable(true);
 		btnAtualizar.setDisable(true);
 		btnProcessar.setDisable(true);
-		btnProcessarTudo.setDisable(true);
+		btnExclusao.setDisable(true);
 		tbLista.setDisable(true);
 
 		btnProcessarTudo.setAccessibleText("PROCESSANDO");
 		btnProcessarTudo.setText("Pausar");
 
+		txtAreaVocabulario.setText("");
+
 		desativar = false;
+
+		processar.vocabulario.clear();
 
 		Task<Void> processarTudo = new Task<Void>() {
 			List<Processar> lista = null;
@@ -210,13 +228,14 @@ public class ProcessarController implements Initializable {
 						btnSalvar.setDisable(false);
 						btnAtualizar.setDisable(false);
 						btnProcessar.setDisable(false);
-						btnProcessarTudo.setDisable(false);
+						btnExclusao.setDisable(false);
 						tbLista.setDisable(false);
 
 						controller.getLog().textProperty().unbind();
 						controller.getBarraProgresso().progressProperty().unbind();
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+						txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
 
 						tbLista.refresh();
 					});
@@ -229,6 +248,21 @@ public class ProcessarController implements Initializable {
 		controller.getLog().textProperty().bind(processarTudo.messageProperty());
 		controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
 		processa.start();
+	}
+
+	@FXML
+	private void onBtnEclusao() {
+		if (txtAreaVocabulario.getText().isEmpty())
+			return;
+
+		try {
+			service.exclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
+			txtAreaVocabulario.setText("");
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao salvar a exclusao.");
+		}
 	}
 
 	public AnchorPane getRoot() {

@@ -24,4 +24,9 @@ public class ProcessarServices {
 		return processarDao.select(select);
 	}
 
+	public void exclusao(List<String> exclusoes) throws ExcessaoBd {
+		for (String exclusao : exclusoes)
+			processarDao.exclusao(exclusao);
+	}
+
 }

@@ -57,7 +57,11 @@ public class VocabularioServices {
 	}
 
 	public boolean existeExclusao(String palavra) throws ExcessaoBd {
-		return vocabularioDao.existeExclusao(palavra);
+		return vocabularioDao.existeExclusao(palavra, palavra);
+	}
+	
+	public boolean existeExclusao(String palavra, String basico) throws ExcessaoBd {
+		return vocabularioDao.existeExclusao(palavra, basico);
 	}
 
 	public Set<String> selectExclusao() throws ExcessaoBd {

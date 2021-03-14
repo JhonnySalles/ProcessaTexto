@@ -17,6 +17,8 @@ import org.jisho.textosJapones.util.mysql.DB;
 public class ProcessarDaoJDBC implements ProcessarDao {
 
 	private Connection conn;
+	
+	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?);";
 
 	public ProcessarDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -67,6 +69,23 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public void exclusao(String exclusao) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
+			st.setString(1, exclusao);
+
+			st.executeUpdate();		
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+		} finally {
+			DB.closeStatement(st);
 		}
 	}
 

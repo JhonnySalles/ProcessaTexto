@@ -2,7 +2,9 @@ package org.jisho.textosJapones.util.processar;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jisho.textosJapones.controller.LegendasController;
 import org.jisho.textosJapones.model.entities.Revisar;
@@ -25,7 +27,7 @@ import javafx.concurrent.Task;
 
 public class ProcessarLegendas {
 
-	private VocabularioServices vocabulario = new VocabularioServices();
+	private VocabularioServices vocabularioService = new VocabularioServices();
 	private RevisarServices service = new RevisarServices();
 	private LegendasController controller;
 
@@ -111,7 +113,7 @@ public class ProcessarLegendas {
 	private void processar(String frase) throws ExcessaoBd {
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
-				Vocabulario palavra = vocabulario.select(m.surface(), m.dictionaryForm());
+				Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 				if (palavra == null) {
 					Revisar revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm());
@@ -122,20 +124,24 @@ public class ProcessarLegendas {
 	}
 
 	private Boolean usarRevisar = true;
+	public Set<String> vocabulario = new HashSet<>();
 
 	private String gerarVocabulario(String frase) throws ExcessaoBd {
 		String vocabularios = "";
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
-				if (!vocabulario.existeExclusao(m.surface())) {
-					Vocabulario palavra = vocabulario.select(m.surface(), m.dictionaryForm());
+				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())) {
+					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
-					if (palavra != null)
+					if (palavra != null) {
 						vocabularios += palavra.getFormaBasica() + " - " + palavra.getTraducao() + " ";
-					else if (usarRevisar) {
+						vocabulario.add(palavra.getFormaBasica());
+					} else if (usarRevisar) {
 						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
-						if (revisar != null)
+						if (revisar != null) {
 							vocabularios += revisar.getFormaBasica() + " - " + revisar.getTraducao() + " ";
+							vocabulario.add(revisar.getFormaBasica());
+						}
 					}
 				}
 			}

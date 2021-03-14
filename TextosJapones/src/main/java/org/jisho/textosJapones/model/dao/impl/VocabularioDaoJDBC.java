@@ -29,7 +29,7 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao FROM vocabulario WHERE formaBasica = '' OR leitura = '';";
 	final private String INSERT_EXCLUSAO = "INSERT INTO exclusao (palavra) VALUES (?);";
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
-	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? ";
+	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
 
 	public VocabularioDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -250,17 +250,17 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 	}
 
 	@Override
-	public boolean existeExclusao(String palavra) throws ExcessaoBd {
+	public boolean existeExclusao(String palavra, String basico) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(SELECT_EXCLUSAO);
 			st.setString(1, palavra);
+			st.setString(2, basico);
 			rs = st.executeQuery();
 
-			if (rs.next()) {
+			if (rs.next())
 				return true;
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
