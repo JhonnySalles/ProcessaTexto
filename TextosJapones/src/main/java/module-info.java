@@ -29,8 +29,12 @@ module TextosJapones {
 	requires org.jsoup;
 	requires com.google.common;
 	requires nativejavafx.taskbar;
-	//requires nativejavafx.taskbar;
+	requires javafx.web;
+	requires json;
+	requires com.google.gson;
+	// requires nativejavafx.taskbar;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base;
+	opens org.jisho.textosJapones.util.processar to com.google.gson;
 }

@@ -6,20 +6,20 @@ public enum Api {
 	CONTA_MIGRACAO_2("Google - Migracao 2"), CONTA_MIGRACAO_3("Google - Migracao 3"), CONTA_MIGRACAO_4("Google - Migracao 4"),
 	API_GOOGLE("Api Google");
 
-	private String situacao;
+	private String api;
 
-	Api(String situacao) {
-		this.situacao = situacao;
+	Api(String api) {
+		this.api = api;
 	}
 
 	public String getDescricao() {
-		return situacao;
+		return api;
 	}
 	
 	// Necessário para que a escrita do combo seja Ativo e não ATIVO (nome do enum)
 	@Override
 	public String toString() {
-		return this.situacao;
+		return this.api;
 	}
 
 
