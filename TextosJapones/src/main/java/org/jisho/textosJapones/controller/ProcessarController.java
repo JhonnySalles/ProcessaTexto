@@ -362,10 +362,10 @@ public class ProcessarController implements Initializable {
 								if (desativar)
 									break;
 							}
-							
+
 							if (desativar)
 								break;
-							
+
 							updateMessage("Salvando....");
 							service.update(select.getUpdate(), lista);
 
@@ -378,10 +378,13 @@ public class ProcessarController implements Initializable {
 				} catch (ExcessaoBd e1) {
 					e1.printStackTrace();
 				} finally {
+					if (!desativar)
+						updateMessage("Concluído....");
+
 					Platform.runLater(() -> {
 						btnExecutarFila.setAccessibleText("PROCESSAR");
 						btnExecutarFila.setText("Executar fila");
- 
+
 						habilitaBotoes();
 						btnProcessarTudo.setDisable(false);
 
