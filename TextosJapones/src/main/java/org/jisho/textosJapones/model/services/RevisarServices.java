@@ -84,8 +84,8 @@ public class RevisarServices {
 		return revisarDao.selectQuantidadeRestante();
 	}
 
-	public Revisar selectRevisar() throws ExcessaoBd {
-		return revisarDao.selectRevisar();
+	public Revisar selectRevisar(String pesquisar) throws ExcessaoBd {
+		return revisarDao.selectRevisar(pesquisar);
 	}
 
 	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {

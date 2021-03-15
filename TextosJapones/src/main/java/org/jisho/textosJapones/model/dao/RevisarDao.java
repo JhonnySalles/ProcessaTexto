@@ -27,7 +27,7 @@ public interface RevisarDao {
 
 	String selectQuantidadeRestante() throws ExcessaoBd;
 
-	Revisar selectRevisar() throws ExcessaoBd;
+	Revisar selectRevisar(String pesquisar) throws ExcessaoBd;
 
 	List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd;
 }

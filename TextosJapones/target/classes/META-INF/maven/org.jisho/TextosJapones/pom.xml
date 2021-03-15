@@ -38,7 +38,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.jisho.PostBot.App</mainClass>
+							<mainClass>org.jisho.textosJapones.App</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

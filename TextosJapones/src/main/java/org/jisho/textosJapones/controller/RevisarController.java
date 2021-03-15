@@ -41,6 +41,9 @@ public class RevisarController implements Initializable {
 	private JFXTextField txtSimilar;
 
 	@FXML
+	private JFXTextField txtPesquisar;
+
+	@FXML
 	private JFXTextArea txtAreaIngles;
 
 	@FXML
@@ -72,6 +75,7 @@ public class RevisarController implements Initializable {
 			service.delete(revisando);
 			service.delete(similar);
 
+			limpaCampos();
 			onBtnNovo();
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
@@ -79,21 +83,25 @@ public class RevisarController implements Initializable {
 	}
 
 	private void limpaCampos() {
-		lblRestantes.setText("Restante 0 palavras.");
+		try {
+			lblRestantes.setText("Restante " + service.selectQuantidadeRestante() + " palavras.");
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			lblRestantes.setText("Restante 0 palavras.");
+		}
+
 		revisando = null;
 		txtVocabulario.setText("");
 		txtSimilar.setText("");
+		txtPesquisar.setText("");
 		txtAreaIngles.setText("");
 		txtAreaPortugues.setText("");
 	}
 
 	@FXML
 	private void onBtnNovo() {
-		limpaCampos();
 		try {
-			lblRestantes.setText("Restante " + service.selectQuantidadeRestante() + " palavras.");
-
-			revisando = service.selectRevisar();
+			revisando = service.selectRevisar(txtPesquisar.getText());
 
 			if (revisando != null) {
 				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
@@ -104,8 +112,8 @@ public class RevisarController implements Initializable {
 
 				if (similar.size() > 0)
 					txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));
-			}
-
+			} else
+				limpaCampos();
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 		}
@@ -116,6 +124,7 @@ public class RevisarController implements Initializable {
 	}
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		limpaCampos();
 		onBtnNovo();
 	}
 
