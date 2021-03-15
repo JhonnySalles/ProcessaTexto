@@ -1,44 +1,23 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.model.entities.Revisar;
-import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.enums.Site;
+import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.processar.JapanDict;
-import org.jisho.textosJapones.util.processar.Jisho;
-import org.jisho.textosJapones.util.processar.ProcessarPalavra;
-import org.jisho.textosJapones.util.processar.Tangorin;
-import org.jisho.textosJapones.util.processar.TanoshiJapanese;
-import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
+import org.jisho.textosJapones.model.services.VocabularioServices;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.nativejavafx.taskbar.TaskbarProgressbar;
-import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
+import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.JFXTextField;
 
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 public class RevisarController implements Initializable {
@@ -47,437 +26,97 @@ public class RevisarController implements Initializable {
 	private AnchorPane apRoot;
 
 	@FXML
-	private JFXComboBox<Api> cbContaGoolge;
-
-	@FXML
-	private JFXButton btnProcessarTudo;
-
-	@FXML
-	private JFXButton btnTraduzir;
+	private Label lblRestantes;
 
 	@FXML
 	private JFXButton btnSalvar;
 
 	@FXML
-	private JFXButton btnAtualizar;
+	private JFXButton btnNovo;
 
 	@FXML
-	private JFXComboBox<Site> cbSite;
+	private JFXTextField txtVocabulario;
 
 	@FXML
-	private JFXButton btnJapaneseTanoshi;
+	private JFXTextField txtSimilar;
 
 	@FXML
-	private JFXButton btnJapanDict;
+	private JFXTextArea txtAreaIngles;
 
 	@FXML
-	private JFXButton btnJisho;
-
-	@FXML
-	private JFXCheckBox ckbDesmembrar;
-
-	@FXML
-	private TableView<Revisar> tbVocabulario;
-
-	@FXML
-	private TableColumn<Revisar, String> tcVocabulario;
-
-	@FXML
-	private TableColumn<Revisar, String> tcIngles;
-
-	@FXML
-	private TableColumn<Revisar, String> tcTraducao;
-
-	@FXML
-	private TableColumn<Revisar, CheckBox> tcRevisado;
+	private JFXTextArea txtAreaPortugues;
 
 	private RevisarServices service = new RevisarServices();
-	private LegendasController controller;
-	private ProcessarPalavra processar = new ProcessarPalavra();
-
-	public void setControllerPai(LegendasController controller) {
-		this.controller = controller;
-	}
+	private VocabularioServices vocabulario = new VocabularioServices();
+	private List<Revisar> similar;
+	private Revisar revisando;
 
 	@FXML
 	private void onBtnSalvar() {
+		if (revisando == null || txtAreaPortugues.getText().isEmpty())
+			return;
+
+		revisando.setTraducao(txtAreaPortugues.getText());
+
+		Vocabulario palavra = Revisar.toVocabulario(revisando);
+
+		for (Revisar obj : similar)
+			obj.setTraducao(revisando.getTraducao());
+
+		List<Vocabulario> lista = Revisar.toVocabulario(similar);
+
 		try {
-			controller.getLog().setText("Iniciando salvamento.");
+			vocabulario.insert(palavra);
+			vocabulario.insert(lista);
 
-			btnSalvar.setDisable(true);
-			btnAtualizar.setDisable(true);
-			tbVocabulario.setDisable(true);
+			service.delete(revisando);
+			service.delete(similar);
 
-			btnProcessarTudo.setDisable(true);
-			btnTraduzir.setDisable(true);
-
-			btnJapaneseTanoshi.setDisable(true);
-			btnJapanDict.setDisable(true);
-			btnJisho.setDisable(true);
-
-			List<Revisar> update = tbVocabulario.getItems().stream()
-					.filter(revisar -> revisar.getRevisado().isSelected()).collect(Collectors.toList());
-			// List<Vocabulario> salvar = update.stream().map(revisar ->
-			// Revisar.toVocabulario(revisar))
-			// .collect(Collectors.toList());
-
-			service.insertOrUpdate(update);
-
-			// VocabularioServices service = new VocabularioServices();
-			// service.insertOrUpdate(salvar);
+			onBtnNovo();
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao salvar as atualizações.");
-		} finally {
-			controller.getLog().setText("Salvamento concluido.");
-
-			btnSalvar.setDisable(false);
-			btnAtualizar.setDisable(false);
-			tbVocabulario.setDisable(false);
-
-			btnProcessarTudo.setDisable(false);
-			btnTraduzir.setDisable(false);
-
-			btnJapaneseTanoshi.setDisable(false);
-			btnJapanDict.setDisable(false);
-			btnJisho.setDisable(false);
-
-			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
-					"Salvo com sucesso.");
-			onBtnAtualizar();
 		}
 	}
 
-	@FXML
-	private void onBtnAtualizar() {
-		try {
-			controller.getLog().setText("Atualizando....");
-			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectRevisar()));
+	private void limpaCampos() {
+		lblRestantes.setText("Restante 0 palavras.");
+		revisando = null;
+		txtVocabulario.setText("");
+		txtSimilar.setText("");
+		txtAreaIngles.setText("");
+		txtAreaPortugues.setText("");
+	}
 
-			controller.getLog().setText("");
+	@FXML
+	private void onBtnNovo() {
+		limpaCampos();
+		try {
+			lblRestantes.setText("Restante " + service.selectQuantidadeRestante() + " palavras.");
+
+			revisando = service.selectRevisar();
+
+			if (revisando != null) {
+				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
+
+				txtVocabulario.setText(revisando.getVocabulario());
+				txtAreaIngles.setText(revisando.getIngles());
+				txtAreaPortugues.setText(revisando.getTraducao());
+
+				if (similar.size() > 0)
+					txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));
+			}
+
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao pesquisar as revisões.");
 		}
-	}
-
-	private static Boolean desativar = false;
-	private static Boolean desmembrar = false;
-
-	private String getTraducao(String kanji) {
-		String resultado = "";
-		switch (cbSite.getSelectionModel().getSelectedItem()) {
-		case JAPANESE_TANOSHI:
-			resultado = TanoshiJapanese.processa(kanji);
-			break;
-		case JAPANDICT:
-			resultado = JapanDict.processa(kanji);
-			break;
-		case JISHO:
-			resultado = Jisho.processa(kanji);
-			break;
-		default:
-		}
-
-		return resultado;
-	}
-
-	private String processaPalavras(List<String> palavras, Modo modo) {
-		String desmembrado = "";
-		for (String palavra : palavras) {
-			String resultado = getTraducao(palavra);
-
-			if (!resultado.trim().isEmpty())
-				desmembrado += palavra + " - " + resultado + "; ";
-			else if (modo.equals(Modo.B)) {
-				resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
-						Modo.A);
-				if (!resultado.trim().isEmpty())
-					desmembrado += resultado;
-			}
-		}
-
-		return desmembrado;
-	}
-
-	private String getDesmembrado(String palavra) {
-		String resultado = "";
-		resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.B),
-				Modo.B);
-
-		if (resultado.isEmpty())
-			resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
-					Modo.A);
-
-		return resultado;
-	}
-
-	@FXML
-	private void onBtnProcessarTudo() {
-		if (btnProcessarTudo.getAccessibleText().equalsIgnoreCase("PROCESSANDO")) {
-			desativar = true;
-			return;
-		}
-
-		if (tbVocabulario.getItems().isEmpty())
-			return;
-
-		btnSalvar.setDisable(true);
-		btnAtualizar.setDisable(true);
-		tbVocabulario.setDisable(true);
-		btnTraduzir.setDisable(true);
-
-		btnJapaneseTanoshi.setDisable(true);
-		btnJapanDict.setDisable(true);
-		btnJisho.setDisable(true);
-		ckbDesmembrar.setDisable(true);
-
-		btnProcessarTudo.setAccessibleText("PROCESSANDO");
-		btnProcessarTudo.setText("Pausar");
-
-		desativar = false;
-		desmembrar = ckbDesmembrar.isSelected();
-
-		Task<Void> processarTudo = new Task<Void>() {
-			List<Revisar> lista = null;
-			Integer i = 0;
-
-			@Override
-			public Void call() throws IOException, InterruptedException {
-
-				lista = new ArrayList<Revisar>(tbVocabulario.getItems());
-
-				try {
-
-					for (Revisar item : lista) {
-
-						i++;
-						updateMessage("Processando item " + i + " de " + lista.size());
-						updateProgress(i, lista.size());
-
-						Platform.runLater(() -> {
-							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size(),
-										Type.NORMAL);
-						});
-
-						if (!item.getRevisado().isSelected()) {
-
-							if (item.getIngles().isEmpty()) {
-								item.setIngles(getTraducao(item.getVocabulario()));
-
-								if (item.getIngles().isEmpty())
-									item.setIngles(getTraducao(item.getFormaBasica()));
-
-								if (desmembrar && item.getIngles().isEmpty())
-									item.setIngles(getTraducao(getDesmembrado(item.getVocabulario())));
-
-							}
-
-							if (item.getTraducao().isEmpty() && !item.getIngles().isEmpty()) {
-								try {
-									item.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-											Language.PORTUGUESE.getSigla(), item.getIngles(),
-											cbContaGoolge.getValue()));
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-
-							// if (!item.getIngles().isEmpty() && !item.getTraducao().isEmpty())
-							item.getRevisado().setSelected(true);
-						}
-
-						if (desativar)
-							break;
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					Platform.runLater(() -> tbVocabulario.setItems(FXCollections.observableArrayList(lista)));
-
-					Platform.runLater(() -> {
-						btnProcessarTudo.setAccessibleText("PROCESSAR");
-						btnProcessarTudo.setText("Processar tudo");
-
-						btnSalvar.setDisable(false);
-						btnAtualizar.setDisable(false);
-						tbVocabulario.setDisable(false);
-						btnTraduzir.setDisable(false);
-
-						btnJapaneseTanoshi.setDisable(false);
-						btnJapanDict.setDisable(false);
-						btnJisho.setDisable(false);
-						ckbDesmembrar.setDisable(false);
-
-						controller.getLog().textProperty().unbind();
-						controller.getBarraProgresso().progressProperty().unbind();
-
-						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-
-						tbVocabulario.refresh();
-					});
-				}
-				return null;
-			}
-		};
-
-		Thread processa = new Thread(processarTudo);
-		controller.getLog().textProperty().bind(processarTudo.messageProperty());
-		controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
-		processa.start();
-	}
-
-	@FXML
-	private void onBtnTraduzir() {
-		if (tbVocabulario.getItems().isEmpty())
-			return;
-
-		if (tbVocabulario.getSelectionModel().getSelectedItem() == null
-				|| tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			return;
-
-		try {
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
-							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(), cbContaGoolge.getValue()));
-
-			tbVocabulario.refresh();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@FXML
-	private void onBtnJapaneseTanoshi() {
-		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
-			return;
-
-		tbVocabulario.getSelectionModel().getSelectedItem().setIngles(
-				TanoshiJapanese.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		if (tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem().setIngles(
-					TanoshiJapanese.processa(tbVocabulario.getSelectionModel().getSelectedItem().getFormaBasica()));
-
-		if (ckbDesmembrar.isSelected() && tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setIngles(getDesmembrado(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		tbVocabulario.refresh();
-	}
-
-	@FXML
-	private void onBtnTangorin() {
-		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
-			return;
-		int index = tbVocabulario.getSelectionModel().getSelectedIndex();
-		Tangorin.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario(), (controller) -> {
-			tbVocabulario.getItems().get(index).setIngles(controller);
-			tbVocabulario.refresh();
-		});
-	}
-
-	@FXML
-	private void onBtnJapanDict() {
-		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
-			return;
-
-		tbVocabulario.getSelectionModel().getSelectedItem()
-				.setIngles(JapanDict.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		if (tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem().setIngles(
-					JapanDict.processa(tbVocabulario.getSelectionModel().getSelectedItem().getFormaBasica()));
-
-		if (ckbDesmembrar.isSelected() && tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setIngles(getDesmembrado(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		tbVocabulario.refresh();
-	}
-
-	@FXML
-	private void onBtnJisho() {
-		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
-			return;
-
-		tbVocabulario.getSelectionModel().getSelectedItem()
-				.setIngles(Jisho.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		if (tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setIngles(Jisho.processa(tbVocabulario.getSelectionModel().getSelectedItem().getFormaBasica()));
-
-		if (ckbDesmembrar.isSelected() && tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setIngles(getDesmembrado(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
-
-		tbVocabulario.refresh();
 	}
 
 	public AnchorPane getRoot() {
 		return apRoot;
 	}
 
-	private void editaColunas() {
-		tcVocabulario.setCellValueFactory(new PropertyValueFactory<>("vocabulario"));
-		tcIngles.setCellValueFactory(new PropertyValueFactory<>("ingles"));
-		tcTraducao.setCellValueFactory(new PropertyValueFactory<>("traducao"));
-
-		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
-
-		tcIngles.setCellFactory(TextFieldTableCell.forTableColumn());
-		tcIngles.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setIngles(e.getNewValue().trim());
-			if (!e.getNewValue().trim().isEmpty()) {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
-
-				if (e.getTableView().getItems().get(e.getTablePosition().getRow()).getTraducao().isEmpty()) {
-					try {
-						e.getTableView().getItems().get(e.getTablePosition().getRow())
-								.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-										Language.PORTUGUESE.getSigla(), e.getNewValue().trim(),
-										cbContaGoolge.getValue()));
-
-						tbVocabulario.refresh();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
-			tbVocabulario.requestFocus();
-		});
-
-		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
-		tcTraducao.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
-			if (!e.getNewValue().trim().isEmpty()) {
-				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
-			}
-			tbVocabulario.requestFocus();
-		});
-
-		tcRevisado.setCellValueFactory(new PropertyValueFactory<>("revisado"));
-	}
-
-	private void linkaCelulas() {
-		editaColunas();
-	}
-
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		linkaCelulas();
-
-		cbContaGoolge.getItems().addAll(Api.values());
-		cbContaGoolge.getSelectionModel().selectFirst();
-
-		cbSite.getItems().addAll(Site.values());
-		cbSite.getSelectionModel().selectFirst();
-
-		btnProcessarTudo.setAccessibleText("PROCESSAR");
+		onBtnNovo();
 	}
 
 	public static URL getFxmlLocate() {

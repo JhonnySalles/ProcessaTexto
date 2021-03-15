@@ -1,5 +1,8 @@
 package org.jisho.textosJapones.model.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.control.CheckBox;
 
 public class Revisar {
@@ -101,5 +104,14 @@ public class Revisar {
 	public static Vocabulario toVocabulario(Revisar revisar) {
 		return new Vocabulario(revisar.getVocabulario(), revisar.getFormaBasica(), revisar.getLeitura(),
 				revisar.getTraducao());
+	}
+
+	public static List<Vocabulario> toVocabulario(List<Revisar> revisar) {
+		List<Vocabulario> lista = new ArrayList<>();
+
+		for (Revisar obj : revisar)
+			lista.add(toVocabulario(obj));
+
+		return lista;
 	}
 }

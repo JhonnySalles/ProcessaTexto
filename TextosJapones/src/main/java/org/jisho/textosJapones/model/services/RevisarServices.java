@@ -14,9 +14,9 @@ public class RevisarServices {
 	public List<Revisar> selectAll() throws ExcessaoBd {
 		return revisarDao.selectAll();
 	}
-	
-	public List<Revisar> selectRevisar() throws ExcessaoBd {
-		return revisarDao.selectRevisar();
+
+	public List<Revisar> selectTraduzir() throws ExcessaoBd {
+		return revisarDao.selectTraduzir();
 	}
 
 	public RevisarServices insertOrUpdate(List<Revisar> lista) throws ExcessaoBd {
@@ -59,6 +59,11 @@ public class RevisarServices {
 		revisarDao.delete(obj);
 	}
 
+	public void delete(List<Revisar> lista) throws ExcessaoBd {
+		for (Revisar obj : lista)
+			delete(obj);
+	}
+
 	public Revisar select(String vocabulario, String base) throws ExcessaoBd {
 		return revisarDao.select(vocabulario, base);
 	}
@@ -75,4 +80,15 @@ public class RevisarServices {
 		return revisarDao.selectFrases(select);
 	}
 
+	public String selectQuantidadeRestante() throws ExcessaoBd {
+		return revisarDao.selectQuantidadeRestante();
+	}
+
+	public Revisar selectRevisar() throws ExcessaoBd {
+		return revisarDao.selectRevisar();
+	}
+
+	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
+		return revisarDao.selectSimilar(vocabulario, ingles);
+	}
 }

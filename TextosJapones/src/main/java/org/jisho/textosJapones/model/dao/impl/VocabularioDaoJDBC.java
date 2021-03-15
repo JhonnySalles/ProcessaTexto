@@ -46,12 +46,7 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 			st.setString(3, obj.getLeitura());
 			st.setString(4, obj.getTraducao());
 
-			int rowsAffected = st.executeUpdate();
-
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-			}
+			st.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();

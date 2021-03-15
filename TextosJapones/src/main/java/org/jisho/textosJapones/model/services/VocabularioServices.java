@@ -45,8 +45,7 @@ public class VocabularioServices {
 
 	public VocabularioServices insert(List<Vocabulario> lista) throws ExcessaoBd {
 		for (Vocabulario obj : lista)
-			if (!obj.getTraducao().isEmpty())
-				vocabularioDao.insert(obj);
+			insert(obj);
 
 		return this;
 	}

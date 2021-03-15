@@ -25,8 +25,11 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_PALAVRA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
 	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE 1 > 0;";
-	final private String SELECT_REVISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 1000";
-	
+	final private String SELECT_TRADUZIR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 1000";
+	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
+	final private String SELECT_REVISAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar LIMIT 1";
+	final private String SELECT_SIMILAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario <> ? AND ( FormaBasica = ? OR ingles = ? )";
+
 	public RevisarDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
@@ -177,22 +180,22 @@ public class RevisarDaoJDBC implements RevisarDao {
 			DB.closeResultSet(rs);
 		}
 	}
-	
+
 	@Override
-	public List<Revisar> selectRevisar() throws ExcessaoBd {
+	public List<Revisar> selectTraduzir() throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
-			st = conn.prepareStatement(SELECT_REVISA);
+			st = conn.prepareStatement(SELECT_TRADUZIR);
 			rs = st.executeQuery();
 
 			List<Revisar> list = new ArrayList<>();
 
-			while (rs.next()) {
+			while (rs.next())
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
 						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado")));
-			}
+
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -237,6 +240,75 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			while (rs.next())
 				list.add(rs.getString(1));
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public String selectQuantidadeRestante() throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(SELECT_QUANTIDADE_RESTANTE);
+			rs = st.executeQuery();
+
+			if (rs.next())
+				return rs.getString("Quantidade");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return "0";
+	}
+
+	@Override
+	public Revisar selectRevisar() throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(SELECT_REVISAR);
+			rs = st.executeQuery();
+
+			if (rs.next())
+				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return null;
+	}
+
+	@Override
+	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+
+			st = conn.prepareStatement(SELECT_SIMILAR);
+			st.setString(1, vocabulario);
+			st.setString(2, vocabulario);
+			st.setString(3, ingles);
+			rs = st.executeQuery();
+
+			List<Revisar> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado")));
 
 			return list;
 		} catch (SQLException e) {

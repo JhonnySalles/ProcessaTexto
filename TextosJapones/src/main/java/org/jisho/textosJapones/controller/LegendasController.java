@@ -64,12 +64,15 @@ public class LegendasController implements Initializable {
 
 	@FXML
 	private AnchorPane revisar;
-	
+
 	@FXML
-	private RevisarController revisarController;
-	
+	private TraduzirController traduzirController;
+
 	@FXML
 	private ProcessarController processarController;
+
+	@FXML
+	private RevisarController revisarController;
 
 	@FXML
 	private ProgressBar barraProgresso;
@@ -140,9 +143,9 @@ public class LegendasController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		linkaCelulas();
 
-		revisarController.setControllerPai(this);
+		traduzirController.setControllerPai(this);
 		processarController.setControllerPai(this);
-		
+
 		cbModo.getItems().addAll(Modo.values());
 		cbModo.getSelectionModel().select(Modo.C);
 

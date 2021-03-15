@@ -1,7 +1,7 @@
 package org.jisho.textosJapones.model.enums;
 
 public enum Tipo {
-	TEXTO("Texto"), MUSICA("Música");
+	TEXTO("Texto"), MUSICA("Música"), VOCABULARIO("Vocabulário");
 
 	private String modo;
 
