@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.model.entities.FilaSQL;
 import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
@@ -54,6 +55,12 @@ public class ProcessarController implements Initializable {
 	private JFXButton btnProcessarTudo;
 
 	@FXML
+	private JFXButton btnSalvarFila;
+
+	@FXML
+	private JFXButton btnExecutarFila;
+
+	@FXML
 	private JFXTextArea txtAreaSelect;
 
 	@FXML
@@ -82,6 +89,22 @@ public class ProcessarController implements Initializable {
 		this.controller = controller;
 	}
 
+	private void desabilitaBotoes() {
+		btnSalvar.setDisable(true);
+		btnAtualizar.setDisable(true);
+		btnProcessar.setDisable(true);
+		btnExclusao.setDisable(true);
+		btnSalvarFila.setDisable(true);
+	}
+
+	private void habilitaBotoes() {
+		btnSalvar.setDisable(false);
+		btnAtualizar.setDisable(false);
+		btnProcessar.setDisable(false);
+		btnExclusao.setDisable(false);
+		btnSalvarFila.setDisable(false);
+	}
+
 	@FXML
 	private void onBtnSalvar() {
 		if (txtAreaUpdate.getText().trim().isEmpty()
@@ -94,11 +117,8 @@ public class ProcessarController implements Initializable {
 		try {
 			controller.getLog().setText("Iniciando salvamento.");
 
-			btnSalvar.setDisable(true);
-			btnAtualizar.setDisable(true);
-			btnProcessar.setDisable(true);
+			desabilitaBotoes();
 			btnProcessarTudo.setDisable(true);
-			btnExclusao.setDisable(true);
 
 			List<Processar> update = tbLista.getItems().stream()
 					.filter(revisar -> !revisar.getVocabulario().trim().isEmpty()).collect(Collectors.toList());
@@ -115,11 +135,8 @@ public class ProcessarController implements Initializable {
 		} finally {
 			controller.getLog().setText("Salvamento concluido.");
 
-			btnSalvar.setDisable(false);
-			btnAtualizar.setDisable(false);
-			btnProcessar.setDisable(false);
+			habilitaBotoes();
 			btnProcessarTudo.setDisable(false);
-			btnExclusao.setDisable(false);
 		}
 	}
 
@@ -171,10 +188,9 @@ public class ProcessarController implements Initializable {
 		if (tbLista.getItems().isEmpty())
 			return;
 
-		btnSalvar.setDisable(true);
-		btnAtualizar.setDisable(true);
-		btnProcessar.setDisable(true);
-		btnExclusao.setDisable(true);
+		desabilitaBotoes();
+		btnExecutarFila.setDisable(true);
+
 		tbLista.setDisable(true);
 
 		btnProcessarTudo.setAccessibleText("PROCESSANDO");
@@ -225,10 +241,9 @@ public class ProcessarController implements Initializable {
 						btnProcessarTudo.setAccessibleText("PROCESSAR");
 						btnProcessarTudo.setText("Processar tudo");
 
-						btnSalvar.setDisable(false);
-						btnAtualizar.setDisable(false);
-						btnProcessar.setDisable(false);
-						btnExclusao.setDisable(false);
+						habilitaBotoes();
+						btnExecutarFila.setDisable(false);
+
 						tbLista.setDisable(false);
 
 						controller.getLog().textProperty().unbind();
@@ -265,6 +280,133 @@ public class ProcessarController implements Initializable {
 		}
 	}
 
+	@FXML
+	private void onBtnSalvarFila() {
+		if (txtAreaSelect.getText().trim().isEmpty()
+				|| txtAreaSelect.getText().equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")
+				|| txtAreaUpdate.getText().trim().isEmpty()
+				|| txtAreaUpdate.getText().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
+			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
+					"Necessário informar um update ou select para gravar na lista.");
+			return;
+		}
+
+		try {
+			service.insertOrUpdateFila(new FilaSQL(txtAreaSelect.getText().trim(), txtAreaUpdate.getText().trim()));
+
+			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
+					"Salvo com sucesso.");
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao salvar ao salvar a fila.");
+		}
+	}
+
+	@FXML
+	private void onBtnProcessarFila() {
+		if (btnExecutarFila.getAccessibleText().equalsIgnoreCase("PROCESSANDO")) {
+			desativar = true;
+			return;
+		}
+
+		desabilitaBotoes();
+		btnProcessarTudo.setDisable(true);
+
+		btnExecutarFila.setAccessibleText("PROCESSANDO");
+		btnExecutarFila.setText("Pausar");
+
+		desativar = false;
+		tbLista.getItems().clear();
+
+		Task<Void> processarFila = new Task<Void>() {
+			List<Processar> lista = null;
+			List<FilaSQL> fila = null;
+			Dicionario dicionario = controller.getDicionario();
+			Modo modo = controller.getModo();
+			Integer i = 0, x = 0;
+
+			@Override
+			public Void call() throws IOException, InterruptedException {
+				try {
+					fila = service.selectFila();
+					for (FilaSQL select : fila) {
+						x++;
+
+						Platform.runLater(() -> {
+							txtAreaSelect.setText(select.getSelect());
+							txtAreaUpdate.setText(select.getUpdate());
+							txtAreaVocabulario.setText(select.getVocabulario());
+						});
+
+						processar.vocabulario.clear();
+
+						try {
+							updateMessage("Pesquisando....");
+							lista = service.select(select.getSelect());
+							i = 0;
+							for (Processar item : lista) {
+								i++;
+								updateMessage("Processando fila " + x + " de " + fila.size() + " - Processando item "
+										+ i + " de " + lista.size());
+								updateProgress(i, lista.size());
+
+								Platform.runLater(() -> {
+									if (TaskbarProgressbar.isSupported())
+										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size(),
+												Type.NORMAL);
+								});
+
+								item.setVocabulario(getVocabulario(dicionario, modo, item.getOriginal()));
+
+								if (desativar)
+									break;
+							}
+							
+							if (desativar)
+								break;
+							
+							updateMessage("Salvando....");
+							service.update(select.getUpdate(), lista);
+
+							select.setVocabulario(processar.vocabulario.stream().collect(Collectors.joining("\n")));
+							service.insertOrUpdateFila(select);
+						} catch (ExcessaoBd e) {
+							e.printStackTrace();
+						}
+					}
+				} catch (ExcessaoBd e1) {
+					e1.printStackTrace();
+				} finally {
+					Platform.runLater(() -> {
+						btnExecutarFila.setAccessibleText("PROCESSAR");
+						btnExecutarFila.setText("Executar fila");
+ 
+						habilitaBotoes();
+						btnProcessarTudo.setDisable(false);
+
+						tbLista.setDisable(false);
+
+						controller.getLog().textProperty().unbind();
+						controller.getBarraProgresso().progressProperty().unbind();
+
+						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+
+						txtAreaSelect.setText("");
+						txtAreaUpdate.setText("");
+						txtAreaVocabulario.setText("");
+					});
+				}
+				return null;
+			}
+		};
+
+		Thread processa = new Thread(processarFila);
+		controller.getLog().textProperty().bind(processarFila.messageProperty());
+		controller.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
+		processa.start();
+	}
+
 	public AnchorPane getRoot() {
 		return apRoot;
 	}
@@ -292,6 +434,7 @@ public class ProcessarController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		linkaCelulas();
 		btnProcessarTudo.setAccessibleText("PROCESSAR");
+		btnExecutarFila.setAccessibleText("PROCESSAR");
 	}
 
 	public static URL getFxmlLocate() {

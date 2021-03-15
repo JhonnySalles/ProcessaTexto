@@ -107,6 +107,7 @@ public class ProcessarLegendas {
 	}
 
 	final private String pattern = ".*[\u4E00-\u9FAF].*";
+	final private String japanese = ".*[\u3041-\u9FAF].*";
 	private Tokenizer tokenizer;
 	private SplitMode mode;
 
@@ -134,13 +135,29 @@ public class ProcessarLegendas {
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
-						vocabularios += palavra.getFormaBasica() + " - " + palavra.getTraducao() + " ";
+						if (palavra.getTraducao().substring(0, 2).matches(japanese))
+							vocabularios += palavra.getTraducao();
+						else
+							vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+
+						//Usado apenas para correção em formas em branco.
+						if (palavra.getFormaBasica().isEmpty()) {
+							palavra.setFormaBasica(m.dictionaryForm());
+							palavra.setLeitura(m.readingForm());
+							vocabularioService.update(palavra);
+						}
+							
 						vocabulario.add(palavra.getFormaBasica());
 					} else if (usarRevisar) {
 						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
 						if (revisar != null) {
-							vocabularios += revisar.getFormaBasica() + " - " + revisar.getTraducao() + " ";
-							vocabulario.add(revisar.getFormaBasica());
+
+							if (revisar.getTraducao().substring(0, 2).matches(japanese))
+								vocabularios += revisar.getTraducao();
+							else
+								vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + " ";
+
+							vocabulario.add(m.dictionaryForm());
 						}
 					}
 				}

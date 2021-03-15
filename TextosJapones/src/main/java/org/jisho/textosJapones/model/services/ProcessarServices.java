@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jisho.textosJapones.model.dao.DaoFactory;
 import org.jisho.textosJapones.model.dao.ProcessarDao;
+import org.jisho.textosJapones.model.entities.FilaSQL;
 import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
@@ -27,6 +28,17 @@ public class ProcessarServices {
 	public void exclusao(List<String> exclusoes) throws ExcessaoBd {
 		for (String exclusao : exclusoes)
 			processarDao.exclusao(exclusao);
+	}
+	
+	public void insertOrUpdateFila(FilaSQL fila) throws ExcessaoBd {
+		if (fila.getId() == 0)
+			processarDao.insert(fila);
+		else
+			processarDao.update(fila);
+	}
+	
+	public List<FilaSQL> selectFila() throws ExcessaoBd {
+		return processarDao.select();
 	}
 
 }
