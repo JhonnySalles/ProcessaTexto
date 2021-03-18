@@ -5,6 +5,7 @@ public class FilaSQL {
 	private Long id;
 	private String select;
 	private String update;
+	private String delete;
 	private String vocabulario;
 
 	public Long getId() {
@@ -19,6 +20,10 @@ public class FilaSQL {
 		return update;
 	}
 
+	public String getDelete() {
+		return delete;
+	}
+
 	public String getVocabulario() {
 		return vocabulario;
 	}
@@ -26,24 +31,27 @@ public class FilaSQL {
 	public void setVocabulario(String vocabulario) {
 		this.vocabulario = vocabulario;
 	}
-	
-	public FilaSQL(String select, String update) {
+
+	public FilaSQL(String select, String update, String delete) {
 		this.id = 0L;
 		this.select = select;
 		this.update = update;
+		this.delete = delete;
 		this.vocabulario = "";
 	}
 
-	public FilaSQL(Long id, String select, String update, String vocabulario) {
+	public FilaSQL(Long id, String select, String update, String delete, String vocabulario) {
 		this.id = id;
 		this.select = select;
 		this.update = update;
+		this.delete = delete;
 		this.vocabulario = vocabulario;
 	}
 
 	@Override
 	public String toString() {
-		return "FilaSQL [id=" + id + ", select=" + select + ", update=" + update + ", vocabulario=" + vocabulario + "]";
+		return "FilaSQL [id=" + id + ", select=" + select + ", update=" + update + ", delete=" + delete
+				+ ", vocabulario=" + vocabulario + "]";
 	}
 
 }

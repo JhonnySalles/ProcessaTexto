@@ -12,7 +12,7 @@ public interface ProcessarDao {
 
 	List<Processar> select(String select) throws ExcessaoBd;
 
-	void exclusao(String exclusao) throws ExcessaoBd;
+	void delete(String delete) throws ExcessaoBd;
 
 	void insert(FilaSQL fila) throws ExcessaoBd;
 

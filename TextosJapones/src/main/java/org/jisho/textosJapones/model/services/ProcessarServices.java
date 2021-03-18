@@ -25,18 +25,17 @@ public class ProcessarServices {
 		return processarDao.select(select);
 	}
 
-	public void exclusao(List<String> exclusoes) throws ExcessaoBd {
-		for (String exclusao : exclusoes)
-			processarDao.exclusao(exclusao);
+	public void delete(String delete) throws ExcessaoBd {
+		processarDao.delete(delete);
 	}
-	
+
 	public void insertOrUpdateFila(FilaSQL fila) throws ExcessaoBd {
 		if (fila.getId() == 0)
 			processarDao.insert(fila);
 		else
 			processarDao.update(fila);
 	}
-	
+
 	public List<FilaSQL> selectFila() throws ExcessaoBd {
 		return processarDao.select();
 	}

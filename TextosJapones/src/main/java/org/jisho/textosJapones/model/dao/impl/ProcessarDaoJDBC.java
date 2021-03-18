@@ -19,10 +19,9 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 
 	private Connection conn;
 
-	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?);";
 	final private String INSERT_FILA = "INSERT INTO fila_sql (selectSQL, updateSQL, vocabulario ) VALUES (?, ?, ?);";
 	final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, vocabulario = ? WHERE sequencial = ?";
-	final private String SELECT_FILA = "SELECT sequencial, selectSQL, updateSQL, vocabulario FROM fila_sql";
+	final private String SELECT_FILA = "SELECT sequencial, selectSQL, updateSQL, deleteSQL, vocabulario FROM fila_sql";
 
 	public ProcessarDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -73,23 +72,6 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
-		}
-	}
-
-	@Override
-	public void exclusao(String exclusao) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
-			st.setString(1, exclusao);
-
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-		} finally {
-			DB.closeStatement(st);
 		}
 	}
 
@@ -159,7 +141,7 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 
 			while (rs.next())
 				list.add(new FilaSQL(rs.getLong("sequencial"), rs.getString("selectSQL"), rs.getString("updateSQL"),
-						rs.getString("vocabulario")));
+						rs.getString("deleteSQL"), rs.getString("vocabulario")));
 
 			return list;
 		} catch (SQLException e) {
@@ -168,6 +150,22 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public void delete(String delete) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(delete, Statement.RETURN_GENERATED_KEYS);
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
 		}
 	}
 

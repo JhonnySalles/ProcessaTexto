@@ -27,7 +27,7 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 	final private String SELECT_PALAVRA = "SELECT vocabulario, formaBasica, leitura, traducao FROM vocabulario WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
 	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao FROM vocabulario WHERE formaBasica = '' OR leitura = '';";
-	final private String INSERT_EXCLUSAO = "INSERT INTO exclusao (palavra) VALUES (?);";
+	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
 	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
 
@@ -206,12 +206,7 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 			st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, palavra);
 
-			int rowsAffected = st.executeUpdate();
-
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-			}
+			st.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();

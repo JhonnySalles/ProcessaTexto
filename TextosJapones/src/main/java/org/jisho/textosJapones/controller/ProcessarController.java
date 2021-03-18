@@ -15,6 +15,7 @@ import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.ProcessarServices;
+import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.processar.ProcessarLegendas;
 
@@ -49,6 +50,9 @@ public class ProcessarController implements Initializable {
 	private JFXButton btnAtualizar;
 
 	@FXML
+	private JFXButton btnDeletar;
+
+	@FXML
 	private JFXButton btnProcessar;
 
 	@FXML
@@ -67,6 +71,9 @@ public class ProcessarController implements Initializable {
 	private JFXTextArea txtAreaUpdate;
 
 	@FXML
+	private JFXTextArea txtAreaDelete;
+
+	@FXML
 	private JFXTextArea txtAreaVocabulario;
 
 	@FXML
@@ -82,6 +89,7 @@ public class ProcessarController implements Initializable {
 	private TableColumn<Processar, String> tcVocabulario;
 
 	private ProcessarServices service = new ProcessarServices();
+	private VocabularioServices vocabularioService = new VocabularioServices();
 	private LegendasController controller;
 	private ProcessarLegendas processar = new ProcessarLegendas(null);
 
@@ -91,6 +99,7 @@ public class ProcessarController implements Initializable {
 
 	private void desabilitaBotoes() {
 		btnSalvar.setDisable(true);
+		btnDeletar.setDisable(true);
 		btnAtualizar.setDisable(true);
 		btnProcessar.setDisable(true);
 		btnExclusao.setDisable(true);
@@ -99,6 +108,7 @@ public class ProcessarController implements Initializable {
 
 	private void habilitaBotoes() {
 		btnSalvar.setDisable(false);
+		btnDeletar.setDisable(false);
 		btnAtualizar.setDisable(false);
 		btnProcessar.setDisable(false);
 		btnExclusao.setDisable(false);
@@ -108,9 +118,9 @@ public class ProcessarController implements Initializable {
 	@FXML
 	private void onBtnSalvar() {
 		if (txtAreaUpdate.getText().trim().isEmpty()
-				|| txtAreaUpdate.getText().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
+				|| txtAreaUpdate.getText().trim().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
 			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-					"Necessário informar um update para prosseguir com o salvamento.");
+					"Necessário informar um update e um delete para prosseguir com o salvamento.");
 			return;
 		}
 
@@ -119,6 +129,10 @@ public class ProcessarController implements Initializable {
 
 			desabilitaBotoes();
 			btnProcessarTudo.setDisable(true);
+
+			if (!txtAreaDelete.getText().isEmpty() && !txtAreaDelete.getText()
+					.equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL"))
+				service.delete(txtAreaDelete.getText());
 
 			List<Processar> update = tbLista.getItems().stream()
 					.filter(revisar -> !revisar.getVocabulario().trim().isEmpty()).collect(Collectors.toList());
@@ -142,8 +156,12 @@ public class ProcessarController implements Initializable {
 
 	@FXML
 	private void onBtnAtualizar() {
-		if (txtAreaSelect.getText().trim().isEmpty())
+		if (txtAreaSelect.getText().trim().isEmpty() || txtAreaSelect.getText().trim()
+				.equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")) {
+			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
+					"Necessário informar um select para prosseguir com o salvamento.");
 			return;
+		}
 
 		try {
 			controller.getLog().setText("Atualizando....");
@@ -153,6 +171,29 @@ public class ProcessarController implements Initializable {
 			e.printStackTrace();
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao realizar a pesquisa.");
+		}
+	}
+
+	@FXML
+	private void onBtnDeletar() {
+		if (txtAreaDelete.getText().trim().isEmpty() || txtAreaDelete.getText().trim()
+				.equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL")) {
+			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
+					"Necessário informar um delete para prosseguir com a limpeza.");
+			return;
+		}
+
+		try {
+			controller.getLog().setText("Iniciando delete.");
+			service.delete(txtAreaDelete.getText());
+			;
+
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					"Erro ao salvar as atualizações.");
+		} finally {
+			controller.getLog().setText("Delete concluido.");
 		}
 	}
 
@@ -271,7 +312,8 @@ public class ProcessarController implements Initializable {
 			return;
 
 		try {
-			service.exclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
+			vocabularioService
+					.insertExclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
 			txtAreaVocabulario.setText("");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
@@ -283,16 +325,20 @@ public class ProcessarController implements Initializable {
 	@FXML
 	private void onBtnSalvarFila() {
 		if (txtAreaSelect.getText().trim().isEmpty()
-				|| txtAreaSelect.getText().equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")
+				|| txtAreaSelect.getText().trim()
+						.equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")
 				|| txtAreaUpdate.getText().trim().isEmpty()
-				|| txtAreaUpdate.getText().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")) {
+				|| txtAreaUpdate.getText().trim().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")
+				|| txtAreaDelete.getText().trim().isEmpty() || txtAreaDelete.getText().trim()
+						.equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL")) {
 			AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-					"Necessário informar um update ou select para gravar na lista.");
+					"Necessário informar um select, update e delete para gravar na lista.");
 			return;
 		}
 
 		try {
-			service.insertOrUpdateFila(new FilaSQL(txtAreaSelect.getText().trim(), txtAreaUpdate.getText().trim()));
+			service.insertOrUpdateFila(new FilaSQL(txtAreaSelect.getText().trim(), txtAreaUpdate.getText().trim(),
+					txtAreaDelete.getText().trim()));
 
 			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
 					"Salvo com sucesso.");
@@ -336,12 +382,16 @@ public class ProcessarController implements Initializable {
 						Platform.runLater(() -> {
 							txtAreaSelect.setText(select.getSelect());
 							txtAreaUpdate.setText(select.getUpdate());
+							txtAreaDelete.setText(select.getDelete());
 							txtAreaVocabulario.setText(select.getVocabulario());
 						});
 
 						processar.vocabulario.clear();
 
 						try {
+							updateMessage("Limpando....");
+							service.delete(select.getDelete());
+
 							updateMessage("Pesquisando....");
 							lista = service.select(select.getSelect());
 							i = 0;
@@ -397,6 +447,7 @@ public class ProcessarController implements Initializable {
 
 						txtAreaSelect.setText("");
 						txtAreaUpdate.setText("");
+						txtAreaDelete.setText("");
 						txtAreaVocabulario.setText("");
 					});
 				}

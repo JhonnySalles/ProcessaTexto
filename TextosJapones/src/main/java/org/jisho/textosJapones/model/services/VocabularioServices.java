@@ -49,9 +49,14 @@ public class VocabularioServices {
 
 		return this;
 	}
+	
+	public void insertExclusao(List<String> exclusoes) throws ExcessaoBd {
+		for (String exclusao : exclusoes)
+			insertExclusao(exclusao);
+	}
 
 	public VocabularioServices insertExclusao(String palavra) throws ExcessaoBd {
-		vocabularioDao.insertExclusao(palavra);
+		vocabularioDao.insertExclusao(palavra.trim());
 		return this;
 	}
 

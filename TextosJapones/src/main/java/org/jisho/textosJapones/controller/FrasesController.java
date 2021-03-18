@@ -401,7 +401,7 @@ public class FrasesController implements Initializable {
 		if (!txtExclusoes.getText().trim().isEmpty()) {
 			try {
 				if (!vocabServ.existeExclusao(txtExclusoes.getText().trim())) {
-					excluido = vocabServ.insertExclusao(txtExclusoes.getText().trim()).selectExclusao();
+					excluido = vocabServ.insertExclusao(txtExclusoes.getText()).selectExclusao();
 					lblExclusoes.setText(excluido.toString());
 					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento exclusão concluído.",
 							txtExclusoes.getText());

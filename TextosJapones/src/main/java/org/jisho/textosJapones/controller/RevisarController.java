@@ -15,10 +15,16 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.robot.Robot;
 
 public class RevisarController implements Initializable {
 
@@ -33,6 +39,12 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXButton btnNovo;
+
+	@FXML
+	private JFXButton btnSalvarAux;
+
+	@FXML
+	private JFXButton btnNovoAux;
 
 	@FXML
 	private JFXTextField txtVocabulario;
@@ -53,6 +65,7 @@ public class RevisarController implements Initializable {
 	private VocabularioServices vocabulario = new VocabularioServices();
 	private List<Revisar> similar;
 	private Revisar revisando;
+	private Robot robot = new Robot();
 
 	@FXML
 	private void onBtnSalvar() {
@@ -89,7 +102,6 @@ public class RevisarController implements Initializable {
 			e.printStackTrace();
 			lblRestantes.setText("Restante 0 palavras.");
 		}
-
 		revisando = null;
 		txtVocabulario.setText("");
 		txtSimilar.setText("");
@@ -101,7 +113,11 @@ public class RevisarController implements Initializable {
 	@FXML
 	private void onBtnNovo() {
 		try {
+			txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 			revisando = service.selectRevisar(txtPesquisar.getText());
+
+			if (!txtPesquisar.getText().isEmpty() && revisando == null)
+				txtPesquisar.setUnFocusColor(Color.RED);
 
 			if (revisando != null) {
 				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
@@ -123,9 +139,40 @@ public class RevisarController implements Initializable {
 		return apRoot;
 	}
 
+	final private String allFlag = ".*";
+	final private String japanese = "[\u3041-\u9FAF]";
+	final private String notJapanese = "[A-Za-z0-9 ,.]";
+
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		limpaCampos();
 		onBtnNovo();
+
+		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal.matches(allFlag + japanese + allFlag))
+				Platform.runLater(
+						() -> txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, "")));
+		});
+
+		txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal.matches(allFlag + notJapanese + allFlag))
+				Platform.runLater(
+						() -> txtPesquisar.setText(newVal.replaceFirst(" - ", "").replaceAll(notJapanese, "")));
+		});
+
+		txtPesquisar.focusedProperty().addListener((o, oldVal, newVal) -> {
+			if (oldVal) {
+				txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
+				onBtnNovo();
+			}
+		});
+
+		txtPesquisar.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
 	}
 
 	public static URL getFxmlLocate() {

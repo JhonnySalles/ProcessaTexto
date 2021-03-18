@@ -78,6 +78,7 @@ public class ProcessarLegendas {
 	}
 
 	public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
+		existe.clear();
 		String vocabulario = "";
 		try (Dictionary dict = new DictionaryFactory().create("",
 				SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
@@ -126,17 +127,19 @@ public class ProcessarLegendas {
 
 	private Boolean usarRevisar = true;
 	public Set<String> vocabulario = new HashSet<>();
-
+	private Set<String> existe = new HashSet<>();
+	
 	private String gerarVocabulario(String frase) throws ExcessaoBd {
 		String vocabularios = "";
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
-				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())) {
+				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm()) && !existe.contains(m.dictionaryForm())) {
+					existe.add(m.dictionaryForm());
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
 						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabularios += palavra.getTraducao();
+							vocabularios += palavra.getTraducao() + " ";
 						else
 							vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
 
@@ -153,9 +156,9 @@ public class ProcessarLegendas {
 						if (revisar != null) {
 
 							if (revisar.getTraducao().substring(0, 2).matches(japanese))
-								vocabularios += revisar.getTraducao();
+								vocabularios += revisar.getTraducao() + "¹ ";
 							else
-								vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + " ";
+								vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
 
 							vocabulario.add(m.dictionaryForm());
 						}
