@@ -12,6 +12,7 @@ import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
@@ -56,6 +57,12 @@ public class RevisarController implements Initializable {
 	private JFXTextField txtPesquisar;
 
 	@FXML
+	private JFXCheckBox cbImportarFrase;
+
+	@FXML
+	private JFXCheckBox cbCorrecao;
+
+	@FXML
 	private JFXTextArea txtAreaIngles;
 
 	@FXML
@@ -65,33 +72,51 @@ public class RevisarController implements Initializable {
 	private VocabularioServices vocabulario = new VocabularioServices();
 	private List<Revisar> similar;
 	private Revisar revisando;
+	private Vocabulario corrigindo;
 	private Robot robot = new Robot();
 
 	@FXML
 	private void onBtnSalvar() {
-		if (revisando == null || txtAreaPortugues.getText().isEmpty())
+		if ((revisando == null && corrigindo == null) || txtAreaPortugues.getText().isEmpty())
 			return;
 
-		revisando.setTraducao(txtAreaPortugues.getText());
+		Boolean error = false;
+		if (revisando != null) {
+			revisando.setTraducao(txtAreaPortugues.getText());
 
-		Vocabulario palavra = Revisar.toVocabulario(revisando);
+			Vocabulario palavra = Revisar.toVocabulario(revisando);
 
-		for (Revisar obj : similar)
-			obj.setTraducao(revisando.getTraducao());
+			for (Revisar obj : similar)
+				obj.setTraducao(revisando.getTraducao());
 
-		List<Vocabulario> lista = Revisar.toVocabulario(similar);
+			List<Vocabulario> lista = Revisar.toVocabulario(similar);
 
-		try {
-			vocabulario.insert(palavra);
-			vocabulario.insert(lista);
+			try {
+				vocabulario.insert(palavra);
+				vocabulario.insert(lista);
 
-			service.delete(revisando);
-			service.delete(similar);
+				service.delete(revisando);
+				service.delete(similar);
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+				error = true;
+			}
 
+		} else if (corrigindo != null) {
+			corrigindo.setTraducao(txtAreaPortugues.getText());
+
+			try {
+				vocabulario.insertOrUpdate(corrigindo);
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+				error = true;
+			}
+		} else
+			error = true;
+
+		if (!error) {
 			limpaCampos();
-			onBtnNovo();
-		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			pesquisar();
 		}
 	}
 
@@ -102,6 +127,7 @@ public class RevisarController implements Initializable {
 			e.printStackTrace();
 			lblRestantes.setText("Restante 0 palavras.");
 		}
+		corrigindo = null;
 		revisando = null;
 		txtVocabulario.setText("");
 		txtSimilar.setText("");
@@ -110,16 +136,24 @@ public class RevisarController implements Initializable {
 		txtAreaPortugues.setText("");
 	}
 
-	@FXML
-	private void onBtnNovo() {
-		try {
-			txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
-			revisando = service.selectRevisar(txtPesquisar.getText());
+	private void pesquisar() {
+		txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 
-			if (!txtPesquisar.getText().isEmpty() && revisando == null)
+		try {
+			if (cbCorrecao.isSelected()) {
+				corrigindo = vocabulario.select(txtPesquisar.getText().trim());
+				if (corrigindo.getTraducao().isEmpty())
+					corrigindo = null;
+			} else
+				revisando = service.selectRevisar(txtPesquisar.getText());
+
+			if (!txtPesquisar.getText().isEmpty() && revisando == null && corrigindo == null)
 				txtPesquisar.setUnFocusColor(Color.RED);
 
-			if (revisando != null) {
+			if (corrigindo != null) {
+				txtVocabulario.setText(corrigindo.getVocabulario());
+				txtAreaPortugues.setText(corrigindo.getTraducao());
+			} else if (revisando != null) {
 				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
 
 				txtVocabulario.setText(revisando.getVocabulario());
@@ -135,34 +169,52 @@ public class RevisarController implements Initializable {
 		}
 	}
 
+	@FXML
+	private void onBtnNovo() {
+		limpaCampos();
+		pesquisar();
+	}
+
 	public AnchorPane getRoot() {
 		return apRoot;
 	}
 
 	final private String allFlag = ".*";
 	final private String japanese = "[\u3041-\u9FAF]";
-	final private String notJapanese = "[A-Za-z0-9 ,.]";
+	final private String notJapanese = "[A-Za-z0-9 ,.à-úÀ-ú\\[\\]\\-\\(\\)]";
+	private String frasePortugues = "";
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		limpaCampos();
-		onBtnNovo();
+		pesquisar();
 
 		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
-			if (newVal.matches(allFlag + japanese + allFlag))
-				Platform.runLater(
-						() -> txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, "")));
+			if (cbImportarFrase.isSelected())
+				if (newVal.matches(allFlag + japanese + allFlag))
+					Platform.runLater(
+							() -> txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, "")));
 		});
 
 		txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
-			if (newVal.matches(allFlag + notJapanese + allFlag))
-				Platform.runLater(
-						() -> txtPesquisar.setText(newVal.replaceFirst(" - ", "").replaceAll(notJapanese, "")));
+			if (cbImportarFrase.isSelected())
+				if (newVal.matches(allFlag + notJapanese + allFlag))
+					Platform.runLater(() -> {
+						txtPesquisar.setText(newVal.replaceFirst(" - ", "").replaceAll(notJapanese, ""));
+
+						if (newVal.matches(allFlag + japanese + allFlag))
+							frasePortugues = newVal.replaceFirst(" - ", "").replaceAll(japanese, "");
+					});
 		});
 
 		txtPesquisar.focusedProperty().addListener((o, oldVal, newVal) -> {
 			if (oldVal) {
 				txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
-				onBtnNovo();
+				pesquisar();
+				
+				if (revisando != null && cbImportarFrase.isSelected() && !frasePortugues.isEmpty())
+					txtAreaPortugues.setText(frasePortugues);
+
+				frasePortugues = "";
 			}
 		});
 
@@ -172,6 +224,11 @@ public class RevisarController implements Initializable {
 				if (ke.getCode().equals(KeyCode.ENTER))
 					robot.keyPress(KeyCode.TAB);
 			}
+		});
+
+		cbCorrecao.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal)
+				limpaCampos();
 		});
 	}
 

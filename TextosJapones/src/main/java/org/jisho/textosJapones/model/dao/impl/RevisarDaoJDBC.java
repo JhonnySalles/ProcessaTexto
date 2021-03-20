@@ -29,7 +29,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
 	final private String SELECT_REVISAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
-	final private String SELECT_SIMILAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario <> ? AND ( FormaBasica = ? OR ingles = ? )";
+	final private String SELECT_SIMILAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario <> ? AND ingles = ?";
 
 	public RevisarDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -308,8 +308,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			st = conn.prepareStatement(SELECT_SIMILAR);
 			st.setString(1, vocabulario);
-			st.setString(2, vocabulario);
-			st.setString(3, ingles);
+			st.setString(2, ingles);
 			rs = st.executeQuery();
 
 			List<Revisar> list = new ArrayList<>();
