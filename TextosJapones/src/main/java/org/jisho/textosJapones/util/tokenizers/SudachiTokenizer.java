@@ -11,22 +11,32 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Dicionario;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
+import org.jisho.textosJapones.util.processar.TanoshiJapanese;
+import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
+import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
 import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
+
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 public class SudachiTokenizer {
 
@@ -35,16 +45,13 @@ public class SudachiTokenizer {
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
-	private int i = 0;
-	private int max = 0;
+	private Runnable atualizaBarraWindows = () -> Platform.runLater(
+			() -> TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, TaskbarProgressbar.Type.NORMAL));
 
-	/*
-	 * private Runnable atualizaBarraWindows = new Runnable() {
-	 * 
-	 * @Override public void run() {
-	 * TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max,
-	 * TaskbarProgressbar.Type.NORMAL); } };
-	 */
+	private static int i = 0;
+	private static int max = 0;
+
+	public static Boolean DESATIVAR = false;
 
 	public static String getPathSettings(Dicionario dicionario) {
 		String settings_path = Paths.get("").toAbsolutePath().toString();
@@ -131,34 +138,7 @@ public class SudachiTokenizer {
 
 			for (String txt : texto) {
 				if (txt != texto[0] && !txt.isEmpty()) {
-					for (Morpheme m : tokenizer.tokenize(mode, txt)) {
-						if (m.surface().matches(pattern) && !m.surface().equalsIgnoreCase(texto[0])
-								&& !repetido.contains(m.dictionaryForm())
-								&& !controller.getExcluido().contains(m.dictionaryForm())) {
-
-							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
-							if (palavra != null) {
-								processado += m.dictionaryForm() + " " + palavra.getTraducao() + " ";
-
-								if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
-									palavra.setFormaBasica(m.dictionaryForm());
-									palavra.setLeitura(m.readingForm());
-									vocabServ.update(palavra);
-								}
-							} else {
-								List<Vocabulario> existe = vocabNovo.stream()
-										.filter(p -> p.getVocabulario().equalsIgnoreCase(m.surface()))
-										.collect(Collectors.toList());
-
-								processado += m.dictionaryForm() + " ** ";
-								if (existe.size() < 1) {
-									vocabNovo
-											.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
-								}
-							}
-							repetido.add(m.dictionaryForm());
-						}
-					}
+					processado += processaTokenizer(mode, txt, false);
 					processado += "\n\n\n";
 				}
 				i++;
@@ -178,79 +158,230 @@ public class SudachiTokenizer {
 	}
 
 	private void processaMusica() throws ExcessaoBd {
-		String[] texto = controller.getTextoOrigem().split("\n");
-		String processado = "";
+		Task<Void> processar = new Task<Void>() {
+			String[] texto;
+			String processado = "";
+			Dicionario dictionario = Dicionario.FULL;
+			SplitMode mode = SplitMode.C;
+			boolean erro = false;
 
-		vocabNovo.clear();
-		controller.limpaVocabulario();
+			@Override
+			public Void call() throws IOException, InterruptedException {
+				DESATIVAR = false;
+				vocabNovo.clear();
+				Platform.runLater(() -> {
+					texto = controller.getTextoOrigem().split("\n");
+					dictionario = controller.getDicionario();
+					mode = getModo(controller.getModo());
+					controller.limpaVocabulario();
+					controller.desabilitaBotoes();
+				});
 
-		try (Dictionary dict = new DictionaryFactory().create("",
-				readAll(new FileInputStream(getPathSettings(controller.getDicionario()))))) {
-			tokenizer = dict.create();
+				try (Dictionary dict = new DictionaryFactory().create("",
+						readAll(new FileInputStream(getPathSettings(dictionario))))) {
+					tokenizer = dict.create();
 
-			i = 1;
-			max = texto.length;
-			SplitMode mode = getModo(controller.getModo());
+					i = 1;
+					max = texto.length;
 
-			for (String txt : texto) {
-				if (!txt.isEmpty()) {
-					processado += txt + "\n\n";
+					for (String txt : texto) {
+						if (!txt.isEmpty()) {
+							processado += txt + "\n\n";
 
-					for (Morpheme m : tokenizer.tokenize(mode, txt)) {
-						if (m.surface().matches(pattern) && !controller.getExcluido().contains(m.dictionaryForm())) {
+							processado += processaTokenizer(mode, txt, true);
 
-							Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
-							if (palavra != null) {
-								processado += m.dictionaryForm() + " " + palavra.getTraducao() + " ";
+							processado += "\n\n\n";
+						} else
+							processado += "\n";
+						i++;
+						updateProgress(i, max);
+						atualizaBarraWindows.run();
 
-								if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
-									palavra.setFormaBasica(m.dictionaryForm());
-									palavra.setLeitura(m.readingForm());
-									vocabServ.update(palavra);
-								}
-							} else {
-								List<Vocabulario> existe = vocabNovo.stream()
-										.filter(p -> p.getVocabulario().equalsIgnoreCase(m.surface()))
-										.collect(Collectors.toList());
-
-								processado += m.dictionaryForm() + " ** ";
-								if (existe.size() < 1) {
-									vocabNovo
-											.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
-								}
-							}
-						}
+						if (DESATIVAR)
+							return null;
 					}
-					processado += "\n\n\n";
-				} else
-					processado += "\n";
-				i++;
-				atualizaProgresso();
-			}
-			concluiProgresso(false);
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			concluiProgresso(true);
-			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
+				} catch (IOException e) {
+					erro = true;
+					e.printStackTrace();
+					Platform.runLater(() -> AlertasPopup.ErroModal("Erro ao processar o textos", e.getMessage()));
+				} catch (ExcessaoBd e) {
+					erro = true;
+					e.printStackTrace();
+					Platform.runLater(() -> AlertasPopup.ErroModal("Erro de conexao", e.getMessage()));
+				} finally {
+					Platform.runLater(() -> {
+						if (erro)
+							TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR);
+						else {
+							i = 1;
+							max = 1;
+							updateProgress(i, max);
+							atualizaBarraWindows.run();
+						}
+						controller.setVocabulario(vocabNovo);
+						controller.setTextoDestino(processado);
+						controller.getBarraProgresso().progressProperty().unbind();
+						controller.habilitaBotoes();
+					});
+
+					TimeUnit.SECONDS.sleep(5);
+					Platform.runLater(() -> concluiProgresso(false));
+				}
+				return null;
+			}
+		};
+
+		Thread processa = new Thread(processar);
+		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		processa.start();
+	}
+
+	private void processaVocabulario() throws ExcessaoBd {
+		Task<Void> processar = new Task<Void>() {
+			String[] palavras;
+			String vocabulario = "", links = "";
+			Dicionario dictionario = Dicionario.FULL;
+			SplitMode mode = SplitMode.C;
+			boolean erro = false;
+
+			@Override
+			public Void call() throws IOException, InterruptedException {
+				DESATIVAR = false;
+				String significado;
+				String[][] frase;
+
+				vocabNovo.clear();
+				Platform.runLater(() -> {
+					palavras = controller.getTextoOrigem().split("\n");
+					dictionario = controller.getDicionario();
+					mode = getModo(controller.getModo());
+					controller.limpaVocabulario();
+					controller.desabilitaBotoes();
+				});
+
+				try (Dictionary dict = new DictionaryFactory().create("",
+						readAll(new FileInputStream(getPathSettings(dictionario))))) {
+					tokenizer = dict.create();
+
+					i = 1;
+					max = palavras.length;
+
+					for (String txt : palavras) {
+						repetido.clear();
+						if (!txt.trim().isEmpty()) {
+							significado = "";
+							frase = TanoshiJapanese.getFrase(txt.trim());
+							for (int i = 0; i < 2; i++) {
+								if (!frase[i][0].isEmpty()) {
+									String processado = processaTokenizer(mode, frase[i][0], false);
+									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+											Language.PORTUGUESE.getSigla(), frase[i][1], controller.getContaGoogle());
+
+									vocabulario += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
+									significado += processado + "\n\n" + traduzido + "\n\n";
+									links += (!frase[i][2].isEmpty() ? txt + ": " + frase[i][2] + "\n" : "");
+								} else {
+									if (i == 0)
+										vocabulario += txt + "\n\n" + "***" + "\n\n";
+								}
+								if (DESATIVAR)
+									return null;
+							}
+							vocabulario += significado + "-".repeat(10) + "\n";
+						}
+
+						i++;
+						updateProgress(i, max);
+						atualizaBarraWindows.run();
+					}
+				} catch (IOException e) {
+					erro = true;
+					e.printStackTrace();
+					Platform.runLater(() -> AlertasPopup.ErroModal("Erro ao processar o textos", e.getMessage()));
+				} catch (ExcessaoBd e) {
+					erro = true;
+					e.printStackTrace();
+					Platform.runLater(() -> AlertasPopup.ErroModal("Erro de conexao", e.getMessage()));
+				} catch (Exception e) {
+					erro = true;
+					e.printStackTrace();
+					Platform.runLater(() -> AlertasPopup.ErroModal("Erro de conexao", e.getMessage()));
+				} finally {
+					Platform.runLater(() -> {
+						if (erro)
+							TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR);
+						else {
+							i = 1;
+							max = 1;
+							updateProgress(i, max);
+							atualizaBarraWindows.run();
+						}
+						controller.setVocabulario(vocabNovo);
+						controller.setTextoDestino(vocabulario + "\n\n\n" + "--".repeat(20) + "\n" + links);
+						controller.getBarraProgresso().progressProperty().unbind();
+						controller.habilitaBotoes();
+					});
+
+					TimeUnit.SECONDS.sleep(5);
+					Platform.runLater(() -> concluiProgresso(false));
+				}
+				return null;
+			}
+		};
+
+		Thread processa = new Thread(processar);
+		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		processa.start();
+	}
+
+	private String processaTokenizer(SplitMode mode, String texto, Boolean repetido) throws ExcessaoBd {
+		String processado = "";
+		for (Morpheme m : tokenizer.tokenize(mode, texto)) {
+			if (m.surface().matches(pattern) && !controller.getExcluido().contains(m.dictionaryForm())) {
+
+				if (!repetido && this.repetido.contains(m.dictionaryForm()))
+					continue;
+
+				this.repetido.add(m.dictionaryForm());
+
+				Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
+				if (palavra != null) {
+					processado += m.dictionaryForm() + " " + palavra.getTraducao() + " ";
+
+					if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
+						palavra.setFormaBasica(m.dictionaryForm());
+						palavra.setLeitura(m.readingForm());
+						vocabServ.update(palavra);
+					}
+				} else {
+					List<Vocabulario> existe = vocabNovo.stream()
+							.filter(p -> p.getVocabulario().equalsIgnoreCase(m.surface())).collect(Collectors.toList());
+
+					processado += m.dictionaryForm() + " ** ";
+					if (existe.size() < 1) {
+						vocabNovo.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
+					}
+				}
+			}
 		}
 
-		controller.setTextoDestino(processado);
+		return processado;
 	}
 
 	private void atualizaProgresso() {
 		controller.getBarraProgresso().setProgress(i / max);
-		// Não há necessidade por enquanto.
-		// Platform.runLater(atualizaBarraWindows);
+		if (TaskbarProgressbar.isSupported())
+			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, Type.NORMAL);
 	}
 
 	public void concluiProgresso(boolean erro) {
 		controller.getBarraProgresso().setProgress(0);
-		// Não há necessidade por enquanto.
-		/*
-		 * if (erro) TaskbarProgressbar.showFullErrorProgress(Run.getPrimaryStage());
-		 * else if (i >= max) TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-		 */
+
+		if (erro)
+			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR);
+		else
+			TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 	}
 
 	private void configura() {
@@ -268,6 +399,11 @@ public class SudachiTokenizer {
 		case MUSICA:
 			processaMusica();
 			break;
+		case VOCABULARIO:
+			processaVocabulario();
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -278,7 +414,7 @@ public class SudachiTokenizer {
 	public void corrigirLancados(FrasesController cnt) {
 		controller = cnt;
 		vocabServ = new VocabularioServices();
-		
+
 		List<Vocabulario> lista;
 		try {
 			lista = vocabServ.selectAll();
@@ -293,24 +429,24 @@ public class SudachiTokenizer {
 			SplitMode mode = getModo(controller.getModo());
 
 			for (Vocabulario vocabulario : lista) {
-				for(Morpheme mp : tokenizer.tokenize(mode, vocabulario.getVocabulario()))
+				for (Morpheme mp : tokenizer.tokenize(mode, vocabulario.getVocabulario()))
 					if (mp.dictionaryForm().equalsIgnoreCase(vocabulario.getVocabulario())) {
 						vocabulario.setFormaBasica(mp.dictionaryForm());
 						vocabulario.setLeitura(mp.readingForm());
 					}
-
 			}
-
 			vocabServ.insertOrUpdate(lista);
 
+			concluiProgresso(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 			concluiProgresso(true);
 			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
 		} catch (ExcessaoBd e) {
+			concluiProgresso(true);
 			e.printStackTrace();
+			AlertasPopup.ErroModal("Erro de conexao", e.getMessage());
 		}
-
 	}
 
 }

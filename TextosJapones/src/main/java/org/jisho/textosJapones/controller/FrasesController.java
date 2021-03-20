@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Notificacao;
@@ -115,6 +116,9 @@ public class FrasesController implements Initializable {
 	private JFXButton btnSalvar;
 
 	@FXML
+	private JFXButton btnProcessar;
+
+	@FXML
 	private JFXButton btnEstatistica;
 
 	@FXML
@@ -145,13 +149,16 @@ public class FrasesController implements Initializable {
 	private JFXComboBox<Dicionario> cbDicionario;
 
 	@FXML
+	private JFXComboBox<Api> cbContaGoolge;
+
+	@FXML
 	private JFXTextField txtVocabulario;
 
 	@FXML
 	private JFXTextArea txtAreaOrigem;
 
 	@FXML
-	private JFXTextArea txtAreaProcessar;
+	private JFXTextArea txtAreaDestino;
 
 	@FXML
 	private JFXTextField txtExclusoes;
@@ -173,7 +180,7 @@ public class FrasesController implements Initializable {
 
 	private ObservableList<Vocabulario> obsLVocabulario;
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
-	private VocabularioServices vocabServ;
+	private VocabularioServices vocabServ = new VocabularioServices();;
 	private Vocabulario vocabulario;
 	private Set<String> excluido;
 
@@ -234,6 +241,14 @@ public class FrasesController implements Initializable {
 	@FXML
 	private void onBtnCorrecao() {
 		CorrecaoController.abreTelaCorrecao(rootStackPane, root);
+	}
+
+	@FXML
+	private void onBtnProcessar() {
+		if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSAR"))
+			processaTexto();
+		else
+			SudachiTokenizer.DESATIVAR = true;
 	}
 
 	public void setImagemBancoErro(String erro) {
@@ -321,6 +336,36 @@ public class FrasesController implements Initializable {
 		}
 	}
 
+	public void desabilitaBotoes() {
+		cbContaGoolge.setDisable(true);
+		cbTipo.setDisable(true);
+		cbDicionario.setDisable(true);
+		cbModo.setDisable(true);
+		btnCorrecao.setDisable(true);
+		btnEstatistica.setDisable(true);
+		btnImportar.setDisable(true);
+		btnSalvar.setDisable(true);
+		tbVocabulario.setDisable(true);
+
+		btnProcessar.setAccessibleText("PAUSAR");
+		btnProcessar.setText("Pausar");
+	}
+
+	public void habilitaBotoes() {
+		cbContaGoolge.setDisable(false);
+		cbTipo.setDisable(false);
+		cbDicionario.setDisable(false);
+		cbModo.setDisable(false);
+		btnCorrecao.setDisable(false);
+		btnEstatistica.setDisable(false);
+		btnImportar.setDisable(false);
+		btnSalvar.setDisable(false);
+		tbVocabulario.setDisable(false);
+
+		btnProcessar.setAccessibleText("PROCESSAR");
+		btnProcessar.setText("Processar");
+	}
+
 	public void limpaVocabulario() {
 		vocabulario = null;
 		txtVocabulario.setText("");
@@ -337,7 +382,7 @@ public class FrasesController implements Initializable {
 	}
 
 	public void setTextoDestino(String texto) {
-		txtAreaProcessar.setText(texto);
+		txtAreaDestino.setText(texto);
 	}
 
 	public void setAviso(String aviso) {
@@ -364,6 +409,10 @@ public class FrasesController implements Initializable {
 
 	public Dicionario getDicionario() {
 		return cbDicionario.getSelectionModel().getSelectedItem();
+	}
+
+	public Api getContaGoogle() {
+		return cbContaGoolge.getSelectionModel().getSelectedItem();
 	}
 
 	public ProgressBar getBarraProgresso() {
@@ -444,8 +493,11 @@ public class FrasesController implements Initializable {
 				vocabServ.insert(vocabNovo);
 
 				String itensSalvo = "";
-				for (Vocabulario itens : vocabNovo)
-					itensSalvo += itens.toString();
+				for (Vocabulario item : vocabNovo) {
+					txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*",
+							item.getFormaBasica() + " - " + item.getTraducao() + "."));
+					itensSalvo += item.toString();
+				}
 
 				vocabNovo.clear();
 				vocabNovo.add(new Vocabulario());
@@ -644,9 +696,9 @@ public class FrasesController implements Initializable {
 
 	private void configuraListenert() {
 		txtAreaOrigem.focusedProperty().addListener((o, oldVal, newVal) -> {
-			if (oldVal) {
+			if (oldVal && !cbTipo.getSelectionModel().getSelectedItem().equals(Tipo.VOCABULARIO))
 				processaTexto();
-			}
+
 		});
 
 		txtVocabulario.focusedProperty().addListener((o, oldVal, newVal) -> {
@@ -657,9 +709,8 @@ public class FrasesController implements Initializable {
 		});
 
 		txtExclusoes.focusedProperty().addListener((o, oldVal, newVal) -> {
-			if (oldVal) {
+			if (oldVal)
 				txtExclusoes.setUnFocusColor(Color.web("#106ebe"));
-			}
 		});
 
 		txtVocabulario.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -699,10 +750,16 @@ public class FrasesController implements Initializable {
 		cbDicionario.getItems().addAll(Dicionario.values());
 		cbDicionario.getSelectionModel().select(Dicionario.FULL);
 
+		cbContaGoolge.getItems().addAll(Api.values());
+		cbContaGoolge.getSelectionModel().selectFirst();
+
 		/* Setando as variáveis para o alerta padrão. */
 		AlertasPopup.setRootStackPane(rootStackPane);
 		AlertasPopup.setNodeBlur(root);
 		Notificacoes.setRootStackPane(apGlobal);
+
+		btnProcessar.setAccessibleText("PROCESSAR");
+		btnProcessar.setText("Processar");
 
 		verificaConexao();
 	}
