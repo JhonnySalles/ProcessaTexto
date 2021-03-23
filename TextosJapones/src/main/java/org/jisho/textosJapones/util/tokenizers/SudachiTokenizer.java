@@ -161,6 +161,7 @@ public class SudachiTokenizer {
 
 		controller.setTextoDestino(processado);
 		controller.setVocabulario(vocabNovo);
+		processaListaNovo(false);
 	}
 
 	private void processaMusica() throws ExcessaoBd {
@@ -238,7 +239,7 @@ public class SudachiTokenizer {
 					Platform.runLater(() -> {
 						controller.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
-						processaListaNovo();
+						processaListaNovo(true);
 					});
 				}
 				return null;
@@ -343,7 +344,7 @@ public class SudachiTokenizer {
 					Platform.runLater(() -> {
 						controller.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
-						processaListaNovo();
+						processaListaNovo(true);
 					});
 				}
 				return null;
@@ -386,13 +387,14 @@ public class SudachiTokenizer {
 	}
 
 	private void atualizaProgresso() {
-		controller.getBarraProgresso().setProgress(i / max);
+		if (!controller.getBarraProgresso().progressProperty().isBound())
+			controller.getBarraProgresso().setProgress(i / max);
+
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, Type.NORMAL);
 	}
 
 	public void concluiProgresso(boolean erro) {
-
 		if (!controller.getBarraProgresso().progressProperty().isBound())
 			controller.getBarraProgresso().setProgress(0);
 
@@ -467,7 +469,7 @@ public class SudachiTokenizer {
 		}
 	}
 
-	public void processaListaNovo() {
+	public void processaListaNovo(Boolean pesquisaSite) {
 		Task<Void> processar = new Task<Void>() {
 			@Override
 			public Void call() throws IOException, InterruptedException {
@@ -495,6 +497,9 @@ public class SudachiTokenizer {
 							} catch (ExcessaoBd e) {
 								e.printStackTrace();
 							}
+
+							if (!pesquisaSite)
+								continue;
 
 							String signficado = TanoshiJapanese.processa(item.getFormaBasica());
 

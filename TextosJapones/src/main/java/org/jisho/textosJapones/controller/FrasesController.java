@@ -180,8 +180,6 @@ public class FrasesController implements Initializable {
 	@FXML
 	private ProgressBar barraProgresso;
 
-	private ObservableList<Vocabulario> obsLVocabulario;
-	private List<Vocabulario> vocabNovo = new ArrayList<>();
 	private VocabularioServices vocabServ = new VocabularioServices();
 	private RevisarServices revisaServ = new RevisarServices();
 	private Vocabulario vocabulario;
@@ -393,14 +391,12 @@ public class FrasesController implements Initializable {
 	}
 
 	public void setVocabulario(List<Vocabulario> lista) {
-		vocabNovo.clear();
-		vocabNovo.addAll(lista);
+		tbVocabulario.getItems().clear();
+		tbVocabulario.getItems().addAll(lista);
 
-		if (vocabNovo.isEmpty())
-			vocabNovo.add(new Vocabulario());
+		if (tbVocabulario.getItems().isEmpty())
+			tbVocabulario.getItems().add(new Vocabulario());
 
-		obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
-		tbVocabulario.setItems(obsLVocabulario);
 		tbVocabulario.refresh();
 	}
 
@@ -493,10 +489,10 @@ public class FrasesController implements Initializable {
 	}
 
 	private void salvarTexto() {
-		if (vocabNovo.size() > 0) {
+		if (tbVocabulario.getItems().size() > 0) {
 			try {
 
-				List<Vocabulario> salvar = vocabNovo.stream().filter(e -> !e.getTraducao().isEmpty())
+				List<Vocabulario> salvar = tbVocabulario.getItems().stream().filter(e -> !e.getTraducao().isEmpty())
 						.collect(Collectors.toList());
 
 				vocabServ.insert(salvar);
@@ -510,15 +506,12 @@ public class FrasesController implements Initializable {
 					revisaServ.delete(item.getVocabulario());
 				}
 
-				if (salvar.size() != vocabNovo.size())
-					vocabNovo.removeIf(item -> salvar.contains(item));
+				if (salvar.size() != tbVocabulario.getItems().size())
+					tbVocabulario.getItems().removeIf(item -> salvar.contains(item));
 				else {
-					vocabNovo.clear();
-					vocabNovo.add(new Vocabulario());
+					tbVocabulario.getItems().clear();
+					tbVocabulario.getItems().add(new Vocabulario());
 				}
-
-				obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
-				tbVocabulario.setItems(obsLVocabulario);
 
 				if (itensSalvo.isEmpty())
 					Notificacoes.notificacao(Notificacao.AVISO, "Nenhum item encontrado.",
@@ -719,9 +712,10 @@ public class FrasesController implements Initializable {
 		editaColunas();
 		adicionaUltimaLinha();
 
-		vocabNovo.add(new Vocabulario());
-		obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
-		tbVocabulario.setItems(obsLVocabulario);
+		List<Vocabulario> vocabulario = new ArrayList<>();
+		vocabulario.add(new Vocabulario());
+		ObservableList<Vocabulario> observable = FXCollections.observableArrayList(vocabulario);
+		tbVocabulario.setItems(observable);
 	}
 
 	private void configuraListenert() {
