@@ -12,6 +12,8 @@ public interface RevisarDao {
 	void update(Revisar obj) throws ExcessaoBd;
 
 	void delete(Revisar obj) throws ExcessaoBd;
+	
+	void delete(String vocabulario) throws ExcessaoBd;
 
 	boolean exist(String vocabulario);
 

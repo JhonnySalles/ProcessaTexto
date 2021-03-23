@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -17,6 +18,7 @@ import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.animation.Animacao;
 import org.jisho.textosJapones.util.kanjiStatics.ImportaEstatistica;
@@ -180,7 +182,8 @@ public class FrasesController implements Initializable {
 
 	private ObservableList<Vocabulario> obsLVocabulario;
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
-	private VocabularioServices vocabServ = new VocabularioServices();;
+	private VocabularioServices vocabServ = new VocabularioServices();
+	private RevisarServices revisaServ = new RevisarServices();
 	private Vocabulario vocabulario;
 	private Set<String> excluido;
 
@@ -390,13 +393,15 @@ public class FrasesController implements Initializable {
 	}
 
 	public void setVocabulario(List<Vocabulario> lista) {
-		vocabNovo = lista;
+		vocabNovo.clear();
+		vocabNovo.addAll(lista);
 
 		if (vocabNovo.isEmpty())
 			vocabNovo.add(new Vocabulario());
 
 		obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
 		tbVocabulario.setItems(obsLVocabulario);
+		tbVocabulario.refresh();
 	}
 
 	public Modo getModo() {
@@ -490,22 +495,37 @@ public class FrasesController implements Initializable {
 	private void salvarTexto() {
 		if (vocabNovo.size() > 0) {
 			try {
-				vocabServ.insert(vocabNovo);
+
+				List<Vocabulario> salvar = vocabNovo.stream().filter(e -> !e.getTraducao().isEmpty())
+						.collect(Collectors.toList());
+
+				vocabServ.insert(salvar);
 
 				String itensSalvo = "";
-				for (Vocabulario item : vocabNovo) {
+				for (Vocabulario item : salvar) {
 					txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*",
 							item.getFormaBasica() + " - " + item.getTraducao() + "."));
 					itensSalvo += item.toString();
+
+					revisaServ.delete(item.getVocabulario());
 				}
 
-				vocabNovo.clear();
-				vocabNovo.add(new Vocabulario());
+				if (salvar.size() != vocabNovo.size())
+					vocabNovo.removeIf(item -> salvar.contains(item));
+				else {
+					vocabNovo.clear();
+					vocabNovo.add(new Vocabulario());
+				}
+
 				obsLVocabulario = FXCollections.observableArrayList(vocabNovo);
 				tbVocabulario.setItems(obsLVocabulario);
 
-				Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.",
-						itensSalvo.substring(0, itensSalvo.lastIndexOf(", ")) + ".");
+				if (itensSalvo.isEmpty())
+					Notificacoes.notificacao(Notificacao.AVISO, "Nenhum item encontrado.",
+							"Nenhum item com tradução encontrada.");
+				else
+					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.",
+							itensSalvo.substring(0, itensSalvo.lastIndexOf(", ")) + ".");
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
 				Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao salvar os novos vocabulários.");
@@ -671,7 +691,17 @@ public class FrasesController implements Initializable {
 
 		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcTraducao.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
+			String frase = "";
+
+			if (!e.getNewValue().trim().isEmpty()) {
+				frase = e.getNewValue().trim();
+				frase = frase.substring(0, 1).toUpperCase() + frase.substring(1) + ".";
+				if (frase.contains(".."))
+					frase = frase.replaceAll("\\.{2,}", ".");
+			}
+
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(frase);
+			tbVocabulario.refresh();
 			tbVocabulario.requestFocus();
 		});
 

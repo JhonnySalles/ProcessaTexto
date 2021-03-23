@@ -12,18 +12,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.FrasesController;
+import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
+import org.jisho.textosJapones.util.processar.JapanDict;
+import org.jisho.textosJapones.util.processar.Jisho;
 import org.jisho.textosJapones.util.processar.TanoshiJapanese;
 import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
@@ -40,6 +44,7 @@ import javafx.concurrent.Task;
 
 public class SudachiTokenizer {
 
+	private Api google = Api.API_GOOGLE;
 	private FrasesController controller;
 	private VocabularioServices vocabServ;
 	private Set<String> repetido = new HashSet<String>();
@@ -126,6 +131,7 @@ public class SudachiTokenizer {
 		vocabNovo.clear();
 		repetido.clear();
 
+		google = controller.getContaGoogle();
 		controller.setPalavra(texto[0]);
 
 		try (FileInputStream input = new FileInputStream(getPathSettings(controller.getDicionario()));
@@ -153,8 +159,8 @@ public class SudachiTokenizer {
 			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
 		}
 
-		controller.setVocabulario(vocabNovo);
 		controller.setTextoDestino(processado);
+		controller.setVocabulario(vocabNovo);
 	}
 
 	private void processaMusica() throws ExcessaoBd {
@@ -173,6 +179,7 @@ public class SudachiTokenizer {
 					texto = controller.getTextoOrigem().split("\n");
 					dictionario = controller.getDicionario();
 					mode = getModo(controller.getModo());
+					google = controller.getContaGoogle();
 					controller.limpaVocabulario();
 					controller.desabilitaBotoes();
 				});
@@ -185,6 +192,10 @@ public class SudachiTokenizer {
 					max = texto.length;
 
 					for (String txt : texto) {
+						updateProgress(i, max);
+						atualizaBarraWindows.run();
+
+						i++;
 						if (!txt.isEmpty()) {
 							processado += txt + "\n\n";
 
@@ -193,9 +204,6 @@ public class SudachiTokenizer {
 							processado += "\n\n\n";
 						} else
 							processado += "\n";
-						i++;
-						updateProgress(i, max);
-						atualizaBarraWindows.run();
 
 						if (DESATIVAR)
 							return null;
@@ -221,12 +229,17 @@ public class SudachiTokenizer {
 						}
 						controller.setVocabulario(vocabNovo);
 						controller.setTextoDestino(processado);
-						controller.getBarraProgresso().progressProperty().unbind();
 						controller.habilitaBotoes();
 					});
 
-					TimeUnit.SECONDS.sleep(5);
-					Platform.runLater(() -> concluiProgresso(false));
+					if (erro)
+						TimeUnit.SECONDS.sleep(5);
+
+					Platform.runLater(() -> {
+						controller.getBarraProgresso().progressProperty().unbind();
+						concluiProgresso(false);
+						processaListaNovo();
+					});
 				}
 				return null;
 			}
@@ -239,8 +252,8 @@ public class SudachiTokenizer {
 
 	private void processaVocabulario() throws ExcessaoBd {
 		Task<Void> processar = new Task<Void>() {
-			String[] palavras;
-			String vocabulario = "", links = "";
+			String[] palavras = { "" };
+			String vocabulario = "";
 			Dicionario dictionario = Dicionario.FULL;
 			SplitMode mode = SplitMode.C;
 			boolean erro = false;
@@ -248,7 +261,7 @@ public class SudachiTokenizer {
 			@Override
 			public Void call() throws IOException, InterruptedException {
 				DESATIVAR = false;
-				String significado;
+				String significado, links;
 				String[][] frase;
 
 				vocabNovo.clear();
@@ -256,6 +269,7 @@ public class SudachiTokenizer {
 					palavras = controller.getTextoOrigem().split("\n");
 					dictionario = controller.getDicionario();
 					mode = getModo(controller.getModo());
+					google = controller.getContaGoogle();
 					controller.limpaVocabulario();
 					controller.desabilitaBotoes();
 				});
@@ -268,19 +282,24 @@ public class SudachiTokenizer {
 					max = palavras.length;
 
 					for (String txt : palavras) {
+						updateProgress(i, max);
+						atualizaBarraWindows.run();
+
+						i++;
 						repetido.clear();
 						if (!txt.trim().isEmpty()) {
 							significado = "";
+							links = "";
 							frase = TanoshiJapanese.getFrase(txt.trim());
 							for (int i = 0; i < 2; i++) {
 								if (!frase[i][0].isEmpty()) {
 									String processado = processaTokenizer(mode, frase[i][0], false);
 									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-											Language.PORTUGUESE.getSigla(), frase[i][1], controller.getContaGoogle());
+											Language.PORTUGUESE.getSigla(), frase[i][1], google);
 
 									vocabulario += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
 									significado += processado + "\n\n" + traduzido + "\n\n";
-									links += (!frase[i][2].isEmpty() ? txt + ": " + frase[i][2] + "\n" : "");
+									links += (!frase[i][2].isEmpty() ? frase[i][2] + "\n" : "");
 								} else {
 									if (i == 0)
 										vocabulario += txt + "\n\n" + "***" + "\n\n";
@@ -288,12 +307,8 @@ public class SudachiTokenizer {
 								if (DESATIVAR)
 									return null;
 							}
-							vocabulario += significado + "-".repeat(10) + "\n";
+							vocabulario += significado + links + "\n" + "-".repeat(10) + "\n";
 						}
-
-						i++;
-						updateProgress(i, max);
-						atualizaBarraWindows.run();
 					}
 				} catch (IOException e) {
 					erro = true;
@@ -318,13 +333,18 @@ public class SudachiTokenizer {
 							atualizaBarraWindows.run();
 						}
 						controller.setVocabulario(vocabNovo);
-						controller.setTextoDestino(vocabulario + "\n\n\n" + "--".repeat(20) + "\n" + links);
-						controller.getBarraProgresso().progressProperty().unbind();
+						controller.setTextoDestino(vocabulario);
 						controller.habilitaBotoes();
 					});
 
-					TimeUnit.SECONDS.sleep(5);
-					Platform.runLater(() -> concluiProgresso(false));
+					if (erro)
+						TimeUnit.SECONDS.sleep(5);
+
+					Platform.runLater(() -> {
+						controller.getBarraProgresso().progressProperty().unbind();
+						concluiProgresso(false);
+						processaListaNovo();
+					});
 				}
 				return null;
 			}
@@ -355,13 +375,9 @@ public class SudachiTokenizer {
 						vocabServ.update(palavra);
 					}
 				} else {
-					List<Vocabulario> existe = vocabNovo.stream()
-							.filter(p -> p.getVocabulario().equalsIgnoreCase(m.surface())).collect(Collectors.toList());
-
 					processado += m.dictionaryForm() + " ** ";
-					if (existe.size() < 1) {
+					if (!vocabNovo.stream().map(e -> e.getVocabulario()).anyMatch(m.surface()::equalsIgnoreCase))
 						vocabNovo.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
-					}
 				}
 			}
 		}
@@ -376,7 +392,9 @@ public class SudachiTokenizer {
 	}
 
 	public void concluiProgresso(boolean erro) {
-		controller.getBarraProgresso().setProgress(0);
+
+		if (!controller.getBarraProgresso().progressProperty().isBound())
+			controller.getBarraProgresso().setProgress(0);
 
 		if (erro)
 			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR);
@@ -447,6 +465,84 @@ public class SudachiTokenizer {
 			e.printStackTrace();
 			AlertasPopup.ErroModal("Erro de conexao", e.getMessage());
 		}
+	}
+
+	public void processaListaNovo() {
+		Task<Void> processar = new Task<Void>() {
+			@Override
+			public Void call() throws IOException, InterruptedException {
+				try {
+					if (DESATIVAR)
+						return null;
+
+					RevisarServices service = new RevisarServices();
+
+					i = 0;
+					max = vocabNovo.size();
+					for (Vocabulario item : vocabNovo) {
+
+						updateProgress(i, max);
+						atualizaBarraWindows.run();
+
+						i++;
+						if (item.getTraducao().isEmpty()) {
+
+							try {
+								if (service.existe(item.getVocabulario())) {
+									item.setTraducao(service.select(item.getVocabulario()).getTraducao());
+									continue;
+								}
+							} catch (ExcessaoBd e) {
+								e.printStackTrace();
+							}
+
+							String signficado = TanoshiJapanese.processa(item.getFormaBasica());
+
+							if (signficado.isEmpty())
+								signficado = Jisho.processa(item.getFormaBasica());
+
+							if (signficado.isEmpty())
+								signficado = JapanDict.processa(item.getFormaBasica());
+
+							if (!signficado.isEmpty()) {
+								try {
+									item.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+											Language.PORTUGUESE.getSigla(), signficado, google));
+
+									service.insert(new Revisar(item.getVocabulario(), item.getFormaBasica(),
+											item.getLeitura(), item.getTraducao(), signficado, false));
+								} catch (IOException io) {
+									item.setTraducao(signficado);
+									io.printStackTrace();
+								} catch (ExcessaoBd e) {
+									e.printStackTrace();
+								}
+							}
+						}
+
+						if (DESATIVAR)
+							return null;
+					}
+
+				} finally {
+					updateProgress(i, max);
+					atualizaBarraWindows.run();
+
+					Platform.runLater(() -> controller.setVocabulario(vocabNovo));
+
+					TimeUnit.SECONDS.sleep(5);
+					Platform.runLater(() -> {
+						controller.getBarraProgresso().progressProperty().unbind();
+						concluiProgresso(false);
+					});
+				}
+				return null;
+			}
+		};
+
+		Thread processa = new Thread(processar);
+		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		processa.start();
 	}
 
 }

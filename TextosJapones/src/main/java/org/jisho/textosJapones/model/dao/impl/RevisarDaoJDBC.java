@@ -109,6 +109,24 @@ public class RevisarDaoJDBC implements RevisarDao {
 			DB.closeStatement(st);
 		}
 	}
+	
+	@Override
+	public void delete(String vocabulario) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(DELETE);
+
+			st.setString(1, vocabulario);
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+		} finally {
+			DB.closeStatement(st);
+		}		
+	}
 
 	@Override
 	public Revisar select(String vocabulario, String base) throws ExcessaoBd {

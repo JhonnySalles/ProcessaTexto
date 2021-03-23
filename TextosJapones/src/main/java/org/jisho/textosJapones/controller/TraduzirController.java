@@ -166,7 +166,7 @@ public class TraduzirController implements Initializable {
 	private static Boolean desativar = false;
 	private static Boolean desmembrar = false;
 
-	private String getTraducao(String kanji) {
+	private String getSignificado(String kanji) {
 		String resultado = "";
 		switch (cbSite.getSelectionModel().getSelectedItem()) {
 		case JAPANESE_TANOSHI:
@@ -187,7 +187,7 @@ public class TraduzirController implements Initializable {
 	private String processaPalavras(List<String> palavras, Modo modo) {
 		String desmembrado = "";
 		for (String palavra : palavras) {
-			String resultado = getTraducao(palavra);
+			String resultado = getSignificado(palavra);
 
 			if (!resultado.trim().isEmpty())
 				desmembrado += palavra + " - " + resultado + "; ";
@@ -266,14 +266,13 @@ public class TraduzirController implements Initializable {
 						if (!item.getRevisado().isSelected()) {
 
 							if (item.getIngles().isEmpty()) {
-								item.setIngles(getTraducao(item.getVocabulario()));
+								item.setIngles(getSignificado(item.getVocabulario()));
 
 								if (item.getIngles().isEmpty())
-									item.setIngles(getTraducao(item.getFormaBasica()));
+									item.setIngles(getSignificado(item.getFormaBasica()));
 
 								if (desmembrar && item.getIngles().isEmpty())
-									item.setIngles(getTraducao(getDesmembrado(item.getVocabulario())));
-
+									item.setIngles(getSignificado(getDesmembrado(item.getVocabulario())));
 							}
 
 							if (item.getTraducao().isEmpty() && !item.getIngles().isEmpty()) {

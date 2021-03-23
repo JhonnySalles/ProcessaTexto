@@ -58,6 +58,10 @@ public class RevisarServices {
 	public void delete(Revisar obj) throws ExcessaoBd {
 		revisarDao.delete(obj);
 	}
+	
+	public void delete(String vocabulario) throws ExcessaoBd {
+		revisarDao.delete(vocabulario);
+	}
 
 	public void delete(List<Revisar> lista) throws ExcessaoBd {
 		for (Revisar obj : lista)

@@ -77,6 +77,7 @@ public class Jisho {
 	/**
 	 * the desired word to search. Refer to Jisho.org regarding search methods
 	 */
+	@SuppressWarnings("unused")
 	private String searchWord;
 
 	/**
@@ -550,8 +551,10 @@ public class Jisho {
 
 		private Map<Object, Object> attribution;
 
+		@SuppressWarnings("unused")
 		private String word;
 
+		@SuppressWarnings("unused")
 		private String reading;
 
 	}
@@ -588,6 +591,7 @@ public class Jisho {
 
 	}
 
+	@SuppressWarnings("unused")
 	private class JishoParseLinks {
 
 		public String text;
