@@ -22,7 +22,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>make-assembly</id>
@@ -41,6 +41,23 @@
 							<mainClass>org.jisho.textosJapones.App</mainClass>
 						</manifest>
 					</archive>
+
+					<options>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.binding=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.graphics/com.sun.javafx.stage=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.event=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.graphics/com.sun.glass.ui=nativejavafx.taskbar</option>
+						<option>--add-opens</option>
+						<option>java.base/java.lang.reflect=com.jfoenix</option>
+					</options>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -94,39 +111,46 @@
 			<version>9.0.10</version>
 		</dependency>
 
+		<!-- Biblioteca JavaFX Base -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>16</version>
+		</dependency>
+
 		<!-- Biblioteca JavaFX Graphics -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-graphics</artifactId>
-			<version>15</version>
+			<version>16</version>
 		</dependency>
 
 		<!-- Biblioteca JavaFX Controle -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>15</version>
+			<version>16</version>
 		</dependency>
 
 		<!-- Bibliotecas para animacao no javafx -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>15</version>
+			<version>16</version>
 		</dependency>
 
 		<!-- Biblioteca JavaFX WebView -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-web</artifactId>
-			<version>15</version>
+			<version>16</version>
 		</dependency>
 
 		<!-- Biblioteca para popup -->
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>11.0.1</version>
+			<version>11.1.0</version>
 		</dependency>
 
 		<!-- MySQL -->
@@ -154,21 +178,14 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>29.0-jre</version>
-		</dependency>
-
-		<!-- Mostrar barra de progresso windows -->
-		<dependency>
-			<groupId>com.github.Dansoftowner</groupId>
-			<artifactId>FXTaskbarProgressBar</artifactId>
-			<version>v11.2.7</version>
+			<version>30.1-jre</version>
 		</dependency>
 
 		<!-- Json - api jisho -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20180130</version>
+			<version>20201115</version>
 		</dependency>
 
 		<dependency>

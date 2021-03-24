@@ -2,19 +2,19 @@ Manifest-Version: 1.0
 Built-By: Jhonny
 Build-Jdk: 15.0.1
 Class-Path: FXTaskbarProgressBar-v11.2.7.jar javafx-media-11-linux.jar j
- avafx-media-11-win.jar javafx-base-11-linux.jar javafx-base-11-win.jar 
- javafx-web-11-linux.jar javafx-fxml-11-linux.jar javafx-controls-11-lin
- ux.jar javafx-graphics-11-linux.jar bridj-0.7.0.jar dx-1.7.jar AnimateF
- X-1.2.1.jar jfoenix-9.0.10.jar javafx-graphics-15.jar javafx-graphics-1
- 5-win.jar javafx-base-15.jar javafx-controls-15.jar javafx-controls-15-
- win.jar javafx-fxml-15.jar javafx-fxml-15-win.jar javafx-web-15.jar jav
- afx-web-15-win.jar javafx-media-15.jar controlsfx-11.0.1.jar javafx-swi
- ng-11.0.2.jar javafx-swing-11.0.2-win.jar mysql-connector-java-8.0.20.j
- ar protobuf-java-3.6.1.jar sudachi-0.5.2.jar javax.json-1.1.jar jdartsc
- lone-1.2.0.jar jsoup-1.13.1.jar guava-29.0-jre.jar failureaccess-1.0.1.
- jar listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar jsr3
- 05-3.0.2.jar checker-qual-2.11.1.jar error_prone_annotations-2.3.4.jar 
- j2objc-annotations-1.3.jar json-20180130.jar gson-2.8.6.jar
+ avafx-media-11-win.jar javafx-base-11-linux.jar javafx-web-11-linux.jar
+  javafx-fxml-11-linux.jar javafx-controls-11-linux.jar javafx-graphics-
+ 11-linux.jar bridj-0.7.0.jar dx-1.7.jar AnimateFX-1.2.1.jar jfoenix-9.0
+ .10.jar javafx-base-16.jar javafx-base-16-win.jar javafx-graphics-16.ja
+ r javafx-graphics-16-win.jar javafx-controls-16.jar javafx-controls-16-
+ win.jar javafx-fxml-16.jar javafx-fxml-16-win.jar javafx-web-16.jar jav
+ afx-web-16-win.jar javafx-media-16.jar controlsfx-11.1.0.jar mysql-conn
+ ector-java-8.0.20.jar protobuf-java-3.6.1.jar sudachi-0.5.2.jar javax.j
+ son-1.1.jar jdartsclone-1.2.0.jar jsoup-1.13.1.jar guava-30.1-jre.jar f
+ ailureaccess-1.0.1.jar listenablefuture-9999.0-empty-to-avoid-conflict-
+ with-guava.jar jsr305-3.0.2.jar checker-qual-3.5.0.jar error_prone_anno
+ tations-2.3.4.jar j2objc-annotations-1.3.jar json-20201115.jar gson-2.8
+ .6.jar
 Main-Class: org.jisho.textosJapones.App
 Created-By: Maven Integration for Eclipse
 
