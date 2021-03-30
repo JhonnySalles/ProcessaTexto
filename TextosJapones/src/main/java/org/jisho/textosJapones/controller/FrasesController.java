@@ -500,7 +500,7 @@ public class FrasesController implements Initializable {
 				String itensSalvo = "";
 				for (Vocabulario item : salvar) {
 					txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*",
-							item.getFormaBasica() + " - " + item.getTraducao() + "."));
+							item.getFormaBasica() + " - " + item.getTraducao()));
 					itensSalvo += item.toString();
 
 					revisaServ.delete(item.getVocabulario());

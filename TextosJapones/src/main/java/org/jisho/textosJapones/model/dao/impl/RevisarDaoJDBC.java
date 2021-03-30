@@ -27,7 +27,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE 1 > 0;";
 	final private String SELECT_TRADUZIR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 1000";
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
-	final private String SELECT_REVISAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar LIMIT 1";
+	final private String SELECT_REVISAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado, aparece FROM revisar ORDER BY aparece DESC LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
 	final private String SELECT_SIMILAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario <> ? AND ingles = ?";
 
