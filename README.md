@@ -160,7 +160,7 @@ Incluso o recurso de visualização do progresso no ícone da bandeja do sistema
 ## Meta
 
 Distribuido sobre a licença GPL. Veja o arquivo ``COPYING`` para maiores informações.
-[https://github.com/JhonnySalles/github-link](https://github.com/JhonnySalles/ProcessaTextoJapones/blob/master/COPYING.txt)
+[https://github.com/JhonnySalles/github-link](https://github.com/JhonnySalles/ProcessaTextoJapones/blob/master/COPYING)
 
 ## Contribuindo
 
@@ -174,4 +174,4 @@ Distribuido sobre a licença GPL. Veja o arquivo ``COPYING`` para maiores inform
 
 ## Licença
 
-[GPL-3.0 License](https://github.com/JhonnySalles/Fenix/blob/master/COPYING)
+[GPL-3.0 License](https://github.com/JhonnySalles/ProcessaTextoJapones/blob/master/COPYING)
