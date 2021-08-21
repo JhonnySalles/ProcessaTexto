@@ -1,0 +1,494 @@
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------ Estilos do Dashboard ------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+
+/*---------- Estilos de background ----------*/
+.background-Black1 {
+	-fx-background-color: #000000;
+}
+
+.background-Black2 {
+	-fx-background-color: #212121;
+}
+
+.background-Black3 {
+	-fx-background-color: #333333;
+}
+
+.background-Black4 {
+	-fx-background-color: #3c3c3c;
+}
+
+.background-Black5 {
+	-fx-background-color: #666666;
+}
+
+.background-Blue1 {
+	-fx-background-color: #004578;
+}
+
+.background-Blue2 {
+	-fx-background-color: #005a9e;
+}
+
+.background-Blue3 {
+	-fx-background-color: #106ebe;
+}
+
+.background-Blue4 {
+	-fx-background-color: #0078d4;
+}
+
+.background-Blue5 {
+	-fx-background-color: #71afe5;
+}
+
+.background-White1 {
+	-fx-background-color: #ffffff;
+}
+
+.background-White2 {
+	-fx-background-color: #eaeaea;
+}
+
+.background-White3 {
+	-fx-background-color: #dadada;
+}
+
+.background-White4 {
+	-fx-background-color: #d0d0d0;
+}
+
+.background-Red1 {
+	-fx-background-color: #a4262c;
+}
+
+.background-Red2 {
+	-fx-background-color: #f44336;
+}
+
+.background-Red3 {
+	-fx-background-color: #ef6950;
+}
+
+.background-Green1 {
+	-fx-background-color: #407855;
+}
+
+.background-Green2 {
+	-fx-background-color: #7cb342;
+}
+
+.background-Green3 {
+	-fx-background-color: #00cc00;
+}
+
+.background-Purple1 {
+	-fx-background-color: #854085;
+}
+
+.background-Purple2 {
+	-fx-background-color: #8764b8;
+}
+
+.background-Purple3 {
+	-fx-background-color: #b4a0ff;
+}
+
+.background-Orange1 {
+	-fx-background-color: #ca5010;
+}
+
+.background-Indigo1 {
+	-fx-background-color: #4052ab;
+}
+
+.background-Yellow1 {
+	-fx-background-color: #ffc83d;
+}
+
+/*---------- Tab ----------*/
+.jfx-tab-pane .control-buttons-tab .jfx-rippler {
+	-jfx-rippler-fill: black;
+}
+
+.jfx-tab-pane .tab-header-area .jfx-rippler {
+	-jfx-rippler-fill: black;
+}
+
+.jfx-tab-pane .tab-selected-line {
+	-fx-background-color: black;
+	-fx-pref-height: 3;
+	-fx-background-insets: 0 -0.01 0 -0.01;
+}
+
+.jfx-tab-pane .headers-region .tab .tab-container .tab-close-button>.jfx-svg-glyph {
+	-fx-background-color: red;
+}
+
+.jfx-tab-pane .headers-region {
+	-fx-background-color: transparent;
+}
+
+.jfx-tab-pane .tab-header-background {
+	-fx-background-color: #1A237E;
+	-fx-background-color: linear-gradient(to top right, #0277BD, #1A237E);
+}
+
+/*---------- Estilos de fonte ----------*/
+.texto-stilo {
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: #bfbfbf;
+}
+
+.texto-stilo-fundo-azul {
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: #d9d9d9;
+}
+
+.comboBox-stilo {
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: #bfbfbf;
+}
+
+.comboBox-stilo>.list-cell {
+	-fx-text-fill: white;
+}
+
+/*----------  Titulo background ----------*/
+.tituloBackground {
+	-fx-background-color: linear-gradient(to right top, #0277BD, #1A237E);
+}
+
+/*---------- Estilos de borda ----------*/
+.paneBorder {
+	-fx-border-color: #005a9e;
+}
+
+.paneBorder:focused {
+	-fx-border-color: #0078d4;
+}
+
+/*----------  Panels de rolagens ----------*/
+.split-pane:horizontal>.split-pane-divider {
+	-fx-background-color: #000000;
+}
+
+.split-pane:vertical>.split-pane-divider {
+	-fx-background-color: #000000;
+}
+
+.split-pane *.split-pane-divider {
+	-fx-padding: 0.3;
+}
+
+.splitbox {
+	-fx-box-border: #000000;
+	-fx-padding: 1;
+}
+
+/*---------- Estilos do scroll ----------*/
+.scroll-pane {
+	-fx-background-color: black;
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical {
+	-fx-background-color: transparent;
+}
+
+.increment-button, .decrement-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+}
+
+.scroll-bar:horizontal .track, .scroll-bar:vertical .track {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-background-radius: 0em;
+}
+
+/* Barra */
+.scroll-bar:horizontal .thumb, .scroll-bar:vertical .thumb {
+	-fx-background-color: #3c3c3c;
+	-fx-background-radius: 5em;
+}
+
+.scroll-bar:horizontal .thumb:hover, .scroll-bar:vertical .thumb:hover {
+	-fx-background-color: #757575;
+}
+
+.scroll-bar:horizontal .thumb:pressed, .scroll-bar:vertical .thumb:pressed
+	{
+	-fx-background-color: #666666;
+	-fx-background-insets: 3.0;
+	-fx-effect: dropshadow(one-pass-box, #1e90ff, 4, 4, 0, 0);
+}
+
+.scroll-bar:vertical {
+	-fx-pref-width: 10;
+	-fx-padding: 0.5;
+	-fx-font-size: 8;
+}
+
+.scroll-bar:horizontal {
+	-fx-pref-height: 10;
+	-fx-padding: 0.5;
+	-fx-font-size: 8;
+}
+
+.scroll-bar, .scroll-bar:pressed, .scroll-bar:hover {
+	-fx-pref-width: 15;
+	-fx-pref-height: 15;
+	-fx-padding: 1;
+	-fx-font-size: 14;
+}
+
+/* Quina */
+.scroll-pane>.corner {
+	-fx-background-color: black;
+}
+
+/*---------- Table view ----------*/
+.table-view .column-header, .table-view .column-header-background .filler
+	{
+	-fx-background-color: #004578;
+	-fx-border-color: #000000;
+	-fx-border-width: 0 1 0 0;
+	-fx-border-insets: 5 0 5 0;
+}
+
+.table-view .column-header .label {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-alignment: CENTER_LEFT;
+}
+
+.table-view .column-header-background {
+	-fx-background-color: #004578;
+}
+
+.table-view {
+	-fx-background-color: #000000;
+}
+
+/* Cor da frase de tabela vazia */
+.table-view .placeholder .label {
+	-fx-text-fill: #999999;
+}
+
+.table-view:focused {
+	-fx-background-color: #212121;
+}
+
+.table-view .table-cell {
+	-fx-text-fill: white;
+	-fx-alignment: CENTER-LEFT;
+}
+
+.table-row-cell {
+	-fx-background-color: -fx-table-cell-border-color, #333333;
+	-fx-table-border-color: #000000;
+	-fx-table-cell-border-color: #000000;
+}
+
+.table-row-cell:odd {
+	-fx-background-color: -fx-table-cell-border-color, #212121;
+}
+
+.table-row-cell:selected {
+	-fx-background-color: #4052ab;
+}
+
+.table-view>.virtual-flow>.scroll-bar>.increment-button, .table-view>.virtual-flow>.scroll-bar>.decrement-button {
+	-fx-opacity: 0;
+}
+
+/* scroll bar starts here */
+
+/* The increment and decrement button CSS class of scrollbar */
+.table-view .increment-button, .table-view .decrement-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+.table-view .scroll-bar:horizontal .track, .table-view .scroll-bar:vertical .track
+	{
+	-fx-background-color: transparent;
+	-fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.table-view .scroll-bar:horizontal .thumb, .table-view .scroll-bar:vertical .thumb
+	{
+	-fx-background-color: #3c3c3c;
+	-fx-background-radius: 5em;
+}
+
+.table-view .scroll-bar:horizontal .thumb:hover, .table-view .scroll-bar:vertical .thumb:hover
+	{
+	-fx-background-color: #757575;
+	-fx-effect: dropshadow(one-pass-box, #000000, 4, 4, 0, 0);
+}
+
+.table-view .scroll-bar:horizontal .thumb:pressed, .table-view .scroll-bar:vertical .thumb:pressed
+	{
+	-fx-background-insets: 1.0;
+	-fx-effect: dropshadow(one-pass-box, #000000, 4, 4, 0, 0);
+	-fx-background-color: #a6a6a6;
+}
+
+.corner {
+	-fx-background-color: transparent;
+}
+
+/* Pseudo classe irÃ¡ servir para sinalizar uma linha, somente serÃ¡ chamada em programaÃ§Ã£o */
+.table-row-cell:pesquisa {
+	-fx-background-color: -fx-table-cell-border-color, #008000;
+	-fx-table-border-color: #000000;
+	-fx-table-cell-border-color: #000000;
+}
+
+.table-row-cell:pesquisa:odd {
+	-fx-background-color: -fx-table-cell-border-color, #004d00;
+}
+
+.table-row-cell:pesquisa:selected {
+	-fx-background-color: #4052ab;
+}
+
+/*---------- Table tree ----------*/
+.tree-table-view .column-header, .tree-table-view .column-header-background .filler
+	{
+	-fx-background-color: #004578;
+	-fx-border-color: #000000;
+	-fx-border-width: 0 1 0 0;
+	-fx-border-insets: 5 0 5 0;
+}
+
+.tree-table-view .column-header .label {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-alignment: CENTER_LEFT;
+}
+
+.tree-table-view .column-header-background {
+	-fx-background-color: #004578;
+}
+
+.tree-table-view {
+	-fx-background-color: #000000;
+}
+
+.tree-table-view .placeholder .label {
+	-fx-text-fill: #999999;
+}
+
+.tree-table-view:focused {
+	-fx-background-color: #212121;
+}
+
+.tree-table-view .tree-table-cell {
+	-fx-text-fill: white;
+	-fx-alignment: CENTER-LEFT;
+}
+
+.tree-table-row-cell {
+	-fx-background-color: -fx-table-cell-border-color, #333333;
+	-fx-table-border-color: #000000;
+	-fx-table-cell-border-color: #000000;
+}
+
+.tree-table-row-cell:odd {
+	-fx-background-color: -fx-table-cell-border-color, #212121;
+}
+
+.tree-table-row-cell:selected {
+	-fx-background-color: #4052ab;
+}
+
+/*  Cor da flecha de nivel */
+.tree-cell>.tree-disclosure-node>.arrow, .tree-table-row-cell>.tree-disclosure-node>.arrow
+	{
+	-fx-background-color: white;
+	-fx-padding: 0.333333em 0.229em 0.333333em 0.229em;
+	-fx-shape: "M 0 -3.5 L 4 0 L 0 3.5 z";
+}
+
+.tree-table-view>.virtual-flow>.scroll-bar>.increment-button,
+	.tree-table-view>.virtual-flow>.scroll-bar>.decrement-button {
+	-fx-opacity: 0;
+}
+
+.tree-table-view .increment-button, .table-view .decrement-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+.tree-table-view .scroll-bar:horizontal .track, .tree-table-view .scroll-bar:vertical .track
+	{
+	-fx-background-color: transparent;
+	-fx-background-radius: 0em;
+}
+
+.tree-table-view .scroll-bar:horizontal .thumb, .tree-table-view .scroll-bar:vertical .thumb
+	{
+	-fx-background-color: #3c3c3c;
+	-fx-background-radius: 5em;
+}
+
+.tree-table-view .scroll-bar:horizontal .thumb:hover, .tree-table-view .scroll-bar:vertical .thumb:hover
+	{
+	-fx-background-color: #757575;
+	-fx-effect: dropshadow(one-pass-box, #000000, 4, 4, 0, 0);
+}
+
+.tree-table-view .scroll-bar:horizontal .thumb:pressed, .tree-table-view .scroll-bar:vertical .thumb:pressed
+	{
+	-fx-background-insets: 1.0;
+	-fx-effect: dropshadow(one-pass-box, #000000, 4, 4, 0, 0);
+	-fx-background-color: #a6a6a6;
+}
+
+/* Esconder os check box que não seja folha */
+.tree-table-row-cell .hide-non-leaf * {
+	/* invisible by default */
+	visibility: hidden;
+}
+
+.tree-table-row-cell:leaf .hide-non-leaf * {
+	/* make visible, if leaf */
+	visibility: visible;
+}
+
+/*---------- Progress Bar ----------*/
+.progress-bar {
+	-fx-background-color: #106ebe;
+}
+
+.progress-bar .track {
+	-fx-background-color: black;
+	-fx-background-insets: 1;
+}
+
+.progress-bar .bar {
+	-fx-background-color: #106ebe;
+	-fx-background-insets: 1;
+}
+
+/*---------- Estilo para correção ----------*/
+.jfx-dialog-layout {
+	-fx-background-color: #212121;
+	-fx-border-color: #005a9e;
+}
+
+.jfx-dialog-layout:focused {
+	-fx-border-color: #0078d4;
+}
+
+.jfx-layout-heading {
+	-fx-text-fill: white;
+}
