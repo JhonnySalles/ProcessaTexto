@@ -58,7 +58,7 @@ public class RevisarServices {
 	public void delete(Revisar obj) throws ExcessaoBd {
 		revisarDao.delete(obj);
 	}
-	
+
 	public void delete(String vocabulario) throws ExcessaoBd {
 		revisarDao.delete(vocabulario);
 	}
@@ -88,8 +88,8 @@ public class RevisarServices {
 		return revisarDao.selectQuantidadeRestante();
 	}
 
-	public Revisar selectRevisar(String pesquisar) throws ExcessaoBd {
-		return revisarDao.selectRevisar(pesquisar);
+	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
+		return revisarDao.selectRevisar(pesquisar, isAnime, isManga);
 	}
 
 	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {

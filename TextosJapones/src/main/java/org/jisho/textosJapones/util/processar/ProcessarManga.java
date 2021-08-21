@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jisho.textosJapones.controller.MangaController;
+import org.jisho.textosJapones.controller.MangasController;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTexto;
@@ -34,13 +34,13 @@ import javafx.concurrent.Task;
 public class ProcessarManga {
 
 	private VocabularioServices vocabularioService = new VocabularioServices();
-	private MangaController controller;
+	private MangasController controller;
 	private RevisarServices service = new RevisarServices();
 	private ProcessarPalavra desmembra = new ProcessarPalavra();
 	private Api contaGoogle;
 	private Site siteDicionario;
 
-	public ProcessarManga(MangaController controller) {
+	public ProcessarManga(MangasController controller) {
 		this.controller = controller;
 	}
 
@@ -205,7 +205,7 @@ public class ProcessarManga {
 
 							service.insert(revisar);
 						} else if (!revisar.isManga()) {
-							revisar.isManga(true);
+							revisar.setManga(true);
 							service.update(revisar);
 						}
 

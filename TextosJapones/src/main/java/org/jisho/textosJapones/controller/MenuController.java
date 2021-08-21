@@ -19,10 +19,13 @@ public class MenuController implements Initializable {
 	private AnchorPane apGlobal;
 	
 	@FXML
-	private JFXButton btnVoltar;
+	private JFXButton btnTexto;
 
 	@FXML
-	private JFXButton btnCancelar;
+	private JFXButton btnLegenda;
+	
+	@FXML
+	private JFXButton btnManga;
 
 	@FXML
 	private void onBtnTextoAction() {
@@ -33,6 +36,12 @@ public class MenuController implements Initializable {
 	@FXML
 	private void onBtnLegendaAction() {
 		Menu.tela = Tela.LEGENDA;
+		Run.run();
+	}
+	
+	@FXML
+	private void onBtnMangaAction() {
+		Menu.tela = Tela.MANGA;
 		Run.run();
 	}
 

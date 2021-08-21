@@ -25,6 +25,8 @@
                         <Label fx:id="lblRestantes" text="Restante 0 palavras." textFill="WHITE" />
                      </children>
                   </HBox>
+                  <JFXCheckBox fx:id="cbAnime" checkedColor="#28d325" selected="true" text="Anime" textFill="WHITE" unCheckedColor="#19b516" />
+                  <JFXCheckBox fx:id="cbManga" checkedColor="#1fd61c" text="Manga" textFill="WHITE" unCheckedColor="#19b516" />
                   <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
                   <JFXButton fx:id="btnNovo" focusTraversable="false" minWidth="100.0" onAction="#onBtnNovo" prefWidth="110.0" styleClass="background-White1" text="Novo" />
                </children>

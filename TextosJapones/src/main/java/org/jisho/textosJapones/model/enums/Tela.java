@@ -2,7 +2,7 @@ package org.jisho.textosJapones.model.enums;
 
 public enum Tela {
 	
-	TEXTO("Texto"), LEGENDA("Legenda");
+	TEXTO("Texto"), LEGENDA("Legenda"), MANGA("Manga");
 
 	private String tela;
 

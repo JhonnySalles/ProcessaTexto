@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.jisho.textosJapones.controller.FrasesController;
 import org.jisho.textosJapones.controller.LegendasController;
+import org.jisho.textosJapones.controller.MangasController;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -30,13 +31,16 @@ public class Run extends Application {
 	public static void run() {
 		PRIMARY_STAGE.close();
 		PRIMARY_STAGE = new Stage();
-		
+
 		switch (Menu.tela) {
 		case TEXTO:
 			runTexto(PRIMARY_STAGE);
 			break;
 		case LEGENDA:
 			runLegenda(PRIMARY_STAGE);
+			break;
+		case MANGA:
+			runManga(PRIMARY_STAGE);
 			break;
 		default:
 			runTexto(PRIMARY_STAGE);
@@ -85,6 +89,26 @@ public class Run extends Application {
 			stage.setTitle("Legendas e correção não encontrados");
 			stage.initStyle(StageStyle.DECORATED);
 			stage.getIcons().add(new Image(Run.class.getResourceAsStream(LegendasController.getIconLocate())));
+			stage.show(); // Mostra a tela.
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void runManga(Stage stage) {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MangasController.getFxmlLocate());
+			AnchorPane newAnchorPane = loader.load();
+
+			Scene mainScene = new Scene(newAnchorPane); // Carrega a scena
+			mainScene.setFill(Color.BLACK);
+
+			stage.setScene(mainScene); // Seta a cena principal
+			stage.setTitle("Vocabulário de mangas");
+			stage.initStyle(StageStyle.DECORATED);
+			stage.getIcons().add(new Image(Run.class.getResourceAsStream(MangasController.getIconLocate())));
 			stage.show(); // Mostra a tela.
 
 		} catch (IOException e) {

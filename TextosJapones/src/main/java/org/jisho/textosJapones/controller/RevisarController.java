@@ -48,6 +48,12 @@ public class RevisarController implements Initializable {
 	private JFXButton btnNovoAux;
 
 	@FXML
+	private JFXCheckBox cbAnime;
+
+	@FXML
+	private JFXCheckBox cbManga;
+
+	@FXML
 	private JFXTextField txtVocabulario;
 
 	@FXML
@@ -145,7 +151,7 @@ public class RevisarController implements Initializable {
 				if (corrigindo.getTraducao().isEmpty())
 					corrigindo = null;
 			} else
-				revisando = service.selectRevisar(txtPesquisar.getText());
+				revisando = service.selectRevisar(txtPesquisar.getText(), cbAnime.isSelected(), cbManga.isSelected());
 
 			if (!txtPesquisar.getText().isEmpty() && revisando == null && corrigindo == null)
 				txtPesquisar.setUnFocusColor(Color.RED);
@@ -179,6 +185,14 @@ public class RevisarController implements Initializable {
 		return apRoot;
 	}
 
+	public void setAnime(Boolean ativo) {
+		cbAnime.setSelected(ativo);
+	}
+
+	public void setManga(Boolean ativo) {
+		cbManga.setSelected(ativo);
+	}
+
 	final private String allFlag = ".*";
 	final private String japanese = "[\u3041-\u9FAF]";
 	final private String notJapanese = "[A-Za-z0-9 ,.à-úÀ-ú\\[\\]\\-\\(\\)]";
@@ -210,7 +224,7 @@ public class RevisarController implements Initializable {
 			if (oldVal) {
 				txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 				pesquisar();
-				
+
 				if (revisando != null && cbImportarFrase.isSelected() && !frasePortugues.isEmpty())
 					txtAreaPortugues.setText(frasePortugues);
 

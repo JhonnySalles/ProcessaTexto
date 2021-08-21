@@ -151,6 +151,9 @@ public class LegendasController implements Initializable {
 
 		cbDicionario.getItems().addAll(Dicionario.values());
 		cbDicionario.getSelectionModel().select(Dicionario.FULL);
+		
+		revisarController.setAnime(true);
+		revisarController.setManga(false);
 
 		/* Setando as variáveis para o alerta padrão. */
 		AlertasPopup.setRootStackPane(rootStackPane);

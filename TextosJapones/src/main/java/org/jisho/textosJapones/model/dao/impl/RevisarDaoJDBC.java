@@ -28,7 +28,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
 	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false LIMIT 1000";
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
-	final private String SELECT_REVISAR = SELECT + "ORDER BY aparece DESC LIMIT 1";
+	final private String SELECT_REVISAR = SELECT + "WHERE ? ORDER BY aparece DESC LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
 	final private String SELECT_SIMILAR = SELECT + "WHERE vocabulario <> ? AND ingles = ?";
 
@@ -243,9 +243,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 			st.setString(1, vocabulario);
 			rs = st.executeQuery();
 
-			if (rs.next()) {
+			if (rs.next())
 				return true;
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -300,7 +299,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	}
 
 	@Override
-	public Revisar selectRevisar(String pesquisar) throws ExcessaoBd {
+	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -309,6 +308,20 @@ public class RevisarDaoJDBC implements RevisarDao {
 				st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
 				st.setString(1, pesquisar);
 				st.setString(2, pesquisar);
+
+				if (!isAnime && !isManga)
+					st.setString(3, "1>0");
+				else {
+					if (isAnime && isManga)
+						st.setString(3, "isAnime = true AND isManga = true");
+					else {
+						if (isAnime)
+							st.setString(3, "isAnime = true");
+						else
+							st.setString(3, "isManga = true");
+					}
+				}
+
 			} else
 				st = conn.prepareStatement(SELECT_REVISAR);
 
