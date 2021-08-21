@@ -515,7 +515,7 @@ public class SudachiTokenizer {
 											Language.PORTUGUESE.getSigla(), signficado, google));
 
 									service.insert(new Revisar(item.getVocabulario(), item.getFormaBasica(),
-											item.getLeitura(), item.getTraducao(), signficado, false));
+											item.getLeitura(), item.getTraducao(), signficado));
 								} catch (IOException io) {
 									item.setTraducao(signficado);
 									io.printStackTrace();

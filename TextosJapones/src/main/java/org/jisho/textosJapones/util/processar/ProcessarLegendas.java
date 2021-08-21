@@ -118,7 +118,7 @@ public class ProcessarLegendas {
 				Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 				if (palavra == null) {
-					Revisar revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm());
+					Revisar revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, true, false);
 					service.insert(revisar);
 				}
 			}

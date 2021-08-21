@@ -18,18 +18,19 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 	private Connection conn;
 
-	final private String INSERT = "INSERT IGNORE INTO revisar (vocabulario, formaBasica, leitura, traducao, ingles, revisado) VALUES (?,?,?,?,?,?);";
-	final private String UPDATE = "UPDATE revisar SET formaBasica = ?, leitura = ?, traducao = ?, ingles = ?, revisado = ? WHERE vocabulario = ?;";
+	final private String INSERT = "INSERT IGNORE INTO revisar (vocabulario, formaBasica, leitura, traducao, ingles, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?,?);";
+	final private String UPDATE = "UPDATE revisar SET formaBasica = ?, leitura = ?, traducao = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
 	final private String DELETE = "DELETE FROM revisar WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ? OR formaBasica = ?;";
-	final private String SELECT_PALAVRA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado, isAnime, isManga FROM revisar ";
+	final private String SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR formaBasica = ?;";
+	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
-	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE 1 > 0;";
-	final private String SELECT_TRADUZIR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE revisado = false LIMIT 1000";
+	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
+	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false LIMIT 1000";
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
-	final private String SELECT_REVISAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado, aparece FROM revisar ORDER BY aparece DESC LIMIT 1";
-	final private String SELECT_REVISAR_PESQUISA = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
-	final private String SELECT_SIMILAR = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado FROM revisar WHERE vocabulario <> ? AND ingles = ?";
+	final private String SELECT_REVISAR = SELECT + "ORDER BY aparece DESC LIMIT 1";
+	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
+	final private String SELECT_SIMILAR = SELECT + "WHERE vocabulario <> ? AND ingles = ?";
 
 	public RevisarDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -47,6 +48,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 			st.setString(4, obj.getTraducao());
 			st.setString(5, obj.getIngles());
 			st.setBoolean(6, obj.getRevisado().isSelected());
+			st.setBoolean(7, obj.isAnime());
+			st.setBoolean(8, obj.isManga());
 
 			st.executeUpdate();
 		} catch (SQLException e) {
@@ -70,6 +73,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 			st.setString(4, obj.getIngles());
 			st.setBoolean(5, obj.getRevisado().isSelected());
 			st.setString(6, obj.getVocabulario());
+			st.setBoolean(7, obj.isAnime());
+			st.setBoolean(8, obj.isManga());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -109,7 +114,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 			DB.closeStatement(st);
 		}
 	}
-	
+
 	@Override
 	public void delete(String vocabulario) throws ExcessaoBd {
 		PreparedStatement st = null;
@@ -125,7 +130,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
 		} finally {
 			DB.closeStatement(st);
-		}		
+		}
 	}
 
 	@Override
@@ -133,14 +138,15 @@ public class RevisarDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(SELECT);
+			st = conn.prepareStatement(SELECT_FORMA);
 			st.setString(1, vocabulario);
 			st.setString(2, base);
 			rs = st.executeQuery();
 
 			if (rs.next()) {
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -163,7 +169,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			if (rs.next()) {
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -188,7 +195,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			while (rs.next()) {
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado")));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 			}
 			return list;
 		} catch (SQLException e) {
@@ -213,7 +221,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			while (rs.next())
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado")));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
 			return list;
 		} catch (SQLException e) {
@@ -295,7 +304,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			
+
 			if (!pesquisar.trim().isEmpty()) {
 				st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
 				st.setString(1, pesquisar);
@@ -307,7 +316,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			if (rs.next())
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
@@ -333,7 +343,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 
 			while (rs.next())
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado")));
+						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
 			return list;
 		} catch (SQLException e) {
