@@ -1,10 +1,9 @@
 package org.jisho.textosJapones.model.entities;
 
 public class MangaTexto {
-	
+
 	private Long id;
 	private String texto;
-	private String leitura;
 	private Integer sequencia;
 	private Integer x1;
 	private Integer y1;
@@ -25,14 +24,6 @@ public class MangaTexto {
 
 	public void setTexto(String texto) {
 		this.texto = texto;
-	}
-
-	public String getLeitura() {
-		return leitura;
-	}
-
-	public void setLeitura(String leitura) {
-		this.leitura = leitura;
 	}
 
 	public Integer getSequencia() {
@@ -74,11 +65,10 @@ public class MangaTexto {
 	public void setY2(Integer y2) {
 		this.y2 = y2;
 	}
-	
+
 	public MangaTexto() {
 		this.id = 0L;
 		this.texto = "";
-		this.leitura = "";
 		this.sequencia = 0;
 		this.x1 = 0;
 		this.y1 = 0;
@@ -89,18 +79,6 @@ public class MangaTexto {
 	public MangaTexto(Long id, String texto, Integer sequencia, Integer x1, Integer y1, Integer x2, Integer y2) {
 		this.id = id;
 		this.texto = texto;
-		this.leitura = "";
-		this.sequencia = sequencia;
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
-	}
-	
-	public MangaTexto(Long id, String texto, String leitura, Integer sequencia, Integer x1, Integer y1, Integer x2, Integer y2) {
-		this.id = id;
-		this.texto = texto;
-		this.leitura = leitura;
 		this.sequencia = sequencia;
 		this.x1 = x1;
 		this.y1 = y1;

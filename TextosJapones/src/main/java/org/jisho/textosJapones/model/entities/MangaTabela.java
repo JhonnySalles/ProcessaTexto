@@ -1,12 +1,14 @@
 package org.jisho.textosJapones.model.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MangaTabela {
 
 	private String base;
-	private String manga;
-	private Integer volume;
-	private Float capitulo;
-	private boolean processar = false;
+	private List<MangaVolume> volumes;
+	private Integer quantidade;
+	private Boolean processar;
 
 	public String getBase() {
 		return base;
@@ -16,50 +18,49 @@ public class MangaTabela {
 		this.base = base;
 	}
 
-	public String getManga() {
-		return manga;
+	public List<MangaVolume> getVolumes() {
+		return volumes;
 	}
 
-	public void setManga(String manga) {
-		this.manga = manga;
+	public void setVolumes(List<MangaVolume> volumes) {
+		this.volumes = volumes;
 	}
 
-	public Integer getVolume() {
-		return volume;
+	public Integer getQuantidade() {
+		return quantidade;
 	}
 
-	public void setVolume(Integer volume) {
-		this.volume = volume;
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
 	}
 
-	public Float getCapitulo() {
-		return capitulo;
-	}
-
-	public void setCapitulo(Float capitulo) {
-		this.capitulo = capitulo;
-	}
-
-	public boolean isProcessar() {
+	public Boolean isProcessar() {
 		return processar;
 	}
 
-	public void setProcessar(boolean processar) {
+	public void setProcessar(Boolean processar) {
 		this.processar = processar;
-	}
-	
-	public MangaTabela() {
-		this.base = "";
-		this.manga = "";
-		this.volume = 0;
-		this.capitulo = 0F;
 	}
 
-	public MangaTabela(String base, String manga, Integer volume, Float capitulo, boolean processar) {
+	public MangaTabela() {
+		this.base = "";
+		this.quantidade = 0;
+		this.processar = true;
+		this.volumes = new ArrayList<MangaVolume>();
+
+	}
+
+	public MangaTabela(String base, List<MangaVolume> volumes) {
 		this.base = base;
-		this.manga = manga;
-		this.volume = volume;
-		this.capitulo = capitulo;
-		this.processar = processar;
+		this.quantidade = 0;
+		this.volumes = volumes;
+		this.processar = true;
+	}
+
+	public MangaTabela(String base, Integer quantidade, List<MangaVolume> volumes) {
+		this.base = base;
+		this.quantidade = quantidade;
+		this.volumes = volumes;
+		this.processar = true;
 	}
 }

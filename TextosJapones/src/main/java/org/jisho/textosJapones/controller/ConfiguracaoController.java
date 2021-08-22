@@ -38,6 +38,9 @@ public class ConfiguracaoController implements Initializable {
 	@FXML
 	public JFXButton btnCaminho;
 
+	@FXML
+	public JFXTextField txtDataBaseManga;
+
 	private FrasesController controller;
 
 	@FXML
@@ -49,7 +52,7 @@ public class ConfiguracaoController implements Initializable {
 
 	public void salvar() {
 		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtDataBase.getText(),
-				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText());
+				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText(), txtDataBaseManga.getText());
 		controller.verificaConexao();
 	}
 
@@ -58,6 +61,7 @@ public class ConfiguracaoController implements Initializable {
 		txtServer.setText(ConexaoMysql.getServer());
 		txtPorta.setText(ConexaoMysql.getPort());
 		txtDataBase.setText(ConexaoMysql.getDataBase());
+		txtDataBaseManga.setText(ConexaoMysql.getDataBaseManga());
 		txtUsuario.setText(ConexaoMysql.getUser());
 		pswSenha.setText(ConexaoMysql.getPassword());
 		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
@@ -92,5 +96,6 @@ public class ConfiguracaoController implements Initializable {
 		Validadores.setTextFieldNotEmpty(txtDataBase);
 		Validadores.setTextFieldNotEmpty(txtUsuario);
 		Validadores.setTextFieldNotEmpty(pswSenha);
+		Validadores.setTextFieldNotEmpty(txtDataBaseManga);
 	}
 }

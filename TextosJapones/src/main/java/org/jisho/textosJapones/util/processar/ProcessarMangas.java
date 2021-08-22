@@ -6,10 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.MangasController;
-import org.jisho.textosJapones.model.entities.Manga;
+import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
+import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaTexto;
+import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Api;
@@ -17,34 +20,50 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.util.tokenizers.SudachiTokenizer;
 
+import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
 import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
-public class ProcessarManga {
+public class ProcessarMangas {
 
 	private VocabularioServices vocabularioService = new VocabularioServices();
 	private MangasController controller;
-	private RevisarServices service = new RevisarServices();
+	private RevisarServices serviceRevisar = new RevisarServices();
+	private MangaServices serviceManga = new MangaServices();
 	private ProcessarPalavra desmembra = new ProcessarPalavra();
 	private Api contaGoogle;
 	private Site siteDicionario;
+	private Boolean desativar = false;
 
-	public ProcessarManga(MangasController controller) {
+	public ProcessarMangas(MangasController controller) {
 		this.controller = controller;
 	}
 
-	public void processarTextosMangas(List<Manga> mangas) {
+	public void setDesativar(Boolean desativar) {
+		this.desativar = desativar;
+	}
+
+	private Integer y, z;
+	private String msg;
+	private Set<String> vocabVolume = new HashSet<>();
+	private Set<String> vocabCapitulo = new HashSet<>();
+	private Set<String> vocabPagina = new HashSet<>();
+
+	public void processarTabelas(List<MangaTabela> tabelas) {
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
 		Task<Void> verificaConexao = new Task<Void>() {
 
@@ -57,18 +76,61 @@ public class ProcessarManga {
 					contaGoogle = controller.getContaGoogle();
 					siteDicionario = controller.getSiteTraducao();
 
-					int x = 0;
-					for (Manga manga : mangas) {
-						x++;
-						updateProgress(x, mangas.size());
-						updateMessage("Processando " + x + " de " + mangas.size() + " registros.");
-						processar(manga);
+					y = 0;
+					desativar = false;
+					for (MangaTabela tabela : tabelas) {
+						y++;
+
+						int x = 0;
+						for (MangaVolume volume : tabela.getVolumes()) {
+							x++;
+							updateProgress(x, tabela.getVolumes().size());
+
+							msg = "Processando " + x + " de " + tabela.getVolumes().size() + " volumes." + "\nManga: "
+									+ volume.getManga();
+
+							vocabVolume.clear();
+							z = 0;
+							for (MangaCapitulo capitulo : volume.getCapitulos()) {
+								z++;
+								updateMessage(msg + "\nCapitulo " + capitulo.getCapitulo());
+								vocabCapitulo.clear();
+								for (MangaPagina pagina : capitulo.getPaginas()) {
+									vocabPagina.clear();
+									for (MangaTexto texto : pagina.getTextos())
+										gerarVocabulario(texto.getTexto());
+
+									pagina.setVocabulario(vocabPagina.toString());
+								}
+								capitulo.setVocabulario(vocabCapitulo.toString());
+								Platform.runLater(() -> controller.getBarraProgressoCapitulos()
+										.setProgress(z / volume.getCapitulos().size()));
+							}
+							volume.setVocabulario(vocabVolume.toString());
+
+							serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
+
+							if (desativar)
+								break;
+						}
+
+						if (desativar)
+							break;
+
+						Platform.runLater(() -> {
+							controller.getBarraProgressoVolumes().setProgress(y / tabelas.size());
+							if (TaskbarProgressbar.isSupported())
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), y, tabelas.size(),
+										Type.NORMAL);
+						});
 					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
 					AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 							"Erro ao processar a lista.");
+				} finally {
+					controller.limpar();
 				}
 
 				return null;
@@ -78,11 +140,11 @@ public class ProcessarManga {
 			protected void succeeded() {
 				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
 						"Mangas processadas com sucesso.");
-				controller.getBarraProgresso().progressProperty().unbind();
+				controller.getBarraProgressoGeral().progressProperty().unbind();
 				controller.getLog().textProperty().unbind();
 			}
 		};
-		controller.getBarraProgresso().progressProperty().bind(verificaConexao.progressProperty());
+		controller.getBarraProgressoGeral().progressProperty().bind(verificaConexao.progressProperty());
 		controller.getLog().textProperty().bind(verificaConexao.messageProperty());
 		Thread t = new Thread(verificaConexao);
 		t.start();
@@ -141,28 +203,10 @@ public class ProcessarManga {
 	private Tokenizer tokenizer;
 	private SplitMode mode;
 
-	public Set<String> vocabManga = new HashSet<>();
-	public Set<String> vocabPagina = new HashSet<>();
-
-	private void processar(Manga manga) throws ExcessaoBd {
-		vocabManga.clear();
-		for (MangaPagina pagina : manga.getPaginas()) {
-			vocabPagina.clear();
-			for (MangaTexto texto : pagina.getTextos()) {
-				gerarVocabulario(texto.getTexto());
-			}
-			pagina.setVocabulario(vocabPagina.toString());
-		}
-		manga.setVocabulario(vocabManga.toString());
-	}
-
-	private Set<String> existe = new HashSet<>();
-
 	private void gerarVocabulario(String frase) throws ExcessaoBd {
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
 				if (!vocabPagina.contains(m.dictionaryForm())) {
-					existe.add(m.dictionaryForm());
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
@@ -180,9 +224,10 @@ public class ProcessarManga {
 						}
 
 						vocabPagina.add(vocabulario);
-						vocabManga.add(vocabulario);
+						vocabCapitulo.add(vocabulario);
+						vocabVolume.add(vocabulario);
 					} else {
-						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
+						Revisar revisar = serviceRevisar.select(m.surface(), m.dictionaryForm());
 						if (revisar == null) {
 							revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true);
 
@@ -203,15 +248,16 @@ public class ProcessarManga {
 								}
 							}
 
-							service.insert(revisar);
+							serviceRevisar.insert(revisar);
 						} else if (!revisar.isManga()) {
 							revisar.setManga(true);
-							service.update(revisar);
+							serviceRevisar.update(revisar);
 						}
 
 						String vocabulario = m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
 						vocabPagina.add(vocabulario);
-						vocabManga.add(vocabulario);
+						vocabCapitulo.add(vocabulario);
+						vocabVolume.add(vocabulario);
 					}
 				}
 			}

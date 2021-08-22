@@ -3,19 +3,27 @@ package org.jisho.textosJapones.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.MangaServices;
+import org.jisho.textosJapones.util.processar.ProcessarMangas;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import com.nativejavafx.taskbar.TaskbarProgressbar;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -58,13 +66,22 @@ public class MangasController implements Initializable {
 	private Label lblLog;
 
 	@FXML
-	private ProgressBar barraProgresso;
+	private ProgressBar barraProgressoGeral;
+
+	@FXML
+	private ProgressBar barraProgressoVolumes;
+
+	@FXML
+	private ProgressBar barraProgressoCapitulos;
 
 	@FXML
 	private TraduzirController traduzirController;
 
 	@FXML
 	private RevisarController revisarController;
+
+	@FXML
+	private JFXButton btnCarregar;
 
 	@FXML
 	private JFXButton btnProcessar;
@@ -74,6 +91,12 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private JFXTextField txtBase;
+
+	@FXML
+	private JFXTextField txtManga;
+
+	@FXML
+	private JFXCheckBox ckbProcessados;
 
 	@FXML
 	private TreeTableView<MangaTabela> treeBases;
@@ -93,9 +116,53 @@ public class MangasController implements Initializable {
 	@FXML
 	private TreeTableColumn<MangaTabela, Float> treecCapitulo;
 
+	private ProcessarMangas mangas;
+	private MangaServices service = new MangaServices();
+	private ObservableList<MangaTabela> tabelas;
+
 	@FXML
 	private void onBtnProcessar() {
+		if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSANDO") && mangas != null) {
+			mangas.setDesativar(true);
+			return;
+		}
 
+		btnProcessar.setAccessibleText("PROCESSANDO");
+		btnProcessar.setText("Pausar");
+
+		if (mangas == null)
+			mangas = new ProcessarMangas(this);
+
+		treeBases.setDisable(true);
+		lblLog.setText("Iniciando o processamento..");
+		mangas.processarTabelas(tabelas);
+	}
+
+	@FXML
+	private void onBtnCarregar() {
+		try {
+			btnCarregar.setDisable(true);
+			btnProcessar.setDisable(true);
+			btnGerarJson.setDisable(true);
+			treeBases.setDisable(true);
+
+			lblLog.setText("Atualizando....");
+			try {
+				tabelas = FXCollections.observableArrayList(service.selectTabelas(!ckbProcessados.isSelected(),
+						txtBase.getText().trim(), txtManga.getText().trim()));
+				populaTree();
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+			}
+
+			lblLog.setText("");
+
+		} finally {
+			btnCarregar.setDisable(false);
+			btnProcessar.setDisable(false);
+			btnGerarJson.setDisable(false);
+			treeBases.setDisable(false);
+		}
 	}
 
 	@FXML
@@ -119,6 +186,14 @@ public class MangasController implements Initializable {
 		return cbDicionario.getSelectionModel().getSelectedItem();
 	}
 
+	public void limpar() {
+		treeBases.setDisable(false);
+		lblLog.setText("");
+		btnProcessar.setAccessibleText("PROCESSAR");
+		btnProcessar.setText("Processar");
+		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+	}
+
 	public AnchorPane getRoot() {
 		return root;
 	}
@@ -127,12 +202,35 @@ public class MangasController implements Initializable {
 		return rootStackPane;
 	}
 
-	public ProgressBar getBarraProgresso() {
-		return barraProgresso;
+	public ProgressBar getBarraProgressoGeral() {
+		return barraProgressoGeral;
+	}
+
+	public ProgressBar getBarraProgressoVolumes() {
+		return barraProgressoVolumes;
+	}
+
+	public ProgressBar getBarraProgressoCapitulos() {
+		return barraProgressoCapitulos;
 	}
 
 	public Label getLog() {
 		return lblLog;
+	}
+
+	private void populaTree() {
+		for (MangaTabela tabela : tabelas) {
+			TreeItem<MangaTabela> root = new TreeItem<MangaTabela>(tabela);
+			treeBases.setRoot(root);
+
+			/*
+			 * for (MangaVolume volume: tabela.getVolumes()) { for (MangaCapitulo capitulo :
+			 * volume.getCapitulos()) { for (MangaPagina pagina : capitulo.getPaginas()) {
+			 * for (MangaTexto texto : pagina.getTextos()) {
+			 * 
+			 * } } } }
+			 */
+		}
 	}
 
 	private void editaColunas() {
@@ -196,15 +294,16 @@ public class MangasController implements Initializable {
 		cbDicionario.getSelectionModel().select(Dicionario.FULL);
 
 		linkaCelulas();
-		
+
 		revisarController.setAnime(false);
 		revisarController.setManga(true);
+		revisarController.pesquisar();
 	}
 
 	public static URL getFxmlLocate() {
 		return MangasController.class.getResource("/view/Manga.fxml");
 	}
-	
+
 	public static String getIconLocate() {
 		return "/images/icoTextoJapones_128.png";
 	}

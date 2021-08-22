@@ -154,6 +154,7 @@ public class LegendasController implements Initializable {
 		
 		revisarController.setAnime(true);
 		revisarController.setManga(false);
+		revisarController.pesquisar();
 
 		/* Setando as variáveis para o alerta padrão. */
 		AlertasPopup.setRootStackPane(rootStackPane);

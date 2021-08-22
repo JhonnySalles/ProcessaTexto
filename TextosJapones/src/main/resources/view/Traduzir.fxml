@@ -30,7 +30,7 @@
             <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
                <children>
                   <JFXComboBox fx:id="cbSite" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="150.0" promptText="Site" styleClass="comboBox-stilo" unFocusColor="WHITE" HBox.hgrow="ALWAYS" />
-                  <JFXCheckBox fx:id="ckbDesmembrar" checkedColor="#71afe5" text="Desmembrar kanjis" textFill="WHITE" />
+                  <JFXCheckBox fx:id="ckbDesmembrar" checkedColor="#71afe5" text="Desmembrar kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
                   <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapaneseTanoshi" prefWidth="110.0" styleClass="background-White1" text="Jap. Tanoshi" />
                   <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapanDict" prefWidth="110.0" styleClass="background-White1" text="JapanDict" />
                   <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="110.0" onAction="#onBtnJisho" prefWidth="110.0" styleClass="background-White1" text="Jisho" />

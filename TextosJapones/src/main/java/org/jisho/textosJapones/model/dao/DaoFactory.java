@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.model.dao;
 
 import org.jisho.textosJapones.model.dao.impl.EstatisticaDaoJDBC;
+import org.jisho.textosJapones.model.dao.impl.MangaDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.ProcessarDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.RevisarDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.VocabularioDaoJDBC;
@@ -22,6 +23,10 @@ public class DaoFactory {
 
 	public static ProcessarDao createProcessarDao() {
 		return new ProcessarDaoJDBC(DB.getConnection());
+	}
+
+	public static MangaDao createMangaDao() {
+		return new MangaDaoJDBC(DB.getConnection());
 	}
 
 }

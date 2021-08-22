@@ -142,7 +142,7 @@ public class RevisarController implements Initializable {
 		txtAreaPortugues.setText("");
 	}
 
-	private void pesquisar() {
+	public void pesquisar() {
 		txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 
 		try {
@@ -200,7 +200,6 @@ public class RevisarController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		limpaCampos();
-		pesquisar();
 
 		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
 			if (cbImportarFrase.isSelected())
@@ -243,6 +242,16 @@ public class RevisarController implements Initializable {
 		cbCorrecao.selectedProperty().addListener((o, oldVal, newVal) -> {
 			if (newVal)
 				limpaCampos();
+		});
+
+		cbAnime.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal)
+				pesquisar();
+		});
+
+		cbManga.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal)
+				pesquisar();
 		});
 	}
 

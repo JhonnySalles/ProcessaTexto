@@ -77,5 +77,13 @@ public enum Language {
 	public String getSigla() {
 		return linguagem;
 	}
+	
+	public static Language getEnum(String sigla){
+        for(Language e : Language.values()){
+            if(e.linguagem.equals(sigla)) 
+            	return e;
+        }
+        return null;
+    }
 
 }
