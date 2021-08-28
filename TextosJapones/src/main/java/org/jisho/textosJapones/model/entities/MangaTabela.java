@@ -3,12 +3,11 @@ package org.jisho.textosJapones.model.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MangaTabela {
+public class MangaTabela extends Manga {
 
 	private String base;
 	private List<MangaVolume> volumes;
 	private Integer quantidade;
-	private Boolean processar;
 
 	public String getBase() {
 		return base;
@@ -32,14 +31,6 @@ public class MangaTabela {
 
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
-	}
-
-	public Boolean isProcessar() {
-		return processar;
-	}
-
-	public void setProcessar(Boolean processar) {
-		this.processar = processar;
 	}
 
 	public MangaTabela() {

@@ -36,6 +36,8 @@ import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 
 public class ProcessarMangas {
@@ -57,11 +59,14 @@ public class ProcessarMangas {
 		this.desativar = desativar;
 	}
 
-	private Integer y, z;
-	private String msg;
+	private Integer T, V, C;
 	private Set<String> vocabVolume = new HashSet<>();
 	private Set<String> vocabCapitulo = new HashSet<>();
 	private Set<String> vocabPagina = new HashSet<>();
+
+	private DoubleProperty propCapitulo = new SimpleDoubleProperty(.0);
+	private DoubleProperty propVolume = new SimpleDoubleProperty(.0);
+	private DoubleProperty propTabela = new SimpleDoubleProperty(.0);
 
 	public void processarTabelas(List<MangaTabela> tabelas) {
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
@@ -76,61 +81,108 @@ public class ProcessarMangas {
 					contaGoogle = controller.getContaGoogle();
 					siteDicionario = controller.getSiteTraducao();
 
-					y = 0;
+					propTabela.set(.0);
+					propVolume.set(.0);
+					propCapitulo.set(.0);
+
+					T = 0;
 					desativar = false;
 					for (MangaTabela tabela : tabelas) {
-						y++;
+						T++;
 
-						int x = 0;
+						if (!tabela.isProcessar()) {
+							propTabela.set((double) T / tabelas.size());
+							Platform.runLater(() -> {
+								// controller.getBarraProgressoGeral().setProgress(T / tabelas.size());
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
+											Type.NORMAL);
+							});
+							continue;
+						}
+
+						V = 0;
 						for (MangaVolume volume : tabela.getVolumes()) {
-							x++;
-							updateProgress(x, tabela.getVolumes().size());
+							V++;
 
-							msg = "Processando " + x + " de " + tabela.getVolumes().size() + " volumes." + "\nManga: "
-									+ volume.getManga();
+							if (!volume.isProcessar()) {
+								propVolume.set((double) V / tabela.getVolumes().size());
+								updateMessage("IGNORADO - Manga: " + volume.getManga());
+								continue;
+							}
 
 							vocabVolume.clear();
-							z = 0;
+							C = 0;
 							for (MangaCapitulo capitulo : volume.getCapitulos()) {
-								z++;
-								updateMessage(msg + "\nCapitulo " + capitulo.getCapitulo());
+								C++;
+
+								if (!capitulo.isProcessar()) {
+									updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
+											+ capitulo.getCapitulo());
+									propCapitulo.set((double) C / volume.getCapitulos().size());
+									continue;
+								}
+
 								vocabCapitulo.clear();
+								int p = 0;
 								for (MangaPagina pagina : capitulo.getPaginas()) {
+									p++;
+									updateProgress(p, capitulo.getPaginas().size());
+
+									if (!pagina.isProcessar()) {
+										updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo: "
+												+ capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
+										continue;
+									}
+
+									updateMessage("Processando " + V + " de " + tabela.getVolumes().size() + " volumes."
+											+ " Manga: " + volume.getManga() + " - Capitulo: " + capitulo.getCapitulo()
+											+ " - Página: " + pagina.getNomePagina());
+
 									vocabPagina.clear();
 									for (MangaTexto texto : pagina.getTextos())
 										gerarVocabulario(texto.getTexto());
 
 									pagina.setVocabulario(vocabPagina.toString());
+									pagina.setProcessado(true);
+									serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
+
+									if (desativar)
+										break;
 								}
 								capitulo.setVocabulario(vocabCapitulo.toString());
-								Platform.runLater(() -> controller.getBarraProgressoCapitulos()
-										.setProgress(z / volume.getCapitulos().size()));
+								capitulo.setProcessado(true);
+								serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
+								propCapitulo.set((double) C / volume.getCapitulos().size());
+
+								if (desativar)
+									break;
 							}
 							volume.setVocabulario(vocabVolume.toString());
-
+							volume.setProcessado(true);
 							serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
+							propVolume.set((double) V / tabela.getVolumes().size());
 
 							if (desativar)
 								break;
 						}
 
-						if (desativar)
-							break;
-
+						propTabela.set((double) T / tabelas.size());
 						Platform.runLater(() -> {
-							controller.getBarraProgressoVolumes().setProgress(y / tabelas.size());
+							// controller.getBarraProgressoGeral().setProgress(T / tabelas.size());
 							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), y, tabelas.size(),
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
 										Type.NORMAL);
 						});
+
+						if (desativar)
+							break;
 					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
 					AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 							"Erro ao processar a lista.");
-				} finally {
-					controller.limpar();
 				}
 
 				return null;
@@ -140,17 +192,29 @@ public class ProcessarMangas {
 			protected void succeeded() {
 				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
 						"Mangas processadas com sucesso.");
+
 				controller.getBarraProgressoGeral().progressProperty().unbind();
+				controller.getBarraProgressoVolumes().progressProperty().unbind();
+				controller.getBarraProgressoCapitulos().progressProperty().unbind();
+				controller.getBarraProgressoPaginas().progressProperty().unbind();
 				controller.getLog().textProperty().unbind();
+				controller.habilitar();
 			}
 		};
-		controller.getBarraProgressoGeral().progressProperty().bind(verificaConexao.progressProperty());
+		controller.getBarraProgressoGeral().progressProperty().bind(propTabela);
+		controller.getBarraProgressoVolumes().progressProperty().bind(propVolume);
+		controller.getBarraProgressoCapitulos().progressProperty().bind(propCapitulo);
+		controller.getBarraProgressoPaginas().progressProperty().bind(verificaConexao.progressProperty());
 		controller.getLog().textProperty().bind(verificaConexao.messageProperty());
 		Thread t = new Thread(verificaConexao);
 		t.start();
 	}
 
 	private String getSignificado(String kanji) {
+		if (kanji.trim().isEmpty())
+			return "";
+		
+		Platform.runLater(() -> controller.getLogConsultas().setText(kanji + " : Obtendo significado."));
 		String resultado = "";
 		switch (siteDicionario) {
 		case JAPANESE_TANOSHI:
@@ -170,6 +234,7 @@ public class ProcessarMangas {
 
 	private String getDesmembrado(String palavra) {
 		String resultado = "";
+		Platform.runLater(() -> controller.getLogConsultas().setText(palavra + " : Desmembrando a palavra."));
 		resultado = processaPalavras(desmembra.processarDesmembrar(palavra, controller.getDicionario(), Modo.B),
 				Modo.B);
 
@@ -231,6 +296,8 @@ public class ProcessarMangas {
 						if (revisar == null) {
 							revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true);
 
+							Platform.runLater(
+									() -> controller.getLogConsultas().setText(m.surface() + " : Vocabulário novo."));
 							revisar.setIngles(getSignificado(revisar.getVocabulario()));
 
 							if (revisar.getIngles().isEmpty())
@@ -241,17 +308,23 @@ public class ProcessarMangas {
 
 							if (!revisar.getIngles().isEmpty()) {
 								try {
+									Platform.runLater(() -> controller.getLogConsultas()
+											.setText(m.surface() + " : Obtendo tradução."));
 									revisar.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle));
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
 							}
-
 							serviceRevisar.insert(revisar);
-						} else if (!revisar.isManga()) {
-							revisar.setManga(true);
-							serviceRevisar.update(revisar);
+							Platform.runLater(() -> controller.getLogConsultas().setText(""));
+						} else {
+							if (!revisar.isManga()) {
+								revisar.setManga(true);
+								serviceRevisar.setIsManga(revisar);
+							}
+
+							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
 						String vocabulario = m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";

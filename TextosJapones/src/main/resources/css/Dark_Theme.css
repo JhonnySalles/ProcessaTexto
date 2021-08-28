@@ -479,6 +479,14 @@
 	-fx-background-insets: 1;
 }
 
+.progress-bar-2 {
+	-fx-background-color: #7b1fa2;
+}
+
+.progress-bar-2 .bar {
+	-fx-background-color: #7b1fa2;
+}
+
 /*---------- Estilo para correção ----------*/
 .jfx-dialog-layout {
 	-fx-background-color: #212121;

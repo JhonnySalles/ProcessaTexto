@@ -31,6 +31,8 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_REVISAR = SELECT + "WHERE %s ORDER BY aparece DESC LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
 	final private String SELECT_SIMILAR = SELECT + "WHERE vocabulario <> ? AND ingles = ?";
+	final private String INCREMENTA_VEZES_APARECE = "UPDATE revisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
+	final private String SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;";
 
 	public RevisarDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -72,9 +74,9 @@ public class RevisarDaoJDBC implements RevisarDao {
 			st.setString(3, obj.getTraducao());
 			st.setString(4, obj.getIngles());
 			st.setBoolean(5, obj.getRevisado().isSelected());
-			st.setString(6, obj.getVocabulario());
-			st.setBoolean(7, obj.isAnime());
-			st.setBoolean(8, obj.isManga());
+			st.setBoolean(6, obj.isAnime());
+			st.setBoolean(7, obj.isManga());
+			st.setString(8, obj.getVocabulario());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -82,7 +84,6 @@ public class RevisarDaoJDBC implements RevisarDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
 			}
-			;
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();
@@ -320,7 +321,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 						parametro = "isManga = true";
 				}
 
-				st = conn.prepareStatement(String.format(SELECT_REVISAR,parametro));
+				st = conn.prepareStatement(String.format(SELECT_REVISAR, parametro));
 			}
 
 			rs = st.executeQuery();
@@ -364,6 +365,35 @@ public class RevisarDaoJDBC implements RevisarDao {
 		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(INCREMENTA_VEZES_APARECE);
+			st.setString(1, vocabulario);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
+	@Override
+	public void setIsManga(Revisar obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(SET_ISMANGA);
+			st.setBoolean(1, obj.isManga());
+			st.setString(2, obj.getVocabulario());
+			st.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DB.closeStatement(st);
 		}
 	}
 

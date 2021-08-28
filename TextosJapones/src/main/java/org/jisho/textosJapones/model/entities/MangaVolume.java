@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.jisho.textosJapones.model.enums.Language;
 
-public class MangaVolume {
+public class MangaVolume extends Manga {
 
 	private Long id;
 	private String manga;
@@ -14,7 +14,6 @@ public class MangaVolume {
 	private List<MangaCapitulo> capitulos;
 	private String vocabulario;
 	private Boolean processado;
-	private Boolean processar;
 
 	public Long getId() {
 		return id;
@@ -75,14 +74,6 @@ public class MangaVolume {
 	public void setProcessado(Boolean processado) {
 		this.processado = processado;
 	}
-	
-	public Boolean isProcessar() {
-		return processar;
-	}
-
-	public void setProcessar(Boolean processar) {
-		this.processar = processar;
-	}
 
 	public MangaVolume() {
 		this.id = 0L;
@@ -95,18 +86,18 @@ public class MangaVolume {
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario, Boolean processado) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
 		this.lingua = lingua;
 		this.vocabulario = vocabulario;
-		this.processado = processado;
+		this.processado = false;
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario, Boolean processado,
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario,
 			List<MangaCapitulo> capitulos) {
 		this.id = id;
 		this.manga = manga;
@@ -114,7 +105,7 @@ public class MangaVolume {
 		this.lingua = lingua;
 		this.capitulos = capitulos;
 		this.vocabulario = vocabulario;
-		this.processado = processado;
+		this.processado = false;
 		this.processar = true;
 	}
 

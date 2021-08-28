@@ -33,11 +33,11 @@ public class MangaDaoJDBC implements MangaDao {
 
 	final private String UPDATE_VOLUMES_VOCABULARIO = "UPDATE %s_volumes SET vocabulario = ? WHERE id = ?;";
 	final private String UPDATE_CAPITULOS_VOCABULARIO = "UPDATE %s_capitulos SET vocabulario = ? WHERE id = ?;";
-	final private String UPDATE_PAGINAS_VOCABULARIO = "UPDATE %s_paginas SET vocabulario = ? WHERE id = ?;";
+	final private String UPDATE_PAGINAS_VOCABULARIO = "UPDATE %s_paginas SET vocabulario = ?, is_processado = ? WHERE id = ?;";
 
-	final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.vocabulario, VOL.is_Processado FROM %s_volumes VOL %s WHERE %s GROUP BY VOL.id";
+	final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.vocabulario, VOL.is_Processado FROM %s_volumes VOL %s WHERE VOL.linguagem = 'ja' AND %s GROUP BY VOL.id";
 	final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw, CAP.is_processado, "
-			+ "CAP.vocabulario FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id";
+			+ "CAP.vocabulario FROM %s_capitulos CAP %s WHERE CAP.linguagem = 'ja' AND id_volume = ? AND %s GROUP BY CAP.id";
 	final private String SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina, is_processado, vocabulario FROM %s_paginas WHERE id_capitulo = ? AND %s ";
 	final private String SELECT_TEXTOS = "SELECT id, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2 FROM %s_textos WHERE id_pagina = ? ";
 
@@ -47,7 +47,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 	final private String SELECT_TABELAS = "SELECT REPLACE(REPLACE(REPLACE(Table_Name, '_paginas', ''), '_capitulos', ''), '_volumes', '') AS Tabela "
 			+ "FROM information_schema.tables WHERE table_schema = 'manga_extractor' AND (Table_Name NOT LIKE '%%_textos%%' AND Table_Name NOT LIKE '%%exemplo%%') "
-			+ "AND %s GROUP BY Tabela";
+			+ "AND %s GROUP BY Tabela ";
 
 	public MangaDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -116,7 +116,8 @@ public class MangaDaoJDBC implements MangaDao {
 					Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getVocabulario());
-			st.setLong(2, obj.getId());
+			st.setBoolean(2, obj.getProcessado());
+			st.setLong(3, obj.getId());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -203,7 +204,7 @@ public class MangaDaoJDBC implements MangaDao {
 			st = conn.prepareStatement(String.format(UPDATE_PAGINAS, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getNome());
+			st.setString(1, obj.getNomePagina());
 			st.setInt(2, obj.getNumero());
 			st.setString(3, obj.getHash());
 			st.setString(4, obj.getVocabulario());
@@ -272,7 +273,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("vocabulario"),
-						rs.getBoolean("is_processado"), selectCapitulos(base, todos, rs.getLong("id"))));
+						selectCapitulos(base, todos, rs.getLong("id"))));
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -295,10 +296,10 @@ public class MangaDaoJDBC implements MangaDao {
 			String condicao = "1>0";
 
 			if (manga != null && !manga.trim().isEmpty())
-				condicao += " AND manga = " + '"' + manga.trim() + '"';
+				condicao += " AND VOL.manga = " + '"' + manga.trim() + '"';
 
 			if (volume != null && volume > 0)
-				condicao += " AND volume = " + String.valueOf(volume);
+				condicao += " AND VOL.volume = " + String.valueOf(volume);
 
 			st = conn.prepareStatement(String.format(SELECT_VOLUMES, BASE_MANGA + base, inner, condicao));
 			rs = st.executeQuery();
@@ -308,7 +309,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("vocabulario"),
-						rs.getBoolean("is_processado"), selectCapitulos(base, todos, rs.getLong("id"), capitulo)));
+						selectCapitulos(base, todos, rs.getLong("id"), capitulo)));
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -361,7 +362,7 @@ public class MangaDaoJDBC implements MangaDao {
 			String condicao = "1>0";
 
 			if (capitulo != null && capitulo > 0)
-				condicao += " AND capitulo = " + String.valueOf(capitulo);
+				condicao += " AND CAP.capitulo = " + String.valueOf(capitulo);
 
 			st = conn.prepareStatement(String.format(SELECT_CAPITULOS, BASE_MANGA + base, inner, condicao));
 			st.setLong(1, idVolume);

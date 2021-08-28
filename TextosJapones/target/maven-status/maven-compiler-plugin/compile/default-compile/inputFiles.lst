@@ -7,12 +7,16 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\NotificacaoController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\JapanDict.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\scriptGoogle\ScriptGoogle.java
-D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\ProcessarManga.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaVolume.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\CheckBoxTreeTableCellCustom.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Tipo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\ProcessarPalavra.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\EstatisticaController.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaCapitulo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\ProcessarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasController.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\configuration\Configuracao.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\MangaDao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\exceptions\ExcessaoBd.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\mysql\DB.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\App.java
@@ -21,6 +25,8 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\Vocabulario.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaTexto.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\DaoFactory.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\impl\MangaDaoJDBC.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\services\MangaServices.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\ProcessarLegendas.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\ProcessarDao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\mysql\ConexaoMysql.java
@@ -55,6 +61,7 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\notification\AlertasPopup.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Modo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\CorrecaoController.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\ProcessarMangas.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\RevisarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\FilaSQL.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Notificacao.java

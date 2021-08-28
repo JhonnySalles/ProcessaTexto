@@ -12,7 +12,7 @@ public interface RevisarDao {
 	void update(Revisar obj) throws ExcessaoBd;
 
 	void delete(Revisar obj) throws ExcessaoBd;
-	
+
 	void delete(String vocabulario) throws ExcessaoBd;
 
 	boolean exist(String vocabulario);
@@ -32,4 +32,8 @@ public interface RevisarDao {
 	Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd;
 
 	List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd;
+
+	void incrementaVezesAparece(String vocabulario) throws ExcessaoBd;
+
+	void setIsManga(Revisar obj) throws ExcessaoBd;
 }

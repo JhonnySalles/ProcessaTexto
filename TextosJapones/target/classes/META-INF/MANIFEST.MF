@@ -5,16 +5,16 @@ Class-Path: FXTaskbarProgressBar-v11.2.7.jar javafx-media-11-linux.jar j
  avafx-media-11-win.jar javafx-base-11-linux.jar javafx-web-11-linux.jar
   javafx-fxml-11-linux.jar javafx-controls-11-linux.jar javafx-graphics-
  11-linux.jar bridj-0.7.0.jar dx-1.7.jar AnimateFX-1.2.1.jar jfoenix-9.0
- .10.jar javafx-base-16.jar javafx-base-16-win.jar javafx-graphics-16.ja
- r javafx-graphics-16-win.jar javafx-controls-16.jar javafx-controls-16-
- win.jar javafx-fxml-16.jar javafx-fxml-16-win.jar javafx-web-16.jar jav
- afx-web-16-win.jar javafx-media-16.jar controlsfx-11.1.0.jar mysql-conn
- ector-java-8.0.20.jar protobuf-java-3.6.1.jar sudachi-0.5.2.jar javax.j
- son-1.1.jar jdartsclone-1.2.0.jar jsoup-1.13.1.jar guava-30.1-jre.jar f
- ailureaccess-1.0.1.jar listenablefuture-9999.0-empty-to-avoid-conflict-
- with-guava.jar jsr305-3.0.2.jar checker-qual-3.5.0.jar error_prone_anno
- tations-2.3.4.jar j2objc-annotations-1.3.jar json-20201115.jar gson-2.8
- .6.jar
+ .10.jar javafx-base-18-ea+2.jar javafx-base-18-ea+2-win.jar javafx-grap
+ hics-18-ea+2.jar javafx-graphics-18-ea+2-win.jar javafx-controls-18-ea+
+ 2.jar javafx-controls-18-ea+2-win.jar javafx-fxml-18-ea+2.jar javafx-fx
+ ml-18-ea+2-win.jar javafx-web-18-ea+2.jar javafx-web-18-ea+2-win.jar ja
+ vafx-media-18-ea+2.jar controlsfx-11.1.0.jar mysql-connector-java-8.0.2
+ 6.jar protobuf-java-3.11.4.jar sudachi-0.5.2.jar javax.json-1.1.jar jda
+ rtsclone-1.2.0.jar jsoup-1.13.1.jar guava-30.1.1-jre.jar failureaccess-
+ 1.0.1.jar listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.ja
+ r jsr305-3.0.2.jar checker-qual-3.8.0.jar error_prone_annotations-2.5.1
+ .jar j2objc-annotations-1.3.jar json-20210307.jar gson-2.8.8.jar
 Main-Class: org.jisho.textosJapones.App
 Created-By: Maven Integration for Eclipse
 

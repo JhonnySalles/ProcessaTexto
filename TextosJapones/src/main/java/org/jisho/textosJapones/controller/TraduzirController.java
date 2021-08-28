@@ -167,6 +167,9 @@ public class TraduzirController implements Initializable {
 	private static Boolean desmembrar = false;
 
 	private String getSignificado(String kanji) {
+		if (kanji.trim().isEmpty())
+			return "";
+		
 		String resultado = "";
 		switch (cbSite.getSelectionModel().getSelectedItem()) {
 		case JAPANESE_TANOSHI:

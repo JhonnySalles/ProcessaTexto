@@ -3,16 +3,15 @@ package org.jisho.textosJapones.model.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MangaPagina {
+public class MangaPagina extends Manga {
 
 	private Long id;
-	private String nome;
+	private String nomePagina;
 	private Integer numero;
 	private String hash;
 	private List<MangaTexto> textos;
 	private String vocabulario;
 	private Boolean processado;
-	private Boolean processar;
 
 	public Long getId() {
 		return id;
@@ -22,12 +21,12 @@ public class MangaPagina {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getNomePagina() {
+		return nomePagina;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomePagina(String nomePagina) {
+		this.nomePagina = nomePagina;
 	}
 
 	public Integer getNumero() {
@@ -74,17 +73,9 @@ public class MangaPagina {
 		this.processado = processado;
 	}
 
-	public Boolean isProcessar() {
-		return processar;
-	}
-
-	public void setProcessar(Boolean processar) {
-		this.processar = processar;
-	}
-
 	public MangaPagina() {
 		this.id = 0L;
-		this.nome = "";
+		this.nomePagina = "";
 		this.numero = 0;
 		this.hash = "";
 		this.vocabulario = "";
@@ -93,9 +84,9 @@ public class MangaPagina {
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
-	public MangaPagina(Long id, String nome, Integer numero, String hash, Boolean processado) {
+	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado) {
 		this.id = id;
-		this.nome = nome;
+		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
 		this.vocabulario = "";
@@ -104,9 +95,9 @@ public class MangaPagina {
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
-	public MangaPagina(Long id, String nome, Integer numero, String hash, Boolean processado, List<MangaTexto> textos) {
+	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado, List<MangaTexto> textos) {
 		this.id = id;
-		this.nome = nome;
+		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
 		this.vocabulario = "";
@@ -121,7 +112,7 @@ public class MangaPagina {
 		int result = 1;
 		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((nome == null) ? 0 : nome.hashCode());
+		result = prime * result + ((nomePagina == null) ? 0 : nomePagina.hashCode());
 		result = prime * result + ((numero == null) ? 0 : numero.hashCode());
 		return result;
 	}
@@ -145,10 +136,10 @@ public class MangaPagina {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (nome == null) {
-			if (other.nome != null)
+		if (nomePagina == null) {
+			if (other.nomePagina != null)
 				return false;
-		} else if (!nome.equals(other.nome))
+		} else if (!nomePagina.equals(other.nomePagina))
 			return false;
 		if (numero == null) {
 			if (other.numero != null)

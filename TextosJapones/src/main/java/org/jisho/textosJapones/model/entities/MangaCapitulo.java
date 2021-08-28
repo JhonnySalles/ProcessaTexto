@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.jisho.textosJapones.model.enums.Language;
 
-public class MangaCapitulo {
+public class MangaCapitulo extends Manga {
 
 	private Long id;
 	private String manga;
@@ -18,7 +18,6 @@ public class MangaCapitulo {
 	private Boolean raw;
 	private String vocabulario;
 	private Boolean processado;
-	private Boolean processar;
 
 	public Long getId() {
 		return id;
@@ -110,14 +109,6 @@ public class MangaCapitulo {
 
 	public void setProcessado(Boolean processado) {
 		this.processado = processado;
-	}
-
-	public Boolean isProcessar() {
-		return processar;
-	}
-
-	public void setProcessar(Boolean processar) {
-		this.processar = processar;
 	}
 
 	public MangaCapitulo() {

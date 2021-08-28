@@ -95,4 +95,12 @@ public class RevisarServices {
 	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
 		return revisarDao.selectSimilar(vocabulario, ingles);
 	}
+
+	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {
+		revisarDao.incrementaVezesAparece(vocabulario);
+	}
+
+	public void setIsManga(Revisar obj) throws ExcessaoBd {
+		revisarDao.setIsManga(obj);
+	}
 }
