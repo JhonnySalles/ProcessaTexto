@@ -69,5 +69,9 @@ public class MangaServices {
 			}
 		}
 	}
+	
+	public void createDataBase(String base) throws ExcessaoBd {
+		vocabularioDao.createDatabase(base);
+	}
 
 }

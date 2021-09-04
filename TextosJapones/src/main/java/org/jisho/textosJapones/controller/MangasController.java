@@ -145,9 +145,6 @@ public class MangasController implements Initializable {
 	private TreeTableColumn<Manga, String> treecNomePagina;
 
 	@FXML
-	private JFXButton btnCarregarTransferencia;
-
-	@FXML
 	private JFXButton btnTransferir;
 
 	@FXML
@@ -155,6 +152,9 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private JFXTextField txtBaseDestino;
+	
+	@FXML
+	private JFXCheckBox ckbCriarBase;
 
 	private ProcessarMangas mangas;
 	private MangaServices service = new MangaServices();
@@ -196,7 +196,24 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private void onBtnTransferir() {
-		transferir();
+		BASE_ORIGEM = txtBaseOrigem.getText().trim();
+		BASE_DESTINO = txtBaseDestino.getText().trim();
+		//transferir();
+		List<MangaVolume> lista;
+		try {
+			if (ckbCriarBase.isSelected()) {
+				service.createDataBase(BASE_DESTINO);
+			}
+			
+			lista = service.selectDadosTransferir(BASE_ORIGEM);
+			for (MangaVolume volume : lista) {
+				service.insertDadosTransferir(BASE_DESTINO, volume);
+			}
+		} catch (ExcessaoBd e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 	}
 
 	public Api getContaGoogle() {
@@ -265,10 +282,14 @@ public class MangasController implements Initializable {
 	private Integer I;
 
 	private void transferir() {
+		if (txtBaseOrigem.getText().trim().equalsIgnoreCase(txtBaseDestino.getText().trim())) {
+			AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Favor informar outra base de destino.");
+			return;
+		}
+		
 		lblLog.setText("Transferindo dados....");
-		btnCarregarTransferencia.setDisable(true);
 		btnTransferir.setDisable(true);
-
+		
 		BASE_ORIGEM = txtBaseOrigem.getText().trim();
 		BASE_DESTINO = txtBaseDestino.getText().trim();
 
@@ -282,11 +303,18 @@ public class MangasController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					updateMessage("Transferindo dados....");
+					updateMessage("Carregando dados....");
 					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
+					
+					if (ckbCriarBase.isSelected()) {
+						updateMessage("Criando a base....");
+						service.createDataBase(BASE_DESTINO);
+					}
 
+					updateMessage("Transferindo dados....");
 					I = 0;
 					for (MangaVolume volume : lista) {
+						updateMessage("Transferindo dados.... " + volume.getManga());
 						I++;
 						service.insertDadosTransferir(BASE_DESTINO, volume);
 						updateProgress(I, lista.size());
@@ -310,7 +338,6 @@ public class MangasController implements Initializable {
 					barraProgressoGeral.progressProperty().unbind();
 					lblLog.textProperty().unbind();
 					lblLog.setText("");
-					btnCarregarTransferencia.setDisable(false);
 					btnTransferir.setDisable(false);
 					barraProgressoGeral.setProgress(0);
 					barraProgressoVolumes.setProgress(0);

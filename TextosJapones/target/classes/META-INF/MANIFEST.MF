@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Built-By: Jhonny
-Build-Jdk: 16.0.2
+Build-Jdk: 15
 Class-Path: FXTaskbarProgressBar-v11.2.7.jar javafx-media-11-linux.jar j
  avafx-media-11-win.jar javafx-base-11-linux.jar javafx-web-11-linux.jar
   javafx-fxml-11-linux.jar javafx-controls-11-linux.jar javafx-graphics-

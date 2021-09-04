@@ -47,4 +47,6 @@ public interface MangaDao {
 	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
 
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
+	
+	void createDatabase(String base) throws ExcessaoBd;
 }

@@ -191,8 +191,9 @@ public class ProcessarMangas {
 
 			@Override
 			protected void succeeded() {
-				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
-						"Mangas processadas com sucesso.");
+				if (!desativar)
+					AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
+							"Mangas processadas com sucesso.");
 
 				controller.getBarraProgressoGeral().progressProperty().unbind();
 				controller.getBarraProgressoVolumes().progressProperty().unbind();

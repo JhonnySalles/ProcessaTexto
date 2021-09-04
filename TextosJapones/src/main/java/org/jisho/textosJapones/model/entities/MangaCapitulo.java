@@ -67,7 +67,7 @@ public class MangaCapitulo extends Manga {
 		this.scan = scan;
 	}
 
-	public Boolean getExtra() {
+	public Boolean isExtra() {
 		return extra;
 	}
 
@@ -75,7 +75,7 @@ public class MangaCapitulo extends Manga {
 		this.extra = extra;
 	}
 
-	public Boolean getRaw() {
+	public Boolean isRaw() {
 		return raw;
 	}
 
@@ -139,7 +139,7 @@ public class MangaCapitulo extends Manga {
 	}
 
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
-			String vocabulario, Boolean processado, List<MangaPagina> paginas) {
+			String vocabulario, Boolean extra, Boolean raw, Boolean processado, List<MangaPagina> paginas) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -150,6 +150,8 @@ public class MangaCapitulo extends Manga {
 		this.vocabulario = vocabulario;
 		this.processado = processado;
 		this.processar = true;
+		this.extra = extra;
+		this.raw = raw;
 	}
 
 	@Override
