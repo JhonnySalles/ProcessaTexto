@@ -50,6 +50,7 @@ public class ProcessarMangas {
 	private Api contaGoogle;
 	private Site siteDicionario;
 	private Boolean desativar = false;
+	private Integer traducoes = 0;
 
 	public ProcessarMangas(MangasController controller) {
 		this.controller = controller;
@@ -213,7 +214,7 @@ public class ProcessarMangas {
 	private String getSignificado(String kanji) {
 		if (kanji.trim().isEmpty())
 			return "";
-		
+
 		Platform.runLater(() -> controller.getLogConsultas().setText(kanji + " : Obtendo significado."));
 		String resultado = "";
 		switch (siteDicionario) {
@@ -307,13 +308,43 @@ public class ProcessarMangas {
 								revisar.setIngles(getSignificado(getDesmembrado(revisar.getVocabulario())));
 
 							if (!revisar.getIngles().isEmpty()) {
-								try {
-									Platform.runLater(() -> controller.getLogConsultas()
-											.setText(m.surface() + " : Obtendo tradução."));
-									revisar.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-											Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle));
-								} catch (IOException e) {
-									e.printStackTrace();
+								if (contaGoogle != null) {
+									try {
+										traducoes++;
+
+										if (traducoes > 3000) {
+											traducoes = 0;
+											switch (contaGoogle) {
+											case CONTA_PRINCIPAL:
+												contaGoogle = Api.CONTA_SECUNDARIA;
+												break;
+											case CONTA_SECUNDARIA:
+												contaGoogle = Api.CONTA_MIGRACAO_1;
+												break;
+											case CONTA_MIGRACAO_1:
+												contaGoogle = Api.CONTA_MIGRACAO_2;
+												break;
+											case CONTA_MIGRACAO_2:
+												contaGoogle = Api.CONTA_MIGRACAO_3;
+												break;
+											case CONTA_MIGRACAO_3:
+												contaGoogle = Api.CONTA_MIGRACAO_4;
+												break;
+											case CONTA_MIGRACAO_4:
+												contaGoogle = null;
+												break;
+											default:
+												break;
+											}
+										}
+
+										Platform.runLater(() -> controller.getLogConsultas()
+												.setText(m.surface() + " : Obtendo tradução."));
+										revisar.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+												Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle));
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 								}
 							}
 							serviceRevisar.insert(revisar);

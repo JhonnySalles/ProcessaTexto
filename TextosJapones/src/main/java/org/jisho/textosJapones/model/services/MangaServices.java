@@ -7,6 +7,7 @@ import org.jisho.textosJapones.model.dao.MangaDao;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
+import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
@@ -20,6 +21,10 @@ public class MangaServices {
 
 	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga) throws ExcessaoBd {
 		return vocabularioDao.selectTabelas(todos, base, manga);
+	}
+
+	public List<MangaVolume> selectDadosTransferir(String baseOrigem) throws ExcessaoBd {
+		return vocabularioDao.selectTransferir(baseOrigem);
 	}
 
 	public void updateVocabularioVolume(String base, List<MangaVolume> lista) throws ExcessaoBd {
@@ -50,6 +55,21 @@ public class MangaServices {
 
 	public void updateVocabularioPagina(String base, MangaPagina pagina) throws ExcessaoBd {
 		vocabularioDao.updateVocabularioPagina(base, pagina);
+	}
+
+	public void insertDadosTransferir(String base, List<MangaVolume> lista) throws ExcessaoBd {
+		for (MangaVolume volume : lista) {
+			Long idVolume = vocabularioDao.insertVolume(base, volume);
+			for (MangaCapitulo capitulo : volume.getCapitulos()) {
+				Long idCapitulo = vocabularioDao.insertCapitulo(base, idVolume, capitulo);
+				for (MangaPagina pagina : capitulo.getPaginas()) {
+					Long idPagina = vocabularioDao.insertPagina(base, idCapitulo, pagina);
+					for (MangaTexto texto : pagina.getTextos()) {
+						vocabularioDao.insertTexto(base, idPagina, texto);
+					}
+				}
+			}
+		}
 	}
 
 }

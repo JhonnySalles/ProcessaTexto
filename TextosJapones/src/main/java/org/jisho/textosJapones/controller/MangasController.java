@@ -141,6 +141,18 @@ public class MangasController implements Initializable {
 	@FXML
 	private TreeTableColumn<Manga, String> treecNomePagina;
 
+	@FXML
+	private JFXButton btnCarregarTransferencia;
+
+	@FXML
+	private JFXButton btnTransferir;
+
+	@FXML
+	private JFXTextField txtBaseOrigem;
+
+	@FXML
+	private JFXTextField txtBaseDestino;
+
 	private ProcessarMangas mangas;
 	private MangaServices service = new MangaServices();
 	private ObservableList<MangaTabela> TABELAS;
@@ -177,6 +189,11 @@ public class MangasController implements Initializable {
 	private void onBtnMarcarTodos() {
 		marcarTodosFilhos(treeBases.getRoot(), ckbMarcarTodos.isSelected());
 		treeBases.refresh();
+	}
+
+	@FXML
+	private void onBtnTransferir() {
+		transferir();
 	}
 
 	public Api getContaGoogle() {
@@ -238,6 +255,51 @@ public class MangasController implements Initializable {
 
 	public Label getLogConsultas() {
 		return lblLogConsultas;
+	}
+
+	private String BASE_ORIGEM, BASE_DESTINO;
+
+	private void transferir() {
+		lblLog.setText("Transferindo dados....");
+		btnCarregarTransferencia.setDisable(true);
+		btnTransferir.setDisable(true);
+
+		BASE_ORIGEM = txtBaseOrigem.getText().trim();
+		BASE_DESTINO = txtBaseDestino.getText().trim();
+
+		barraProgressoGeral.setProgress(-1);
+		barraProgressoVolumes.setProgress(-1);
+
+		if (TaskbarProgressbar.isSupported())
+			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
+
+		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
+		Task<Void> transferir = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				try {
+					service.insertDadosTransferir(BASE_DESTINO, service.selectDadosTransferir(BASE_ORIGEM));
+				} catch (ExcessaoBd e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			@Override
+			protected void succeeded() {
+				Platform.runLater(() -> {
+					btnCarregarTransferencia.setDisable(false);
+					btnTransferir.setDisable(false);
+					barraProgressoGeral.setProgress(0);
+					barraProgressoVolumes.setProgress(0);
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+				});
+
+			}
+		};
+		Thread t = new Thread(transferir);
+		t.start();
 	}
 
 	private Boolean PROCESSADOS;

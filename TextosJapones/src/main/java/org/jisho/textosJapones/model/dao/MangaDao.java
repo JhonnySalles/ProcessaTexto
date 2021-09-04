@@ -38,4 +38,13 @@ public interface MangaDao {
 	List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd;
 
+	Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd;
+
+	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd;
+
+	Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd;
+
+	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
+
+	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
 }

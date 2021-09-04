@@ -31,6 +31,11 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ?, vocabulario = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
 
+	final private String INSERT_VOLUMES = "UPDATE %s_volumes (manga, volume, linguagem, vocabulario, is_processado) VALUES (?,?,?,?,?)";
+	final private String INSERT_CAPITULOS = "UPDATE %s_capitulos (id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado, vocabulario) VALUES (?,?,?,?,?,?,?,?,?,?)";
+	final private String INSERT_PAGINAS = "UPDATE %s_paginas (id_capitulo, nome, numero, hash_pagina, is_processado, vocabulario) VALUES (?,?,?,?,?,?)";
+	final private String INSERT_TEXTO = "UPDATE %s_textos (id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?)";
+
 	final private String UPDATE_VOLUMES_VOCABULARIO = "UPDATE %s_volumes SET vocabulario = ? WHERE id = ?;";
 	final private String UPDATE_CAPITULOS_VOCABULARIO = "UPDATE %s_capitulos SET vocabulario = ? WHERE id = ?;";
 	final private String UPDATE_PAGINAS_VOCABULARIO = "UPDATE %s_paginas SET vocabulario = ?, is_processado = ? WHERE id = ?;";
@@ -233,13 +238,13 @@ public class MangaDaoJDBC implements MangaDao {
 		try {
 			st = conn.prepareStatement(String.format(UPDATE_TEXTO, BASE_MANGA + base), Statement.RETURN_GENERATED_KEYS);
 
-			st.setInt(2, obj.getSequencia());
-			st.setString(1, obj.getTexto());
+			st.setInt(1, obj.getSequencia());
+			st.setString(2, obj.getTexto());
 			st.setInt(3, obj.getX1());
-			st.setInt(3, obj.getX2());
-			st.setInt(3, obj.getY1());
-			st.setInt(3, obj.getY2());
-			st.setLong(6, obj.getId());
+			st.setInt(4, obj.getY1());
+			st.setInt(5, obj.getX2());
+			st.setInt(6, obj.getY2());
+			st.setLong(7, obj.getId());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -247,13 +252,35 @@ public class MangaDaoJDBC implements MangaDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
 			}
-			;
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
 		} finally {
 			DB.closeStatement(st);
+		}
+	}
+
+	public List<MangaVolume> selectVolumesTransferir(String baseOrigem) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(String.format(SELECT_VOLUMES, baseOrigem, "1>0"));
+			rs = st.executeQuery();
+
+			List<MangaVolume> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("vocabulario"),
+						selectCapitulosTransferir(baseOrigem, rs.getLong("id"))));
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
 		}
 	}
 
@@ -310,6 +337,32 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("vocabulario"),
 						selectCapitulos(base, todos, rs.getLong("id"), capitulo)));
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	public List<MangaCapitulo> selectCapitulosTransferir(String baseOrigem, Long idVolume) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(String.format(SELECT_CAPITULOS, baseOrigem, "1>0"));
+			st.setLong(1, idVolume);
+			rs = st.executeQuery();
+
+			List<MangaCapitulo> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(new MangaCapitulo(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
+						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
+						rs.getString("vocabulario"), rs.getBoolean("is_processado"),
+						selectPaginasTransferir(baseOrigem, rs.getLong("id"))));
+
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -386,6 +439,32 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
+	public List<MangaPagina> selectPaginasTransferir(String baseOrigem, Long idPagina) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+
+			st = conn.prepareStatement(String.format(SELECT_PAGINAS, baseOrigem, "1>0"));
+			st.setLong(1, idPagina);
+			rs = st.executeQuery();
+
+			List<MangaPagina> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(new MangaPagina(rs.getLong("id"), rs.getString("nome"), rs.getInt("numero"),
+						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
+						selectTextosTransferir(baseOrigem, rs.getLong("id"))));
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
 	public List<MangaPagina> selectPaginas(String base, Boolean todos, Long idPagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -402,6 +481,32 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaPagina(rs.getLong("id"), rs.getString("nome"), rs.getInt("numero"),
 						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
 						selectTextos(base, rs.getLong("id"))));
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+	
+	public List<MangaTexto> selectTextosTransferir(String baseOrigem, Long idPagina) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+
+			st = conn.prepareStatement(String.format(SELECT_TEXTOS, baseOrigem));
+			st.setLong(1, idPagina);
+			rs = st.executeQuery();
+
+			List<MangaTexto> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(new MangaTexto(rs.getLong("id"), rs.getString("texto"), rs.getInt("sequencia"),
+						rs.getInt("posicao_x1"), rs.getInt("posicao_y1"), rs.getInt("posicao_x2"),
+						rs.getInt("posicao_y2")));
 
 			return list;
 		} catch (SQLException e) {
@@ -515,6 +620,147 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
+	}
+
+	@Override
+	public Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(INSERT_VOLUMES, base), Statement.RETURN_GENERATED_KEYS);
+
+			st.setString(1, obj.getManga());
+			st.setInt(2, obj.getVolume());
+			st.setString(3, obj.getLingua().toString());
+			st.setString(4, obj.getVocabulario());
+			st.setBoolean(5, obj.getProcessado());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next())
+					return rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+		return null;
+	}
+
+	@Override
+	public Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(INSERT_CAPITULOS, base), Statement.RETURN_GENERATED_KEYS);
+
+			st.setLong(1, idVolume);
+			st.setString(2, obj.getManga());
+			st.setInt(3, obj.getVolume());
+			st.setFloat(4, obj.getCapitulo());
+			st.setString(5, obj.getLingua().toString());
+			st.setString(6, obj.getScan());
+			st.setBoolean(7, obj.getExtra());
+			st.setBoolean(8, obj.getRaw());
+			st.setBoolean(9, obj.getProcessado());
+			st.setString(10, obj.getVocabulario());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next())
+					return rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+		return null;
+	}
+
+	@Override
+	public Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(INSERT_PAGINAS, base), Statement.RETURN_GENERATED_KEYS);
+
+			st.setLong(1, idCapitulo);
+			st.setString(2, obj.getNomePagina());
+			st.setInt(3, obj.getNumero());
+			st.setString(4, obj.getHash());
+			st.setBoolean(5, obj.getProcessado());
+			st.setString(6, obj.getVocabulario());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next())
+					return rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+		return null;
+	}
+
+	@Override
+	public Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(INSERT_TEXTO, base), Statement.RETURN_GENERATED_KEYS);
+
+			st.setLong(1, idPagina);
+			st.setInt(2, obj.getSequencia());
+			st.setString(3, obj.getTexto());
+			st.setInt(4, obj.getX1());
+			st.setInt(5, obj.getY1());
+			st.setInt(6, obj.getX2());
+			st.setInt(7, obj.getY2());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next())
+					return rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+		return null;
+	}
+
+	@Override
+	public List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd {
+		return selectVolumesTransferir(baseOrigem);
 	}
 
 }
