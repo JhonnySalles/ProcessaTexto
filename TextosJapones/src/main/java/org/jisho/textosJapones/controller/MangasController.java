@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
@@ -16,6 +17,7 @@ import org.jisho.textosJapones.model.enums.Site;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.processar.ProcessarMangas;
 
 import com.jfoenix.controls.JFXButton;
@@ -23,6 +25,7 @@ import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -259,6 +262,8 @@ public class MangasController implements Initializable {
 
 	private String BASE_ORIGEM, BASE_DESTINO;
 
+	private Integer I;
+
 	private void transferir() {
 		lblLog.setText("Transferindo dados....");
 		btnCarregarTransferencia.setDisable(true);
@@ -268,18 +273,31 @@ public class MangasController implements Initializable {
 		BASE_DESTINO = txtBaseDestino.getText().trim();
 
 		barraProgressoGeral.setProgress(-1);
-		barraProgressoVolumes.setProgress(-1);
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
-		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
 		Task<Void> transferir = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
 				try {
-					service.insertDadosTransferir(BASE_DESTINO, service.selectDadosTransferir(BASE_ORIGEM));
+					updateMessage("Transferindo dados....");
+					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
+
+					I = 0;
+					for (MangaVolume volume : lista) {
+						I++;
+						service.insertDadosTransferir(BASE_DESTINO, volume);
+						updateProgress(I, lista.size());
+
+						Platform.runLater(() -> {
+							if (TaskbarProgressbar.isSupported())
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
+										Type.NORMAL);
+						});
+					}
+
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
 				}
@@ -289,15 +307,21 @@ public class MangasController implements Initializable {
 			@Override
 			protected void succeeded() {
 				Platform.runLater(() -> {
+					barraProgressoGeral.progressProperty().unbind();
+					lblLog.textProperty().unbind();
+					lblLog.setText("");
 					btnCarregarTransferencia.setDisable(false);
 					btnTransferir.setDisable(false);
 					barraProgressoGeral.setProgress(0);
 					barraProgressoVolumes.setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+					AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Transferência concluida.");
 				});
 
 			}
 		};
+		barraProgressoGeral.progressProperty().bind(transferir.progressProperty());
+		lblLog.textProperty().bind(transferir.messageProperty());
 		Thread t = new Thread(transferir);
 		t.start();
 	}

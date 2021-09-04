@@ -57,16 +57,14 @@ public class MangaServices {
 		vocabularioDao.updateVocabularioPagina(base, pagina);
 	}
 
-	public void insertDadosTransferir(String base, List<MangaVolume> lista) throws ExcessaoBd {
-		for (MangaVolume volume : lista) {
-			Long idVolume = vocabularioDao.insertVolume(base, volume);
-			for (MangaCapitulo capitulo : volume.getCapitulos()) {
-				Long idCapitulo = vocabularioDao.insertCapitulo(base, idVolume, capitulo);
-				for (MangaPagina pagina : capitulo.getPaginas()) {
-					Long idPagina = vocabularioDao.insertPagina(base, idCapitulo, pagina);
-					for (MangaTexto texto : pagina.getTextos()) {
-						vocabularioDao.insertTexto(base, idPagina, texto);
-					}
+	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
+		Long idVolume = vocabularioDao.insertVolume(base, volume);
+		for (MangaCapitulo capitulo : volume.getCapitulos()) {
+			Long idCapitulo = vocabularioDao.insertCapitulo(base, idVolume, capitulo);
+			for (MangaPagina pagina : capitulo.getPaginas()) {
+				Long idPagina = vocabularioDao.insertPagina(base, idCapitulo, pagina);
+				for (MangaTexto texto : pagina.getTextos()) {
+					vocabularioDao.insertTexto(base, idPagina, texto);
 				}
 			}
 		}
