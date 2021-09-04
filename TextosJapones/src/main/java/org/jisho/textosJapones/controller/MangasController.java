@@ -196,24 +196,7 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private void onBtnTransferir() {
-		BASE_ORIGEM = txtBaseOrigem.getText().trim();
-		BASE_DESTINO = txtBaseDestino.getText().trim();
-		//transferir();
-		List<MangaVolume> lista;
-		try {
-			if (ckbCriarBase.isSelected()) {
-				service.createDataBase(BASE_DESTINO);
-			}
-			
-			lista = service.selectDadosTransferir(BASE_ORIGEM);
-			for (MangaVolume volume : lista) {
-				service.insertDadosTransferir(BASE_DESTINO, volume);
-			}
-		} catch (ExcessaoBd e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
+		transferir();
 	}
 
 	public Api getContaGoogle() {
