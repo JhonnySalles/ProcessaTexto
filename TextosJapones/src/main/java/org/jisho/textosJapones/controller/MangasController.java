@@ -263,7 +263,7 @@ public class MangasController implements Initializable {
 	private String BASE_ORIGEM, BASE_DESTINO;
 
 	private Integer I;
-
+	private String error;
 	private void transferir() {
 		if (txtBaseOrigem.getText().trim().equalsIgnoreCase(txtBaseDestino.getText().trim())) {
 			AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Favor informar outra base de destino.");
@@ -286,6 +286,7 @@ public class MangasController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
+					error = "";
 					updateMessage("Carregando dados....");
 					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
 					
@@ -311,6 +312,7 @@ public class MangasController implements Initializable {
 
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
+					error = e.getMessage();
 				}
 				return null;
 			}
@@ -325,7 +327,11 @@ public class MangasController implements Initializable {
 					barraProgressoGeral.setProgress(0);
 					barraProgressoVolumes.setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-					AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Transferência concluida.");
+					
+					if (!error.isEmpty())
+						AlertasPopup.ErroModal(rootStackPane, root, null, "Erro", error);
+					else
+						AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Transferência concluida.");
 				});
 
 			}
