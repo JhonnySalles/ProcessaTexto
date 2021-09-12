@@ -1,1 +1,1 @@
-java -Dfile.encoding=utf-8 -jar TextosJapones-0.0.5-SNAPSHOT-jar-with-dependencies.jar 
+java -Dfile.encoding=utf-8 -jar TextosJapones-0.0.6-SNAPSHOT-jar-with-dependencies.jar 

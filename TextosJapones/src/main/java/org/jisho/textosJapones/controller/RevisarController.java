@@ -164,7 +164,7 @@ public class RevisarController implements Initializable {
 
 				txtVocabulario.setText(revisando.getVocabulario());
 				txtAreaIngles.setText(revisando.getIngles());
-				txtAreaPortugues.setText(revisando.getTraducao());
+				txtAreaPortugues.setText(revisando.getTraducao().replace(';', ','));
 
 				if (similar.size() > 0)
 					txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));

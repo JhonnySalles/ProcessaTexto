@@ -46,7 +46,7 @@
                   </AnchorPane>
                   <JFXTabPane style="-fx-border-color: black; -fx-border-width: 1;" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <tabs>
-                        <Tab text="Processar Vocabulario">
+                        <Tab text="Processar Manga">
                            <content>
                             <AnchorPane>
                                  <children>
@@ -117,15 +117,6 @@
                                     <String fx:value="background-Black2" />
                                     <String fx:value="paneBorder" />
                                  </styleClass>
-                              </AnchorPane>
-                           </content>
-                        </Tab>
-                        <Tab text="Traduzir Vocabulario">
-                           <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <fx:include fx:id="traduzir" source="Traduzir.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children>
                               </AnchorPane>
                            </content>
                         </Tab>

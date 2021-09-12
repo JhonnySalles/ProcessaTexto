@@ -337,6 +337,7 @@ public class ProcessarMangas {
 											default:
 												break;
 											}
+											controller.setContaGoogle(contaGoogle);
 										}
 
 										Platform.runLater(() -> controller.getLogConsultas()

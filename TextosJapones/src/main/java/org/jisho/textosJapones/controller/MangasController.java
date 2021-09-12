@@ -94,9 +94,6 @@ public class MangasController implements Initializable {
 	private ProgressBar barraProgressoPaginas;
 
 	@FXML
-	private TraduzirController traduzirController;
-
-	@FXML
 	private RevisarController revisarController;
 
 	@FXML
@@ -201,6 +198,10 @@ public class MangasController implements Initializable {
 
 	public Api getContaGoogle() {
 		return cbContaGoolge.getSelectionModel().getSelectedItem();
+	}
+	
+	public void setContaGoogle(Api conta) {
+		cbContaGoolge.getSelectionModel().select(conta);
 	}
 
 	public Site getSiteTraducao() {
@@ -506,7 +507,7 @@ public class MangasController implements Initializable {
 
 	private Robot robot = new Robot();
 
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL arg0, ResourceBundle arg1) {		
 		cbContaGoolge.getItems().addAll(Api.values());
 		cbContaGoolge.getSelectionModel().selectFirst();
 
