@@ -55,9 +55,11 @@ public class MangaServices {
 	public void updateVocabularioPagina(String base, MangaPagina pagina) throws ExcessaoBd {
 		vocabularioDao.updateVocabularioPagina(base, pagina);
 	}
-	
-	public void updateCancel(String base, MangaPagina pagina) throws ExcessaoBd {
-		vocabularioDao.updateCancel(base, pagina);
+
+	public void updateCancel(String base, MangaVolume obj) throws ExcessaoBd {
+		for (MangaCapitulo capitulo : obj.getCapitulos())
+			for (MangaPagina pagina : capitulo.getPaginas())
+				vocabularioDao.updateCancel(base, pagina);
 	}
 
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
@@ -72,7 +74,7 @@ public class MangaServices {
 			}
 		}
 	}
-	
+
 	public void createDataBase(String base) throws ExcessaoBd {
 		vocabularioDao.createDatabase(base);
 	}

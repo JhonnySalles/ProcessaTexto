@@ -52,7 +52,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, scan = ?, vocabulario = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ?, vocabulario = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
-	final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id >= ?";
+	final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id = ?";
 
 	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (manga, volume, linguagem, vocabulario, is_processado) VALUES (?,?,?,?,?)";
 	final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado, vocabulario) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -283,7 +283,7 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 	}
-	
+
 	@Override
 	public void updateCancel(String base, MangaPagina obj) throws ExcessaoBd {
 		PreparedStatement st = null;
@@ -331,7 +331,8 @@ public class MangaDaoJDBC implements MangaDao {
 			if (!todos)
 				inner = String.format(INNER_VOLUMES, base, base);
 
-			st = conn.prepareStatement(String.format(SELECT_VOLUMES, BASE_MANGA + base, inner, "VOL.linguagem = 'ja' AND 1>0"));
+			st = conn.prepareStatement(
+					String.format(SELECT_VOLUMES, BASE_MANGA + base, inner, "VOL.linguagem = 'ja' AND 1>0"));
 			rs = st.executeQuery();
 
 			List<MangaVolume> list = new ArrayList<>();
@@ -420,7 +421,8 @@ public class MangaDaoJDBC implements MangaDao {
 			if (!todos)
 				inner = String.format(INNER_CAPITULOS, base);
 
-			st = conn.prepareStatement(String.format(SELECT_CAPITULOS, BASE_MANGA + base, inner, "CAP.linguagem = 'ja' AND 1>0"));
+			st = conn.prepareStatement(
+					String.format(SELECT_CAPITULOS, BASE_MANGA + base, inner, "CAP.linguagem = 'ja' AND 1>0"));
 			st.setLong(1, idVolume);
 			rs = st.executeQuery();
 
@@ -598,7 +600,8 @@ public class MangaDaoJDBC implements MangaDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0,BASE_MANGA.length()-1), "1>0"));
+			st = conn.prepareStatement(
+					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), "1>0"));
 			rs = st.executeQuery();
 
 			List<MangaTabela> list = new ArrayList<>();
@@ -640,7 +643,8 @@ public class MangaDaoJDBC implements MangaDao {
 			if (base != null && !base.trim().isEmpty())
 				condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
 
-			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0,BASE_MANGA.length()-1), condicao));
+			st = conn.prepareStatement(
+					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), condicao));
 			rs = st.executeQuery();
 
 			List<MangaTabela> list = new ArrayList<>();
