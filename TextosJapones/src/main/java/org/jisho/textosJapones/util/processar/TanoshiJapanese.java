@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.util.processar;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
@@ -23,79 +24,93 @@ public class TanoshiJapanese {
 
 			Element TextoSignificado = CampoSignificado.getElementsByClass("en").get(0);
 			Element ingles = TextoSignificado.select("ol").get(0);
-			return ingles.text();
+			List<Element> linhas = ingles.select("li");
+
+			String texto = "";
+			if (linhas == null || linhas.isEmpty() || linhas.size() == 1)
+				texto = ingles.text();
+			else {
+				for (Element linha : linhas)
+					if (!linha.text().isEmpty())
+						texto += linha.text().concat("; ");
+
+				if (texto.contains("; "))
+					texto = texto.substring(0, texto.lastIndexOf("; "));
+			}
+
+			return texto;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "";
 		}
 	}
-	
+
 	public static String[][] getSentencas(Document pagina) {
-		String[][] retorno = {{"", "", ""}, {"", "", ""}};
-		
+		String[][] retorno = { { "", "", "" }, { "", "", "" } };
+
 		Element CampoSentenca = pagina.getElementById("idSampleSentences");
-		
+
 		if (CampoSentenca == null)
 			return retorno;
-		
+
 		Elements sentencas = CampoSentenca.getElementsByClass("sm");
-		
+
 		int i = 0;
 		for (Element sentenca : sentencas) {
 			String frase = sentenca.getElementsByClass("jp").text();
 			String traducao = sentenca.getElementsByClass("en").text();
 			String link = sentenca.select("a").first().attr("abs:href");
-			
+
 			if (frase != null && !frase.isEmpty()) {
 				retorno[i][0] = frase;
 				retorno[i][1] = traducao;
 				retorno[i][2] = link;
-				
+
 				if (i == 1)
 					break;
 				i++;
 			}
 		}
-		
+
 		return retorno;
 	}
-	
+
 	final static String ENTRE_PARENTESES = "\\((.*?)\\)";
 	final static String PONTO = "·";
-	
+
 	public static String encontraLink(String kanji, Document pagina) {
 		Elements messages = pagina.getElementsByClass("message");
-		
+
 		Pattern parenteses = Pattern.compile(ENTRE_PARENTESES, Pattern.MULTILINE);
 		Pattern ponto = Pattern.compile(PONTO, Pattern.MULTILINE);
-		
+
 		for (Element elemento : messages) {
 			Elements itens = elemento.getElementsByClass("jp");
 
 			if (elemento.getElementsByClass("entrylinks").size() <= 0)
 				continue;
-			
+
 			String link = elemento.getElementsByClass("entrylinks").first().select("a").first().attr("abs:href");
-			
+
 			for (Element item : itens) {
 				String palavra = item.text().trim();
-				
+
 				if (parenteses.matcher(palavra).find())
 					palavra = palavra.replaceAll(ENTRE_PARENTESES, "");
-				
+
 				if (ponto.matcher(palavra).find())
 					palavra = palavra.replaceAll(PONTO, "");
-				
+
 				if (kanji.equalsIgnoreCase(palavra))
 					return link;
 			}
 		}
-		
+
 		return "";
 	}
-	
+
 	public static String[][] getFrase(String kanji) {
-		String[][] retorno = {{"", "", ""}, {"", "", ""}};
+		String[][] retorno = { { "", "", "" }, { "", "", "" } };
 		try {
 			Document pagina = Jsoup.connect(LINK.replace("{kanji}", kanji)).get();
 
@@ -110,8 +125,8 @@ public class TanoshiJapanese {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
-		
+		}
+
 		return retorno;
 	}
 }

@@ -38,8 +38,11 @@ public class JapanDict {
 					String resultado = "";
 					for (Element traducao : traducoes)
 						if (!traducao.text().isEmpty())
-							resultado += traducao.text() + "\n";
+							resultado += traducao.text().concat("; ");
 
+					if (resultado.contains("; "))
+						resultado = resultado.substring(0, resultado.lastIndexOf("; "));
+					
 					return resultado;
 				}
 			}

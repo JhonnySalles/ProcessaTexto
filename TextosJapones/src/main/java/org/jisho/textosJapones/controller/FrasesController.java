@@ -20,6 +20,7 @@ import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.animation.Animacao;
 import org.jisho.textosJapones.util.kanjiStatics.ImportaEstatistica;
 import org.jisho.textosJapones.util.mysql.Backup;
@@ -686,12 +687,8 @@ public class FrasesController implements Initializable {
 		tcTraducao.setOnEditCommit(e -> {
 			String frase = "";
 
-			if (!e.getNewValue().trim().isEmpty()) {
-				frase = e.getNewValue().trim();
-				frase = frase.substring(0, 1).toUpperCase() + frase.substring(1) + ".";
-				if (frase.contains(".."))
-					frase = frase.replaceAll("\\.{2,}", ".");
-			}
+			if (!e.getNewValue().trim().isEmpty())
+				frase = Util.normalize(e.getNewValue().trim());
 
 			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(frase);
 			tbVocabulario.refresh();

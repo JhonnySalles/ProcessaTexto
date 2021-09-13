@@ -95,6 +95,8 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private RevisarController revisarController;
+	
+	/*------------ Processar Manga ------------*/
 
 	@FXML
 	private JFXButton btnCarregar;
@@ -152,6 +154,8 @@ public class MangasController implements Initializable {
 	
 	@FXML
 	private JFXCheckBox ckbCriarBase;
+	
+	/*------------ Processar Json ------------*/
 
 	private ProcessarMangas mangas;
 	private MangaServices service = new MangaServices();

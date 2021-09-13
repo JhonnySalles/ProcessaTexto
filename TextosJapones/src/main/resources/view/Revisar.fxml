@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
@@ -45,6 +46,18 @@
                         <JFXCheckBox fx:id="cbCorrecao" checkedColor="#71afe5" text="Correção" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+               <children>
+                  <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="150.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="110.0" onAction="#onBtnTraduzir" prefWidth="110.0" styleClass="background-White1" text="Traduzir" />
+                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapaneseTanoshi" prefWidth="110.0" styleClass="background-White1" text="Jap. Tanoshi" />
+                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapanDict" prefWidth="110.0" styleClass="background-White1" text="JapanDict" />
+                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="110.0" onAction="#onBtnJisho" prefWidth="110.0" styleClass="background-White1" text="Jisho" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">

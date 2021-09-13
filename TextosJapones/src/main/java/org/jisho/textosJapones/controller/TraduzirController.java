@@ -15,6 +15,7 @@ import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.processar.JapanDict;
 import org.jisho.textosJapones.util.processar.Jisho;
@@ -169,7 +170,7 @@ public class TraduzirController implements Initializable {
 	private String getSignificado(String kanji) {
 		if (kanji.trim().isEmpty())
 			return "";
-		
+
 		String resultado = "";
 		switch (cbSite.getSelectionModel().getSelectedItem()) {
 		case JAPANESE_TANOSHI:
@@ -280,9 +281,9 @@ public class TraduzirController implements Initializable {
 
 							if (item.getTraducao().isEmpty() && !item.getIngles().isEmpty()) {
 								try {
-									item.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+									item.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), item.getIngles(),
-											cbContaGoolge.getValue()));
+											cbContaGoolge.getValue())));
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -344,8 +345,8 @@ public class TraduzirController implements Initializable {
 
 		try {
 			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
-							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(), cbContaGoolge.getValue()));
+					.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(), cbContaGoolge.getValue())));
 
 			tbVocabulario.refresh();
 		} catch (IOException e) {
@@ -441,9 +442,9 @@ public class TraduzirController implements Initializable {
 				if (e.getTableView().getItems().get(e.getTablePosition().getRow()).getTraducao().isEmpty()) {
 					try {
 						e.getTableView().getItems().get(e.getTablePosition().getRow())
-								.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+								.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 										Language.PORTUGUESE.getSigla(), e.getNewValue().trim(),
-										cbContaGoolge.getValue()));
+										cbContaGoolge.getValue())));
 
 						tbVocabulario.refresh();
 					} catch (IOException ex) {

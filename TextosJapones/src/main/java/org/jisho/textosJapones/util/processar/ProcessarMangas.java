@@ -23,6 +23,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.util.tokenizers.SudachiTokenizer;
@@ -165,6 +166,8 @@ public class ProcessarMangas {
 							propVolume.set((double) V / tabela.getVolumes().size());
 
 							if (desativar) {
+								updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga() + 
+										" - Volume: " + volume.getVolume().toString());
 								serviceManga.updateCancel(tabela.getBase(), volume);
 								break;
 							}
@@ -344,8 +347,8 @@ public class ProcessarMangas {
 
 										Platform.runLater(() -> controller.getLogConsultas()
 												.setText(m.surface() + " : Obtendo tradução."));
-										revisar.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-												Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle));
+										revisar.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+												Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle)));
 									} catch (IOException e) {
 										e.printStackTrace();
 									}

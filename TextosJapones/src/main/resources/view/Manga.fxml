@@ -88,7 +88,6 @@
                                              <children>
                                                 <JFXButton fx:id="btnCarregar" buttonType="RAISED" onAction="#onBtnCarregar" prefWidth="130.0" styleClass="background-White1" text="Carregar" />
                                                 <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar Vocabulario" />
-                                                <JFXButton fx:id="btnGerarJson" buttonType="RAISED" focusTraversable="false" onAction="#onBtnGerarJson" prefWidth="130.0" styleClass="background-White1" text="Gerar json" />
                                                 <JFXCheckBox fx:id="ckbProcessados" checkedColor="#71afe5" selected="true" text="Apenas não processados" textFill="WHITE" unCheckedColor="#106ebe" />
                                              </children>
                                           </HBox>
@@ -119,6 +118,15 @@
                                  </styleClass>
                               </AnchorPane>
                            </content>
+                        </Tab>
+                        <Tab text="Gerar Json">
+                          <content>
+                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <fx:include fx:id="revisar" source="Revisar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>  
+                          </content>
                         </Tab>
                         <Tab text="Revisar Vocabulario">
                           <content>

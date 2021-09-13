@@ -1,5 +1,6 @@
 package org.jisho.textosJapones.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -7,12 +8,21 @@ import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Api;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.util.Util;
+import org.jisho.textosJapones.util.processar.JapanDict;
+import org.jisho.textosJapones.util.processar.Jisho;
+import org.jisho.textosJapones.util.processar.Tangorin;
+import org.jisho.textosJapones.util.processar.TanoshiJapanese;
+import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
@@ -67,6 +77,21 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXCheckBox cbCorrecao;
+	
+	@FXML
+	private JFXComboBox<Api> cbContaGoolge;
+
+	@FXML
+	private JFXButton btnTraduzir;
+	
+	@FXML
+	private JFXButton btnJapaneseTanoshi;
+
+	@FXML
+	private JFXButton btnJapanDict;
+
+	@FXML
+	private JFXButton btnJisho;
 
 	@FXML
 	private JFXTextArea txtAreaIngles;
@@ -158,13 +183,13 @@ public class RevisarController implements Initializable {
 
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
-				txtAreaPortugues.setText(corrigindo.getTraducao());
+				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
 			} else if (revisando != null) {
 				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
 
 				txtVocabulario.setText(revisando.getVocabulario());
 				txtAreaIngles.setText(revisando.getIngles());
-				txtAreaPortugues.setText(revisando.getTraducao().replace(';', ','));
+				txtAreaPortugues.setText(Util.normalize(revisando.getTraducao()));
 
 				if (similar.size() > 0)
 					txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));
@@ -179,6 +204,57 @@ public class RevisarController implements Initializable {
 	private void onBtnNovo() {
 		limpaCampos();
 		pesquisar();
+	}
+	
+	@FXML
+	private void onBtnTraduzir() {
+		if (txtAreaIngles.getText().isEmpty())
+			return;
+
+		try {
+			String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+					txtAreaIngles.getText(), cbContaGoolge.getValue()));
+			
+			txtAreaPortugues.setText(Util.normalize(texto));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	private void onBtnJapaneseTanoshi() {
+		if (txtVocabulario.getText().isEmpty())
+			return;
+
+		txtAreaIngles.setText(TanoshiJapanese.processa(txtVocabulario.getText()));
+		onBtnTraduzir();
+	}
+
+	@FXML
+	private void onBtnTangorin() {
+		if (txtVocabulario.getText().isEmpty())
+			return;
+
+		Tangorin.processa(txtVocabulario.getText(), (controller) -> txtAreaIngles.setText(controller));
+		onBtnTraduzir();
+	}
+
+	@FXML
+	private void onBtnJapanDict() {
+		if (txtVocabulario.getText().isEmpty())
+			return;
+
+		txtAreaIngles.setText(JapanDict.processa(txtVocabulario.getText()));
+		onBtnTraduzir();
+	}
+
+	@FXML
+	private void onBtnJisho() {
+		if (txtVocabulario.getText().isEmpty())
+			return;
+
+		txtAreaIngles.setText(Jisho.processa(txtVocabulario.getText()));
+		onBtnTraduzir();
 	}
 
 	public AnchorPane getRoot() {
@@ -199,6 +275,9 @@ public class RevisarController implements Initializable {
 	private String frasePortugues = "";
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		cbContaGoolge.getItems().addAll(Api.values());
+		cbContaGoolge.getSelectionModel().selectLast();
+		
 		limpaCampos();
 
 		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
