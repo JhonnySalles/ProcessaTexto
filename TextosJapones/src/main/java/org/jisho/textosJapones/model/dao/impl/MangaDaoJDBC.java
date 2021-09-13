@@ -52,6 +52,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, scan = ?, vocabulario = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ?, vocabulario = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
+	final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id >= ?";
 
 	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (manga, volume, linguagem, vocabulario, is_processado) VALUES (?,?,?,?,?)";
 	final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado, vocabulario) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -278,6 +279,22 @@ public class MangaDaoJDBC implements MangaDao {
 			System.out.println(st.toString());
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+	
+	@Override
+	public void updateCancel(String base, MangaPagina obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(UPDATE_PAGINAS_CANCEL, BASE_MANGA + base));
+			st.setLong(1, obj.getId());
+			st.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE_CANCEL);
 		} finally {
 			DB.closeStatement(st);
 		}

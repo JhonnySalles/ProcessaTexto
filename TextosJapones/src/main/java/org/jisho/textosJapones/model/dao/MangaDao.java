@@ -37,6 +37,8 @@ public interface MangaDao {
 
 	List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd;
+	
+	void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
 
 	Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
@@ -49,4 +51,5 @@ public interface MangaDao {
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
 	
 	void createDatabase(String base) throws ExcessaoBd;
+	
 }

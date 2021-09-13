@@ -50,11 +50,14 @@ public class MangaServices {
 	public void updateVocabularioCapitulo(String base, MangaCapitulo capitulo) throws ExcessaoBd {
 		vocabularioDao.updateVocabularioCapitulo(base, capitulo);
 		updateVocabularioPagina(base, capitulo.getPaginas());
-
 	}
 
 	public void updateVocabularioPagina(String base, MangaPagina pagina) throws ExcessaoBd {
 		vocabularioDao.updateVocabularioPagina(base, pagina);
+	}
+	
+	public void updateCancel(String base, MangaPagina pagina) throws ExcessaoBd {
+		vocabularioDao.updateCancel(base, pagina);
 	}
 
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {

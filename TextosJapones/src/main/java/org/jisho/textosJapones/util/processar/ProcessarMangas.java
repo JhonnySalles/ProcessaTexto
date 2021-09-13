@@ -163,9 +163,13 @@ public class ProcessarMangas {
 							volume.setProcessado(true);
 							serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
 							propVolume.set((double) V / tabela.getVolumes().size());
-
-							if (desativar)
+							
+							if (desativar) {
+								if (volume.getCapitulos().get(0) != null && volume.getCapitulos().get(0).getPaginas().get(0) != null)
+									serviceManga.updateCancel(tabela.getBase(), volume.getCapitulos().get(0).getPaginas().get(0));
+								
 								break;
+							}
 						}
 
 						propTabela.set((double) T / tabelas.size());
