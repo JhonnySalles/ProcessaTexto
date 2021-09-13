@@ -73,7 +73,7 @@ public class MangaDaoJDBC implements MangaDao {
 			+ "INNER JOIN %s_paginas PAG ON CAP.id = PAG.id_capitulo AND PAG.is_processado = 0";
 
 	final private String SELECT_TABELAS = "SELECT REPLACE(REPLACE(REPLACE(Table_Name, '_paginas', ''), '_capitulos', ''), '_volumes', '') AS Tabela "
-			+ "FROM information_schema.tables WHERE table_schema = 'manga_extractor' AND (Table_Name NOT LIKE '%%_textos%%' AND Table_Name NOT LIKE '%%exemplo%%') "
+			+ "FROM information_schema.tables WHERE table_schema = '%s' AND (Table_Name NOT LIKE '%%_textos%%' AND Table_Name NOT LIKE '%%exemplo%%') "
 			+ "AND %s GROUP BY Tabela ";
 
 	public MangaDaoJDBC(Connection conn) {
@@ -581,7 +581,7 @@ public class MangaDaoJDBC implements MangaDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_TABELAS, "1>0"));
+			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0,BASE_MANGA.length()-1), "1>0"));
 			rs = st.executeQuery();
 
 			List<MangaTabela> list = new ArrayList<>();
@@ -623,7 +623,7 @@ public class MangaDaoJDBC implements MangaDao {
 			if (base != null && !base.trim().isEmpty())
 				condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
 
-			st = conn.prepareStatement(String.format(SELECT_TABELAS, condicao));
+			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0,BASE_MANGA.length()-1), condicao));
 			rs = st.executeQuery();
 
 			List<MangaTabela> list = new ArrayList<>();
