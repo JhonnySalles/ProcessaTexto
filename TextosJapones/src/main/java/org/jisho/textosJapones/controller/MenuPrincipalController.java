@@ -13,7 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 
-public class MenuController implements Initializable {
+public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private AnchorPane apGlobal;
@@ -51,6 +51,6 @@ public class MenuController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MenuController.class.getResource("/view/Menu.fxml");
+		return MenuPrincipalController.class.getResource("/view/MenuPrincipal.fxml");
 	}
 }

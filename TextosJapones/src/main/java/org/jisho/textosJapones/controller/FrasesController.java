@@ -615,7 +615,7 @@ public class FrasesController implements Initializable {
 
 	private FrasesController criaConfiguracao() {
 		pop = new PopOver();
-		URL url = ConfiguracaoController.getFxmlLocate();
+		URL url = MenuConfiguracaoController.getFxmlLocate();
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(url);
 		VBox vbox = new VBox();
@@ -623,7 +623,7 @@ public class FrasesController implements Initializable {
 		try {
 			vbox.getChildren().add(loader.load());
 
-			ConfiguracaoController cntConfiguracao = loader.getController();
+			MenuConfiguracaoController cntConfiguracao = loader.getController();
 			cntConfiguracao.setControllerPai(this);
 			pop.setTitle("Configuração banco de dados");
 			pop.setContentNode(vbox);

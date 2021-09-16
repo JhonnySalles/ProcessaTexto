@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
-public class NotificacaoController implements Initializable {
+public class PopupNotificacaoController implements Initializable {
 
 	@FXML
 	private AnchorPane notificacaoBackground;
@@ -30,7 +30,7 @@ public class NotificacaoController implements Initializable {
 		return imgImagem.getImage();
 	}
 
-	public NotificacaoController setImagem(ImageView imagem) {
+	public PopupNotificacaoController setImagem(ImageView imagem) {
 		this.imgImagem = imagem;
 		return this;
 	}
@@ -39,7 +39,7 @@ public class NotificacaoController implements Initializable {
 		return lblTitulo.getText();
 	}
 
-	public NotificacaoController setTitulo(String titulo) {
+	public PopupNotificacaoController setTitulo(String titulo) {
 		this.lblTitulo.setText(titulo);
 		return this;
 	}
@@ -48,7 +48,7 @@ public class NotificacaoController implements Initializable {
 		return lblTexto.getText();
 	}
 
-	public NotificacaoController setTexto(String texto) {
+	public PopupNotificacaoController setTexto(String texto) {
 		lblTexto.setText(texto);
 
 		if (texto.length() <= 80) {
@@ -81,7 +81,7 @@ public class NotificacaoController implements Initializable {
 	}
 	
 	public static URL getFxmlLocate() {
-		return NotificacaoController.class
-				.getResource("/view/Notificacao.fxml");
+		return PopupNotificacaoController.class
+				.getResource("/view/PopupNotificacao.fxml");
 	}
 }

@@ -3,7 +3,7 @@ package org.jisho.textosJapones.util.notification;
 import java.io.IOException;
 
 import org.controlsfx.control.Notifications;
-import org.jisho.textosJapones.controller.NotificacaoController;
+import org.jisho.textosJapones.controller.PopupNotificacaoController;
 import org.jisho.textosJapones.model.enums.Notificacao;
 
 import animatefx.animation.FadeIn;
@@ -34,7 +34,7 @@ public class Notificacoes {
 	public final static ImageView IMG_SUCESSO = new ImageView(new Image(
 			AlertasPopup.class.getResourceAsStream("/images/alert/btnConfirma_48.png")));
 
-	private static NotificacaoController CONTROLLER;
+	private static PopupNotificacaoController CONTROLLER;
 	private static AnchorPane NOTIFICACAO;
 	private static AnchorPane ROOT_ANCHOR_PANE;
 	private static Timeline TM_LINE_CLOSE;
@@ -49,7 +49,7 @@ public class Notificacoes {
 		Notificacoes.ROOT_ANCHOR_PANE = rootAnchorkPane;
 	}
 
-	private static void setTipo(Notificacao tipo, NotificacaoController controller, AnchorPane root) {
+	private static void setTipo(Notificacao tipo, PopupNotificacaoController controller, AnchorPane root) {
 		root.getStyleClass().clear();
 		switch (tipo) {
 		case ALERTA:
@@ -100,7 +100,7 @@ public class Notificacoes {
 
 	private static void create() {
 		try {
-			FXMLLoader loader = new FXMLLoader(NotificacaoController.getFxmlLocate());
+			FXMLLoader loader = new FXMLLoader(PopupNotificacaoController.getFxmlLocate());
 			NOTIFICACAO = loader.load();
 			CONTROLLER = loader.getController();
 			ROOT_ANCHOR_PANE.getChildren().add(NOTIFICACAO);

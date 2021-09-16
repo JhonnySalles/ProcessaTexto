@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.DirectoryChooser;
 
-public class ConfiguracaoController implements Initializable {
+public class MenuConfiguracaoController implements Initializable {
 
 	@FXML
 	public JFXTextField txtUsuario;
@@ -86,7 +86,7 @@ public class ConfiguracaoController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return ConfiguracaoController.class.getResource("/view/Configuracao.fxml");
+		return MenuConfiguracaoController.class.getResource("/view/MenuConfiguracao.fxml");
 	}
 
 	@Override

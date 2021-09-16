@@ -1,5 +1,7 @@
 package org.jisho.textosJapones.util.notification;
 
+import org.jisho.textosJapones.controller.PopupAlertaController;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -18,11 +20,11 @@ public class Alertas {
 
 	public static void Tela_Alerta(String titulo, String texto) {
 		try {
-			FXMLLoader loader = new FXMLLoader(AlertaController.getFxmlLocate());
+			FXMLLoader loader = new FXMLLoader(PopupAlertaController.getFxmlLocate());
 			AnchorPane scPnTelaPrincipal = loader.load();
 
 			// Obtem a referencia do controller para editar as label.
-			AlertaController controller = loader.getController();
+			PopupAlertaController controller = loader.getController();
 
 			controller.setTexto(titulo, texto);
 
@@ -37,7 +39,7 @@ public class Alertas {
 
 			// Faz a tela ser obrigatoria para voltar ao voltar a tela anterior
 			stageTela.setTitle(titulo);
-			stageTela.getIcons().add(AlertaController.IMG_ALERTA);
+			stageTela.getIcons().add(PopupAlertaController.IMG_ALERTA);
 			stageTela.initModality(Modality.APPLICATION_MODAL);
 
 			controller.setVisivel(true, true);

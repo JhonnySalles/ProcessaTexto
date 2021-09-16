@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.util.notification;
+package org.jisho.textosJapones.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,10 +15,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class AlertaController implements Initializable {
+public class PopupAlertaController implements Initializable {
 
 	public final static Image IMG_ALERTA = new Image(
-			AlertaController.class.getResourceAsStream("/comum/imagens/alerta/icoAlerta_48.png"));
+			PopupAlertaController.class.getResourceAsStream("/comum/imagens/alerta/icoAlerta_48.png"));
 
 	@FXML
 	private Button btnOk;
@@ -67,6 +67,6 @@ public class AlertaController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return AlertaController.class.getResource("/org/jisho/textosJapones/view/Alerta.fxml");
+		return PopupAlertaController.class.getResource("/org/jisho/textosJapones/view/PopupAlerta.fxml");
 	}
 }

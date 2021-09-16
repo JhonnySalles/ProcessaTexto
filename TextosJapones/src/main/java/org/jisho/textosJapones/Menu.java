@@ -1,7 +1,7 @@
 package org.jisho.textosJapones;
 
 import org.jisho.textosJapones.controller.FrasesController;
-import org.jisho.textosJapones.controller.MenuController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Tela;
 
 import javafx.fxml.FXMLLoader;
@@ -18,7 +18,7 @@ public class Menu {
 	public static void runMenu(Stage primaryStage) {
 		try {
 			// Classe inicial
-			FXMLLoader loader = new FXMLLoader(MenuController.getFxmlLocate());
+			FXMLLoader loader = new FXMLLoader(MenuPrincipalController.getFxmlLocate());
 			AnchorPane scPnTelaPrincipal = loader.load();
 
 			Scene scena = new Scene(scPnTelaPrincipal); // Carrega a scena
