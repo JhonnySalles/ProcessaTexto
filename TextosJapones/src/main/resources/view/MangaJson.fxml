@@ -9,11 +9,13 @@
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.RevisarController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasJsonController">
    <children>          
 	    <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
@@ -34,22 +36,29 @@
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Volume" textFill="WHITE" />
-                        <Spinner editable="true" prefHeight="30.0" prefWidth="200.0" styleClass="split-arrows-horizontal" />
+                        <Spinner fx:id="spnVolume" editable="true" prefHeight="30.0" prefWidth="200.0" styleClass="split-arrows-horizontal" />
                      </children>
                   </VBox>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Capitulo" textFill="WHITE" />
-                        <Spinner editable="true" prefHeight="30.0" prefWidth="200.0" styleClass="split-arrows-horizontal" />
+                        <Spinner fx:id="spnCapitulo" editable="true" prefHeight="30.0" prefWidth="200.0" styleClass="split-arrows-horizontal" />
                      </children>
                   </VBox>
+                  <JFXTextField fx:id="txtCaminhoSalvar" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho salvar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnCaminhoSalvar" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoSalvar" prefWidth="35.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/icoPasta_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
             </HBox>
 	          <HBox alignment="CENTER_LEFT" spacing="10.0">
 	             <padding>
@@ -60,16 +69,24 @@
 	             </opaqueInsets>
 	             <children>
 	                <JFXButton fx:id="btnCarregar" buttonType="RAISED" onAction="#onBtnCarregar" prefWidth="130.0" styleClass="background-White1" text="Carregar" />
-	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar Vocabulario" />
-	                <JFXCheckBox fx:id="ckbProcessados" checkedColor="#71afe5" text="Separar por capitulo" textFill="WHITE" unCheckedColor="#106ebe" />
+	                <JFXButton fx:id="btnGerarJson" accessibleText="GERAR" buttonType="RAISED" onAction="#onBtnGerarJson" prefWidth="140.0" styleClass="background-White1" text="Gerar Json" />
+	                <JFXCheckBox fx:id="ckbSepararPorCapitulos" checkedColor="#71afe5" text="Separar por capitulo" textFill="WHITE" unCheckedColor="#106ebe" />
 	             </children>
 	          </HBox>
-            <TreeTableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TreeTableView fx:id="treeBases" prefHeight="200.0" prefWidth="200.0" styleClass="paneBorder" VBox.vgrow="ALWAYS">
               <columns>
+                <TreeTableColumn fx:id="treecFlag" prefWidth="90.0" />
+                <TreeTableColumn fx:id="treecMacado" prefWidth="25.0">
+                   <cellValueFactory>
+                   </cellValueFactory>
+                   <graphic>
+                      <JFXCheckBox fx:id="ckbMarcarTodos" alignment="CENTER" checkedColor="#71afe5" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onBtnMarcarTodos" prefHeight="18.0" prefWidth="7.0" unCheckedColor="#106ebe" />
+                   </graphic>
+                </TreeTableColumn>
                 <TreeTableColumn fx:id="treecBase" prefWidth="110.0" text="Base" />
-                <TreeTableColumn fx:id="treecManga" prefWidth="319.0" text="Manga" />
-                <TreeTableColumn fx:id="treecVolume" minWidth="0.0" prefWidth="58.0" text="Volume" />
-                <TreeTableColumn fx:id="treecCapitulo" prefWidth="69.0" text="Capitulo" />
+                <TreeTableColumn fx:id="treecManga" prefWidth="306.0" text="Manga" />
+                <TreeTableColumn fx:id="treecVolume" minWidth="0.0" prefWidth="65.0" text="Volume" />
+                <TreeTableColumn fx:id="treecCapitulo" prefWidth="78.0" text="Capitulo" />
               </columns>
             </TreeTableView>
 	       </children>

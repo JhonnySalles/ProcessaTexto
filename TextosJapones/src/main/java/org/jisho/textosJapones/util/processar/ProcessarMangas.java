@@ -12,6 +12,7 @@ import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaTexto;
+import org.jisho.textosJapones.model.entities.MangaVocabulario;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
@@ -62,9 +63,9 @@ public class ProcessarMangas {
 	}
 
 	private Integer T, V, C;
-	private Set<String> vocabVolume = new HashSet<>();
-	private Set<String> vocabCapitulo = new HashSet<>();
-	private Set<String> vocabPagina = new HashSet<>();
+	private Set<MangaVocabulario> vocabVolume = new HashSet<>();
+	private Set<MangaVocabulario> vocabCapitulo = new HashSet<>();
+	private Set<MangaVocabulario> vocabPagina = new HashSet<>();
 
 	private DoubleProperty propCapitulo = new SimpleDoubleProperty(.0);
 	private DoubleProperty propVolume = new SimpleDoubleProperty(.0);
@@ -145,14 +146,14 @@ public class ProcessarMangas {
 									for (MangaTexto texto : pagina.getTextos())
 										gerarVocabulario(texto.getTexto());
 
-									pagina.setVocabulario(vocabPagina.toString());
+									pagina.setVocabulario(vocabPagina);
 									pagina.setProcessado(true);
 									serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
 
 									if (desativar)
 										break;
 								}
-								capitulo.setVocabulario(vocabCapitulo.toString());
+								capitulo.setVocabulario(vocabCapitulo);
 								capitulo.setProcessado(true);
 								serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
 								propCapitulo.set((double) C / volume.getCapitulos().size());
@@ -160,7 +161,7 @@ public class ProcessarMangas {
 								if (desativar)
 									break;
 							}
-							volume.setVocabulario(vocabVolume.toString());
+							volume.setVocabulario(vocabVolume);
 							volume.setProcessado(true);
 							serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
 							propVolume.set((double) V / tabela.getVolumes().size());
@@ -175,7 +176,6 @@ public class ProcessarMangas {
 
 						propTabela.set((double) T / tabelas.size());
 						Platform.runLater(() -> {
-							// controller.getBarraProgressoGeral().setProgress(T / tabelas.size());
 							if (TaskbarProgressbar.isSupported())
 								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
 										Type.NORMAL);
@@ -282,11 +282,11 @@ public class ProcessarMangas {
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
-						String vocabulario;
+						MangaVocabulario vocabulario = null;
 						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabulario = palavra.getTraducao() + " ";
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao());
 						else
-							vocabulario = m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao());
 
 						// Usado apenas para correção em formas em branco.
 						if (palavra.getFormaBasica().isEmpty()) {
@@ -365,7 +365,7 @@ public class ProcessarMangas {
 							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						String vocabulario = m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
 						vocabVolume.add(vocabulario);

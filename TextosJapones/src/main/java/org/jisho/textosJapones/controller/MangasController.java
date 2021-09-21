@@ -96,6 +96,9 @@ public class MangasController implements Initializable {
 	@FXML
 	private RevisarController revisarController;
 	
+	@FXML
+	private MangasJsonController jsonController;
+	
 	/*------------ Processar Manga ------------*/
 
 	@FXML
@@ -103,9 +106,6 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private JFXButton btnProcessar;
-
-	@FXML
-	private JFXButton btnGerarJson;
 
 	@FXML
 	private JFXTextField txtBase;
@@ -170,10 +170,12 @@ public class MangasController implements Initializable {
 
 		btnProcessar.setAccessibleText("PROCESSANDO");
 		btnProcessar.setText("Pausar");
-
+		btnCarregar.setDisable(true);
+		
 		if (mangas == null)
 			mangas = new ProcessarMangas(this);
 
+		
 		treeBases.setDisable(true);
 		lblLog.setText("Iniciando o processamento..");
 		mangas.processarTabelas(TABELAS);
@@ -226,6 +228,7 @@ public class MangasController implements Initializable {
 		lblLogConsultas.setText("");
 		btnProcessar.setAccessibleText("PROCESSAR");
 		btnProcessar.setText("Processar");
+		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 		barraProgressoGeral.setProgress(0);
 		barraProgressoVolumes.setProgress(0);
@@ -356,7 +359,6 @@ public class MangasController implements Initializable {
 		lblLog.setText("Carregando....");
 		btnCarregar.setDisable(true);
 		btnProcessar.setDisable(true);
-		btnGerarJson.setDisable(true);
 		treeBases.setDisable(true);
 
 		PROCESSADOS = ckbProcessados.isSelected();
@@ -391,7 +393,6 @@ public class MangasController implements Initializable {
 					ckbMarcarTodos.setSelected(true);
 					btnCarregar.setDisable(false);
 					btnProcessar.setDisable(false);
-					btnGerarJson.setDisable(false);
 					treeBases.setDisable(false);
 					barraProgressoGeral.setProgress(0);
 					barraProgressoVolumes.setProgress(0);
@@ -456,7 +457,6 @@ public class MangasController implements Initializable {
 	}
 
 	private void editaColunas() {
-
 		// ==== (CHECK-BOX) ===
 		treecMacado.setCellValueFactory(
 				new Callback<TreeTableColumn.CellDataFeatures<Manga, Boolean>, ObservableValue<Boolean>>() {
@@ -506,12 +506,14 @@ public class MangasController implements Initializable {
 		treeBases.setShowRoot(false);
 
 		editaColunas();
-
 	}
 
 	private Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {		
+		AlertasPopup.setRootStackPane(rootStackPane);
+		AlertasPopup.setNodeBlur(root);
+		
 		cbContaGoolge.getItems().addAll(Api.values());
 		cbContaGoolge.getSelectionModel().selectFirst();
 
@@ -545,6 +547,7 @@ public class MangasController implements Initializable {
 		revisarController.setAnime(false);
 		revisarController.setManga(true);
 		revisarController.pesquisar();
+		jsonController.setControllerPai(this);
 	}
 
 	public static URL getFxmlLocate() {

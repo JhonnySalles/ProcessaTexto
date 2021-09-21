@@ -1,18 +1,27 @@
 package org.jisho.textosJapones.model.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jisho.textosJapones.model.enums.Language;
+
+import com.google.gson.annotations.Expose;
 
 public class MangaVolume extends Manga {
 
 	private Long id;
+	@Expose
 	private String manga;
+	@Expose
 	private Integer volume;
+	@Expose
 	private Language lingua;
+	@Expose
 	private List<MangaCapitulo> capitulos;
-	private String vocabulario;
+	@Expose
+	private Set<MangaVocabulario> vocabulario;
 	private Boolean processado;
 
 	public Long getId() {
@@ -59,12 +68,16 @@ public class MangaVolume extends Manga {
 		this.capitulos.add(capitulo);
 	}
 
-	public String getVocabulario() {
+	public Set<MangaVocabulario> getVocabulario() {
 		return vocabulario;
 	}
 
-	public void setVocabulario(String vocabulario) {
+	public void setVocabulario(Set<MangaVocabulario> vocabulario) {
 		this.vocabulario = vocabulario;
+	}
+	
+	public void addVocabulario(MangaVocabulario vocabulario) {
+		this.vocabulario.add(vocabulario);
 	}
 
 	public Boolean getProcessado() {
@@ -80,13 +93,24 @@ public class MangaVolume extends Manga {
 		this.manga = "";
 		this.volume = 0;
 		this.lingua = Language.PORTUGUESE;
-		this.vocabulario = "";
+		this.vocabulario = new HashSet<MangaVocabulario>();;
 		this.processado = false;
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
+	
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, List<MangaCapitulo> capitulos) {
+		this.id = id;
+		this.manga = manga;
+		this.volume = volume;
+		this.lingua = lingua;
+		this.vocabulario = new HashSet<MangaVocabulario>();
+		this.processado = false;
+		this.processar = true;
+		this.capitulos = capitulos;
+	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, Set<MangaVocabulario> vocabulario) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -97,7 +121,7 @@ public class MangaVolume extends Manga {
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String vocabulario,
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, Set<MangaVocabulario> vocabulario,
 			List<MangaCapitulo> capitulos) {
 		this.id = id;
 		this.manga = manga;

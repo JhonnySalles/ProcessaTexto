@@ -20,6 +20,7 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\exceptions\ExcessaoBd.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\mysql\DB.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\App.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasJsonController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\services\VocabularioServices.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\Util.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\Menu.java
@@ -60,6 +61,7 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\module-info.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Tela.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\notification\AlertasPopup.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaVocabulario.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Modo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\CorrecaoController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\ProcessarMangas.java

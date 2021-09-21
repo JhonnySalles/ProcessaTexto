@@ -1,21 +1,17 @@
 package org.jisho.textosJapones.model.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaTexto;
+import org.jisho.textosJapones.model.entities.MangaVocabulario;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 public interface MangaDao {
-
-	void updateVocabularioVolume(String base, MangaVolume obj) throws ExcessaoBd;
-
-	void updateVocabularioCapitulo(String base, MangaCapitulo obj) throws ExcessaoBd;
-
-	void updateVocabularioPagina(String base, MangaPagina obj) throws ExcessaoBd;
 
 	void updateVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
@@ -49,7 +45,12 @@ public interface MangaDao {
 	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
 
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
-
+	
+	public void updateProcessado(String base, String tabela, Long id) throws ExcessaoBd ;
+	public void insertVocabulario(String base, Long idVolume, Long idCapitulo, Long idPagina,
+			Set<MangaVocabulario> vocabulario) throws ExcessaoBd;
+	
 	void createDatabase(String base) throws ExcessaoBd;
+	public void createBaseVocabulario(String nome) throws ExcessaoBd;
 
 }

@@ -1,16 +1,25 @@
 package org.jisho.textosJapones.model.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.google.gson.annotations.Expose;
 
 public class MangaPagina extends Manga {
 
 	private Long id;
+	@Expose
 	private String nomePagina;
+	@Expose
 	private Integer numero;
+	@Expose
 	private String hash;
+	@Expose
 	private List<MangaTexto> textos;
-	private String vocabulario;
+	@Expose
+	private Set<MangaVocabulario> vocabulario;
 	private Boolean processado;
 
 	public Long getId() {
@@ -57,12 +66,16 @@ public class MangaPagina extends Manga {
 		this.textos.add(texto);
 	}
 
-	public String getVocabulario() {
+	public Set<MangaVocabulario> getVocabulario() {
 		return vocabulario;
 	}
 
-	public void setVocabulario(String vocabulario) {
+	public void setVocabulario(Set<MangaVocabulario> vocabulario) {
 		this.vocabulario = vocabulario;
+	}
+	
+	public void addVocabulario(MangaVocabulario vocabulario) {
+		this.vocabulario.add(vocabulario);
 	}
 
 	public Boolean getProcessado() {
@@ -78,9 +91,9 @@ public class MangaPagina extends Manga {
 		this.nomePagina = "";
 		this.numero = 0;
 		this.hash = "";
-		this.vocabulario = "";
 		this.processado = false;
 		this.processar = true;
+		this.vocabulario = new HashSet<MangaVocabulario>();
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
@@ -89,7 +102,7 @@ public class MangaPagina extends Manga {
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabulario = "";
+		this.vocabulario = new HashSet<MangaVocabulario>();;
 		this.processado = processado;
 		this.processar = true;
 		this.textos = new ArrayList<MangaTexto>();
@@ -100,7 +113,7 @@ public class MangaPagina extends Manga {
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabulario = "";
+		this.vocabulario = new HashSet<MangaVocabulario>();;
 		this.processado = processado;
 		this.textos = textos;
 		this.processar = true;

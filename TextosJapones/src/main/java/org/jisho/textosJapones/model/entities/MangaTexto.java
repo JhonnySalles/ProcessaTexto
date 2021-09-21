@@ -1,13 +1,21 @@
 package org.jisho.textosJapones.model.entities;
 
+import com.google.gson.annotations.Expose;
+
 public class MangaTexto {
 
 	private Long id;
+	@Expose
 	private String texto;
+	@Expose
 	private Integer sequencia;
+	@Expose
 	private Integer x1;
+	@Expose
 	private Integer y1;
+	@Expose
 	private Integer x2;
+	@Expose
 	private Integer y2;
 
 	public Long getId() {

@@ -33,6 +33,6 @@ module TextosJapones {
 	requires java.desktop;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
-	opens org.jisho.textosJapones.model.entities to javafx.base;
+	opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
 	opens org.jisho.textosJapones.util.processar to com.google.gson;
 }
