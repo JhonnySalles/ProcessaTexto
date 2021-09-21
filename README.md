@@ -2,7 +2,7 @@
 > Programa para processamento de legendas de anime e textos japonês, extraindo os vocabulários do texto com sua tradução.
 
 <h4 align="center"> 
-	🛰  Versão 0.0.5
+	🛰  Versão 0.0.7
 </h4>
 
 [![Build Status][travis-image]][travis-url]
