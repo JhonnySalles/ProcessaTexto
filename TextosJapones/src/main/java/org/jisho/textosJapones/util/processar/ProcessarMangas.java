@@ -66,6 +66,7 @@ public class ProcessarMangas {
 	private Set<MangaVocabulario> vocabVolume = new HashSet<>();
 	private Set<MangaVocabulario> vocabCapitulo = new HashSet<>();
 	private Set<MangaVocabulario> vocabPagina = new HashSet<>();
+	private Set<String> vocabValida = new HashSet<>();
 
 	private DoubleProperty propCapitulo = new SimpleDoubleProperty(.0);
 	private DoubleProperty propVolume = new SimpleDoubleProperty(.0);
@@ -143,6 +144,7 @@ public class ProcessarMangas {
 											+ " - Página: " + pagina.getNomePagina());
 
 									vocabPagina.clear();
+									vocabValida.clear();
 									for (MangaTexto texto : pagina.getTextos())
 										gerarVocabulario(texto.getTexto());
 
@@ -278,7 +280,7 @@ public class ProcessarMangas {
 	private void gerarVocabulario(String frase) throws ExcessaoBd {
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
-				if (!vocabPagina.contains(m.dictionaryForm())) {
+				if (!vocabValida.contains(m.dictionaryForm())) {
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
@@ -295,6 +297,7 @@ public class ProcessarMangas {
 							vocabularioService.update(palavra);
 						}
 
+						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
 						vocabVolume.add(vocabulario);
@@ -366,6 +369,7 @@ public class ProcessarMangas {
 						}
 
 						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao());
+						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
 						vocabVolume.add(vocabulario);
