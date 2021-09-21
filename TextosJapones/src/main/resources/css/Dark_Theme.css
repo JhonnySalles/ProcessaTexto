@@ -153,6 +153,10 @@
 	-fx-prompt-text-fill: #bfbfbf;
 }
 
+.comboBox-stilo .text-field {
+	-fx-text-fill: white;
+}
+
 .comboBox-stilo>.list-cell {
 	-fx-text-fill: white;
 }

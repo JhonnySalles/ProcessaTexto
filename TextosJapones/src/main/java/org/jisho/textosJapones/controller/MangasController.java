@@ -95,10 +95,10 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private RevisarController revisarController;
-	
+
 	@FXML
 	private MangasJsonController jsonController;
-	
+
 	/*------------ Processar Manga ------------*/
 
 	@FXML
@@ -151,10 +151,10 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private JFXTextField txtBaseDestino;
-	
+
 	@FXML
 	private JFXCheckBox ckbCriarBase;
-	
+
 	/*------------ Processar Json ------------*/
 
 	private ProcessarMangas mangas;
@@ -171,11 +171,10 @@ public class MangasController implements Initializable {
 		btnProcessar.setAccessibleText("PROCESSANDO");
 		btnProcessar.setText("Pausar");
 		btnCarregar.setDisable(true);
-		
+
 		if (mangas == null)
 			mangas = new ProcessarMangas(this);
 
-		
 		treeBases.setDisable(true);
 		lblLog.setText("Iniciando o processamento..");
 		mangas.processarTabelas(TABELAS);
@@ -205,7 +204,7 @@ public class MangasController implements Initializable {
 	public Api getContaGoogle() {
 		return cbContaGoolge.getSelectionModel().getSelectedItem();
 	}
-	
+
 	public void setContaGoogle(Api conta) {
 		cbContaGoolge.getSelectionModel().select(conta);
 	}
@@ -272,15 +271,16 @@ public class MangasController implements Initializable {
 
 	private Integer I;
 	private String error;
+
 	private void transferir() {
 		if (txtBaseOrigem.getText().trim().equalsIgnoreCase(txtBaseDestino.getText().trim())) {
 			AlertasPopup.AvisoModal(rootStackPane, root, null, "Aviso", "Favor informar outra base de destino.");
 			return;
 		}
-		
+
 		lblLog.setText("Transferindo dados....");
 		btnTransferir.setDisable(true);
-		
+
 		BASE_ORIGEM = txtBaseOrigem.getText().trim();
 		BASE_DESTINO = txtBaseDestino.getText().trim();
 
@@ -297,7 +297,7 @@ public class MangasController implements Initializable {
 					error = "";
 					updateMessage("Carregando dados....");
 					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
-					
+
 					if (ckbCriarBase.isSelected()) {
 						updateMessage("Criando a base....");
 						service.createDataBase(BASE_DESTINO);
@@ -335,7 +335,7 @@ public class MangasController implements Initializable {
 					barraProgressoGeral.setProgress(0);
 					barraProgressoVolumes.setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-					
+
 					if (!error.isEmpty())
 						AlertasPopup.ErroModal(rootStackPane, root, null, "Erro", error);
 					else
@@ -510,10 +510,10 @@ public class MangasController implements Initializable {
 
 	private Robot robot = new Robot();
 
-	public void initialize(URL arg0, ResourceBundle arg1) {		
+	public void initialize(URL arg0, ResourceBundle arg1) {
 		AlertasPopup.setRootStackPane(rootStackPane);
 		AlertasPopup.setNodeBlur(root);
-		
+
 		cbContaGoolge.getItems().addAll(Api.values());
 		cbContaGoolge.getSelectionModel().selectFirst();
 

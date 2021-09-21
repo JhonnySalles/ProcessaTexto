@@ -9,6 +9,7 @@ import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.MangaVocabulario;
 import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 public interface MangaDao {
@@ -23,7 +24,8 @@ public interface MangaDao {
 
 	List<MangaVolume> selectAll(String base) throws ExcessaoBd;
 
-	List<MangaVolume> selectAll(String base, String manga, Integer volume, Float capitulo) throws ExcessaoBd;
+	List<MangaVolume> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+			throws ExcessaoBd;
 
 	List<MangaTabela> selectTabelas(Boolean todos) throws ExcessaoBd;
 
@@ -32,6 +34,9 @@ public interface MangaDao {
 	List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume) throws ExcessaoBd;
 
 	List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
+			throws ExcessaoBd;
+
+	List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem)
 			throws ExcessaoBd;
 
 	void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
@@ -45,12 +50,14 @@ public interface MangaDao {
 	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
 
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
-	
-	public void updateProcessado(String base, String tabela, Long id) throws ExcessaoBd ;
+
+	public void updateProcessado(String base, String tabela, Long id) throws ExcessaoBd;
+
 	public void insertVocabulario(String base, Long idVolume, Long idCapitulo, Long idPagina,
 			Set<MangaVocabulario> vocabulario) throws ExcessaoBd;
-	
+
 	void createDatabase(String base) throws ExcessaoBd;
+
 	public void createBaseVocabulario(String nome) throws ExcessaoBd;
 
 }

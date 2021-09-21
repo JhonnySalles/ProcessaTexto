@@ -10,6 +10,7 @@ import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
@@ -62,6 +64,9 @@ public class MangasJsonController implements Initializable {
 	private JFXTextField txtManga;
 
 	@FXML
+	private JFXComboBox<Language> cbLinguagem;
+
+	@FXML
 	private Spinner<Integer> spnVolume;
 
 	@FXML
@@ -96,6 +101,9 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private TreeTableColumn<Manga, String> treecManga;
+	
+	@FXML
+	private TreeTableColumn<Manga, Language> treecLinguagem;
 
 	@FXML
 	private TreeTableColumn<Manga, Integer> treecVolume;
@@ -204,10 +212,10 @@ public class MangasJsonController implements Initializable {
 						public boolean shouldSkipField(FieldAttributes field) {
 							if (field.getDeclaringClass() == MangaCapitulo.class && field.getName().equals("lingua"))
 								return true;
-							
+
 							if (field.getDeclaringClass() == MangaCapitulo.class && field.getName().equals("manga"))
 								return true;
-							
+
 							if (field.getDeclaringClass() == MangaCapitulo.class && field.getName().equals("volume"))
 								return true;
 
@@ -328,6 +336,7 @@ public class MangasJsonController implements Initializable {
 	private String MANGA;
 	private Integer VOLUME;
 	private Float CAPITULO;
+	private Language LINGUAGEM;
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
@@ -347,6 +356,7 @@ public class MangasJsonController implements Initializable {
 		MANGA = txtManga.getText().trim();
 		VOLUME = spnVolume.getValue();
 		CAPITULO = spnCapitulo.getValue().floatValue();
+		LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
 
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
 		Task<Void> carregaItens = new Task<Void>() {
@@ -355,7 +365,7 @@ public class MangasJsonController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					TABELAS = FXCollections
-							.observableArrayList(service.selectTabelas(true, BASE, MANGA, VOLUME, CAPITULO));
+							.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
@@ -392,26 +402,38 @@ public class MangasJsonController implements Initializable {
 			tabela.setManga("...");
 			TreeItem<Manga> itmTabela = new TreeItem<Manga>(tabela);
 			TreeItem<Manga> itmManga = null;
+			TreeItem<Manga> itmLingua = null;
 			String volumeAnterior = "";
+			Language linguagemAnterior = null;
+			
 			for (MangaVolume volume : tabela.getVolumes()) {
+				
 				// Implementa um nivel por tipo
 				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
 					volumeAnterior = volume.getManga();
-					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga()));
+					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
 				}
-
+				
+				if (linguagemAnterior == null || volume.getLingua().compareTo(linguagemAnterior) != 0) {
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), volume.getLingua().getSigla().toUpperCase()));
+					linguagemAnterior = volume.getLingua();
+					itmManga.getChildren().add(itmLingua);
+				}
+				
+				volume.setLinguagem(linguagemAnterior.getSigla().toUpperCase());
 				volume.setBase(tabela.getBase());
 				TreeItem<Manga> itmVolume = new TreeItem<Manga>(volume);
 
 				for (MangaCapitulo capitulo : volume.getCapitulos()) {
 					capitulo.setBase(tabela.getBase());
 					capitulo.setNomePagina("...");
+					capitulo.setLinguagem(linguagemAnterior.getSigla().toUpperCase());
 					itmVolume.getChildren().add(new TreeItem<Manga>(capitulo));
 				}
 
-				itmManga.getChildren().add(itmVolume);
+				itmLingua.getChildren().add(itmVolume);
 			}
 			itmRoot.getChildren().add(itmTabela);
 			itmRoot.setExpanded(true);
@@ -432,7 +454,6 @@ public class MangasJsonController implements Initializable {
 	}
 
 	private void editaColunas() {
-
 		// ==== (CHECK-BOX) ===
 		treecMacado.setCellValueFactory(
 				new Callback<TreeTableColumn.CellDataFeatures<Manga, Boolean>, ObservableValue<Boolean>>() {
@@ -475,6 +496,7 @@ public class MangasJsonController implements Initializable {
 		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<Manga, Boolean>("processar"));
 		treecBase.setCellValueFactory(new TreeItemPropertyValueFactory<>("base"));
 		treecManga.setCellValueFactory(new TreeItemPropertyValueFactory<>("manga"));
+		treecLinguagem.setCellValueFactory(new TreeItemPropertyValueFactory<>("linguagem"));
 		treecVolume.setCellValueFactory(new TreeItemPropertyValueFactory<>("volume"));
 		treecCapitulo.setCellValueFactory(new TreeItemPropertyValueFactory<>("capitulo"));
 		treeBases.setShowRoot(false);
@@ -486,6 +508,19 @@ public class MangasJsonController implements Initializable {
 	private Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+
+		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE);
+
+		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ESCAPE))
+					cbLinguagem.getSelectionModel().clearSelection();
+				else if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+		
 		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent ke) {

@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
@@ -23,6 +24,7 @@
 	             <children>
 	                <JFXTextField fx:id="txtBase" focusColor="#71afe5" labelFloat="true" promptText="Base" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
 	                <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
 	             </children>
 	             <padding>
 	                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -73,7 +75,7 @@
 	                <JFXCheckBox fx:id="ckbSepararPorCapitulos" checkedColor="#71afe5" text="Separar por capitulo" textFill="WHITE" unCheckedColor="#106ebe" />
 	             </children>
 	          </HBox>
-            <TreeTableView fx:id="treeBases" prefHeight="200.0" prefWidth="200.0" styleClass="paneBorder" VBox.vgrow="ALWAYS">
+            <TreeTableView fx:id="treeBases" editable="true" prefHeight="200.0" prefWidth="200.0" styleClass="paneBorder" VBox.vgrow="ALWAYS">
               <columns>
                 <TreeTableColumn fx:id="treecFlag" prefWidth="90.0" />
                 <TreeTableColumn fx:id="treecMacado" prefWidth="25.0">
@@ -84,9 +86,10 @@
                    </graphic>
                 </TreeTableColumn>
                 <TreeTableColumn fx:id="treecBase" prefWidth="110.0" text="Base" />
-                <TreeTableColumn fx:id="treecManga" prefWidth="306.0" text="Manga" />
-                <TreeTableColumn fx:id="treecVolume" minWidth="0.0" prefWidth="65.0" text="Volume" />
-                <TreeTableColumn fx:id="treecCapitulo" prefWidth="78.0" text="Capitulo" />
+                <TreeTableColumn fx:id="treecManga" prefWidth="262.0" text="Manga" />
+                  <TreeTableColumn fx:id="treecLinguagem" minWidth="0.0" prefWidth="74.0" text="Linguagem" />
+                <TreeTableColumn fx:id="treecVolume" minWidth="0.0" prefWidth="54.0" text="Volume" />
+                <TreeTableColumn fx:id="treecCapitulo" prefWidth="100.0" text="Capitulo" />
               </columns>
             </TreeTableView>
 	       </children>

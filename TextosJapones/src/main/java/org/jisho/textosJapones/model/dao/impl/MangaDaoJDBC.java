@@ -365,8 +365,8 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaVolume> selectVolumes(String base, Boolean todos, String manga, Integer volume, Float capitulo)
-			throws ExcessaoBd {
+	public List<MangaVolume> selectVolumes(String base, Boolean todos, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -374,7 +374,10 @@ public class MangaDaoJDBC implements MangaDao {
 			if (!todos)
 				inner = String.format(INNER_VOLUMES, BASE_MANGA + base, BASE_MANGA + base);
 
-			String condicao = " VOL.linguagem = 'ja' AND 1>0";
+			String condicao = " 1>0 ";
+
+			if (linguagem != null)
+				condicao += " AND VOL.linguagem = '" + linguagem.getSigla() + "' ";
 
 			if (manga != null && !manga.trim().isEmpty())
 				condicao += " AND VOL.manga = " + '"' + manga.trim() + '"';
@@ -391,7 +394,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")),
 						selectVocabulario(base, "id_volume = " + rs.getLong("id")),
-						selectCapitulos(base, todos, rs.getLong("id"), capitulo)));
+						selectCapitulos(base, todos, rs.getLong("id"), capitulo, linguagem)));
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -460,8 +463,8 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaCapitulo> selectCapitulos(String base, Boolean todos, Long idVolume, Float capitulo)
-			throws ExcessaoBd {
+	public List<MangaCapitulo> selectCapitulos(String base, Boolean todos, Long idVolume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -469,7 +472,10 @@ public class MangaDaoJDBC implements MangaDao {
 			if (!todos)
 				inner = String.format(INNER_CAPITULOS, BASE_MANGA + base);
 
-			String condicao = " CAP.linguagem = 'ja' AND 1>0";
+			String condicao = " 1>0 ";
+
+			if (linguagem != null)
+				condicao += " AND CAP.linguagem = '" + linguagem.getSigla() + "' ";
 
 			if (capitulo != null && capitulo > 0)
 				condicao += " CAP.linguagem = 'ja' AND CAP.capitulo = " + String.valueOf(capitulo);
@@ -608,8 +614,9 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public List<MangaVolume> selectAll(String base, String manga, Integer volume, Float capitulo) throws ExcessaoBd {
-		return selectVolumes(base, true, manga, volume, capitulo);
+	public List<MangaVolume> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+			throws ExcessaoBd {
+		return selectVolumes(base, true, manga, volume, capitulo, linguagem);
 	}
 
 	@Override
@@ -668,7 +675,8 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next()) {
 				createBaseVocabulario(rs.getString("Tabela"));
-				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), todos, manga, volume, capitulo);
+				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), todos, manga, volume, capitulo,
+						Language.JAPANESE);
 				if (volumes.size() > 0)
 					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
 			}
@@ -693,7 +701,7 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setInt(2, obj.getVolume());
 			st.setString(3, obj.getLingua().getSigla());
 			st.setBoolean(4, obj.getProcessado());
-			
+
 			int rowsAffected = st.executeUpdate();
 
 			if (rowsAffected < 1) {
@@ -704,9 +712,9 @@ public class MangaDaoJDBC implements MangaDao {
 				Long id = null;
 				if (rs.next())
 					id = rs.getLong(1);
-				
+
 				insertVocabulario(base, id, null, null, obj.getVocabulario());
-				
+
 				return id;
 			}
 		} catch (SQLException e) {
@@ -744,9 +752,9 @@ public class MangaDaoJDBC implements MangaDao {
 				Long id = null;
 				if (rs.next())
 					id = rs.getLong(1);
-				
+
 				insertVocabulario(base, null, id, null, obj.getVocabulario());
-				
+
 				return id;
 			}
 		} catch (SQLException e) {
@@ -780,7 +788,7 @@ public class MangaDaoJDBC implements MangaDao {
 				Long id = null;
 				if (rs.next())
 					id = rs.getLong(1);
-				
+
 				insertVocabulario(base, null, null, id, obj.getVocabulario());
 				return id;
 			}
@@ -941,7 +949,42 @@ public class MangaDaoJDBC implements MangaDao {
 			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
 		} finally {
 			DB.closeStatement(st);
-		}		
+		}
+	}
+
+	@Override
+	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			String condicao = "1>0 ";
+
+			if (base != null && !base.trim().isEmpty())
+				condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
+
+			st = conn.prepareStatement(
+					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), condicao));
+			rs = st.executeQuery();
+
+			List<MangaTabela> list = new ArrayList<>();
+
+			while (rs.next()) {
+				createBaseVocabulario(rs.getString("Tabela"));
+				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), true, manga, volume, capitulo,
+						linguagem);
+				if (volumes.size() > 0)
+					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 }

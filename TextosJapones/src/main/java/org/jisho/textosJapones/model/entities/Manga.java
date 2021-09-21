@@ -11,6 +11,7 @@ public class Manga {
 	protected Integer pagina;
 	protected String nomePagina;
 	protected Boolean processar;
+	protected String linguagem;
 
 	public String getBase() {
 		return base;
@@ -59,6 +60,14 @@ public class Manga {
 	public void setNomePagina(String nomePagina) {
 		this.nomePagina = nomePagina;
 	}
+	
+	public String getLinguagem() {
+		return linguagem;
+	}
+
+	public void setLinguagem(String linguagem) {
+		this.linguagem = linguagem;
+	}
 
 	public Boolean isProcessar() {
 		return processar;
@@ -83,6 +92,7 @@ public class Manga {
 		this.pagina = null;
 		this.nomePagina = "";
 		this.processar = true;
+		this.linguagem = null;
 	}
 
 	public Manga(String base, String manga) {
@@ -93,6 +103,18 @@ public class Manga {
 		this.pagina = null;
 		this.nomePagina = "";
 		this.processar = true;
+		this.linguagem = null;
+	}
+	
+	public Manga(String base, String manga, String linguagem) {
+		this.base = base;
+		this.manga = manga;
+		this.volume = null;
+		this.capitulo = null;
+		this.pagina = null;
+		this.nomePagina = null;
+		this.linguagem = linguagem;
+		this.processar = true;
 	}
 
 	public Manga(String base, String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -102,5 +124,6 @@ public class Manga {
 		this.capitulo = capitulo;
 		this.pagina = pagina;
 		this.nomePagina = nomePagina;
+		this.linguagem = null;
 	}
 }

@@ -169,8 +169,8 @@ public class ProcessarMangas {
 							propVolume.set((double) V / tabela.getVolumes().size());
 
 							if (desativar) {
-								updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga() + 
-										" - Volume: " + volume.getVolume().toString());
+								updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga()
+										+ " - Volume: " + volume.getVolume().toString());
 								serviceManga.updateCancel(tabela.getBase(), volume);
 								break;
 							}
@@ -350,8 +350,9 @@ public class ProcessarMangas {
 
 										Platform.runLater(() -> controller.getLogConsultas()
 												.setText(m.surface() + " : Obtendo tradução."));
-										revisar.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-												Language.PORTUGUESE.getSigla(), revisar.getIngles(), contaGoogle)));
+										revisar.setTraducao(Util.normalize(ScriptGoogle.translate(
+												Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+												revisar.getIngles(), contaGoogle)));
 									} catch (IOException e) {
 										e.printStackTrace();
 									}

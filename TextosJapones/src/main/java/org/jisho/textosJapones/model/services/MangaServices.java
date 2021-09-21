@@ -11,6 +11,7 @@ import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.MangaVocabulario;
 import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 public class MangaServices {
@@ -28,6 +29,11 @@ public class MangaServices {
 	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd {
 		return vocabularioDao.selectTabelas(todos, base, manga, volume, capitulo);
+	}
+	
+	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+			throws ExcessaoBd {
+		return vocabularioDao.selectTabelasJson(base, manga, volume, capitulo, linguagem);
 	}
 
 	public List<MangaVolume> selectDadosTransferir(String baseOrigem) throws ExcessaoBd {
