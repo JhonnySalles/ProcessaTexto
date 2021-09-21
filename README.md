@@ -144,6 +144,13 @@ Incluso o recurso de visualização do progresso no ícone da bandeja do sistema
 * 0.0.5
     * Criação de tela para correção do vocabulário temporário.
     * Ajuste para melhor funcionalidade das telas.
+* 0.0.6
+    * Criado nova tela para realizar o processamento de vocabulário de texto extraido de imagens do projeto [MangaExtractor](https://github.com/JhonnySalles/MangaExtractor).
+    *  Implementado o processamento onde irá percorrer as tabelas criadas na extração e gerar os vocabulários, também estará gerando as frases de revisão e a tradução automática.
+    * Ajuste de erros no projeto.
+* 0.0.7
+    * Modificação na estrutura do vocabulário, onde irá criar uma nova tabela que terá campo de vinculo com as páginas, capítulos e volume.
+    * Criado a exportação de Json de legendas com a estrutura das classes correspondentes ao projeto MangaExtractor.
 
 ### Features
 
@@ -156,6 +163,9 @@ Incluso o recurso de visualização do progresso no ícone da bandeja do sistema
 - [X] Gerar e restaurar backup do banco de dados
 - [X] Processamento de registros no banco de dados
 - [X] Processamento de registros no banco de dados em lote
+- [X] Processamento de textos extraidos das imagens com o projeto MangaExtractor.
+- [X] Exportação do Json de legendas processadas.
+- [] Refatorar as classes para melhor organização do projeto.
 
 ## Meta
 
