@@ -14,7 +14,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.controller.FrasesController;
+import org.jisho.textosJapones.controller.FrasesAnkiController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Api;
@@ -45,7 +46,7 @@ import javafx.concurrent.Task;
 public class SudachiTokenizer {
 
 	private Api google = Api.API_GOOGLE;
-	private FrasesController controller;
+	private FrasesAnkiController controller;
 	private VocabularioServices vocabServ;
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
@@ -131,16 +132,17 @@ public class SudachiTokenizer {
 		vocabNovo.clear();
 		repetido.clear();
 
-		google = controller.getContaGoogle();
+		google = MenuPrincipalController.getController().getContaGoogle();
 		controller.setPalavra(texto[0]);
 
-		try (FileInputStream input = new FileInputStream(getPathSettings(controller.getDicionario()));
+		try (FileInputStream input = new FileInputStream(
+				getPathSettings(MenuPrincipalController.getController().getDicionario()));
 				Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
 			tokenizer = dict.create();
 
 			i = 0;
 			max = texto.length;
-			SplitMode mode = getModo(controller.getModo());
+			SplitMode mode = getModo(MenuPrincipalController.getController().getModo());
 
 			for (String txt : texto) {
 				if (txt != texto[0] && !txt.isEmpty()) {
@@ -178,9 +180,9 @@ public class SudachiTokenizer {
 				vocabNovo.clear();
 				Platform.runLater(() -> {
 					texto = controller.getTextoOrigem().split("\n");
-					dictionario = controller.getDicionario();
-					mode = getModo(controller.getModo());
-					google = controller.getContaGoogle();
+					dictionario = MenuPrincipalController.getController().getDicionario();
+					mode = getModo(MenuPrincipalController.getController().getModo());
+					google = MenuPrincipalController.getController().getContaGoogle();
 					controller.limpaVocabulario();
 					controller.desabilitaBotoes();
 				});
@@ -237,7 +239,7 @@ public class SudachiTokenizer {
 						TimeUnit.SECONDS.sleep(5);
 
 					Platform.runLater(() -> {
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 						processaListaNovo(true);
 					});
@@ -247,7 +249,7 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 
@@ -268,9 +270,9 @@ public class SudachiTokenizer {
 				vocabNovo.clear();
 				Platform.runLater(() -> {
 					palavras = controller.getTextoOrigem().split("\n");
-					dictionario = controller.getDicionario();
-					mode = getModo(controller.getModo());
-					google = controller.getContaGoogle();
+					dictionario = MenuPrincipalController.getController().getDicionario();
+					mode = getModo(MenuPrincipalController.getController().getModo());
+					google = MenuPrincipalController.getController().getContaGoogle();
 					controller.limpaVocabulario();
 					controller.desabilitaBotoes();
 				});
@@ -342,7 +344,7 @@ public class SudachiTokenizer {
 						TimeUnit.SECONDS.sleep(5);
 
 					Platform.runLater(() -> {
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 						processaListaNovo(true);
 					});
@@ -352,7 +354,7 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 
@@ -387,16 +389,20 @@ public class SudachiTokenizer {
 	}
 
 	private void atualizaProgresso() {
-		if (!controller.getBarraProgresso().progressProperty().isBound())
-			controller.getBarraProgresso().setProgress(i / max);
+		/*
+		 * if (!controller.getBarraProgresso().progressProperty().isBound())
+		 * controller.getBarraProgresso().setProgress(i / max);
+		 */
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, Type.NORMAL);
 	}
 
 	public void concluiProgresso(boolean erro) {
-		if (!controller.getBarraProgresso().progressProperty().isBound())
-			controller.getBarraProgresso().setProgress(0);
+		/*
+		 * if (!controller.getBarraProgresso().progressProperty().isBound())
+		 * controller.getBarraProgresso().setProgress(0);
+		 */
 
 		if (erro)
 			TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR);
@@ -408,7 +414,7 @@ public class SudachiTokenizer {
 		setVocabularioServices(new VocabularioServices());
 	}
 
-	public void processa(FrasesController cnt) throws ExcessaoBd {
+	public void processa(FrasesAnkiController cnt) throws ExcessaoBd {
 		controller = cnt;
 		configura();
 
@@ -431,7 +437,7 @@ public class SudachiTokenizer {
 		this.vocabServ = vocabServ;
 	}
 
-	public void corrigirLancados(FrasesController cnt) {
+	public void corrigirLancados(FrasesAnkiController cnt) {
 		controller = cnt;
 		vocabServ = new VocabularioServices();
 
@@ -443,10 +449,10 @@ public class SudachiTokenizer {
 			return;
 		}
 
-		try (Dictionary dict = new DictionaryFactory().create("",
-				readAll(new FileInputStream(getPathSettings(controller.getDicionario()))))) {
+		try (Dictionary dict = new DictionaryFactory().create("", readAll(
+				new FileInputStream(getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
 			tokenizer = dict.create();
-			SplitMode mode = getModo(controller.getModo());
+			SplitMode mode = getModo(MenuPrincipalController.getController().getModo());
 
 			for (Vocabulario vocabulario : lista) {
 				for (Morpheme mp : tokenizer.tokenize(mode, vocabulario.getVocabulario()))
@@ -537,7 +543,7 @@ public class SudachiTokenizer {
 
 					TimeUnit.SECONDS.sleep(5);
 					Platform.runLater(() -> {
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 					});
 				}
@@ -546,7 +552,7 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 

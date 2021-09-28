@@ -35,7 +35,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 
-public class ProcessarController implements Initializable {
+public class LegendasGerarVocabularioController implements Initializable {
 
 	@FXML
 	private AnchorPane apRoot;
@@ -90,8 +90,9 @@ public class ProcessarController implements Initializable {
 
 	private ProcessarServices service = new ProcessarServices();
 	private VocabularioServices vocabularioService = new VocabularioServices();
-	private LegendasController controller;
 	private ProcessarLegendas processar = new ProcessarLegendas(null);
+
+	private LegendasController controller;
 
 	public void setControllerPai(LegendasController controller) {
 		this.controller = controller;
@@ -125,7 +126,7 @@ public class ProcessarController implements Initializable {
 		}
 
 		try {
-			controller.getLog().setText("Iniciando salvamento.");
+			// controller.getLog().setText("Iniciando salvamento.");
 
 			desabilitaBotoes();
 			btnProcessarTudo.setDisable(true);
@@ -147,7 +148,7 @@ public class ProcessarController implements Initializable {
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao salvar as atualizações.");
 		} finally {
-			controller.getLog().setText("Salvamento concluido.");
+			// controller.getLog().setText("Salvamento concluido.");
 
 			habilitaBotoes();
 			btnProcessarTudo.setDisable(false);
@@ -164,9 +165,9 @@ public class ProcessarController implements Initializable {
 		}
 
 		try {
-			controller.getLog().setText("Atualizando....");
+			// controller.getLog().setText("Atualizando....");
 			tbLista.setItems(FXCollections.observableArrayList(service.select(txtAreaSelect.getText())));
-			controller.getLog().setText("");
+			// controller.getLog().setText("");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
@@ -184,16 +185,15 @@ public class ProcessarController implements Initializable {
 		}
 
 		try {
-			controller.getLog().setText("Iniciando delete.");
+			// controller.getLog().setText("Iniciando delete.");
 			service.delete(txtAreaDelete.getText());
-			;
 
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao salvar as atualizações.");
 		} finally {
-			controller.getLog().setText("Delete concluido.");
+			// controller.getLog().setText("Delete concluido.");
 		}
 	}
 
@@ -209,8 +209,10 @@ public class ProcessarController implements Initializable {
 		if (tbLista.getSelectionModel().getSelectedItem().getVocabulario().isEmpty()) {
 			processar.vocabulario.clear();
 
-			tbLista.getSelectionModel().getSelectedItem().setVocabulario(getVocabulario(controller.getDicionario(),
-					controller.getModo(), tbLista.getSelectionModel().getSelectedItem().getOriginal()));
+			tbLista.getSelectionModel().getSelectedItem()
+					.setVocabulario(getVocabulario(MenuPrincipalController.getController().getDicionario(),
+							MenuPrincipalController.getController().getModo(),
+							tbLista.getSelectionModel().getSelectedItem().getOriginal()));
 
 			txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
 		}
@@ -245,8 +247,8 @@ public class ProcessarController implements Initializable {
 
 		Task<Void> processarTudo = new Task<Void>() {
 			List<Processar> lista = null;
-			Dicionario dicionario = controller.getDicionario();
-			Modo modo = controller.getModo();
+			Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
+			Modo modo = MenuPrincipalController.getController().getModo();
 			Integer i = 0;
 
 			@Override
@@ -287,8 +289,8 @@ public class ProcessarController implements Initializable {
 
 						tbLista.setDisable(false);
 
-						controller.getLog().textProperty().unbind();
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getLog().textProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 						txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
@@ -301,8 +303,8 @@ public class ProcessarController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarTudo);
-		controller.getLog().textProperty().bind(processarTudo.messageProperty());
-		controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
+		// controller.getLog().textProperty().bind(processarTudo.messageProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
 		processa.start();
 	}
 
@@ -368,8 +370,8 @@ public class ProcessarController implements Initializable {
 		Task<Void> processarFila = new Task<Void>() {
 			List<Processar> lista = null;
 			List<FilaSQL> fila = null;
-			Dicionario dicionario = controller.getDicionario();
-			Modo modo = controller.getModo();
+			Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
+			Modo modo = MenuPrincipalController.getController().getModo();
 			Integer i = 0, x = 0;
 
 			@Override
@@ -440,8 +442,8 @@ public class ProcessarController implements Initializable {
 
 						tbLista.setDisable(false);
 
-						controller.getLog().textProperty().unbind();
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getLog().textProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
@@ -456,8 +458,8 @@ public class ProcessarController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarFila);
-		controller.getLog().textProperty().bind(processarFila.messageProperty());
-		controller.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
+		// controller.getLog().textProperty().bind(processarFila.messageProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
 		processa.start();
 	}
 
@@ -492,7 +494,7 @@ public class ProcessarController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return ProcessarController.class.getResource("/view/Processar.fxml");
+		return LegendasGerarVocabularioController.class.getResource("/view/LegendasGerarVocabulario.fxml");
 	}
 
 }

@@ -1,121 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTabPane?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apGlobal" minHeight="700.0" minWidth="750.0" prefHeight="700.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasController">
+<AnchorPane fx:id="apGlobal" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasController">
    <children>
       <StackPane fx:id="rootStackPane" layoutX="5.0" layoutY="11.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <AnchorPane fx:id="root" styleClass="background-Black1" stylesheets="@../css/Dark_Theme.css">
                <children>
-                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="50.0" styleClass="tituloBackground" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="500.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <padding>
-                              <Insets left="15.0" right="15.0" />
-                           </padding>
-                           <children>
-                              <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label fx:id="lblLog" textFill="WHITE" wrapText="true" />
-                                    <Label fx:id="lblLogConsultas" textFill="WHITE" />
-                                 </children>
-                              </VBox>
-                              <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" minWidth="100.0" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" />
-                              <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" minWidth="100.0" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" />
-                              <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="100.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="WHITE" />
-                              <JFXComboBox fx:id="cbSite" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="100.0" promptText="Site" styleClass="comboBox-stilo" unFocusColor="WHITE" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </AnchorPane>
-                  <JFXTabPane style="-fx-border-color: black; -fx-border-width: 1;" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                  <JFXTabPane style="-fx-border-color: black; -fx-border-width: 1;" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <tabs>
                         <Tab text="Processar Manga">
                            <content>
                             <AnchorPane>
-                                 <children>
-                                    <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0">
-                                             <children>
-                                                <JFXTextField fx:id="txtBaseOrigem" focusColor="#71afe5" labelFloat="true" promptText="Base Origem" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                                                <JFXTextField fx:id="txtBaseDestino" focusColor="#71afe5" labelFloat="true" promptText="Base Destino" styleClass="texto-stilo" text="manga_extractor.tabela" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                                                <JFXCheckBox fx:id="ckbCriarBase" checkedColor="#71afe5" text="Criar Base" textFill="WHITE" unCheckedColor="#106ebe" />
-                                                <JFXButton fx:id="btnTransferir" buttonType="RAISED" onAction="#onBtnTransferir" prefWidth="130.0" styleClass="background-White1" text="Transferir" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets>
-                                          </HBox>
-                                          <HBox alignment="TOP_CENTER" spacing="10.0">
-                                             <children>
-                                                <JFXTextField fx:id="txtBase" focusColor="#71afe5" labelFloat="true" promptText="Base" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                                                <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets>
-                                             <children>
-                                                <JFXButton fx:id="btnCarregar" buttonType="RAISED" onAction="#onBtnCarregar" prefWidth="130.0" styleClass="background-White1" text="Carregar" />
-                                                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar Vocabulario" />
-                                                <JFXCheckBox fx:id="ckbProcessados" checkedColor="#71afe5" selected="true" text="Apenas não processados" textFill="WHITE" unCheckedColor="#106ebe" />
-                                             </children>
-                                          </HBox>
-                                          <TreeTableView fx:id="treeBases" editable="true" prefHeight="345.0" prefWidth="678.0" styleClass="paneBorder" VBox.vgrow="ALWAYS">
-                                             <columns>
-                                                <TreeTableColumn fx:id="treecFlag" prefWidth="90.0" />
-                                                <TreeTableColumn fx:id="treecMacado" prefWidth="25.0">
-                                                   <cellValueFactory>
-						                           </cellValueFactory>
-						                           <graphic>
-						                              <JFXCheckBox fx:id="ckbMarcarTodos" alignment="CENTER" checkedColor="#71afe5" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onBtnMarcarTodos" prefHeight="18.0" prefWidth="7.0" unCheckedColor="#106ebe" />
-						                           </graphic>
-						                        </TreeTableColumn>
-                                                <TreeTableColumn fx:id="treecBase" prefWidth="110.0" text="Base" />
-                                                <TreeTableColumn fx:id="treecManga" prefWidth="195.0" text="Manga" />
-                                                <TreeTableColumn fx:id="treecVolume" prefWidth="50.0" text="Volume" />
-                                                <TreeTableColumn fx:id="treecCapitulo" prefWidth="53.0" text="Capitulo" />
-                                                <TreeTableColumn fx:id="treecPagina" prefWidth="45.0" text="Página" />
-                                                <TreeTableColumn fx:id="treecNomePagina" prefWidth="148.0" text="Nome Página" />
-                                             </columns>
-                                          </TreeTableView>
-                                       </children>
-                                    </VBox>
-                                 </children>
                                  <styleClass>
                                     <String fx:value="background-Black2" />
                                     <String fx:value="paneBorder" />
                                  </styleClass>
+                                 <children>
+                                    <fx:include fx:id="processar" source="MangaProcessar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
                               </AnchorPane>
                            </content>
                         </Tab>
@@ -128,22 +37,12 @@
                               </AnchorPane>  
                           </content>
                         </Tab>
-                        <Tab text="Revisar Vocabulario">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <fx:include fx:id="revisar" source="Revisar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </Tab>
                      </tabs>
                   </JFXTabPane>
-                  <ProgressBar fx:id="barraProgressoGeral" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <ProgressBar fx:id="barraProgressoVolumes" layoutX="10.0" layoutY="10.0" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <ProgressBar fx:id="barraProgressoCapitulos" layoutX="20.0" layoutY="20.0" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <ProgressBar fx:id="barraProgressoPaginas" layoutX="30.0" layoutY="30.0" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-               </children>
+                  <ProgressBar fx:id="barraProgressoVolumes" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <ProgressBar fx:id="barraProgressoCapitulos" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <ProgressBar fx:id="barraProgressoPaginas" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                 </children>
             </AnchorPane>
          </children>
       </StackPane>

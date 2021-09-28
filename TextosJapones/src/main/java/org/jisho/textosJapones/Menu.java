@@ -1,6 +1,6 @@
 package org.jisho.textosJapones;
 
-import org.jisho.textosJapones.controller.FrasesController;
+import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Tela;
 
@@ -26,7 +26,7 @@ public class Menu {
 
 			primaryStage.setScene(scena); // Seta a cena principal
 			primaryStage.setTitle("Processar textos japonês");
-			primaryStage.getIcons().add(new Image(Menu.class.getResourceAsStream(FrasesController.getIconLocate())));
+			primaryStage.getIcons().add(new Image(Menu.class.getResourceAsStream(FrasesAnkiController.getIconLocate())));
 			primaryStage.setMinWidth(300);
 			primaryStage.setMinHeight(200);
 

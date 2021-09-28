@@ -41,12 +41,12 @@ public class Notificacoes {
 	private static TranslateTransition TT_AP_NOTIFICACOES;
 	private static Boolean APARECENDO;
 
-	public static AnchorPane getRootStackPane() {
+	public static AnchorPane getRootAnchorPane() {
 		return ROOT_ANCHOR_PANE;
 	}
 
-	public static void setRootStackPane(AnchorPane rootAnchorkPane) {
-		Notificacoes.ROOT_ANCHOR_PANE = rootAnchorkPane;
+	public static void setRootAnchorPane(AnchorPane rootAnchorPane) {
+		Notificacoes.ROOT_ANCHOR_PANE = rootAnchorPane;
 	}
 
 	private static void setTipo(Notificacao tipo, PopupNotificacaoController controller, AnchorPane root) {

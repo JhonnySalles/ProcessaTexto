@@ -101,7 +101,7 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private TreeTableColumn<Manga, String> treecManga;
-	
+
 	@FXML
 	private TreeTableColumn<Manga, Language> treecLinguagem;
 
@@ -114,8 +114,13 @@ public class MangasJsonController implements Initializable {
 	private MangaServices service = new MangaServices();
 	private ObservableList<MangaTabela> TABELAS;
 	private Boolean PAUSAR;
-	private MangasController controller;
 	private Boolean logAtivo;
+
+	private MangasController controller;
+
+	public void setControllerPai(MangasController controller) {
+		this.controller = controller;
+	}
 
 	@FXML
 	private void onBtnCarregar() {
@@ -168,10 +173,6 @@ public class MangasJsonController implements Initializable {
 		treeBases.refresh();
 	}
 
-	public void setControllerPai(MangasController controller) {
-		this.controller = controller;
-	}
-
 	public void habilitar() {
 		treeBases.setDisable(false);
 		btnGerarJson.setAccessibleText("GERAR");
@@ -185,15 +186,15 @@ public class MangasJsonController implements Initializable {
 	private String error, destino;
 
 	private void gerar() {
-		logAtivo = !controller.getLog().textProperty().isBound();
+		// logAtivo = !controller.getLog().textProperty().isBound();
 		isSepararCapitulo = ckbSepararPorCapitulos.isSelected();
 		destino = txtCaminhoSalvar.getText();
 
 		PAUSAR = false;
 
 		if (logAtivo) {
-			controller.getLog().setText("Gerando Json....");
-			controller.getBarraProgressoGeral().setProgress(-1);
+			// controller.getLog().setText("Gerando Json....");
+			// controller.getBarraProgressoGeral().setProgress(-1);
 			if (TaskbarProgressbar.isSupported())
 				TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 		}
@@ -305,10 +306,10 @@ public class MangasJsonController implements Initializable {
 				Platform.runLater(() -> {
 
 					if (logAtivo) {
-						controller.getBarraProgressoGeral().progressProperty().unbind();
-						controller.getLog().textProperty().unbind();
-						controller.getBarraProgressoGeral().setProgress(0);
-						controller.getLog().setText("");
+						// controller.getBarraProgressoGeral().progressProperty().unbind();
+						// controller.getLog().textProperty().unbind();
+						// controller.getBarraProgressoGeral().setProgress(0);
+						// controller.getLog().setText("");
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 					}
 
@@ -324,8 +325,8 @@ public class MangasJsonController implements Initializable {
 		};
 
 		if (logAtivo) {
-			controller.getBarraProgressoGeral().progressProperty().bind(gerarJson.progressProperty());
-			controller.getLog().textProperty().bind(gerarJson.messageProperty());
+			// controller.getBarraProgressoGeral().progressProperty().bind(gerarJson.progressProperty());
+			// controller.getLog().textProperty().bind(gerarJson.messageProperty());
 		}
 
 		Thread t = new Thread(gerarJson);
@@ -340,10 +341,10 @@ public class MangasJsonController implements Initializable {
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
-		logAtivo = !controller.getLog().textProperty().isBound();
+		// logAtivo = !controller.getLog().textProperty().isBound();
 		if (logAtivo) {
-			controller.getLog().setText("Carregando....");
-			controller.getBarraProgressoGeral().setProgress(-1);
+			// controller.getLog().setText("Carregando....");
+			// controller.getBarraProgressoGeral().setProgress(-1);
 
 			if (TaskbarProgressbar.isSupported())
 				TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
@@ -379,8 +380,8 @@ public class MangasJsonController implements Initializable {
 					treeBases.setRoot(DADOS);
 
 					if (logAtivo) {
-						controller.getLog().setText("");
-						controller.getBarraProgressoGeral().setProgress(0);
+						// controller.getLog().setText("");
+						// controller.getBarraProgressoGeral().setProgress(0);
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 					}
 
@@ -405,9 +406,9 @@ public class MangasJsonController implements Initializable {
 			TreeItem<Manga> itmLingua = null;
 			String volumeAnterior = "";
 			Language linguagemAnterior = null;
-			
+
 			for (MangaVolume volume : tabela.getVolumes()) {
-				
+
 				// Implementa um nivel por tipo
 				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
 					volumeAnterior = volume.getManga();
@@ -415,13 +416,14 @@ public class MangasJsonController implements Initializable {
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
 				}
-				
+
 				if (linguagemAnterior == null || volume.getLingua().compareTo(linguagemAnterior) != 0) {
-					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), volume.getLingua().getSigla().toUpperCase()));
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(),
+							volume.getLingua().getSigla().toUpperCase()));
 					linguagemAnterior = volume.getLingua();
 					itmManga.getChildren().add(itmLingua);
 				}
-				
+
 				volume.setLinguagem(linguagemAnterior.getSigla().toUpperCase());
 				volume.setBase(tabela.getBase());
 				TreeItem<Manga> itmVolume = new TreeItem<Manga>(volume);
@@ -520,7 +522,7 @@ public class MangasJsonController implements Initializable {
 					robot.keyPress(KeyCode.TAB);
 			}
 		});
-		
+
 		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent ke) {

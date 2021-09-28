@@ -6,7 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jisho.textosJapones.controller.LegendasController;
+import org.jisho.textosJapones.controller.LegendasImportarController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Dicionario;
@@ -29,9 +30,9 @@ public class ProcessarLegendas {
 
 	private VocabularioServices vocabularioService = new VocabularioServices();
 	private RevisarServices service = new RevisarServices();
-	private LegendasController controller;
+	private LegendasImportarController controller;
 
-	public ProcessarLegendas(LegendasController controller) {
+	public ProcessarLegendas(LegendasImportarController controller) {
 		this.controller = controller;
 	}
 
@@ -41,10 +42,10 @@ public class ProcessarLegendas {
 
 			@Override
 			protected Void call() throws Exception {
-				try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer
-						.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(controller.getDicionario()))))) {
+				try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer.readAll(new FileInputStream(
+						SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
 					tokenizer = dict.create();
-					mode = SudachiTokenizer.getModo(controller.getModo());
+					mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
 
 					int x = 0;
 					for (String frase : frases) {
@@ -56,8 +57,8 @@ public class ProcessarLegendas {
 
 				} catch (IOException e) {
 					e.printStackTrace();
-					AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-							"Erro ao processar a lista.");
+					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
+							controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
 				}
 
 				return null;
@@ -65,14 +66,14 @@ public class ProcessarLegendas {
 
 			@Override
 			protected void succeeded() {
-				AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
-						"Lista processada com sucesso.");
-				controller.getBarraProgresso().progressProperty().unbind();
-				controller.getLog().textProperty().unbind();
+				AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
+						controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
+				// controller.getBarraProgresso().progressProperty().unbind();
+				// controller.getLog().textProperty().unbind();
 			}
 		};
-		controller.getBarraProgresso().progressProperty().bind(verificaConexao.progressProperty());
-		controller.getLog().textProperty().bind(verificaConexao.messageProperty());
+		// controller.getBarraProgresso().progressProperty().bind(verificaConexao.progressProperty());
+		// controller.getLog().textProperty().bind(verificaConexao.messageProperty());
 		Thread t = new Thread(verificaConexao);
 		t.start();
 	}
@@ -100,8 +101,8 @@ public class ProcessarLegendas {
 		} catch (IOException | ExcessaoBd e) {
 			vocabulario = "";
 			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao processar a lista.");
+			AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
+					controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
 		}
 
 		return vocabulario.trim();
@@ -128,12 +129,13 @@ public class ProcessarLegendas {
 	private Boolean usarRevisar = true;
 	public Set<String> vocabulario = new HashSet<>();
 	private Set<String> existe = new HashSet<>();
-	
+
 	private String gerarVocabulario(String frase) throws ExcessaoBd {
 		String vocabularios = "";
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
-				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm()) && !existe.contains(m.dictionaryForm())) {
+				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())
+						&& !existe.contains(m.dictionaryForm())) {
 					existe.add(m.dictionaryForm());
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
@@ -143,13 +145,13 @@ public class ProcessarLegendas {
 						else
 							vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
 
-						//Usado apenas para correção em formas em branco.
+						// Usado apenas para correção em formas em branco.
 						if (palavra.getFormaBasica().isEmpty()) {
 							palavra.setFormaBasica(m.dictionaryForm());
 							palavra.setLeitura(m.readingForm());
 							vocabularioService.update(palavra);
 						}
-							
+
 						vocabulario.add(palavra.getFormaBasica());
 					} else if (usarRevisar) {
 						Revisar revisar = service.select(m.surface(), m.dictionaryForm());

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.ProcessarController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.LegendasGerarVocabularioController">
    <children>
       <SplitPane dividerPositions="0.5887096774193549" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="background-Black2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>

@@ -2,7 +2,7 @@ package org.jisho.textosJapones.model.enums;
 
 public enum Site {
 
-	JAPANESE_TANOSHI("Japanese tanoshi"), 
+	TODOS("Todos"), JAPANESE_TANOSHI("Japanese tanoshi"), 
 	// TANGORIN("Tangorin"),
 	JAPANDICT("JapanDict"), JISHO("Jisho");
 

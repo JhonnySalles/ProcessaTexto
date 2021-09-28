@@ -41,7 +41,7 @@ public class MenuConfiguracaoController implements Initializable {
 	@FXML
 	public JFXTextField txtDataBaseManga;
 
-	private FrasesController controller;
+	private MenuPrincipalController controller;
 
 	@FXML
 	private void onBtnCarregarCaminhoMysql() {
@@ -81,7 +81,7 @@ public class MenuConfiguracaoController implements Initializable {
 			return caminho.getAbsolutePath();
 	}
 
-	public void setControllerPai(FrasesController cnt) {
+	public void setControllerPai(MenuPrincipalController cnt) {
 		this.controller = cnt;
 	}
 

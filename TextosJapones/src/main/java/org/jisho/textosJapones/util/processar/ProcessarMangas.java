@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.controller.MangasController;
+import org.jisho.textosJapones.controller.MangasProcessarController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
@@ -45,7 +46,7 @@ import javafx.concurrent.Task;
 public class ProcessarMangas {
 
 	private VocabularioServices vocabularioService = new VocabularioServices();
-	private MangasController controller;
+	private MangasProcessarController controller;
 	private RevisarServices serviceRevisar = new RevisarServices();
 	private MangaServices serviceManga = new MangaServices();
 	private ProcessarPalavra desmembra = new ProcessarPalavra();
@@ -54,7 +55,7 @@ public class ProcessarMangas {
 	private Boolean desativar = false;
 	private Integer traducoes = 0;
 
-	public ProcessarMangas(MangasController controller) {
+	public ProcessarMangas(MangasProcessarController controller) {
 		this.controller = controller;
 	}
 
@@ -79,11 +80,11 @@ public class ProcessarMangas {
 			@Override
 			protected Void call() throws Exception {
 				try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer
-						.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(controller.getDicionario()))))) {
+						.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
 					tokenizer = dict.create();
-					mode = SudachiTokenizer.getModo(controller.getModo());
-					contaGoogle = controller.getContaGoogle();
-					siteDicionario = controller.getSiteTraducao();
+					mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
+					contaGoogle = MenuPrincipalController.getController().getContaGoogle();
+					siteDicionario = MenuPrincipalController.getController().getSite();
 
 					propTabela.set(.0);
 					propVolume.set(.0);
@@ -189,7 +190,7 @@ public class ProcessarMangas {
 
 				} catch (IOException e) {
 					e.printStackTrace();
-					AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Erro",
 							"Erro ao processar a lista.");
 				}
 
@@ -199,22 +200,22 @@ public class ProcessarMangas {
 			@Override
 			protected void succeeded() {
 				if (!desativar)
-					AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
+					AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Aviso",
 							"Mangas processadas com sucesso.");
 
-				controller.getBarraProgressoGeral().progressProperty().unbind();
+				//controller.getBarraProgressoGeral().progressProperty().unbind();
 				controller.getBarraProgressoVolumes().progressProperty().unbind();
 				controller.getBarraProgressoCapitulos().progressProperty().unbind();
 				controller.getBarraProgressoPaginas().progressProperty().unbind();
-				controller.getLog().textProperty().unbind();
+				//controller.getLog().textProperty().unbind();
 				controller.habilitar();
 			}
 		};
-		controller.getBarraProgressoGeral().progressProperty().bind(propTabela);
+		//controller.getBarraProgressoGeral().progressProperty().bind(propTabela);
 		controller.getBarraProgressoVolumes().progressProperty().bind(propVolume);
 		controller.getBarraProgressoCapitulos().progressProperty().bind(propCapitulo);
 		controller.getBarraProgressoPaginas().progressProperty().bind(verificaConexao.progressProperty());
-		controller.getLog().textProperty().bind(verificaConexao.messageProperty());
+		//controller.getLog().textProperty().bind(verificaConexao.messageProperty());
 		Thread t = new Thread(verificaConexao);
 		t.start();
 	}
@@ -223,7 +224,7 @@ public class ProcessarMangas {
 		if (kanji.trim().isEmpty())
 			return "";
 
-		Platform.runLater(() -> controller.getLogConsultas().setText(kanji + " : Obtendo significado."));
+		//Platform.runLater(() -> controller.getLogConsultas().setText(kanji + " : Obtendo significado."));
 		String resultado = "";
 		switch (siteDicionario) {
 		case JAPANESE_TANOSHI:
@@ -243,12 +244,12 @@ public class ProcessarMangas {
 
 	private String getDesmembrado(String palavra) {
 		String resultado = "";
-		Platform.runLater(() -> controller.getLogConsultas().setText(palavra + " : Desmembrando a palavra."));
-		resultado = processaPalavras(desmembra.processarDesmembrar(palavra, controller.getDicionario(), Modo.B),
+		//Platform.runLater(() -> controller.getLogConsultas().setText(palavra + " : Desmembrando a palavra."));
+		resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B),
 				Modo.B);
 
 		if (resultado.isEmpty())
-			resultado = processaPalavras(desmembra.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
+			resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.A),
 					Modo.A);
 
 		return resultado;
@@ -262,7 +263,7 @@ public class ProcessarMangas {
 			if (!resultado.trim().isEmpty())
 				desmembrado += palavra + " - " + resultado + "; ";
 			else if (modo.equals(Modo.B)) {
-				resultado = processaPalavras(desmembra.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
+				resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.A),
 						Modo.A);
 				if (!resultado.trim().isEmpty())
 					desmembrado += resultado;
@@ -306,8 +307,8 @@ public class ProcessarMangas {
 						if (revisar == null) {
 							revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true);
 
-							Platform.runLater(
-									() -> controller.getLogConsultas().setText(m.surface() + " : Vocabulário novo."));
+							/*Platform.runLater(
+									() -> controller.getLogConsultas().setText(m.surface() + " : Vocabulário novo."));*/
 							revisar.setIngles(getSignificado(revisar.getVocabulario()));
 
 							if (revisar.getIngles().isEmpty())
@@ -345,11 +346,11 @@ public class ProcessarMangas {
 											default:
 												break;
 											}
-											controller.setContaGoogle(contaGoogle);
+											MenuPrincipalController.getController().setContaGoogle(contaGoogle);
 										}
 
-										Platform.runLater(() -> controller.getLogConsultas()
-												.setText(m.surface() + " : Obtendo tradução."));
+										/*Platform.runLater(() -> controller.getLogConsultas()
+												.setText(m.surface() + " : Obtendo tradução."));*/
 										revisar.setTraducao(Util.normalize(ScriptGoogle.translate(
 												Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
 												revisar.getIngles(), contaGoogle)));
@@ -359,7 +360,7 @@ public class ProcessarMangas {
 								}
 							}
 							serviceRevisar.insert(revisar);
-							Platform.runLater(() -> controller.getLogConsultas().setText(""));
+							//Platform.runLater(() -> controller.getLogConsultas().setText(""));
 						} else {
 							if (!revisar.isManga()) {
 								revisar.setManga(true);

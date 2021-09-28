@@ -9,10 +9,8 @@ import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.model.entities.Revisar;
-import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.enums.Site;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.util.Util;
@@ -26,7 +24,6 @@ import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 
@@ -48,9 +45,6 @@ public class TraduzirController implements Initializable {
 	private AnchorPane apRoot;
 
 	@FXML
-	private JFXComboBox<Api> cbContaGoolge;
-
-	@FXML
 	private JFXButton btnProcessarTudo;
 
 	@FXML
@@ -63,9 +57,6 @@ public class TraduzirController implements Initializable {
 	private JFXButton btnAtualizar;
 
 	@FXML
-	private JFXComboBox<Site> cbSite;
-
-	@FXML
 	private JFXButton btnJapaneseTanoshi;
 
 	@FXML
@@ -76,6 +67,9 @@ public class TraduzirController implements Initializable {
 
 	@FXML
 	private JFXCheckBox ckbDesmembrar;
+
+	@FXML
+	private JFXCheckBox ckbMarcarTodos;
 
 	@FXML
 	private TableView<Revisar> tbVocabulario;
@@ -103,7 +97,7 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private void onBtnSalvar() {
 		try {
-			controller.getLog().setText("Iniciando salvamento.");
+			// controller.getLog().setText("Iniciando salvamento.");
 
 			btnSalvar.setDisable(true);
 			btnAtualizar.setDisable(true);
@@ -131,7 +125,7 @@ public class TraduzirController implements Initializable {
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao salvar as atualizações.");
 		} finally {
-			controller.getLog().setText("Salvamento concluido.");
+			// controller.getLog().setText("Salvamento concluido.");
 
 			btnSalvar.setDisable(false);
 			btnAtualizar.setDisable(false);
@@ -153,15 +147,21 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private void onBtnAtualizar() {
 		try {
-			controller.getLog().setText("Atualizando....");
+			// controller.getLog().setText("Atualizando....");
 			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectTraduzir()));
 
-			controller.getLog().setText("");
+			// controller.getLog().setText("");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao pesquisar as revisões.");
 		}
+	}
+
+	@FXML
+	private void onBtnMarcarTodos() {
+		tbVocabulario.getItems().forEach(e -> e.getRevisado().selectedProperty().set(ckbMarcarTodos.isSelected()));
+		tbVocabulario.refresh();
 	}
 
 	private static Boolean desativar = false;
@@ -172,7 +172,7 @@ public class TraduzirController implements Initializable {
 			return "";
 
 		String resultado = "";
-		switch (cbSite.getSelectionModel().getSelectedItem()) {
+		switch (MenuPrincipalController.getController().getSite()) {
 		case JAPANESE_TANOSHI:
 			resultado = TanoshiJapanese.processa(kanji);
 			break;
@@ -196,8 +196,8 @@ public class TraduzirController implements Initializable {
 			if (!resultado.trim().isEmpty())
 				desmembrado += palavra + " - " + resultado + "; ";
 			else if (modo.equals(Modo.B)) {
-				resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
-						Modo.A);
+				resultado = processaPalavras(processar.processarDesmembrar(palavra,
+						MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
 				if (!resultado.trim().isEmpty())
 					desmembrado += resultado;
 			}
@@ -208,12 +208,13 @@ public class TraduzirController implements Initializable {
 
 	private String getDesmembrado(String palavra) {
 		String resultado = "";
-		resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.B),
+		resultado = processaPalavras(
+				processar.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B),
 				Modo.B);
 
 		if (resultado.isEmpty())
-			resultado = processaPalavras(processar.processarDesmembrar(palavra, controller.getDicionario(), Modo.A),
-					Modo.A);
+			resultado = processaPalavras(processar.processarDesmembrar(palavra,
+					MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
 
 		return resultado;
 	}
@@ -283,7 +284,7 @@ public class TraduzirController implements Initializable {
 								try {
 									item.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), item.getIngles(),
-											cbContaGoolge.getValue())));
+											MenuPrincipalController.getController().getContaGoogle())));
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -316,8 +317,8 @@ public class TraduzirController implements Initializable {
 						btnJisho.setDisable(false);
 						ckbDesmembrar.setDisable(false);
 
-						controller.getLog().textProperty().unbind();
-						controller.getBarraProgresso().progressProperty().unbind();
+						// controller.getLog().textProperty().unbind();
+						// controller.getBarraProgresso().progressProperty().unbind();
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
@@ -329,8 +330,8 @@ public class TraduzirController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarTudo);
-		controller.getLog().textProperty().bind(processarTudo.messageProperty());
-		controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
+		// controller.getLog().textProperty().bind(processarTudo.messageProperty());
+		// controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
 		processa.start();
 	}
 
@@ -344,9 +345,10 @@ public class TraduzirController implements Initializable {
 			return;
 
 		try {
-			tbVocabulario.getSelectionModel().getSelectedItem()
-					.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
-							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(), cbContaGoolge.getValue())));
+			tbVocabulario.getSelectionModel().getSelectedItem().setTraducao(
+					Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(),
+							MenuPrincipalController.getController().getContaGoogle())));
 
 			tbVocabulario.refresh();
 		} catch (IOException e) {
@@ -444,7 +446,7 @@ public class TraduzirController implements Initializable {
 						e.getTableView().getItems().get(e.getTablePosition().getRow())
 								.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 										Language.PORTUGUESE.getSigla(), e.getNewValue().trim(),
-										cbContaGoolge.getValue())));
+										MenuPrincipalController.getController().getContaGoogle())));
 
 						tbVocabulario.refresh();
 					} catch (IOException ex) {
@@ -473,13 +475,6 @@ public class TraduzirController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		linkaCelulas();
-
-		cbContaGoolge.getItems().addAll(Api.values());
-		cbContaGoolge.getSelectionModel().selectFirst();
-
-		cbSite.getItems().addAll(Site.values());
-		cbSite.getSelectionModel().selectFirst();
-
 		btnProcessarTudo.setAccessibleText("PROCESSAR");
 	}
 

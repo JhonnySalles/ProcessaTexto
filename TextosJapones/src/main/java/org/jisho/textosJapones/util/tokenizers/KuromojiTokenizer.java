@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jisho.textosJapones.controller.FrasesController;
+import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
@@ -37,7 +37,7 @@ public class KuromojiTokenizer {
 	final private String pattern = ".*[\u4E00-\u9FAF].*";
 	private int i;
 
-	public void processaTexto(FrasesController cnt) {
+	public void processaTexto(FrasesAnkiController cnt) {
 		setVocabularioServices(new VocabularioServices());
 
 		String[] texto = cnt.getTextoOrigem().split("\n");
