@@ -121,6 +121,10 @@ public class MangasJsonController implements Initializable {
 	public void setControllerPai(MangasController controller) {
 		this.controller = controller;
 	}
+	
+	public MangasController getControllerPai() {
+		return controller;
+	}
 
 	@FXML
 	private void onBtnCarregar() {

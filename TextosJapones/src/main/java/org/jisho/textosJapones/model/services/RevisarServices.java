@@ -15,8 +15,8 @@ public class RevisarServices {
 		return revisarDao.selectAll();
 	}
 
-	public List<Revisar> selectTraduzir() throws ExcessaoBd {
-		return revisarDao.selectTraduzir();
+	public List<Revisar> selectTraduzir(Integer quantidadeRegistros) throws ExcessaoBd {
+		return revisarDao.selectTraduzir(quantidadeRegistros);
 	}
 
 	public RevisarServices insertOrUpdate(List<Revisar> lista) throws ExcessaoBd {

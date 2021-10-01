@@ -2,6 +2,8 @@ package org.jisho.textosJapones.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
@@ -37,11 +39,13 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -114,10 +118,20 @@ public class MenuPrincipalController implements Initializable {
 	private JFXComboBox<Api> cbContaGoolge;
 
 	@FXML
+	private HBox hbContainerLog;
+	
+	@FXML
 	private Label lblLog;
 
 	@FXML
 	private ProgressBar barraProgresso;
+	
+	@FXML
+	private ScrollPane scpBarraProgress;
+	
+	@FXML
+	private VBox vbBarraProgress;
+	private Map<GrupoBarraProgressoController, AnchorPane> progressBar = new HashMap<>();
 
 	private PopOver pop;
 	private Timeline tmlImagemBackup;
@@ -225,7 +239,7 @@ public class MenuPrincipalController implements Initializable {
 	public Api getContaGoogle() {
 		return cbContaGoolge.getSelectionModel().getSelectedItem();
 	}
-	
+
 	public void setContaGoogle(Api contaGoogle) {
 		cbContaGoolge.getSelectionModel().select(contaGoogle);
 	}
@@ -236,6 +250,42 @@ public class MenuPrincipalController implements Initializable {
 
 	public Label getLblLog() {
 		return lblLog;
+	}
+	
+	private void progressBarVisible(Boolean visible) {
+		if (visible)
+			hbContainerLog.setMaxWidth(62);
+		else
+			hbContainerLog.setMaxWidth(17);
+		scpBarraProgress.setVisible(!progressBar.isEmpty());
+	}
+
+	public GrupoBarraProgressoController criaBarraProgresso() {
+		try {
+			lblLog.setText("");
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(GrupoBarraProgressoController.getFxmlLocate());
+			AnchorPane barra = loader.load(); // Necessário primeiro iniciar o loader para pegar o controller.
+			GrupoBarraProgressoController cnt = loader.getController();
+			vbBarraProgress.getChildren().add(barra);
+			progressBar.put(cnt, barra);
+			progressBarVisible(!progressBar.isEmpty());
+			return cnt;
+		} catch (IOException e) {
+			System.out.println("Erro ao criar barra de progresso.");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void destroiBarraProgresso(GrupoBarraProgressoController barra, String texto) {
+		if (progressBar.containsKey(barra)) {
+			AnchorPane item = progressBar.get(barra);
+			vbBarraProgress.getChildren().remove(vbBarraProgress.getChildren().indexOf(item));
+			progressBar.remove(barra);
+			progressBarVisible(!progressBar.isEmpty());
+		}
+		lblLog.setText(texto);
 	}
 
 	public void verificaConexao() {
@@ -346,10 +396,11 @@ public class MenuPrincipalController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		CONTROLLER = this;
+		progressBarVisible(false);
 		animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera);
 		criaConfiguracao();
 		criaMenuBackup();
-		
+
 		cbSite.getItems().addAll(Site.values());
 		cbSite.getSelectionModel().select(Site.TODOS);
 

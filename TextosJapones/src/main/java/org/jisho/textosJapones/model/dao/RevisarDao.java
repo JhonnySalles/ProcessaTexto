@@ -25,7 +25,7 @@ public interface RevisarDao {
 
 	List<String> selectFrases(String select) throws ExcessaoBd;
 
-	List<Revisar> selectTraduzir() throws ExcessaoBd;
+	List<Revisar> selectTraduzir(Integer quantidadeRegistros) throws ExcessaoBd;
 
 	String selectQuantidadeRestante() throws ExcessaoBd;
 

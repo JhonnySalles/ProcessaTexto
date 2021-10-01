@@ -7,6 +7,7 @@
 <?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -61,7 +62,7 @@
                                     <Insets right="15.0" />
                                  </padding>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT">
+                              <HBox fx:id="hbContainerLog" alignment="CENTER_RIGHT">
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
@@ -69,6 +70,19 @@
                                     <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label fx:id="lblLog" textFill="WHITE" wrapText="true" />
+                                          <ScrollPane fx:id="scpBarraProgress" fitToHeight="true" fitToWidth="true" minHeight="45.0">
+                                             <content>
+                                                <AnchorPane styleClass="background-Black3">
+                                                   <children>
+                                                      <VBox fx:id="vbBarraProgress" spacing="5.0" styleClass="background-Black3" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <padding>
+                                                            <Insets bottom="2.0" left="3.0" right="3.0" top="2.0" />
+                                                         </padding>
+                                                      </VBox>
+                                                   </children>
+                                                </AnchorPane>
+                                             </content>
+                                          </ScrollPane>
                                        </children>
                                     </VBox>
                                  </children>

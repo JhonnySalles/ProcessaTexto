@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 
@@ -18,6 +19,15 @@ public class MangasController implements Initializable {
 
 	@FXML
 	protected AnchorPane apConteinerRoot;
+	
+	@FXML
+	private ProgressBar barraProgressoVolumes;
+
+	@FXML
+	private ProgressBar barraProgressoCapitulos;
+
+	@FXML
+	private ProgressBar barraProgressoPaginas;
 
 	@FXML
 	private MangasJsonController jsonController;
@@ -31,6 +41,18 @@ public class MangasController implements Initializable {
 
 	public StackPane getStackPane() {
 		return stackPane;
+	}
+	
+	public ProgressBar getBarraProgressoVolumes() {
+		return barraProgressoVolumes;
+	}
+
+	public ProgressBar getBarraProgressoCapitulos() {
+		return barraProgressoCapitulos;
+	}
+
+	public ProgressBar getBarraProgressoPaginas() {
+		return barraProgressoPaginas;
 	}
 
 	public void initialize(URL arg0, ResourceBundle arg1) {

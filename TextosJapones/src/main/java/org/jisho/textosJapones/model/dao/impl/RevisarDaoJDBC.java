@@ -26,7 +26,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
 	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
-	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false LIMIT 1000";
+	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
 	final private String SELECT_REVISAR = SELECT + "WHERE %s ORDER BY aparece DESC LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or formaBasica = ? LIMIT 1";
@@ -210,12 +210,12 @@ public class RevisarDaoJDBC implements RevisarDao {
 	}
 
 	@Override
-	public List<Revisar> selectTraduzir() throws ExcessaoBd {
+	public List<Revisar> selectTraduzir(Integer quantidadeRegistros) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
-			st = conn.prepareStatement(SELECT_TRADUZIR);
+			st = conn.prepareStatement(SELECT_TRADUZIR + (quantidadeRegistros > 0 ? " LIMIT " + quantidadeRegistros.toString() : " LIMIT 1000"));
 			rs = st.executeQuery();
 
 			List<Revisar> list = new ArrayList<>();

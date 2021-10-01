@@ -51,23 +51,6 @@ public class MangasProcessarController implements Initializable {
 	protected AnchorPane apRoot;
 
 	@FXML
-	private ProgressBar barraProgressoVolumes;
-
-	@FXML
-	private ProgressBar barraProgressoCapitulos;
-
-	@FXML
-	private ProgressBar barraProgressoPaginas;
-
-	@FXML
-	private RevisarController revisarController;
-
-	@FXML
-	private MangasJsonController jsonController;
-
-	/*------------ Processar Manga ------------*/
-
-	@FXML
 	private JFXButton btnCarregar;
 
 	@FXML
@@ -179,9 +162,9 @@ public class MangasProcessarController implements Initializable {
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 		// barraProgressoGeral.setProgress(0);
-		barraProgressoVolumes.setProgress(0);
-		barraProgressoCapitulos.setProgress(0);
-		barraProgressoPaginas.setProgress(0);
+		controller.getBarraProgressoVolumes().setProgress(0);
+		controller.getBarraProgressoCapitulos().setProgress(0);
+		controller.getBarraProgressoPaginas().setProgress(0);
 	}
 
 	public AnchorPane getRoot() {
@@ -189,15 +172,15 @@ public class MangasProcessarController implements Initializable {
 	}
 
 	public ProgressBar getBarraProgressoVolumes() {
-		return barraProgressoVolumes;
+		return controller.getBarraProgressoVolumes();
 	}
 
 	public ProgressBar getBarraProgressoCapitulos() {
-		return barraProgressoCapitulos;
+		return controller.getBarraProgressoCapitulos();
 	}
 
 	public ProgressBar getBarraProgressoPaginas() {
-		return barraProgressoPaginas;
+		return controller.getBarraProgressoPaginas();
 	}
 
 	private String BASE_ORIGEM, BASE_DESTINO;
@@ -267,7 +250,7 @@ public class MangasProcessarController implements Initializable {
 					// lblLog.setText("");
 					btnTransferir.setDisable(false);
 					// barraProgressoGeral.setProgress(0);
-					barraProgressoVolumes.setProgress(0);
+					controller.getBarraProgressoVolumes().setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
 					if (!error.isEmpty())
@@ -300,8 +283,8 @@ public class MangasProcessarController implements Initializable {
 		BASE = txtBase.getText().trim();
 		MANGA = txtManga.getText().trim();
 
-		// barraProgressoGeral.setProgress(-1);
-		barraProgressoVolumes.setProgress(-1);
+		controller.getBarraProgressoCapitulos().setProgress(-1);
+		controller.getBarraProgressoVolumes().setProgress(-1);
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
@@ -329,8 +312,8 @@ public class MangasProcessarController implements Initializable {
 					btnCarregar.setDisable(false);
 					btnProcessar.setDisable(false);
 					treeBases.setDisable(false);
-					// barraProgressoGeral.setProgress(0);
-					barraProgressoVolumes.setProgress(0);
+					controller.getBarraProgressoCapitulos().setProgress(0);
+					controller.getBarraProgressoVolumes().setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 				});
 

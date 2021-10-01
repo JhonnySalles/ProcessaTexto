@@ -24,6 +24,7 @@ import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 
@@ -43,6 +44,9 @@ public class TraduzirController implements Initializable {
 
 	@FXML
 	private AnchorPane apRoot;
+	
+	@FXML
+	private JFXTextField txtQuantidadeRegistros;
 
 	@FXML
 	private JFXButton btnProcessarTudo;
@@ -122,8 +126,7 @@ public class TraduzirController implements Initializable {
 			// service.insertOrUpdate(salvar);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao salvar as atualizações.");
+			AlertasPopup.ErroModal("Erro",	"Erro ao salvar as atualizações.");
 		} finally {
 			// controller.getLog().setText("Salvamento concluido.");
 
@@ -148,13 +151,12 @@ public class TraduzirController implements Initializable {
 	private void onBtnAtualizar() {
 		try {
 			// controller.getLog().setText("Atualizando....");
-			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectTraduzir()));
+			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectTraduzir(Integer.valueOf(txtQuantidadeRegistros.getText()))));
 
 			// controller.getLog().setText("");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao pesquisar as revisões.");
+			AlertasPopup.ErroModal("Erro", "Erro ao pesquisar as revisões.");
 		}
 	}
 
@@ -173,6 +175,16 @@ public class TraduzirController implements Initializable {
 
 		String resultado = "";
 		switch (MenuPrincipalController.getController().getSite()) {
+		case TODOS:
+			resultado = TanoshiJapanese.processa(kanji);
+			
+			if (resultado.isEmpty())
+				resultado = JapanDict.processa(kanji);
+			
+			if (resultado.isEmpty())
+				resultado = Jisho.processa(kanji);
+			
+			break;
 		case JAPANESE_TANOSHI:
 			resultado = TanoshiJapanese.processa(kanji);
 			break;

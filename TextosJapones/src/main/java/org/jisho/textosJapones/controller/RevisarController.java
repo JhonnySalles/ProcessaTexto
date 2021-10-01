@@ -46,6 +46,9 @@ public class RevisarController implements Initializable {
 	private Label lblRestantes;
 
 	@FXML
+	private JFXButton btnFormatar;
+	
+	@FXML
 	private JFXButton btnSalvar;
 
 	@FXML
@@ -149,6 +152,14 @@ public class RevisarController implements Initializable {
 			limpaCampos();
 			pesquisar();
 		}
+	}
+	
+	@FXML
+	private void onBtnFormatar() {
+		if (txtAreaPortugues.getText().isEmpty())
+			return;
+		
+		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));	
 	}
 
 	private void limpaCampos() {

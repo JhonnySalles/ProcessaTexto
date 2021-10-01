@@ -22,7 +22,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                      <children>
-                        <JFXTextField fx:id="txtQuantidadeRegistros" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Carregar x registros" styleClass="texto-stilo" unFocusColor="#106ebe" />
+                        <JFXTextField fx:id="txtQuantidadeRegistros" focusColor="#71afe5" labelFloat="true" promptText="Carregar x registros" styleClass="texto-stilo" text="0" unFocusColor="#106ebe" />
                      </children>
                   </HBox>
                   <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="110.0" onAction="#onBtnTraduzir" prefWidth="110.0" styleClass="background-White1" text="Traduzir" />

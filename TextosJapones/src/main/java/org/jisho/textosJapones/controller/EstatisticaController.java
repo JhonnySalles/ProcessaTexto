@@ -16,6 +16,7 @@ import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.google.common.collect.Sets;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -90,6 +91,9 @@ public class EstatisticaController implements Initializable {
 	private JFXTextField txtPesquisa;
 
 	@FXML
+	private JFXCheckBox ckbMarcarTodos;
+
+	@FXML
 	private TreeTableView<Estatistica> treePalavras;
 
 	@FXML
@@ -147,6 +151,17 @@ public class EstatisticaController implements Initializable {
 	@FXML
 	private void onBtnGerarTabela() {
 		geraProcessaLista();
+	}
+
+	@FXML
+	private void onBtnMarcarTodos() {
+		marcarTodosFilhos(treePalavras.getRoot(), ckbMarcarTodos.isSelected());
+		treePalavras.refresh();
+	}
+
+	private void marcarTodosFilhos(TreeItem<Estatistica> treeItem, Boolean newValue) {
+		treeItem.getValue().setGerar(newValue);
+		treeItem.getChildren().forEach(treeItemNivel2 -> marcarTodosFilhos(treeItemNivel2, newValue));
 	}
 
 	private void pesquisaVocabulario() {

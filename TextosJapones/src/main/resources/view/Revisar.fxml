@@ -91,6 +91,11 @@
                   <Insets left="15.0" right="15.0" />
                </padding>
                <children>
+                  <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <JFXButton fx:id="btnFormatar" focusTraversable="false" minWidth="100.0" onAction="#onBtnFormatar" prefWidth="110.0" styleClass="background-White1" text="Formatar" />
+                     </children>
+                  </HBox>
                   <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
                   <JFXButton fx:id="btnNovoAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnNovo" prefWidth="110.0" styleClass="background-White1" text="Novo" />
                </children>
