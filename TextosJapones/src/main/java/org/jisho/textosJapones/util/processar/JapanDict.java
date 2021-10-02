@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 
 public class JapanDict {
 
-	final private static String LINK = "https://www.japandict.com/{kanji}?lang=eng";
+	final private static String LINK = "https://www.japandict.com/?s={kanji}&lang=eng";
 
 	public static String processa(String kanji) {
 		try {

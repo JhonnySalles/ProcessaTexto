@@ -133,7 +133,7 @@ public class MangasProcessarController implements Initializable {
 			mangas = new ProcessarMangas(this);
 
 		treeBases.setDisable(true);
-		// lblLog.setText("Iniciando o processamento..");
+		MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento dos mangas...");
 		mangas.processarTabelas(TABELAS);
 	}
 
@@ -155,13 +155,11 @@ public class MangasProcessarController implements Initializable {
 
 	public void habilitar() {
 		treeBases.setDisable(false);
-		// lblLog.setText("");
-		// lblLogConsultas.setText("");
+		MenuPrincipalController.getController().getLblLog().setText("");
 		btnProcessar.setAccessibleText("PROCESSAR");
 		btnProcessar.setText("Processar");
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-		// barraProgressoGeral.setProgress(0);
 		controller.getBarraProgressoVolumes().setProgress(0);
 		controller.getBarraProgressoCapitulos().setProgress(0);
 		controller.getBarraProgressoPaginas().setProgress(0);
@@ -195,13 +193,13 @@ public class MangasProcessarController implements Initializable {
 			return;
 		}
 
-		// lblLog.setText("Transferindo dados....");
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Mangas - Transferencia");
+		progress.getLog().setText("Transferindo dados....");
 		btnTransferir.setDisable(true);
 
 		BASE_ORIGEM = txtBaseOrigem.getText().trim();
 		BASE_DESTINO = txtBaseDestino.getText().trim();
-
-		// barraProgressoGeral.setProgress(-1);
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
@@ -245,11 +243,11 @@ public class MangasProcessarController implements Initializable {
 			@Override
 			protected void succeeded() {
 				Platform.runLater(() -> {
-					// barraProgressoGeral.progressProperty().unbind();
-					// lblLog.textProperty().unbind();
-					// lblLog.setText("");
+					progress.getBarraProgresso().progressProperty().unbind();
+					progress.getLog().textProperty().unbind();
+					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+
 					btnTransferir.setDisable(false);
-					// barraProgressoGeral.setProgress(0);
 					controller.getBarraProgressoVolumes().setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
@@ -262,8 +260,8 @@ public class MangasProcessarController implements Initializable {
 
 			}
 		};
-		// barraProgressoGeral.progressProperty().bind(transferir.progressProperty());
-		// lblLog.textProperty().bind(transferir.messageProperty());
+		progress.getBarraProgresso().progressProperty().bind(transferir.progressProperty());
+		progress.getLog().textProperty().bind(transferir.messageProperty());
 		Thread t = new Thread(transferir);
 		t.start();
 	}
@@ -274,7 +272,7 @@ public class MangasProcessarController implements Initializable {
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
-		// lblLog.setText("Carregando....");
+		MenuPrincipalController.getController().getLblLog().setText("Carregando dados dos mangas...");
 		btnCarregar.setDisable(true);
 		btnProcessar.setDisable(true);
 		treeBases.setDisable(true);
@@ -307,7 +305,7 @@ public class MangasProcessarController implements Initializable {
 			protected void succeeded() {
 				Platform.runLater(() -> {
 					treeBases.setRoot(DADOS);
-					// lblLog.setText("");
+					MenuPrincipalController.getController().getLblLog().setText("");
 					ckbMarcarTodos.setSelected(true);
 					btnCarregar.setDisable(false);
 					btnProcessar.setDisable(false);

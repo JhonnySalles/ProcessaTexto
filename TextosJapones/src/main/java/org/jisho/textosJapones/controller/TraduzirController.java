@@ -101,7 +101,7 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private void onBtnSalvar() {
 		try {
-			// controller.getLog().setText("Iniciando salvamento.");
+			MenuPrincipalController.getController().getLblLog().setText("Salvando....");
 
 			btnSalvar.setDisable(true);
 			btnAtualizar.setDisable(true);
@@ -128,7 +128,7 @@ public class TraduzirController implements Initializable {
 			e.printStackTrace();
 			AlertasPopup.ErroModal("Erro",	"Erro ao salvar as atualizações.");
 		} finally {
-			// controller.getLog().setText("Salvamento concluido.");
+			MenuPrincipalController.getController().getLblLog().setText("Salvamento concluido.");
 
 			btnSalvar.setDisable(false);
 			btnAtualizar.setDisable(false);
@@ -150,10 +150,10 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private void onBtnAtualizar() {
 		try {
-			// controller.getLog().setText("Atualizando....");
+			MenuPrincipalController.getController().getLblLog().setText("Atualizando.....");
 			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectTraduzir(Integer.valueOf(txtQuantidadeRegistros.getText()))));
 
-			// controller.getLog().setText("");
+			MenuPrincipalController.getController().getLblLog().setText("");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal("Erro", "Erro ao pesquisar as revisões.");
@@ -256,7 +256,9 @@ public class TraduzirController implements Initializable {
 
 		desativar = false;
 		desmembrar = ckbDesmembrar.isSelected();
-
+		
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Tradução");
 		Task<Void> processarTudo = new Task<Void>() {
 			List<Revisar> lista = null;
 			Integer i = 0;
@@ -329,8 +331,9 @@ public class TraduzirController implements Initializable {
 						btnJisho.setDisable(false);
 						ckbDesmembrar.setDisable(false);
 
-						// controller.getLog().textProperty().unbind();
-						// controller.getBarraProgresso().progressProperty().unbind();
+						progress.getLog().textProperty().unbind();
+						progress.getBarraProgresso().progressProperty().unbind();
+						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
@@ -342,8 +345,8 @@ public class TraduzirController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarTudo);
-		// controller.getLog().textProperty().bind(processarTudo.messageProperty());
-		// controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
+		progress.getLog().textProperty().bind(processarTudo.messageProperty());
+		progress.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
 		processa.start();
 	}
 
@@ -486,6 +489,12 @@ public class TraduzirController implements Initializable {
 	}
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		txtQuantidadeRegistros.textProperty().addListener((obs, oldValue, newValue) -> {
+			if(newValue != null && !newValue.matches("\\d*"))
+				txtQuantidadeRegistros.setText(oldValue);
+			else if (newValue != null && newValue.isEmpty())
+				txtQuantidadeRegistros.setText("0");
+		});
 		linkaCelulas();
 		btnProcessarTudo.setAccessibleText("PROCESSAR");
 	}

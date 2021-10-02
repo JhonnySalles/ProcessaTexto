@@ -1,6 +1,5 @@
 package org.jisho.textosJapones;
 
-import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 
 import javafx.application.Application;

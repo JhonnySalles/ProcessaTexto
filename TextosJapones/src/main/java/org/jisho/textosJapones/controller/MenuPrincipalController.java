@@ -34,11 +34,11 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -119,19 +119,16 @@ public class MenuPrincipalController implements Initializable {
 
 	@FXML
 	private HBox hbContainerLog;
-	
+
 	@FXML
 	private Label lblLog;
 
 	@FXML
-	private ProgressBar barraProgresso;
-	
-	@FXML
 	private ScrollPane scpBarraProgress;
-	
+
 	@FXML
 	private VBox vbBarraProgress;
-	private Map<GrupoBarraProgressoController, AnchorPane> progressBar = new HashMap<>();
+	private Map<GrupoBarraProgressoController, Node> progressBar = new HashMap<>();
 
 	private PopOver pop;
 	private Timeline tmlImagemBackup;
@@ -216,10 +213,6 @@ public class MenuPrincipalController implements Initializable {
 		Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", aviso);
 	}
 
-	public ProgressBar getBarraProgresso() {
-		return barraProgresso;
-	}
-
 	public PopOver getPopPup() {
 		return pop;
 	}
@@ -251,25 +244,21 @@ public class MenuPrincipalController implements Initializable {
 	public Label getLblLog() {
 		return lblLog;
 	}
-	
+
 	private void progressBarVisible(Boolean visible) {
-		if (visible)
-			hbContainerLog.setMaxWidth(62);
-		else
-			hbContainerLog.setMaxWidth(17);
-		scpBarraProgress.setVisible(!progressBar.isEmpty());
+		scpBarraProgress.setVisible(visible);
 	}
 
 	public GrupoBarraProgressoController criaBarraProgresso() {
 		try {
+			progressBarVisible(true);
 			lblLog.setText("");
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(GrupoBarraProgressoController.getFxmlLocate());
-			AnchorPane barra = loader.load(); // Necessário primeiro iniciar o loader para pegar o controller.
+			Node barra = loader.load(); // Necessário primeiro iniciar o loader para pegar o controller.
 			GrupoBarraProgressoController cnt = loader.getController();
 			vbBarraProgress.getChildren().add(barra);
 			progressBar.put(cnt, barra);
-			progressBarVisible(!progressBar.isEmpty());
 			return cnt;
 		} catch (IOException e) {
 			System.out.println("Erro ao criar barra de progresso.");
@@ -280,7 +269,7 @@ public class MenuPrincipalController implements Initializable {
 
 	public void destroiBarraProgresso(GrupoBarraProgressoController barra, String texto) {
 		if (progressBar.containsKey(barra)) {
-			AnchorPane item = progressBar.get(barra);
+			Node item = progressBar.get(barra);
 			vbBarraProgress.getChildren().remove(vbBarraProgress.getChildren().indexOf(item));
 			progressBar.remove(barra);
 			progressBarVisible(!progressBar.isEmpty());
@@ -396,6 +385,7 @@ public class MenuPrincipalController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		CONTROLLER = this;
+		scpBarraProgress.managedProperty().bind(scpBarraProgress.visibleProperty());
 		progressBarVisible(false);
 		animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera);
 		criaConfiguracao();

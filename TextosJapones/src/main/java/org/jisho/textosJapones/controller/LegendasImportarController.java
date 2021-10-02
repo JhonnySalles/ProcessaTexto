@@ -62,7 +62,7 @@ public class LegendasImportarController implements Initializable {
 			if (legendas == null)
 				legendas = new ProcessarLegendas(this);
 
-			// lblLog.setText("Iniciando o processamento..");
+			MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das legendas...");
 			legendas.processarLegendas(frases);
 		} else
 			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",

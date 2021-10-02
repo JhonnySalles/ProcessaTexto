@@ -126,8 +126,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 		}
 
 		try {
-			// controller.getLog().setText("Iniciando salvamento.");
-
+			MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Salvando as informações...");
 			desabilitaBotoes();
 			btnProcessarTudo.setDisable(true);
 
@@ -148,7 +147,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao salvar as atualizações.");
 		} finally {
-			// controller.getLog().setText("Salvamento concluido.");
+			MenuPrincipalController.getController().getLblLog().setText("");
 
 			habilitaBotoes();
 			btnProcessarTudo.setDisable(false);
@@ -165,9 +164,9 @@ public class LegendasGerarVocabularioController implements Initializable {
 		}
 
 		try {
-			// controller.getLog().setText("Atualizando....");
+			MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Atualizando....");
 			tbLista.setItems(FXCollections.observableArrayList(service.select(txtAreaSelect.getText())));
-			// controller.getLog().setText("");
+			MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Concluido....");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
@@ -185,7 +184,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 		}
 
 		try {
-			// controller.getLog().setText("Iniciando delete.");
+			MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Iniciando o delete....");
 			service.delete(txtAreaDelete.getText());
 
 		} catch (ExcessaoBd e) {
@@ -193,7 +192,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
 					"Erro ao salvar as atualizações.");
 		} finally {
-			// controller.getLog().setText("Delete concluido.");
+			MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Delete do vocabulario concluido.");
 		}
 	}
 
@@ -245,6 +244,8 @@ public class LegendasGerarVocabularioController implements Initializable {
 
 		processar.vocabulario.clear();
 
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Legendas - Processar Vocabulario");
 		Task<Void> processarTudo = new Task<Void>() {
 			List<Processar> lista = null;
 			Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
@@ -288,10 +289,11 @@ public class LegendasGerarVocabularioController implements Initializable {
 						btnExecutarFila.setDisable(false);
 
 						tbLista.setDisable(false);
-
-						// controller.getLog().textProperty().unbind();
-						// controller.getBarraProgresso().progressProperty().unbind();
-
+						
+						progress.getBarraProgresso().progressProperty().unbind();
+						progress.getLog().textProperty().unbind();
+						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+						
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 						txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
 
@@ -303,8 +305,8 @@ public class LegendasGerarVocabularioController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarTudo);
-		// controller.getLog().textProperty().bind(processarTudo.messageProperty());
-		// controller.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
+		progress.getLog().textProperty().bind(processarTudo.messageProperty());
+		progress.getBarraProgresso().progressProperty().bind(processarTudo.progressProperty());
 		processa.start();
 	}
 
@@ -367,6 +369,8 @@ public class LegendasGerarVocabularioController implements Initializable {
 		desativar = false;
 		tbLista.getItems().clear();
 
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Legendas - Processar Fila");
 		Task<Void> processarFila = new Task<Void>() {
 			List<Processar> lista = null;
 			List<FilaSQL> fila = null;
@@ -442,8 +446,9 @@ public class LegendasGerarVocabularioController implements Initializable {
 
 						tbLista.setDisable(false);
 
-						// controller.getLog().textProperty().unbind();
-						// controller.getBarraProgresso().progressProperty().unbind();
+						progress.getBarraProgresso().progressProperty().unbind();
+						progress.getLog().textProperty().unbind();
+						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
@@ -458,8 +463,8 @@ public class LegendasGerarVocabularioController implements Initializable {
 		};
 
 		Thread processa = new Thread(processarFila);
-		// controller.getLog().textProperty().bind(processarFila.messageProperty());
-		// controller.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
+		progress.getLog().textProperty().bind(processarFila.messageProperty());
+		progress.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
 		processa.start();
 	}
 

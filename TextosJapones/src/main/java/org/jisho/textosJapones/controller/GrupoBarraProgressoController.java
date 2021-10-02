@@ -3,12 +3,10 @@ package org.jisho.textosJapones.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.jfoenix.controls.JFXProgressBar;
-
-import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 
 public class GrupoBarraProgressoController implements Initializable {
@@ -20,30 +18,30 @@ public class GrupoBarraProgressoController implements Initializable {
 	private Label lblTitulo;
 	
 	@FXML
-	private Label lblProgresso;
+	private Label lblLog;
 
 	@FXML
-	private JFXProgressBar barraProgresso;
+	private ProgressBar barraProgresso;
 
 	// Sera usado para colorir as barras de progresso
-	final PseudoClass textoAzul = PseudoClass.getPseudoClass("progress-TextAzul");
+	/*final PseudoClass textoAzul = PseudoClass.getPseudoClass("progress-TextAzul");
 	final PseudoClass textoVerde = PseudoClass.getPseudoClass("progress-TextVerde");
 	final PseudoClass bProgressAzul = PseudoClass.getPseudoClass("progress-barAzul");
-	final PseudoClass bProgressVerde = PseudoClass.getPseudoClass("progress-barVerde");
+	final PseudoClass bProgressVerde = PseudoClass.getPseudoClass("progress-barVerde");*/
 
 	public AnchorPane getBackground() {
 		return background;
 	}
 
-	public Label getLblTitulo() {
+	public Label getTitulo() {
 		return lblTitulo;
 	}
 
-	public Label getLblProgresso() {
-		return lblProgresso;
+	public Label getLog() {
+		return lblLog;
 	}
 
-	public JFXProgressBar getBarraProgresso() {
+	public ProgressBar getBarraProgresso() {
 		return barraProgresso;
 	}
 

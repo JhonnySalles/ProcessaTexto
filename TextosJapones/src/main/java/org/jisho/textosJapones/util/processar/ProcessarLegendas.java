@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.LegendasImportarController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Revisar;
@@ -37,8 +38,10 @@ public class ProcessarLegendas {
 	}
 
 	public void processarLegendas(List<String> frases) {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Legendas - Processar");
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
-		Task<Void> verificaConexao = new Task<Void>() {
+		Task<Void> processarVocabulario = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
@@ -68,13 +71,13 @@ public class ProcessarLegendas {
 			protected void succeeded() {
 				AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
 						controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
-				// controller.getBarraProgresso().progressProperty().unbind();
-				// controller.getLog().textProperty().unbind();
+				progress.getBarraProgresso().progressProperty().unbind();
+				progress.getLog().textProperty().unbind();
 			}
 		};
-		// controller.getBarraProgresso().progressProperty().bind(verificaConexao.progressProperty());
-		// controller.getLog().textProperty().bind(verificaConexao.messageProperty());
-		Thread t = new Thread(verificaConexao);
+		progress.getBarraProgresso().progressProperty().bind(processarVocabulario.progressProperty());
+		progress.getLog().textProperty().bind(processarVocabulario.messageProperty());
+		Thread t = new Thread(processarVocabulario);
 		t.start();
 	}
 

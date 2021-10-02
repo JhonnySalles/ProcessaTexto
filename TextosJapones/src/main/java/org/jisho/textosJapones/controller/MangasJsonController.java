@@ -345,14 +345,10 @@ public class MangasJsonController implements Initializable {
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
-		// logAtivo = !controller.getLog().textProperty().isBound();
-		if (logAtivo) {
-			// controller.getLog().setText("Carregando....");
-			// controller.getBarraProgressoGeral().setProgress(-1);
-
-			if (TaskbarProgressbar.isSupported())
-				TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
-		}
+		MenuPrincipalController.getController().getLblLog().setText("Carregando json...");
+		
+		if (TaskbarProgressbar.isSupported())
+			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
 		btnCarregar.setDisable(true);
 		btnGerarJson.setDisable(true);
@@ -383,11 +379,8 @@ public class MangasJsonController implements Initializable {
 				Platform.runLater(() -> {
 					treeBases.setRoot(DADOS);
 
-					if (logAtivo) {
-						// controller.getLog().setText("");
-						// controller.getBarraProgressoGeral().setProgress(0);
-						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-					}
+					MenuPrincipalController.getController().getLblLog().setText("");
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
 					ckbMarcarTodos.setSelected(true);
 					btnCarregar.setDisable(false);

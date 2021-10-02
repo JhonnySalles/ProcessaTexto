@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.FrasesAnkiController;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
@@ -64,19 +65,15 @@ public class SudachiTokenizer {
 		switch (dicionario) {
 		case SAMLL:
 			settings_path += "/sudachi_smalldict.json";
-			;
 			break;
 		case CORE:
 			settings_path += "/sudachi_coredict.json";
-			;
 			break;
 		case FULL:
 			settings_path += "/sudachi_fulldict.json";
-			;
 			break;
 		default:
 			settings_path += "/sudachi_fulldict.json";
-			;
 		}
 
 		return settings_path;
@@ -167,6 +164,8 @@ public class SudachiTokenizer {
 	}
 
 	private void processaMusica() throws ExcessaoBd {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Sudachi - Processar música");
 		Task<Void> processar = new Task<Void>() {
 			String[] texto;
 			String processado = "";
@@ -239,7 +238,7 @@ public class SudachiTokenizer {
 						TimeUnit.SECONDS.sleep(5);
 
 					Platform.runLater(() -> {
-						// controller.getBarraProgresso().progressProperty().unbind();
+						progress.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 						processaListaNovo(true);
 					});
@@ -249,11 +248,13 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		progress.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 
 	private void processaVocabulario() throws ExcessaoBd {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Sudachi - Processar vocabulário");
 		Task<Void> processar = new Task<Void>() {
 			String[] palavras = { "" };
 			String vocabulario = "";
@@ -344,7 +345,7 @@ public class SudachiTokenizer {
 						TimeUnit.SECONDS.sleep(5);
 
 					Platform.runLater(() -> {
-						// controller.getBarraProgresso().progressProperty().unbind();
+						progress.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 						processaListaNovo(true);
 					});
@@ -354,7 +355,7 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		progress.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 
@@ -476,6 +477,8 @@ public class SudachiTokenizer {
 	}
 
 	public void processaListaNovo(Boolean pesquisaSite) {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo().setText("Sudachi - Processar lista de novos registros");
 		Task<Void> processar = new Task<Void>() {
 			@Override
 			public Void call() throws IOException, InterruptedException {
@@ -543,7 +546,7 @@ public class SudachiTokenizer {
 
 					TimeUnit.SECONDS.sleep(5);
 					Platform.runLater(() -> {
-						// controller.getBarraProgresso().progressProperty().unbind();
+						progress.getBarraProgresso().progressProperty().unbind();
 						concluiProgresso(false);
 					});
 				}
@@ -552,7 +555,7 @@ public class SudachiTokenizer {
 		};
 
 		Thread processa = new Thread(processar);
-		// controller.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		progress.getBarraProgresso().progressProperty().bind(processar.progressProperty());
 		processa.start();
 	}
 
