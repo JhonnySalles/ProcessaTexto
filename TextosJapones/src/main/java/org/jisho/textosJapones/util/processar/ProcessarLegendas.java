@@ -160,7 +160,7 @@ public class ProcessarLegendas {
 						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
 						if (revisar != null) {
 
-							if (revisar.getTraducao().substring(0, 2).matches(japanese))
+							if (!revisar.getTraducao().isEmpty() && revisar.getTraducao().substring(0, 2).matches(japanese))
 								vocabularios += revisar.getTraducao() + "¹ ";
 							else
 								vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";

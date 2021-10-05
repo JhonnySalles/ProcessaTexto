@@ -54,7 +54,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String CREATE_VOCABULARIO = "CREATE TABLE %s_vocabulario (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
 			+ "  id_volume INT(11) DEFAULT NULL," + "  id_capitulo INT(11) DEFAULT NULL,"
 			+ "  id_pagina INT(11) DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
-			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + "  PRIMARY KEY (id),"
+			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + " revisado tinyint(1) DEFAULT 1," + "  PRIMARY KEY (id),"
 			+ "  KEY %s_vocab_volume_fk (id_volume)," + "  KEY %s_vocab_capitulo_fk (id_capitulo),"
 			+ "  KEY %s_vocab_pagina_fk (id_pagina),"
 			+ "  CONSTRAINT %s_vocab_capitulo_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id),"
@@ -94,7 +94,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabulario WHERE %s;";
 	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabulario (%s, palavra, significado, revisado) "
 			+ " VALUES (?,?,?,?);";
-	final private String SELECT_VOCABUALRIO = "SELECT id, palavra, significado, revisado FROM %s_vocabulario WHERE %s ";
+	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, significado, revisado FROM %s_vocabulario WHERE %s ";
 	final private String UPDATE_PROCESSADO = "UPDATE %s_%s SET is_processado = 1 WHERE id = ?";
 
 	public MangaDaoJDBC(Connection conn) {
@@ -222,7 +222,7 @@ public class MangaDaoJDBC implements MangaDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_VOCABUALRIO, BASE_MANGA + base, where));
+			st = conn.prepareStatement(String.format(SELECT_VOCABUALARIO, BASE_MANGA + base, where));
 			rs = st.executeQuery();
 
 			Set<MangaVocabulario> list = new HashSet<MangaVocabulario>();

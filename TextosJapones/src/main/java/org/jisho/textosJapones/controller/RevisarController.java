@@ -343,6 +343,9 @@ public class RevisarController implements Initializable {
 			if (newVal)
 				pesquisar();
 		});
+		
+		
+		pesquisar();
 	}
 
 	public static URL getFxmlLocate() {
