@@ -31,9 +31,9 @@ public class MangaServices {
 		return vocabularioDao.selectTabelas(todos, base, manga, volume, capitulo);
 	}
 	
-	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto)
 			throws ExcessaoBd {
-		return vocabularioDao.selectTabelasJson(base, manga, volume, capitulo, linguagem);
+		return vocabularioDao.selectTabelasJson(base, manga, volume, capitulo, linguagem, inverterTexto);
 	}
 
 	public List<MangaVolume> selectDadosTransferir(String baseOrigem) throws ExcessaoBd {

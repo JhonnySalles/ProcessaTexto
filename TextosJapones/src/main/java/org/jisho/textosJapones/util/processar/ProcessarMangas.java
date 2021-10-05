@@ -385,7 +385,7 @@ public class ProcessarMangas {
 							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao());
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(), false);
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);

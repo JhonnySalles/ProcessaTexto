@@ -13,7 +13,6 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\EstatisticaController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaCapitulo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\PopupNotificacaoController.java
-D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\ProcessarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\configuration\Configuracao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\MangaDao.java
@@ -24,8 +23,10 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\services\VocabularioServices.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\Util.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\Menu.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\LegendasGerarVocabularioController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\Vocabulario.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaTexto.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\LegendasImportarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\DaoFactory.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\impl\MangaDaoJDBC.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\services\MangaServices.java
@@ -33,12 +34,14 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\ProcessarDao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\mysql\ConexaoMysql.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\RevisarDao.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\GrupoBarraProgressoController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\notification\Notificacoes.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Site.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\Jisho.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\impl\ProcessarDaoJDBC.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\tokenizers\SudachiTokenizer.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Dicionario.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\FrasesAnkiController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaTabela.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\impl\RevisarDaoJDBC.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\message\Mensagens.java
@@ -55,8 +58,8 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\PopupAlertaController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\TraduzirController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\notification\Alertas.java
-D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\FrasesController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\LegendasController.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasProcessarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Api.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\module-info.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\enums\Tela.java

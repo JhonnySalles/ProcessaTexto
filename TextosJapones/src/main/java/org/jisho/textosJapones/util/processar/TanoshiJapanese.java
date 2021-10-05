@@ -12,33 +12,66 @@ import org.jsoup.select.Elements;
 public class TanoshiJapanese {
 
 	final private static String LINK = "https://www.tanoshiijapanese.com/dictionary/index.cfm?j={kanji}";
+	final private static String SITE = "https://www.tanoshiijapanese.com/";
 
+	private static Document getLink(String link) throws IOException {
+		return Jsoup.connect(link).get();
+	}
+	
+	private static String getSignificado(Element campo) {
+		Element TextoSignificado = campo.getElementsByClass("en").get(0);
+		Element ingles = TextoSignificado.select("ol").get(0);
+		List<Element> linhas = ingles.select("li");
+
+		String texto = "";
+		if (linhas == null || linhas.isEmpty() || linhas.size() == 1)
+			texto = ingles.text();
+		else {
+			for (Element linha : linhas)
+				if (!linha.text().isEmpty())
+					texto += linha.text().concat("; ");
+
+			if (texto.contains("; "))
+				texto = texto.substring(0, texto.lastIndexOf("; "));
+		}
+		return texto;
+	}
+	
 	public static String processa(String kanji) {
 		try {
-			Document pagina = Jsoup.connect(LINK.replace("{kanji}", kanji)).get();
+			Document pagina = getLink(LINK.replace("{kanji}", kanji));
 
 			Element CampoSignificado = pagina.getElementById("idEnglishMeaning");
 
-			if (CampoSignificado == null)
+			if (CampoSignificado == null) {
+				Elements Ruby = pagina.getElementsByTag("ruby");
+				for(Element rb : Ruby) {
+					if(rb.getElementsByTag("rb").get(0).text().equalsIgnoreCase(kanji)) {
+						Elements CampoEntry = pagina.getElementsByClass("entrylinks");
+						Elements Links = CampoEntry.get(0).getElementsByTag("a");
+						String link = "";
+						for (Element ln: Links)
+							if (ln.text().contains("Entry Details")) {
+								link =  ln.attr("href");
+								break;
+							}
+								
+						
+						if (link == "")
+							continue;
+			
+						pagina = getLink(SITE + link.replaceFirst("\\.\\.", ""));
+						CampoSignificado = pagina.getElementById("idEnglishMeaning");
+						
+						if (CampoSignificado != null)
+							return getSignificado(CampoSignificado);
+					}
+				}
+				
 				return "";
-
-			Element TextoSignificado = CampoSignificado.getElementsByClass("en").get(0);
-			Element ingles = TextoSignificado.select("ol").get(0);
-			List<Element> linhas = ingles.select("li");
-
-			String texto = "";
-			if (linhas == null || linhas.isEmpty() || linhas.size() == 1)
-				texto = ingles.text();
-			else {
-				for (Element linha : linhas)
-					if (!linha.text().isEmpty())
-						texto += linha.text().concat("; ");
-
-				if (texto.contains("; "))
-					texto = texto.substring(0, texto.lastIndexOf("; "));
 			}
-
-			return texto;
+				
+			return getSignificado(CampoSignificado);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "";

@@ -36,7 +36,7 @@ public interface MangaDao {
 	List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd;
 
-	List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+	List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto)
 			throws ExcessaoBd;
 
 	void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;

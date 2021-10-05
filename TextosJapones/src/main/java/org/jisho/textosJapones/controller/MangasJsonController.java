@@ -86,6 +86,9 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private JFXCheckBox ckbSepararPorCapitulos;
+	
+	@FXML
+	private JFXCheckBox ckbInverterOrdemTexto;
 
 	@FXML
 	private JFXCheckBox ckbMarcarTodos;
@@ -366,7 +369,7 @@ public class MangasJsonController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					TABELAS = FXCollections
-							.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM));
+							.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
