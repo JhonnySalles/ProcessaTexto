@@ -117,7 +117,6 @@ public class MangasJsonController implements Initializable {
 	private MangaServices service = new MangaServices();
 	private ObservableList<MangaTabela> TABELAS;
 	private Boolean PAUSAR;
-	private Boolean logAtivo;
 
 	private MangasController controller;
 
@@ -193,27 +192,25 @@ public class MangasJsonController implements Initializable {
 	private String error, destino;
 
 	private void gerar() {
-		// logAtivo = !controller.getLog().textProperty().isBound();
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 		isSepararCapitulo = ckbSepararPorCapitulos.isSelected();
 		destino = txtCaminhoSalvar.getText();
 
 		PAUSAR = false;
 
-		if (logAtivo) {
-			// controller.getLog().setText("Gerando Json....");
-			// controller.getBarraProgressoGeral().setProgress(-1);
-			if (TaskbarProgressbar.isSupported())
-				TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
-		}
 
+		if (TaskbarProgressbar.isSupported())
+			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
+
+		progress.getTitulo().setText("Json");
 		Task<Void> gerarJson = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
 				try {
 					error = "";
-					if (logAtivo)
-						updateMessage("Gravando Jsons....");
+	
+					updateMessage("Gravando Jsons....");
 
 					ExclusionStrategy removeLinguagemCapitulo = new ExclusionStrategy() {
 						@Override
@@ -250,7 +247,7 @@ public class MangasJsonController implements Initializable {
 
 						if (!tabela.isProcessar()) {
 
-							if (logAtivo)
+				
 								Platform.runLater(() -> {
 									if (TaskbarProgressbar.isSupported())
 										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
@@ -290,7 +287,6 @@ public class MangasJsonController implements Initializable {
 
 						}
 
-						if (logAtivo)
 							Platform.runLater(() -> {
 								if (TaskbarProgressbar.isSupported())
 									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
@@ -312,14 +308,11 @@ public class MangasJsonController implements Initializable {
 			protected void succeeded() {
 				Platform.runLater(() -> {
 
-					if (logAtivo) {
-						// controller.getBarraProgressoGeral().progressProperty().unbind();
-						// controller.getLog().textProperty().unbind();
-						// controller.getBarraProgressoGeral().setProgress(0);
-						// controller.getLog().setText("");
-						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-					}
-
+					progress.getBarraProgresso().progressProperty().unbind();
+					progress.getLog().textProperty().unbind();
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+					
 					if (!error.isEmpty())
 						AlertasPopup.ErroModal("Erro", error);
 					else
@@ -331,10 +324,8 @@ public class MangasJsonController implements Initializable {
 			}
 		};
 
-		if (logAtivo) {
-			// controller.getBarraProgressoGeral().progressProperty().bind(gerarJson.progressProperty());
-			// controller.getLog().textProperty().bind(gerarJson.messageProperty());
-		}
+		progress.getBarraProgresso().progressProperty().bind(gerarJson.progressProperty());
+		progress.getLog().textProperty().bind(gerarJson.messageProperty());
 
 		Thread t = new Thread(gerarJson);
 		t.start();
