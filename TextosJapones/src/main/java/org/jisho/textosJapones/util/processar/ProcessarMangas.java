@@ -222,6 +222,8 @@ public class ProcessarMangas {
 				controller.getBarraProgressoPaginas().progressProperty().unbind();
 				progress.getLog().textProperty().unbind();
 				controller.habilitar();
+				
+				MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 			}
 		};
 		progress.getBarraProgresso().progressProperty().bind(propTabela);
