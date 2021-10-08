@@ -17,8 +17,8 @@
 		   <children>
 		      <HBox spacing="10.0">
 		         <children>
-		            <JFXTextField fx:id="txtBaseOrigem" focusColor="#71afe5" labelFloat="true" promptText="Base Origem" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-		            <JFXTextField fx:id="txtBaseDestino" focusColor="#71afe5" labelFloat="true" promptText="Base Destino" styleClass="texto-stilo" text="manga_extractor.tabela" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+		            <JFXTextField fx:id="txtBaseOrigem" focusColor="#71afe5" labelFloat="true" promptText="Base Origem" styleClass="texto-stilo" text="manga_extractor.tabela" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+		            <JFXTextField fx:id="txtBaseDestino" focusColor="#71afe5" labelFloat="true" promptText="Base Destino" styleClass="texto-stilo" text="tabela" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
 		            <JFXCheckBox fx:id="ckbCriarBase" checkedColor="#71afe5" text="Criar Base" textFill="WHITE" unCheckedColor="#106ebe" />
 		            <JFXButton fx:id="btnTransferir" buttonType="RAISED" onAction="#onBtnTransferir" prefWidth="130.0" styleClass="background-White1" text="Transferir" />
 		         </children>

@@ -74,7 +74,9 @@ public class ProcessarMangas {
 	private DoubleProperty propVolume = new SimpleDoubleProperty(.0);
 	private DoubleProperty propTabela = new SimpleDoubleProperty(.0);
 
+	private Boolean error;
 	public void processarTabelas(List<MangaTabela> tabelas) {
+		error = false;
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 		progress.getTitulo().setText("Mangas - Processar vocabulário");
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
@@ -82,118 +84,123 @@ public class ProcessarMangas {
 
 			@Override
 			protected Void call() throws Exception {
-				try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer.readAll(new FileInputStream(
-						SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
-					tokenizer = dict.create();
-					mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
-					contaGoogle = MenuPrincipalController.getController().getContaGoogle();
-					siteDicionario = MenuPrincipalController.getController().getSite();
+				try {
+					try (Dictionary dict = new DictionaryFactory().create("",
+							SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer
+									.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
+						tokenizer = dict.create();
+						mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
+						contaGoogle = MenuPrincipalController.getController().getContaGoogle();
+						siteDicionario = MenuPrincipalController.getController().getSite();
 
-					propTabela.set(.0);
-					propVolume.set(.0);
-					propCapitulo.set(.0);
+						propTabela.set(.0);
+						propVolume.set(.0);
+						propCapitulo.set(.0);
 
-					T = 0;
-					desativar = false;
-					for (MangaTabela tabela : tabelas) {
-						T++;
+						T = 0;
+						desativar = false;
+						for (MangaTabela tabela : tabelas) {
+							T++;
 
-						if (!tabela.isProcessar()) {
+							if (!tabela.isProcessar()) {
+								propTabela.set((double) T / tabelas.size());
+								Platform.runLater(() -> {
+									if (TaskbarProgressbar.isSupported())
+										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
+												Type.NORMAL);
+								});
+								continue;
+							}
+
+							V = 0;
+							for (MangaVolume volume : tabela.getVolumes()) {
+								V++;
+
+								if (!volume.isProcessar()) {
+									propVolume.set((double) V / tabela.getVolumes().size());
+									updateMessage("IGNORADO - Manga: " + volume.getManga());
+									continue;
+								}
+
+								vocabVolume.clear();
+								C = 0;
+								for (MangaCapitulo capitulo : volume.getCapitulos()) {
+									C++;
+
+									if (!capitulo.isProcessar()) {
+										updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
+												+ capitulo.getCapitulo());
+										propCapitulo.set((double) C / volume.getCapitulos().size());
+										continue;
+									}
+
+									vocabCapitulo.clear();
+									int p = 0;
+									for (MangaPagina pagina : capitulo.getPaginas()) {
+										p++;
+										updateProgress(p, capitulo.getPaginas().size());
+
+										if (!pagina.isProcessar()) {
+											updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo: "
+													+ capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
+											continue;
+										}
+
+										updateMessage("Processando " + V + " de " + tabela.getVolumes().size()
+												+ " volumes." + " Manga: " + volume.getManga() + " - Capitulo: "
+												+ capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
+
+										vocabPagina.clear();
+										vocabValida.clear();
+										for (MangaTexto texto : pagina.getTextos())
+											gerarVocabulario(texto.getTexto());
+
+										pagina.setVocabulario(vocabPagina);
+										pagina.setProcessado(true);
+										serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
+
+										if (desativar)
+											break;
+									}
+									capitulo.setVocabulario(vocabCapitulo);
+									capitulo.setProcessado(true);
+									serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
+									propCapitulo.set((double) C / volume.getCapitulos().size());
+
+									if (desativar)
+										break;
+								}
+								volume.setVocabulario(vocabVolume);
+								volume.setProcessado(true);
+								serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
+								propVolume.set((double) V / tabela.getVolumes().size());
+
+								if (desativar) {
+									updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga()
+											+ " - Volume: " + volume.getVolume().toString());
+									serviceManga.updateCancel(tabela.getBase(), volume);
+									break;
+								}
+							}
+
 							propTabela.set((double) T / tabelas.size());
 							Platform.runLater(() -> {
 								if (TaskbarProgressbar.isSupported())
 									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
 											Type.NORMAL);
 							});
-							continue;
-						}
 
-						V = 0;
-						for (MangaVolume volume : tabela.getVolumes()) {
-							V++;
-
-							if (!volume.isProcessar()) {
-								propVolume.set((double) V / tabela.getVolumes().size());
-								updateMessage("IGNORADO - Manga: " + volume.getManga());
-								continue;
-							}
-
-							vocabVolume.clear();
-							C = 0;
-							for (MangaCapitulo capitulo : volume.getCapitulos()) {
-								C++;
-
-								if (!capitulo.isProcessar()) {
-									updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
-											+ capitulo.getCapitulo());
-									propCapitulo.set((double) C / volume.getCapitulos().size());
-									continue;
-								}
-
-								vocabCapitulo.clear();
-								int p = 0;
-								for (MangaPagina pagina : capitulo.getPaginas()) {
-									p++;
-									updateProgress(p, capitulo.getPaginas().size());
-
-									if (!pagina.isProcessar()) {
-										updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo: "
-												+ capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
-										continue;
-									}
-
-									updateMessage("Processando " + V + " de " + tabela.getVolumes().size() + " volumes."
-											+ " Manga: " + volume.getManga() + " - Capitulo: " + capitulo.getCapitulo()
-											+ " - Página: " + pagina.getNomePagina());
-
-									vocabPagina.clear();
-									vocabValida.clear();
-									for (MangaTexto texto : pagina.getTextos())
-										gerarVocabulario(texto.getTexto());
-
-									pagina.setVocabulario(vocabPagina);
-									pagina.setProcessado(true);
-									serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
-
-									if (desativar)
-										break;
-								}
-								capitulo.setVocabulario(vocabCapitulo);
-								capitulo.setProcessado(true);
-								serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
-								propCapitulo.set((double) C / volume.getCapitulos().size());
-
-								if (desativar)
-									break;
-							}
-							volume.setVocabulario(vocabVolume);
-							volume.setProcessado(true);
-							serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
-							propVolume.set((double) V / tabela.getVolumes().size());
-
-							if (desativar) {
-								updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga()
-										+ " - Volume: " + volume.getVolume().toString());
-								serviceManga.updateCancel(tabela.getBase(), volume);
+							if (desativar)
 								break;
-							}
 						}
 
-						propTabela.set((double) T / tabelas.size());
-						Platform.runLater(() -> {
-							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
-										Type.NORMAL);
-						});
-
-						if (desativar)
-							break;
+					} catch (IOException e) {
+						e.printStackTrace();
+						error = false;
 					}
-
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
-					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-							"Erro", "Erro ao processar a lista.");
+					error = false;
 				}
 
 				return null;
@@ -201,9 +208,13 @@ public class ProcessarMangas {
 
 			@Override
 			protected void succeeded() {
-				if (!desativar)
+				if (error)
+					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
+							"Erro", "Erro ao processar a lista.");
+				else if (!desativar)
 					AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
 							"Aviso", "Mangas processadas com sucesso.");
+				
 
 				progress.getBarraProgresso().progressProperty().unbind();
 				controller.getBarraProgressoVolumes().progressProperty().unbind();
@@ -385,7 +396,8 @@ public class ProcessarMangas {
 							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(), false);
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
+								false);
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);

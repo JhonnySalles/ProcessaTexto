@@ -54,9 +54,9 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String CREATE_VOCABULARIO = "CREATE TABLE %s_vocabulario (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
 			+ "  id_volume INT(11) DEFAULT NULL," + "  id_capitulo INT(11) DEFAULT NULL,"
 			+ "  id_pagina INT(11) DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
-			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + " revisado tinyint(1) DEFAULT 1," + "  PRIMARY KEY (id),"
-			+ "  KEY %s_vocab_volume_fk (id_volume)," + "  KEY %s_vocab_capitulo_fk (id_capitulo),"
-			+ "  KEY %s_vocab_pagina_fk (id_pagina),"
+			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + " revisado tinyint(1) DEFAULT 1,"
+			+ "  PRIMARY KEY (id)," + "  KEY %s_vocab_volume_fk (id_volume),"
+			+ "  KEY %s_vocab_capitulo_fk (id_capitulo)," + "  KEY %s_vocab_pagina_fk (id_pagina),"
 			+ "  CONSTRAINT %s_vocab_capitulo_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id),"
 			+ "  CONSTRAINT %s_vocab_pagina_fk FOREIGN KEY (id_pagina) REFERENCES %s_paginas (id),"
 			+ "  CONSTRAINT %s_vocab_volume_fk FOREIGN KEY (id_volume) REFERENCES %s_volumes (id)"
@@ -228,7 +228,8 @@ public class MangaDaoJDBC implements MangaDao {
 			Set<MangaVocabulario> list = new HashSet<MangaVocabulario>();
 
 			while (rs.next())
-				list.add(new MangaVocabulario(rs.getLong("id"), rs.getString("palavra"), rs.getString("significado"), rs.getBoolean("revisado")));
+				list.add(new MangaVocabulario(rs.getLong("id"), rs.getString("palavra"), rs.getString("significado"),
+						rs.getBoolean("revisado")));
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -530,7 +531,8 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaPagina> selectPaginas(String base, Boolean todos, Long idPagina, Boolean inverterTexto) throws ExcessaoBd {
+	public List<MangaPagina> selectPaginas(String base, Boolean todos, Long idPagina, Boolean inverterTexto)
+			throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -587,7 +589,7 @@ public class MangaDaoJDBC implements MangaDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			
+
 			String order = "";
 			if (inverterTexto)
 				order = " ORDER BY sequencia DESC";
@@ -890,6 +892,18 @@ public class MangaDaoJDBC implements MangaDao {
 
 		try {
 			st = conn.prepareStatement(String.format(CREATE_TEXTO, base + nome, nome, nome, base + nome));
+			st.execute();
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
+		} finally {
+			DB.closeStatement(st);
+		}
+
+		try {
+			st = conn.prepareStatement(String.format(CREATE_VOCABULARIO, base + nome, nome, nome, nome, nome,
+					base + nome, nome, base + nome, nome, base + nome));
 			st.execute();
 		} catch (SQLException e) {
 			System.out.println(st.toString());
