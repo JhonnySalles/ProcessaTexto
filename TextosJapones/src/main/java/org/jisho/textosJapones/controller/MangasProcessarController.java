@@ -332,7 +332,8 @@ public class MangasProcessarController implements Initializable {
 				// Implementa um nivel por tipo
 				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
 					volumeAnterior = volume.getManga();
-					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga()));
+					volume.setBase(tabela.getBase());
+					itmManga = new TreeItem<Manga>(volume);
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
 				}

@@ -426,7 +426,7 @@ public class MangasJsonController implements Initializable {
 					itmVolume.getChildren().add(new TreeItem<Manga>(capitulo));
 				}
 
-				itmLingua.getChildren().add(itmVolume);
+				itmManga.getChildren().add(itmVolume);
 			}
 			itmRoot.getChildren().add(itmTabela);
 			itmRoot.setExpanded(true);
