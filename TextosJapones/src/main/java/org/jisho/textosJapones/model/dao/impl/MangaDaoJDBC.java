@@ -219,11 +219,15 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	private Set<MangaVocabulario> selectVocabulario(String base, String where) throws ExcessaoBd {
+	private Set<MangaVocabulario> selectVocabulario(String base, String where, Boolean inverterTexto) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_VOCABUALARIO, BASE_MANGA + base, where));
+			String order = "";
+			if (inverterTexto)
+				order = " ORDER BY id DESC";
+			
+			st = conn.prepareStatement(String.format(SELECT_VOCABUALARIO, BASE_MANGA + base, where + order));
 			rs = st.executeQuery();
 
 			Set<MangaVocabulario> list = new HashSet<MangaVocabulario>();
@@ -356,7 +360,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")),
-						selectVocabulario(base, "id_volume = " + rs.getLong("id")),
+						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
 						selectCapitulos(base, todos, rs.getLong("id"))));
 			return list;
 		} catch (SQLException e) {
@@ -396,7 +400,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")),
-						selectVocabulario(base, "id_volume = " + rs.getLong("id")),
+						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
 						selectCapitulos(base, todos, rs.getLong("id"), capitulo, linguagem, inverterTexto)));
 			return list;
 		} catch (SQLException e) {
@@ -453,7 +457,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaCapitulo(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectVocabulario(base, "id_capitulo = " + rs.getLong("id")),
+						selectVocabulario(base, "id_capitulo = " + rs.getLong("id"), false),
 						selectPaginas(base, todos, rs.getLong("id"), false, false)));
 
 			return list;
@@ -493,7 +497,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaCapitulo(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectVocabulario(base, "id_capitulo = " + rs.getLong("id")),
+						selectVocabulario(base, "id_capitulo = " + rs.getLong("id"), false),
 						selectPaginas(base, todos, rs.getLong("id"), inverterTexto, true)));
 
 			return list;
@@ -549,7 +553,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaPagina(rs.getLong("id"), rs.getString("nome"), rs.getInt("numero"),
 						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
 						selectTextos(base, rs.getLong("id"), inverterTexto),
-						(selectVocabulario ? selectVocabulario(base, "id_pagina = " + rs.getLong("id"))
+						(selectVocabulario ? selectVocabulario(base, "id_pagina = " + rs.getLong("id"), inverterTexto)
 								: new HashSet<MangaVocabulario>())));
 
 			return list;
@@ -602,9 +606,11 @@ public class MangaDaoJDBC implements MangaDao {
 			rs = st.executeQuery();
 
 			List<MangaTexto> list = new ArrayList<>();
+			
+			int sequencia = 0;
 
 			while (rs.next())
-				list.add(new MangaTexto(rs.getLong("id"), rs.getString("texto"), rs.getInt("sequencia"),
+				list.add(new MangaTexto(rs.getLong("id"), rs.getString("texto"), sequencia++,
 						rs.getInt("posicao_x1"), rs.getInt("posicao_y1"), rs.getInt("posicao_x2"),
 						rs.getInt("posicao_y2")));
 

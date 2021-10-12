@@ -113,7 +113,7 @@ public class MangasProcessarController implements Initializable {
 	public void setControllerPai(MangasController controller) {
 		this.controller = controller;
 	}
-	
+
 	public MangasController getControllerPai() {
 		return controller;
 	}
@@ -333,7 +333,7 @@ public class MangasProcessarController implements Initializable {
 				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
 					volumeAnterior = volume.getManga();
 					volume.setBase(tabela.getBase());
-					itmManga = new TreeItem<Manga>(volume);
+					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
 				}
