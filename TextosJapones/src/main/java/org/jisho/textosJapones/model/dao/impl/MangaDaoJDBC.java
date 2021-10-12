@@ -54,8 +54,8 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String CREATE_VOCABULARIO = "CREATE TABLE %s_vocabulario (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
 			+ "  id_volume INT(11) DEFAULT NULL," + "  id_capitulo INT(11) DEFAULT NULL,"
 			+ "  id_pagina INT(11) DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
-			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + " revisado tinyint(1) DEFAULT 1,"
-			+ "  PRIMARY KEY (id)," + "  KEY %s_vocab_volume_fk (id_volume),"
+			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + "  leitura LONGTEXT COLLATE utf8mb4_unicode_ci,"
+			+ "  revisado tinyint(1) DEFAULT 1," + "  PRIMARY KEY (id)," + "  KEY %s_vocab_volume_fk (id_volume),"
 			+ "  KEY %s_vocab_capitulo_fk (id_capitulo)," + "  KEY %s_vocab_pagina_fk (id_pagina),"
 			+ "  CONSTRAINT %s_vocab_capitulo_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id),"
 			+ "  CONSTRAINT %s_vocab_pagina_fk FOREIGN KEY (id_pagina) REFERENCES %s_paginas (id),"
@@ -92,9 +92,9 @@ public class MangaDaoJDBC implements MangaDao {
 			+ " AND Table_Name LIKE '%%_vocabulario%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
 
 	final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabulario WHERE %s;";
-	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabulario (%s, palavra, significado, revisado) "
-			+ " VALUES (?,?,?,?);";
-	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, significado, revisado FROM %s_vocabulario WHERE %s ";
+	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabulario (%s, palavra, significado, leitura, revisado) "
+			+ " VALUES (?,?,?,?,?);";
+	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, significado, leitura, revisado FROM %s_vocabulario WHERE %s ";
 	final private String UPDATE_PROCESSADO = "UPDATE %s_%s SET is_processado = 1 WHERE id = ?";
 
 	public MangaDaoJDBC(Connection conn) {
@@ -116,7 +116,7 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setBoolean(4, obj.getProcessado());
 			st.setLong(5, obj.getId());
 
-			insertVocabulario(base, obj.getId(), null, null, obj.getVocabulario());
+			insertVocabulario(base, obj.getId(), null, null, obj.getVocabularios());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -149,7 +149,7 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setBoolean(6, obj.getProcessado());
 			st.setLong(7, obj.getId());
 
-			insertVocabulario(base, null, obj.getId(), null, obj.getVocabulario());
+			insertVocabulario(base, null, obj.getId(), null, obj.getVocabularios());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -189,7 +189,8 @@ public class MangaDaoJDBC implements MangaDao {
 				st.setLong(1, id);
 				st.setString(2, vocab.getPalavra());
 				st.setString(3, vocab.getSignificado());
-				st.setBoolean(4, vocab.getRevisado());
+				st.setString(4, vocab.getLeitura());
+				st.setBoolean(5, vocab.getRevisado());
 
 				st.executeUpdate();
 			}
@@ -229,7 +230,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next())
 				list.add(new MangaVocabulario(rs.getLong("id"), rs.getString("palavra"), rs.getString("significado"),
-						rs.getBoolean("revisado")));
+						rs.getString("leitura"), rs.getBoolean("revisado")));
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -382,7 +383,7 @@ public class MangaDaoJDBC implements MangaDao {
 				condicao += " AND VOL.linguagem = '" + linguagem.getSigla() + "' ";
 
 			if (manga != null && !manga.trim().isEmpty())
-				condicao += " AND VOL.manga = " + '"' + manga.trim() + '"';
+				condicao += " AND VOL.manga LIKE " + '"' + manga.trim() + '"';
 
 			if (volume != null && volume > 0)
 				condicao += " AND VOL.volume = " + String.valueOf(volume);
@@ -453,7 +454,7 @@ public class MangaDaoJDBC implements MangaDao {
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
 						selectVocabulario(base, "id_capitulo = " + rs.getLong("id")),
-						selectPaginas(base, todos, rs.getLong("id"), false)));
+						selectPaginas(base, todos, rs.getLong("id"), false, false)));
 
 			return list;
 		} catch (SQLException e) {
@@ -493,7 +494,7 @@ public class MangaDaoJDBC implements MangaDao {
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
 						selectVocabulario(base, "id_capitulo = " + rs.getLong("id")),
-						selectPaginas(base, todos, rs.getLong("id"), inverterTexto)));
+						selectPaginas(base, todos, rs.getLong("id"), inverterTexto, true)));
 
 			return list;
 		} catch (SQLException e) {
@@ -531,8 +532,8 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaPagina> selectPaginas(String base, Boolean todos, Long idPagina, Boolean inverterTexto)
-			throws ExcessaoBd {
+	public List<MangaPagina> selectPaginas(String base, Boolean todos, Long idPagina, Boolean inverterTexto,
+			Boolean selectVocabulario) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -547,7 +548,9 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaPagina(rs.getLong("id"), rs.getString("nome"), rs.getInt("numero"),
 						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
-						selectTextos(base, rs.getLong("id"), inverterTexto)));
+						selectTextos(base, rs.getLong("id"), inverterTexto),
+						(selectVocabulario ? selectVocabulario(base, "id_pagina = " + rs.getLong("id"))
+								: new HashSet<MangaVocabulario>())));
 
 			return list;
 		} catch (SQLException e) {
@@ -720,7 +723,7 @@ public class MangaDaoJDBC implements MangaDao {
 				if (rs.next())
 					id = rs.getLong(1);
 
-				insertVocabulario(base, id, null, null, obj.getVocabulario());
+				insertVocabulario(base, id, null, null, obj.getVocabularios());
 
 				return id;
 			}
@@ -760,7 +763,7 @@ public class MangaDaoJDBC implements MangaDao {
 				if (rs.next())
 					id = rs.getLong(1);
 
-				insertVocabulario(base, null, id, null, obj.getVocabulario());
+				insertVocabulario(base, null, id, null, obj.getVocabularios());
 
 				return id;
 			}

@@ -10,6 +10,8 @@ public class MangaVocabulario {
 	@Expose
 	String significado;
 	@Expose
+	String leitura;
+	@Expose
 	Boolean revisado;
 
 	public Long getId() {
@@ -36,6 +38,14 @@ public class MangaVocabulario {
 		this.significado = significado;
 	}
 	
+	public String getLeitura() {
+		return leitura;
+	}
+
+	public void setLeitura(String leitura) {
+		this.leitura = leitura;
+	}
+
 	public Boolean getRevisado() {
 		return revisado;
 	}
@@ -48,27 +58,31 @@ public class MangaVocabulario {
 		this.id = 0L;
 		this.palavra = "";
 		this.significado = "";
+		this.leitura = "";
 		this.revisado = true;
 	}
 	
-	public MangaVocabulario(String palavra, String significado) {
+	public MangaVocabulario(String palavra, String significado, String leitura) {
 		this.id = 0L;
 		this.palavra = palavra;
 		this.significado = significado;
+		this.leitura = leitura;
 		this.revisado = true;
 	}
 	
-	public MangaVocabulario(String palavra, String significado, Boolean revisado) {
+	public MangaVocabulario(String palavra, String significado,  String leitura, Boolean revisado) {
 		this.id = 0L;
 		this.palavra = palavra;
 		this.significado = significado;
+		this.leitura = leitura;
 		this.revisado = revisado;
 	}
 
-	public MangaVocabulario(Long id, String palavra, String significado, Boolean revisado) {
+	public MangaVocabulario(Long id, String palavra, String significado, String leitura, Boolean revisado) {
 		this.id = id;
 		this.palavra = palavra;
 		this.significado = significado;
+		this.leitura = leitura;
 		this.revisado = revisado;
 	}
 

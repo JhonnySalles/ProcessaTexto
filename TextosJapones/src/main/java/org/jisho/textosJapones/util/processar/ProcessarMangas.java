@@ -155,14 +155,14 @@ public class ProcessarMangas {
 										for (MangaTexto texto : pagina.getTextos())
 											gerarVocabulario(texto.getTexto());
 
-										pagina.setVocabulario(vocabPagina);
+										pagina.setVocabularios(vocabPagina);
 										pagina.setProcessado(true);
 										serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
 
 										if (desativar)
 											break;
 									}
-									capitulo.setVocabulario(vocabCapitulo);
+									capitulo.setVocabularios(vocabCapitulo);
 									capitulo.setProcessado(true);
 									serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
 									propCapitulo.set((double) C / volume.getCapitulos().size());
@@ -170,7 +170,7 @@ public class ProcessarMangas {
 									if (desativar)
 										break;
 								}
-								volume.setVocabulario(vocabVolume);
+								volume.setVocabularios(vocabVolume);
 								volume.setProcessado(true);
 								serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
 								propVolume.set((double) V / tabela.getVolumes().size());
@@ -315,9 +315,9 @@ public class ProcessarMangas {
 					if (palavra != null) {
 						MangaVocabulario vocabulario = null;
 						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao());
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(), m.readingForm());
 						else
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao());
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(), m.readingForm());
 
 						// Usado apenas para correção em formas em branco.
 						if (palavra.getFormaBasica().isEmpty()) {
@@ -398,7 +398,7 @@ public class ProcessarMangas {
 							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(), m.readingForm(),
 								false);
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);

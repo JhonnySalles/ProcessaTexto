@@ -86,7 +86,7 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private JFXCheckBox ckbSepararPorCapitulos;
-	
+
 	@FXML
 	private JFXCheckBox ckbInverterOrdemTexto;
 
@@ -123,7 +123,7 @@ public class MangasJsonController implements Initializable {
 	public void setControllerPai(MangasController controller) {
 		this.controller = controller;
 	}
-	
+
 	public MangasController getControllerPai() {
 		return controller;
 	}
@@ -198,7 +198,6 @@ public class MangasJsonController implements Initializable {
 
 		PAUSAR = false;
 
-
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
@@ -209,7 +208,7 @@ public class MangasJsonController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					error = "";
-	
+
 					updateMessage("Gravando Jsons....");
 
 					ExclusionStrategy removeLinguagemCapitulo = new ExclusionStrategy() {
@@ -247,12 +246,11 @@ public class MangasJsonController implements Initializable {
 
 						if (!tabela.isProcessar()) {
 
-				
-								Platform.runLater(() -> {
-									if (TaskbarProgressbar.isSupported())
-										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
-												Type.NORMAL);
-								});
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
+											Type.NORMAL);
+							});
 
 							continue;
 						}
@@ -287,11 +285,11 @@ public class MangasJsonController implements Initializable {
 
 						}
 
-							Platform.runLater(() -> {
-								if (TaskbarProgressbar.isSupported())
-									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
-											Type.NORMAL);
-							});
+						Platform.runLater(() -> {
+							if (TaskbarProgressbar.isSupported())
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
+										Type.NORMAL);
+						});
 
 						if (PAUSAR)
 							break;
@@ -312,7 +310,7 @@ public class MangasJsonController implements Initializable {
 					progress.getLog().textProperty().unbind();
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
-					
+
 					if (!error.isEmpty())
 						AlertasPopup.ErroModal("Erro", error);
 					else
@@ -340,7 +338,7 @@ public class MangasJsonController implements Initializable {
 
 	private void carregar() {
 		MenuPrincipalController.getController().getLblLog().setText("Carregando json...");
-		
+
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
@@ -359,8 +357,8 @@ public class MangasJsonController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					TABELAS = FXCollections
-							.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
+					TABELAS = FXCollections.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO,
+							LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();

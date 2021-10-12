@@ -70,7 +70,7 @@
 	                <Insets />
 	             </opaqueInsets>
 	             <children>
-                  <JFXCheckBox fx:id="ckbInverterOrdemTexto" checkedColor="#71afe5" text="Inverter ordem do texto na consulta?" textFill="WHITE" unCheckedColor="#106ebe" />
+                  <JFXCheckBox fx:id="ckbInverterOrdemTexto" checkedColor="#71afe5" selected="true" text="Inverter ordem do texto na consulta?" textFill="WHITE" unCheckedColor="#106ebe" />
 	                <JFXCheckBox fx:id="ckbSepararPorCapitulos" checkedColor="#71afe5" text="Separar por capitulo" textFill="WHITE" unCheckedColor="#106ebe" />
 	                <JFXButton fx:id="btnCarregar" buttonType="RAISED" onAction="#onBtnCarregar" prefWidth="130.0" styleClass="background-White1" text="Carregar" />
 	                <JFXButton fx:id="btnGerarJson" accessibleText="GERAR" buttonType="RAISED" onAction="#onBtnGerarJson" prefWidth="140.0" styleClass="background-White1" text="Gerar Json" />

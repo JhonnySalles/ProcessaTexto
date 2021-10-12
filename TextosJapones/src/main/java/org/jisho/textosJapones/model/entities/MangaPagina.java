@@ -19,7 +19,7 @@ public class MangaPagina extends Manga {
 	@Expose
 	private List<MangaTexto> textos;
 	@Expose
-	private Set<MangaVocabulario> vocabulario;
+	private Set<MangaVocabulario> vocabularios;
 	private Boolean processado;
 
 	public Long getId() {
@@ -67,15 +67,15 @@ public class MangaPagina extends Manga {
 	}
 
 	public Set<MangaVocabulario> getVocabulario() {
-		return vocabulario;
+		return vocabularios;
 	}
 
-	public void setVocabulario(Set<MangaVocabulario> vocabulario) {
-		this.vocabulario = vocabulario;
+	public void setVocabularios(Set<MangaVocabulario> vocabularios) {
+		this.vocabularios = vocabularios;
 	}
-	
+
 	public void addVocabulario(MangaVocabulario vocabulario) {
-		this.vocabulario.add(vocabulario);
+		this.vocabularios.add(vocabulario);
 	}
 
 	public Boolean getProcessado() {
@@ -93,7 +93,7 @@ public class MangaPagina extends Manga {
 		this.hash = "";
 		this.processado = false;
 		this.processar = true;
-		this.vocabulario = new HashSet<MangaVocabulario>();
+		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
@@ -102,18 +102,32 @@ public class MangaPagina extends Manga {
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabulario = new HashSet<MangaVocabulario>();;
+		this.vocabularios = new HashSet<MangaVocabulario>();
+		;
 		this.processado = processado;
 		this.processar = true;
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
-	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado, List<MangaTexto> textos) {
+	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
+			List<MangaTexto> textos) {
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabulario = new HashSet<MangaVocabulario>();;
+		this.vocabularios = new HashSet<MangaVocabulario>();
+		this.processado = processado;
+		this.textos = textos;
+		this.processar = true;
+	}
+
+	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
+			List<MangaTexto> textos, Set<MangaVocabulario> vocabularios) {
+		this.id = id;
+		this.nomePagina = nomePagina;
+		this.numero = numero;
+		this.hash = hash;
+		this.vocabularios = vocabularios;
 		this.processado = processado;
 		this.textos = textos;
 		this.processar = true;
