@@ -13,6 +13,7 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\EstatisticaController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaCapitulo.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\PopupNotificacaoController.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\converter\FloatConverter.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\configuration\Configuracao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\MangaDao.java
@@ -49,6 +50,7 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\Manga.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MenuPrincipalController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\Run.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\converter\IntegerConverter.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\impl\EstatisticaDaoJDBC.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\processar\TanoshiJapanese.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\constraints\Validadores.java
@@ -76,5 +78,6 @@ D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJ
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\dao\VocabularioDao.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\services\RevisarServices.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\MangaPagina.java
+D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\controller\MangasAjustarController.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\model\entities\Revisar.java
 D:\ProjetoApp\ProcessaTextoJapones\TextosJapones\src\main\java\org\jisho\textosJapones\util\mysql\Backup.java

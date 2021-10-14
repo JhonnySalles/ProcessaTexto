@@ -208,6 +208,7 @@ public class ProcessarMangas {
 
 			@Override
 			protected void succeeded() {
+				super.failed();
 				if (error)
 					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
 							"Erro", "Erro ao processar a lista.");
@@ -224,6 +225,12 @@ public class ProcessarMangas {
 				controller.habilitar();
 				
 				MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+			}
+			
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread de processamento da tabela: " + super.getMessage());
 			}
 		};
 		progress.getBarraProgresso().progressProperty().bind(propTabela);
@@ -334,7 +341,6 @@ public class ProcessarMangas {
 						Revisar revisar = serviceRevisar.select(m.surface(), m.dictionaryForm());
 						if (revisar == null) {
 							revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true);
-
 							Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
 									.setText(m.surface() + " : Vocabulário novo."));
 							revisar.setIngles(getSignificado(revisar.getVocabulario()));

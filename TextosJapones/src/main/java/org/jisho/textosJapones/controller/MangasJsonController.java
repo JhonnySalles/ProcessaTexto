@@ -304,6 +304,7 @@ public class MangasJsonController implements Initializable {
 
 			@Override
 			protected void succeeded() {
+				super.failed();
 				Platform.runLater(() -> {
 
 					progress.getBarraProgresso().progressProperty().unbind();
@@ -319,6 +320,12 @@ public class MangasJsonController implements Initializable {
 					habilitar();
 				});
 
+			}
+			
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread gerar json: " + super.getMessage());
 			}
 		};
 
@@ -368,6 +375,7 @@ public class MangasJsonController implements Initializable {
 
 			@Override
 			protected void succeeded() {
+				super.succeeded();
 				Platform.runLater(() -> {
 					treeBases.setRoot(DADOS);
 
@@ -380,6 +388,12 @@ public class MangasJsonController implements Initializable {
 					treeBases.setDisable(false);
 				});
 
+			}
+			
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread de carregamento de itens: " + super.getMessage());
 			}
 		};
 		Thread t = new Thread(carregaItens);
@@ -559,7 +573,7 @@ public class MangasJsonController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasJsonController.class.getResource("/view/Manga.fxml");
+		return MangasJsonController.class.getResource("/view/MangaJson.fxml");
 	}
 
 	public static String getIconLocate() {

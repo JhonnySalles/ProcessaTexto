@@ -17,6 +17,8 @@ public interface MangaDao {
 	void updateVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
 	void updateCapitulo(String base, MangaCapitulo obj) throws ExcessaoBd;
+	
+	void updateCapitulo(String base, Long IdVolume, MangaCapitulo obj) throws ExcessaoBd;
 
 	void updatePagina(String base, MangaPagina obj) throws ExcessaoBd;
 
@@ -41,13 +43,15 @@ public interface MangaDao {
 
 	void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
 
-	Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd;
+	Long insertVolume(String base, MangaVolume obj, Boolean importando) throws ExcessaoBd;
 
 	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd;
 
 	Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd;
 
 	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
+	
+	void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
 
@@ -59,5 +63,6 @@ public interface MangaDao {
 	void createDatabase(String base) throws ExcessaoBd;
 
 	public void createBaseVocabulario(String nome) throws ExcessaoBd;
+
 
 }

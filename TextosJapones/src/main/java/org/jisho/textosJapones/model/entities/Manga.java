@@ -10,8 +10,12 @@ public class Manga {
 	protected Float capitulo;
 	protected Integer pagina;
 	protected String nomePagina;
+	protected String texto;
 	protected Boolean processar;
 	protected String linguagem;
+	protected Integer volumeDestino;
+	protected Float capituloDestino;
+	protected Boolean alterado;
 
 	public String getBase() {
 		return base;
@@ -60,7 +64,15 @@ public class Manga {
 	public void setNomePagina(String nomePagina) {
 		this.nomePagina = nomePagina;
 	}
-	
+
+	public String getTexto() {
+		return texto;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
+	}
+
 	public String getLinguagem() {
 		return linguagem;
 	}
@@ -77,22 +89,73 @@ public class Manga {
 		this.processar = processar;
 	}
 
+	public Integer getVolumeDestino() {
+		return volumeDestino;
+	}
+
+	public void setVolumeDestino(Integer volumeDestino) {
+		this.volumeDestino = volumeDestino;
+	}
+
+	public Float getCapituloDestino() {
+		return capituloDestino;
+	}
+
+	public void setCapituloDestino(Float capituloDestino) {
+		this.capituloDestino = capituloDestino;
+	}
+
+	public Boolean isAlterado() {
+		return alterado;
+	}
+
+	public void setAlterado(Boolean alterado) {
+		this.alterado = alterado;
+	}
+
 	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua) {
 		this.base = base;
 		this.manga = manga;
 		this.volume = volume;
 		this.capitulo = capitulo;
+		this.pagina = null;
+		this.nomePagina = null;
+		this.texto = null;
+		this.processar = true;
+		this.linguagem = lingua.getSigla().toUpperCase();
+		this.capituloDestino = capitulo;
+		this.volumeDestino = volume;
+		this.alterado = false;
+	}
+
+	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua,
+			Integer pagina, String nomePagina, String texto) {
+		this.base = base;
+		this.manga = manga;
+		this.volume = volume;
+		this.capitulo = capitulo;
+		this.pagina = pagina;
+		this.nomePagina = nomePagina;
+		this.texto = texto;
+		this.processar = true;
+		this.linguagem = lingua.getSigla().toUpperCase();
+		this.capituloDestino = capitulo;
+		this.volumeDestino = volume;
+		this.alterado = false;
 	}
 
 	public Manga() {
-		this.base = "";
-		this.manga = "";
+		this.base = null;
+		this.manga = null;
 		this.volume = null;
 		this.capitulo = null;
 		this.pagina = null;
-		this.nomePagina = "";
+		this.nomePagina = null;
 		this.processar = true;
 		this.linguagem = null;
+		this.volumeDestino = null;
+		this.capituloDestino = null;
+		this.alterado = false;
 	}
 
 	public Manga(String base, String manga) {
@@ -101,11 +164,14 @@ public class Manga {
 		this.volume = null;
 		this.capitulo = null;
 		this.pagina = null;
-		this.nomePagina = "";
+		this.nomePagina = null;
 		this.processar = true;
 		this.linguagem = null;
+		this.volumeDestino = null;
+		this.capituloDestino = null;
+		this.alterado = false;
 	}
-	
+
 	public Manga(String base, String manga, String linguagem) {
 		this.base = base;
 		this.manga = manga;
@@ -115,6 +181,9 @@ public class Manga {
 		this.nomePagina = null;
 		this.linguagem = linguagem;
 		this.processar = true;
+		this.volumeDestino = null;
+		this.capituloDestino = null;
+		this.alterado = false;
 	}
 
 	public Manga(String base, String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -125,5 +194,45 @@ public class Manga {
 		this.pagina = pagina;
 		this.nomePagina = nomePagina;
 		this.linguagem = null;
+		this.volumeDestino = volume;
+		this.capituloDestino = capitulo;
+		this.alterado = false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((base == null) ? 0 : base.hashCode());
+		result = prime * result + ((linguagem == null) ? 0 : linguagem.hashCode());
+		result = prime * result + ((manga == null) ? 0 : manga.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Manga other = (Manga) obj;
+		if (base == null) {
+			if (other.base != null)
+				return false;
+		} else if (!base.equals(other.base))
+			return false;
+		if (linguagem == null) {
+			if (other.linguagem != null)
+				return false;
+		} else if (!linguagem.equals(other.linguagem))
+			return false;
+		if (manga == null) {
+			if (other.manga != null)
+				return false;
+		} else if (!manga.equals(other.manga))
+			return false;
+		return true;
 	}
 }

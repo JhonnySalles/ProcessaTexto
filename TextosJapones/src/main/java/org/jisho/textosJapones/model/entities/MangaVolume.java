@@ -94,7 +94,6 @@ public class MangaVolume extends Manga {
 		this.volume = 0;
 		this.lingua = Language.PORTUGUESE;
 		this.vocabularios = new HashSet<MangaVocabulario>();
-		;
 		this.processado = false;
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();

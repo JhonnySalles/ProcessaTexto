@@ -69,10 +69,17 @@ public class ProcessarLegendas {
 
 			@Override
 			protected void succeeded() {
+				super.succeeded();
 				AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
 						controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
 				progress.getBarraProgresso().progressProperty().unbind();
 				progress.getLog().textProperty().unbind();
+			}
+			
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread de processamento do vocabulário: " + super.getMessage());
 			}
 		};
 		progress.getBarraProgresso().progressProperty().bind(processarVocabulario.progressProperty());

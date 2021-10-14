@@ -14,6 +14,8 @@ import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
+import javafx.collections.ObservableList;
+
 public class MangaServices {
 
 	private MangaDao mangaDao = DaoFactory.createMangaDao();
@@ -47,7 +49,7 @@ public class MangaServices {
 	}
 
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
-		Long idVolume = mangaDao.insertVolume(base, volume);
+		Long idVolume = mangaDao.insertVolume(base, volume, true);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
 			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
@@ -85,6 +87,24 @@ public class MangaServices {
 
 	public void createBaseVocabulario(String base) throws ExcessaoBd {
 		mangaDao.createBaseVocabulario(base);
+	}
+
+	public void salvarAjustes(ObservableList<MangaTabela> tabelas) throws ExcessaoBd {
+		for (MangaTabela tabela : tabelas)
+			for (MangaVolume volume : tabela.getVolumes()) {
+				
+				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
+					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume, false));
+				else if (volume.isAlterado())
+					mangaDao.updateVolume(tabela.getBase(), volume);
+
+				if (volume.getCapitulos().isEmpty())
+					mangaDao.deleteVolume(tabela.getBase(), volume);
+				else
+					for (MangaCapitulo capitulo : volume.getCapitulos())
+						if (capitulo.isAlterado())
+							mangaDao.updateCapitulo(tabela.getBase(), volume.getId(), capitulo);
+			}
 	}
 
 }

@@ -2,7 +2,7 @@ package org.jisho.textosJapones.model.entities;
 
 import com.google.gson.annotations.Expose;
 
-public class MangaTexto {
+public class MangaTexto extends Manga {
 
 	private Long id;
 	@Expose

@@ -19,7 +19,7 @@ public class MangasController implements Initializable {
 
 	@FXML
 	protected AnchorPane apConteinerRoot;
-	
+
 	@FXML
 	private ProgressBar barraProgressoVolumes;
 
@@ -35,6 +35,9 @@ public class MangasController implements Initializable {
 	@FXML
 	private MangasProcessarController processarController;
 
+	@FXML
+	private MangasAjustarController ajustarController;
+
 	public AnchorPane getRoot() {
 		return apConteinerRoot;
 	}
@@ -42,7 +45,7 @@ public class MangasController implements Initializable {
 	public StackPane getStackPane() {
 		return stackPane;
 	}
-	
+
 	public ProgressBar getBarraProgressoVolumes() {
 		return barraProgressoVolumes;
 	}
@@ -58,10 +61,11 @@ public class MangasController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		jsonController.setControllerPai(this);
 		processarController.setControllerPai(this);
+		ajustarController.setControllerPai(this);
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasController.class.getResource("/view/Manga.fxml");
+		return MangasController.class.getResource("/view/MangaAjustar.fxml");
 	}
 
 	public static String getIconLocate() {
