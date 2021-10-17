@@ -515,7 +515,7 @@ public class MangasJsonController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
-		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE);
+		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE, Language.PORTUGUESE_GOOGLE);
 
 		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
