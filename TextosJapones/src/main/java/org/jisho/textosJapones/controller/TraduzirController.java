@@ -304,7 +304,6 @@ public class TraduzirController implements Initializable {
 								}
 							}
 
-							// if (!item.getIngles().isEmpty() && !item.getTraducao().isEmpty())
 							item.getRevisado().setSelected(true);
 						}
 

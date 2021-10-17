@@ -24,6 +24,11 @@ public class MangaServices {
 		return mangaDao.selectTabelas(todos);
 	}
 
+	public List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+			throws ExcessaoBd {
+		return mangaDao.selectAll(base, manga, volume, capitulo, linguagem);
+	}
+
 	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga) throws ExcessaoBd {
 		return mangaDao.selectTabelas(todos, base, manga);
 	}
@@ -51,12 +56,11 @@ public class MangaServices {
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
 		Long idVolume = mangaDao.insertVolume(base, volume, true);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
+			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo, true);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
-				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
-				for (MangaTexto texto : pagina.getTextos()) {
-					mangaDao.insertTexto(base, idPagina, texto);
-				}
+				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina, true);
+				for (MangaTexto texto : pagina.getTextos())
+					mangaDao.insertTexto(base, idPagina, texto, true);
 			}
 		}
 	}
@@ -92,7 +96,7 @@ public class MangaServices {
 	public void salvarAjustes(ObservableList<MangaTabela> tabelas) throws ExcessaoBd {
 		for (MangaTabela tabela : tabelas)
 			for (MangaVolume volume : tabela.getVolumes()) {
-				
+
 				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
 					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume, false));
 				else if (volume.isAlterado())
@@ -105,6 +109,19 @@ public class MangaServices {
 						if (capitulo.isAlterado())
 							mangaDao.updateCapitulo(tabela.getBase(), volume.getId(), capitulo);
 			}
+	}
+	
+	public void salvarTraducao(String base, MangaVolume volume) throws ExcessaoBd {
+		mangaDao.deleteVolume(base, volume);
+		Long idVolume = mangaDao.insertVolume(base, volume, false);
+		for (MangaCapitulo capitulo : volume.getCapitulos()) {
+			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo, false);
+			for (MangaPagina pagina : capitulo.getPaginas()) {
+				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina, false);
+				for (MangaTexto texto : pagina.getTextos())
+					mangaDao.insertTexto(base, idPagina, texto, false);
+			}
+		}
 	}
 
 }

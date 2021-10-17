@@ -44,7 +44,6 @@ public class ScriptGoogle {
 		case CONTA_MIGRACAO_4:
 			urlStr += contaMigracao4;
 			break;
-
 		default:
 			urlStr += contaPrincipal;
 		}

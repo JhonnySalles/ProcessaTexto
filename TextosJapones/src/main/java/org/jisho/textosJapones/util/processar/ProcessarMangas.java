@@ -18,7 +18,6 @@ import org.jisho.textosJapones.model.entities.MangaVocabulario;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
@@ -51,7 +50,6 @@ public class ProcessarMangas {
 	private RevisarServices serviceRevisar = new RevisarServices();
 	private MangaServices serviceManga = new MangaServices();
 	private ProcessarPalavra desmembra = new ProcessarPalavra();
-	private Api contaGoogle;
 	private Site siteDicionario;
 	private Boolean desativar = false;
 	private Integer traducoes = 0;
@@ -75,6 +73,7 @@ public class ProcessarMangas {
 	private DoubleProperty propTabela = new SimpleDoubleProperty(.0);
 
 	private Boolean error;
+
 	public void processarTabelas(List<MangaTabela> tabelas) {
 		error = false;
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
@@ -90,7 +89,6 @@ public class ProcessarMangas {
 									.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
 						tokenizer = dict.create();
 						mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
-						contaGoogle = MenuPrincipalController.getController().getContaGoogle();
 						siteDicionario = MenuPrincipalController.getController().getSite();
 
 						propTabela.set(.0);
@@ -215,7 +213,6 @@ public class ProcessarMangas {
 				else if (!desativar)
 					AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
 							"Aviso", "Mangas processadas com sucesso.");
-				
 
 				progress.getBarraProgresso().progressProperty().unbind();
 				controller.getBarraProgressoVolumes().progressProperty().unbind();
@@ -223,10 +220,10 @@ public class ProcessarMangas {
 				controller.getBarraProgressoPaginas().progressProperty().unbind();
 				progress.getLog().textProperty().unbind();
 				controller.habilitar();
-				
+
 				MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 			}
-			
+
 			@Override
 			protected void failed() {
 				super.failed();
@@ -258,7 +255,6 @@ public class ProcessarMangas {
 
 			if (resultado.isEmpty())
 				resultado = Jisho.processa(kanji);
-
 			break;
 		case JAPANESE_TANOSHI:
 			resultado = TanoshiJapanese.processa(kanji);
@@ -322,9 +318,11 @@ public class ProcessarMangas {
 					if (palavra != null) {
 						MangaVocabulario vocabulario = null;
 						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(), m.readingForm());
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(),
+									m.readingForm());
 						else
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(), m.readingForm());
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(),
+									m.readingForm());
 
 						// Usado apenas para correção em formas em branco.
 						if (palavra.getFormaBasica().isEmpty()) {
@@ -352,45 +350,23 @@ public class ProcessarMangas {
 								revisar.setIngles(getSignificado(getDesmembrado(revisar.getVocabulario())));
 
 							if (!revisar.getIngles().isEmpty()) {
-								if (contaGoogle != null) {
-									try {
-										traducoes++;
+								try {
+									traducoes++;
 
-										if (traducoes > 3000) {
-											traducoes = 0;
-											switch (contaGoogle) {
-											case CONTA_PRINCIPAL:
-												contaGoogle = Api.CONTA_SECUNDARIA;
-												break;
-											case CONTA_SECUNDARIA:
-												contaGoogle = Api.CONTA_MIGRACAO_1;
-												break;
-											case CONTA_MIGRACAO_1:
-												contaGoogle = Api.CONTA_MIGRACAO_2;
-												break;
-											case CONTA_MIGRACAO_2:
-												contaGoogle = Api.CONTA_MIGRACAO_3;
-												break;
-											case CONTA_MIGRACAO_3:
-												contaGoogle = Api.CONTA_MIGRACAO_4;
-												break;
-											case CONTA_MIGRACAO_4:
-												contaGoogle = null;
-												break;
-											default:
-												break;
-											}
-											MenuPrincipalController.getController().setContaGoogle(contaGoogle);
-										}
-
-										Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
-												.setText(m.surface() + " : Obtendo tradução."));
-										revisar.setTraducao(Util.normalize(ScriptGoogle.translate(
-												Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
-												revisar.getIngles(), contaGoogle)));
-									} catch (IOException e) {
-										e.printStackTrace();
+									if (traducoes > 3000) {
+										traducoes = 0;
+										MenuPrincipalController.getController().setContaGoogle(
+												Util.next(MenuPrincipalController.getController().getContaGoogle()));
 									}
+
+									Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
+											.setText(m.surface() + " : Obtendo tradução."));
+									revisar.setTraducao(
+											Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+													Language.PORTUGUESE.getSigla(), revisar.getIngles(),
+													MenuPrincipalController.getController().getContaGoogle())));
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
 							}
 							serviceRevisar.insert(revisar);
@@ -404,8 +380,8 @@ public class ProcessarMangas {
 							serviceRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(), m.readingForm(),
-								false);
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
+								m.readingForm(), false);
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);

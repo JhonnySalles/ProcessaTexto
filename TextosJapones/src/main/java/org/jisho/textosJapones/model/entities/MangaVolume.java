@@ -98,6 +98,17 @@ public class MangaVolume extends Manga {
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
+	
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua) {
+		this.id = id;
+		this.manga = manga;
+		this.volume = volume;
+		this.lingua = lingua;
+		this.vocabularios = new HashSet<MangaVocabulario>();
+		this.processado = false;
+		this.processar = true;
+		this.capitulos = new ArrayList<MangaCapitulo>();
+	}
 
 	public MangaVolume(Long id, String manga, Integer volume, Language lingua, List<MangaCapitulo> capitulos) {
 		this.id = id;

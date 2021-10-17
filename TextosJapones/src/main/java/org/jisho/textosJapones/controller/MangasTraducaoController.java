@@ -1,7 +1,6 @@
 package org.jisho.textosJapones.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
@@ -9,15 +8,19 @@ import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
+import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.processar.ProcessarMangas;
+import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
@@ -33,7 +36,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -45,16 +49,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
 import javafx.util.Callback;
 
-public class MangasProcessarController implements Initializable {
+public class MangasTraducaoController implements Initializable {
 
 	@FXML
-	protected AnchorPane apRoot;
-
-	@FXML
-	private JFXButton btnCarregar;
-
-	@FXML
-	private JFXButton btnProcessar;
+	private AnchorPane apRoot;
 
 	@FXML
 	private JFXTextField txtBase;
@@ -63,7 +61,19 @@ public class MangasProcessarController implements Initializable {
 	private JFXTextField txtManga;
 
 	@FXML
-	private JFXCheckBox ckbProcessados;
+	private JFXComboBox<Language> cbLinguagem;
+
+	@FXML
+	private Spinner<Integer> spnVolume;
+
+	@FXML
+	private Spinner<Double> spnCapitulo;
+
+	@FXML
+	private JFXButton btnCarregar;
+
+	@FXML
+	private JFXButton btnTraduzir;
 
 	@FXML
 	private JFXCheckBox ckbMarcarTodos;
@@ -81,32 +91,17 @@ public class MangasProcessarController implements Initializable {
 	private TreeTableColumn<Manga, String> treecManga;
 
 	@FXML
+	private TreeTableColumn<Manga, Language> treecLinguagem;
+
+	@FXML
 	private TreeTableColumn<Manga, Integer> treecVolume;
 
 	@FXML
 	private TreeTableColumn<Manga, Float> treecCapitulo;
 
-	@FXML
-	private TreeTableColumn<Manga, Integer> treecPagina;
-
-	@FXML
-	private TreeTableColumn<Manga, String> treecNomePagina;
-
-	@FXML
-	private JFXButton btnTransferir;
-
-	@FXML
-	private JFXTextField txtBaseOrigem;
-
-	@FXML
-	private JFXTextField txtBaseDestino;
-
-	@FXML
-	private JFXCheckBox ckbCriarBase;
-
-	private ProcessarMangas mangas;
 	private MangaServices service = new MangaServices();
 	private ObservableList<MangaTabela> TABELAS;
+	private Boolean PAUSAR;
 
 	private MangasController controller;
 
@@ -119,27 +114,26 @@ public class MangasProcessarController implements Initializable {
 	}
 
 	@FXML
-	private void onBtnProcessar() {
-		if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSANDO") && mangas != null) {
-			mangas.setDesativar(true);
-			return;
-		}
-
-		btnProcessar.setAccessibleText("PROCESSANDO");
-		btnProcessar.setText("Pausar");
-		btnCarregar.setDisable(true);
-
-		if (mangas == null)
-			mangas = new ProcessarMangas(this);
-
-		treeBases.setDisable(true);
-		MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento dos mangas...");
-		mangas.processarTabelas(TABELAS);
+	private void onBtnCarregar() {
+		carregar();
 	}
 
 	@FXML
-	private void onBtnCarregar() {
-		carregar();
+	private void onBtnTraduzir() {
+		if (btnTraduzir.getAccessibleText().equalsIgnoreCase("GERANDO")) {
+			PAUSAR = true;
+			return;
+		}
+
+		if (TABELAS.size() == 0)
+			AlertasPopup.AvisoModal("Aviso", "Nenhum item informado.");
+
+		btnTraduzir.setAccessibleText("GERANDO");
+		btnTraduzir.setText("Pausar");
+		btnCarregar.setDisable(true);
+		treeBases.setDisable(true);
+
+		traduzir();
 	}
 
 	@FXML
@@ -148,92 +142,122 @@ public class MangasProcessarController implements Initializable {
 		treeBases.refresh();
 	}
 
-	@FXML
-	private void onBtnTransferir() {
-		transferir();
-	}
-
 	public void habilitar() {
 		treeBases.setDisable(false);
-		MenuPrincipalController.getController().getLblLog().setText("");
-		btnProcessar.setAccessibleText("PROCESSAR");
-		btnProcessar.setText("Processar");
+		btnTraduzir.setAccessibleText("GERAR");
+		btnTraduzir.setText("Traduzir");
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-		controller.getBarraProgressoVolumes().setProgress(0);
-		controller.getBarraProgressoCapitulos().setProgress(0);
-		controller.getBarraProgressoPaginas().setProgress(0);
 	}
 
-	public AnchorPane getRoot() {
-		return apRoot;
-	}
-
-	public ProgressBar getBarraProgressoVolumes() {
-		return controller.getBarraProgressoVolumes();
-	}
-
-	public ProgressBar getBarraProgressoCapitulos() {
-		return controller.getBarraProgressoCapitulos();
-	}
-
-	public ProgressBar getBarraProgressoPaginas() {
-		return controller.getBarraProgressoPaginas();
-	}
-
-	private String BASE_ORIGEM, BASE_DESTINO;
-
-	private Integer I;
+	private Integer I, X, XSize, P, traducoes;
 	private String error;
 
-	private void transferir() {
-		if (txtBaseOrigem.getText().trim().equalsIgnoreCase(txtBaseDestino.getText().trim())) {
-			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
-					"Favor informar outra base de destino.");
-			return;
-		}
-
+	private void traduzir() {
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
-		progress.getTitulo().setText("Mangas - Transferencia");
-		progress.getLog().setText("Transferindo dados....");
-		btnTransferir.setDisable(true);
-
-		BASE_ORIGEM = txtBaseOrigem.getText().trim();
-		BASE_DESTINO = txtBaseDestino.getText().trim();
+		PAUSAR = false;
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
-		Task<Void> transferir = new Task<Void>() {
+		progress.getTitulo().setText("Traduzindo...");
+		Task<Void> traduzir = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
 				try {
 					error = "";
-					updateMessage("Carregando dados....");
-					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
 
-					if (ckbCriarBase.isSelected()) {
-						updateMessage("Criando a base....");
-						service.createDataBase(BASE_DESTINO);
-					}
+					updateMessage("Traduzindo....");
 
-					updateMessage("Transferindo dados....");
 					I = 0;
-					for (MangaVolume volume : lista) {
-						updateMessage("Transferindo dados.... " + volume.getManga());
+					traducoes = 0;
+					for (MangaTabela tabela : TABELAS) {
 						I++;
-						service.insertDadosTransferir(BASE_DESTINO, volume);
-						updateProgress(I, lista.size());
+
+						if (!tabela.isProcessar()) {
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
+											Type.NORMAL);
+							});
+
+							continue;
+						}
+
+						XSize = tabela.getVolumes().size();
+						tabela.getVolumes().forEach(t -> {
+							if (t.isProcessar()) {
+								XSize += t.getCapitulos().size();
+								t.getCapitulos().forEach(c -> XSize += c.getPaginas().size());
+							}
+						});
+
+						X = 0;
+						for (MangaVolume volume : tabela.getVolumes()) {
+							X++;
+							if (!volume.isProcessar())
+								continue;
+
+							MangaVolume volumeTraduzido = new MangaVolume(null, volume.getManga(), volume.getVolume(),
+									Language.PORTUGUESE_GOOGLE);
+
+							for (MangaCapitulo capitulo : volume.getCapitulos()) {
+								X++;
+								if (!capitulo.isProcessar())
+									continue;
+
+								MangaCapitulo capituloTraduzido = new MangaCapitulo(null, capitulo.getManga(),
+										capitulo.getVolume(), capitulo.getCapitulo(), Language.PORTUGUESE_GOOGLE,
+										capitulo.getScan(), capitulo.isExtra(), capitulo.isRaw(), false);
+								volumeTraduzido.addCapitulos(capituloTraduzido);
+
+								P = 0;
+								for (MangaPagina pagina : capitulo.getPaginas()) {
+									P++;
+									X++;
+									updateProgress(X, XSize);
+									updateMessage(volume.getManga() + " - Volume " + volume.getVolume().toString()
+											+ " Capitulo " + capitulo.getCapitulo().toString() + " Página "
+											+ P + '/' + capitulo.getPaginas().size() + " - " + pagina.getNomePagina());
+
+									MangaPagina paginaTraduzido = new MangaPagina(null, pagina.getNomePagina(),
+											pagina.getNumero(), pagina.getHash(), false);
+									capituloTraduzido.addPaginas(paginaTraduzido);
+
+									for (MangaTexto texto : pagina.getTextos()) {
+										MangaTexto textoTraduzido = new MangaTexto(null, "", texto.getSequencia(),
+												texto.getX1(), texto.getY1(), texto.getX2(), texto.getY2());
+										paginaTraduzido.addTexto(textoTraduzido);
+
+										traducoes++;
+
+										if (traducoes > 3000) {
+											traducoes = 0;
+											MenuPrincipalController.getController().setContaGoogle(Util
+													.next(MenuPrincipalController.getController().getContaGoogle()));
+										}
+
+										textoTraduzido.setTexto(ScriptGoogle.translate(capitulo.getLingua().getSigla(),
+												Language.PORTUGUESE.getSigla(), texto.getTexto(),
+												MenuPrincipalController.getController().getContaGoogle()));
+
+										if (PAUSAR)
+											return null;
+									}
+								}
+							}
+							service.salvarTraducao(tabela.getBase(), volumeTraduzido);
+						}
 
 						Platform.runLater(() -> {
 							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, TABELAS.size(),
 										Type.NORMAL);
 						});
 					}
 
-				} catch (ExcessaoBd e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					error = e.getMessage();
 				}
@@ -242,50 +266,62 @@ public class MangasProcessarController implements Initializable {
 
 			@Override
 			protected void succeeded() {
+				super.failed();
 				Platform.runLater(() -> {
+
 					progress.getBarraProgresso().progressProperty().unbind();
 					progress.getLog().textProperty().unbind();
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 
-					btnTransferir.setDisable(false);
-					controller.getBarraProgressoVolumes().setProgress(0);
-					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-
 					if (!error.isEmpty())
-						AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro", error);
-					else
-						AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
-								"Transferência concluida.");
+						AlertasPopup.ErroModal("Erro", error);
+					else if (!PAUSAR) {
+						AlertasPopup.AvisoModal("Aviso", "Tradução concluida.");
+						TABELAS.clear();
+						DADOS.getChildren().clear();
+					}
+
+					habilitar();
 				});
 
 			}
+
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread tradução: " + super.getMessage());
+			}
 		};
-		progress.getBarraProgresso().progressProperty().bind(transferir.progressProperty());
-		progress.getLog().textProperty().bind(transferir.messageProperty());
-		Thread t = new Thread(transferir);
+
+		progress.getBarraProgresso().progressProperty().bind(traduzir.progressProperty());
+		progress.getLog().textProperty().bind(traduzir.messageProperty());
+
+		Thread t = new Thread(traduzir);
 		t.start();
 	}
 
-	private Boolean PROCESSADOS;
 	private String BASE;
 	private String MANGA;
+	private Integer VOLUME;
+	private Float CAPITULO;
+	private Language LINGUAGEM;
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
-		MenuPrincipalController.getController().getLblLog().setText("Carregando dados dos mangas...");
-		btnCarregar.setDisable(true);
-		btnProcessar.setDisable(true);
-		treeBases.setDisable(true);
-
-		PROCESSADOS = ckbProcessados.isSelected();
-		BASE = txtBase.getText().trim();
-		MANGA = txtManga.getText().trim();
-
-		controller.getBarraProgressoCapitulos().setProgress(-1);
-		controller.getBarraProgressoVolumes().setProgress(-1);
+		MenuPrincipalController.getController().getLblLog().setText("Carregando...");
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
+
+		btnCarregar.setDisable(true);
+		btnTraduzir.setDisable(true);
+		treeBases.setDisable(true);
+		BASE = txtBase.getText().trim();
+		MANGA = txtManga.getText().trim();
+		VOLUME = spnVolume.getValue();
+		CAPITULO = spnCapitulo.getValue().floatValue();
+		LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
 
 		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
 		Task<Void> carregaItens = new Task<Void>() {
@@ -294,7 +330,8 @@ public class MangasProcessarController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					service = new MangaServices();
-					TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, BASE, MANGA));
+					TABELAS = FXCollections
+							.observableArrayList(service.selectAll(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
@@ -304,18 +341,25 @@ public class MangasProcessarController implements Initializable {
 
 			@Override
 			protected void succeeded() {
+				super.succeeded();
 				Platform.runLater(() -> {
 					treeBases.setRoot(DADOS);
+
 					MenuPrincipalController.getController().getLblLog().setText("");
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+
 					ckbMarcarTodos.setSelected(true);
 					btnCarregar.setDisable(false);
-					btnProcessar.setDisable(false);
+					btnTraduzir.setDisable(false);
 					treeBases.setDisable(false);
-					controller.getBarraProgressoCapitulos().setProgress(0);
-					controller.getBarraProgressoVolumes().setProgress(0);
-					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 				});
 
+			}
+
+			@Override
+			protected void failed() {
+				super.failed();
+				System.out.print("Erro na thread de carregamento de itens: " + super.getMessage());
 			}
 		};
 		Thread t = new Thread(carregaItens);
@@ -328,33 +372,39 @@ public class MangasProcessarController implements Initializable {
 			tabela.setManga("...");
 			TreeItem<Manga> itmTabela = new TreeItem<Manga>(tabela);
 			TreeItem<Manga> itmManga = null;
+			TreeItem<Manga> itmLingua = null;
 			String volumeAnterior = "";
+			Language linguagemAnterior = null;
+
 			for (MangaVolume volume : tabela.getVolumes()) {
+
 				// Implementa um nivel por tipo
 				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
 					volumeAnterior = volume.getManga();
-					volume.setBase(tabela.getBase());
 					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
 				}
 
+				if (linguagemAnterior == null || volume.getLingua().compareTo(linguagemAnterior) != 0) {
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(),
+							volume.getLingua().getSigla().toUpperCase()));
+					linguagemAnterior = volume.getLingua();
+					itmManga.getChildren().add(itmLingua);
+				}
+
+				volume.setLinguagem(linguagemAnterior.getSigla().toUpperCase());
 				volume.setBase(tabela.getBase());
 				TreeItem<Manga> itmVolume = new TreeItem<Manga>(volume);
 
 				for (MangaCapitulo capitulo : volume.getCapitulos()) {
 					capitulo.setBase(tabela.getBase());
 					capitulo.setNomePagina("...");
-					TreeItem<Manga> itmCapitulo = new TreeItem<Manga>(capitulo);
-					for (MangaPagina pagina : capitulo.getPaginas()) {
-						pagina.addOutrasInformacoes(tabela.getBase(), volume.getManga(), volume.getVolume(),
-								capitulo.getCapitulo(), volume.getLingua());
-						itmCapitulo.getChildren().add(new TreeItem<Manga>(pagina));
-					}
-					itmVolume.getChildren().add(itmCapitulo);
+					capitulo.setLinguagem(linguagemAnterior.getSigla().toUpperCase());
+					itmVolume.getChildren().add(new TreeItem<Manga>(capitulo));
 				}
 
-				itmManga.getChildren().add(itmVolume);
+				itmLingua.getChildren().add(itmVolume);
 			}
 			itmRoot.getChildren().add(itmTabela);
 			itmRoot.setExpanded(true);
@@ -417,18 +467,32 @@ public class MangasProcessarController implements Initializable {
 		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<Manga, Boolean>("processar"));
 		treecBase.setCellValueFactory(new TreeItemPropertyValueFactory<>("base"));
 		treecManga.setCellValueFactory(new TreeItemPropertyValueFactory<>("manga"));
+		treecLinguagem.setCellValueFactory(new TreeItemPropertyValueFactory<>("linguagem"));
 		treecVolume.setCellValueFactory(new TreeItemPropertyValueFactory<>("volume"));
 		treecCapitulo.setCellValueFactory(new TreeItemPropertyValueFactory<>("capitulo"));
-		treecPagina.setCellValueFactory(new TreeItemPropertyValueFactory<>("pagina"));
-		treecNomePagina.setCellValueFactory(new TreeItemPropertyValueFactory<>("nomePagina"));
 		treeBases.setShowRoot(false);
 
 		editaColunas();
+
 	}
 
 	private Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+
+		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE);
+		cbLinguagem.getSelectionModel().selectFirst();
+
+		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ESCAPE))
+					cbLinguagem.getSelectionModel().clearSelection();
+				else if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
 		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent ke) {
@@ -445,11 +509,30 @@ public class MangasProcessarController implements Initializable {
 			}
 		});
 
+		spnVolume.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		spnCapitulo.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		spnVolume.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 999, 0));
+		spnCapitulo.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 99999, 0, 1));
+
 		linkaCelulas();
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasProcessarController.class.getResource("/view/MangaProcessar.fxml");
+		return MangasTraducaoController.class.getResource("/view/MangaTraducao.fxml");
 	}
 
 	public static String getIconLocate() {

@@ -24,9 +24,9 @@ public interface MangaDao {
 
 	void updateTexto(String base, MangaTexto obj) throws ExcessaoBd;
 
-	List<MangaVolume> selectAll(String base) throws ExcessaoBd;
+	List<MangaTabela> selectAll(String base) throws ExcessaoBd;
 
-	List<MangaVolume> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
+	List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
 			throws ExcessaoBd;
 
 	List<MangaTabela> selectTabelas(Boolean todos) throws ExcessaoBd;
@@ -45,11 +45,11 @@ public interface MangaDao {
 
 	Long insertVolume(String base, MangaVolume obj, Boolean importando) throws ExcessaoBd;
 
-	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd;
+	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj, Boolean importando) throws ExcessaoBd;
 
-	Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd;
+	Long insertPagina(String base, Long idCapitulo, MangaPagina obj, Boolean importando) throws ExcessaoBd;
 
-	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
+	Long insertTexto(String base, Long idPagina, MangaTexto obj, Boolean importando) throws ExcessaoBd;
 	
 	void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd;
 

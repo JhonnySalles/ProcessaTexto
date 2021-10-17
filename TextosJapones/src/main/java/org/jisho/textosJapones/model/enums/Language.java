@@ -48,6 +48,7 @@ public enum Language {
 	PERSIAN("fa"),
 	POLISH("pl"),
 	PORTUGUESE("pt"),
+	PORTUGUESE_GOOGLE("pt-Glt"),
 	ROMANIAN("ro"),
 	RUSSIAN("ru"),
 	SERBIAN("sr"),

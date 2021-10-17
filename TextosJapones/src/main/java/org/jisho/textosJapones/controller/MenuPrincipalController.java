@@ -296,7 +296,6 @@ public class MenuPrincipalController implements Initializable {
 
 				if (!conectado.isEmpty())
 					imgConexaoBase.setImage(imgAnimaBancoConectado);
-
 				else
 					imgConexaoBase.setImage(imgAnimaBancoErro);
 			}

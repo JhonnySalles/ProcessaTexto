@@ -180,6 +180,7 @@ public class MangasAjustarController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
+					service = new MangaServices();
 					TABELAS = FXCollections.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO,
 							LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
 					DADOS = getTreeData();

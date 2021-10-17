@@ -142,6 +142,22 @@ public class MangaCapitulo extends Manga {
 	}
 
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
+			Boolean extra, Boolean raw, Boolean processado) {
+		this.id = id;
+		this.manga = manga;
+		this.volume = volume;
+		this.capitulo = capitulo;
+		this.lingua = lingua;
+		this.scan = scan;
+		this.vocabularios = new HashSet<MangaVocabulario>();
+		this.processado = processado;
+		this.processar = true;
+		this.paginas = new ArrayList<MangaPagina>();
+		this.extra = extra;
+		this.raw = raw;
+	}
+
+	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado, List<MangaPagina> paginas) {
 		this.id = id;
 		this.manga = manga;

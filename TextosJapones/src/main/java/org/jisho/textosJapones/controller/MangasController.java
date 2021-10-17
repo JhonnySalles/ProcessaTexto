@@ -37,6 +37,9 @@ public class MangasController implements Initializable {
 
 	@FXML
 	private MangasAjustarController ajustarController;
+	
+	@FXML
+	private MangasTraducaoController traducaoController;
 
 	public AnchorPane getRoot() {
 		return apConteinerRoot;
@@ -62,6 +65,7 @@ public class MangasController implements Initializable {
 		jsonController.setControllerPai(this);
 		processarController.setControllerPai(this);
 		ajustarController.setControllerPai(this);
+		traducaoController.setControllerPai(this);
 	}
 
 	public static URL getFxmlLocate() {
