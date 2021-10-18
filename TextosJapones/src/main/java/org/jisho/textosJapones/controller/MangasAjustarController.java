@@ -376,6 +376,39 @@ public class MangasAjustarController implements Initializable {
 		}
 	}
 
+	private void deletaCapitulo(TreeItem<Manga> treeItem) {
+		if (treeItem != null && treeItem.getValue() != null) {
+			if (treeItem.getValue() instanceof MangaCapitulo || treeItem.getValue() instanceof MangaPagina
+					|| treeItem.getValue() instanceof MangaTexto) {
+				String descricao = "";
+
+				if (treeItem.getValue() instanceof MangaCapitulo)
+					descricao = "Deseja remover o capítulo selecionado?" + '\n' + treeItem.getValue().getCapitulo();
+				else if (treeItem.getValue() instanceof MangaPagina)
+					descricao = "Deseja remover a página selecionada?" + '\n' + treeItem.getValue().getNomePagina();
+				else
+					descricao = "Deseja remover o texto selecionado?" + '\n' + '"' + treeItem.getValue().getTexto()
+							+ '"';
+
+				if (AlertasPopup.ConfirmacaoModal("Apagar", descricao)) {
+					if (treeItem.getValue() instanceof MangaCapitulo) {
+						MangaVolume volume = (MangaVolume) treeItem.getParent().getValue();
+						volume.getCapitulos().remove(treeItem.getValue());
+					} else if (treeItem.getValue() instanceof MangaPagina) {
+						MangaCapitulo capitulo = (MangaCapitulo) treeItem.getParent().getValue();
+						capitulo.getPaginas().remove(treeItem.getValue());
+					} else {
+						MangaPagina pagina = (MangaPagina) treeItem.getParent().getValue();
+						pagina.getTextos().remove(treeItem.getValue());
+					}
+
+					treeItem.getParent().getChildren().remove(treeItem);
+					treeBases.refresh();
+				}
+			}
+		}
+	}
+
 	private void ajustaCapitulosDoVolume(TreeItem<Manga> treeItem, Integer volume) {
 		if (treeItem.getValue() instanceof MangaVolume)
 			setVolumesChildreen(treeItem, volume);
@@ -608,6 +641,14 @@ public class MangasAjustarController implements Initializable {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER))
 					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		treeBases.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.DELETE))
+					deletaCapitulo(treeBases.getSelectionModel().getSelectedItem());
 			}
 		});
 

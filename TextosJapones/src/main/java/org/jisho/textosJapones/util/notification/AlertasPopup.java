@@ -14,6 +14,7 @@ import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.events.JFXDialogEvent;
 
 import javafx.geometry.Insets;
@@ -25,7 +26,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,8 +40,7 @@ public class AlertasPopup {
 	public final static ImageView CONFIRMA = new ImageView(
 			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoConfirma_48.png")));
 
-	public final static String CSS = AlertasPopup.class.getResource("/css/Dark_Alerts.css")
-			.toExternalForm();
+	public final static String CSS = AlertasPopup.class.getResource("/css/Dark_Alerts.css").toExternalForm();
 
 	private static StackPane ROOT_STACK_PANE;
 	private static Node NODE_BLUR;
@@ -195,7 +194,10 @@ public class AlertasPopup {
 
 		JFXDialogLayout layout = new JFXDialogLayout();
 		layout.setHeading(new Label(titulo));
-		layout.setBody(CONFIRMA, new VBox(new Label(texto)));
+		JFXTextArea content = new JFXTextArea(texto);
+		content.setEditable(false);
+		content.setPrefHeight(100);
+		layout.setBody(new HBox(CONFIRMA, content));
 		layout.getStylesheets().add(CSS);
 
 		JFXButton confirmButton = new JFXButton("Confirmar");
@@ -277,8 +279,8 @@ public class AlertasPopup {
 
 		dialog.setPadding(new Insets(0, 20, 0, 70));
 
-		dialog.getStylesheets().add(
-				AlertasPopup.class.getResource("/org/jisho/textosJapones/resources/css/Dark_Alerts.css").toExternalForm());
+		dialog.getStylesheets().add(AlertasPopup.class
+				.getResource("/org/jisho/textosJapones/resources/css/Dark_Alerts.css").toExternalForm());
 
 		botoes.forEach(controlButton -> {
 			controlButton.getStyleClass().add("btnAlerta");
