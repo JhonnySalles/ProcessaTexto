@@ -115,6 +115,9 @@ public class MangasAjustarController implements Initializable {
 	private TreeTableColumn<Manga, Float> treecCapituloDestino;
 
 	@FXML
+	private TreeTableColumn<Manga, Boolean> treecExtra;
+
+	@FXML
 	private TreeTableColumn<Manga, String> treecPagina;
 
 	@FXML
@@ -537,6 +540,52 @@ public class MangasAjustarController implements Initializable {
 			}
 		});
 
+		treecExtra.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Manga, Boolean>, ObservableValue<Boolean>>() {
+					@Override
+					public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<Manga, Boolean> param) {
+						TreeItem<Manga> treeItem = param.getValue();
+						if (treeItem.getValue() instanceof MangaCapitulo) {
+							MangaCapitulo item = (MangaCapitulo) treeItem.getValue();
+							SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isExtra());
+
+							booleanProp.addListener(new ChangeListener<Boolean>() {
+								@Override
+								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+										Boolean newValue) {
+									item.setExtra(newValue);
+								}
+							});
+
+							return booleanProp;
+						} else
+							return null;
+					}
+
+				});
+
+		treecExtra.setCellFactory(new Callback<TreeTableColumn<Manga, Boolean>, TreeTableCell<Manga, Boolean>>() {
+			@Override
+			public TreeTableCell<Manga, Boolean> call(TreeTableColumn<Manga, Boolean> p) {
+				CheckBoxTreeTableCellCustom<Manga, Boolean> checkbox = new CheckBoxTreeTableCellCustom<Manga, Boolean>() {
+					@Override
+					public void updateItem(Boolean item, boolean empty) {
+						TreeItem<Manga> treeItem = p.getTreeTableView().getTreeItem(getIndex());
+						if (treeItem != null && treeItem.getValue() != null
+								&& treeItem.getValue() instanceof MangaCapitulo)
+							super.updateItem(item, empty);
+						else {
+							setText(null);
+							setGraphic(null);
+						}
+					}
+				};
+				checkbox.setAlignment(Pos.CENTER);
+				return checkbox;
+			}
+
+		});
+
 		treecVolumeDestino.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new IntegerConverter()));
 		treecVolumeDestino.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<Manga, Integer>>() {
 			@Override
@@ -594,6 +643,7 @@ public class MangasAjustarController implements Initializable {
 		treecCapituloOrigem.setCellValueFactory(new TreeItemPropertyValueFactory<>("capitulo"));
 		treecVolumeDestino.setCellValueFactory(new TreeItemPropertyValueFactory<>("volumeDestino"));
 		treecCapituloDestino.setCellValueFactory(new TreeItemPropertyValueFactory<>("capituloDestino"));
+		treecExtra.setCellValueFactory(new TreeItemPropertyValueFactory<Manga, Boolean>("isExtra"));
 		treecPagina.setCellValueFactory(new TreeItemPropertyValueFactory<>("nomePagina"));
 		treecTexto.setCellValueFactory(new TreeItemPropertyValueFactory<>("texto"));
 		treeBases.setShowRoot(false);
@@ -606,7 +656,8 @@ public class MangasAjustarController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
-		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE);
+		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE,
+				Language.PORTUGUESE_GOOGLE);
 
 		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override

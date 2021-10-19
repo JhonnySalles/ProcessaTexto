@@ -93,7 +93,8 @@
                         <TreeTableColumn fx:id="treecCapituloDestino" minWidth="0.0" text="Capitulo" />
                      </columns>
                   </TreeTableColumn>
-                  <TreeTableColumn fx:id="treecPagina" minWidth="0.0" prefWidth="70.0" text="Página" />
+                  <TreeTableColumn fx:id="treecExtra" prefWidth="35.0" text="Extra"/>
+                  <TreeTableColumn fx:id="treecPagina" minWidth="0.0" prefWidth="100.0" text="Página" />
                   <TreeTableColumn fx:id="treecTexto" minWidth="0.0" prefWidth="200.0" text="Texto" />
               </columns>
             </TreeTableView>
