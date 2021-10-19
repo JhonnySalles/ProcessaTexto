@@ -376,6 +376,8 @@ public class MangasAjustarController implements Initializable {
 		}
 	}
 
+	private Integer i;
+
 	private void deletaCapitulo(TreeItem<Manga> treeItem) {
 		if (treeItem != null && treeItem.getValue() != null) {
 			if (treeItem.getValue() instanceof MangaCapitulo || treeItem.getValue() instanceof MangaPagina
@@ -397,9 +399,13 @@ public class MangasAjustarController implements Initializable {
 					} else if (treeItem.getValue() instanceof MangaPagina) {
 						MangaCapitulo capitulo = (MangaCapitulo) treeItem.getParent().getValue();
 						capitulo.getPaginas().remove(treeItem.getValue());
+						i = 1;
+						capitulo.getPaginas().forEach(t -> t.setNumero(i++));
 					} else {
 						MangaPagina pagina = (MangaPagina) treeItem.getParent().getValue();
 						pagina.getTextos().remove(treeItem.getValue());
+						i = 1;
+						pagina.getTextos().forEach(t -> t.setSequencia(i++));
 					}
 
 					treeItem.getParent().getChildren().remove(treeItem);
