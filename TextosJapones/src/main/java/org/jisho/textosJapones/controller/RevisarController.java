@@ -47,7 +47,10 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXButton btnFormatar;
-	
+
+	@FXML
+	private JFXCheckBox cbVirgulaPonto;
+
 	@FXML
 	private JFXButton btnSalvar;
 
@@ -80,13 +83,13 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXCheckBox cbCorrecao;
-	
+
 	@FXML
 	private JFXComboBox<Api> cbContaGoolge;
 
 	@FXML
 	private JFXButton btnTraduzir;
-	
+
 	@FXML
 	private JFXButton btnJapaneseTanoshi;
 
@@ -153,13 +156,16 @@ public class RevisarController implements Initializable {
 			pesquisar();
 		}
 	}
-	
+
 	@FXML
 	private void onBtnFormatar() {
 		if (txtAreaPortugues.getText().isEmpty())
 			return;
-		
-		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));	
+
+		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));
+
+		if (cbVirgulaPonto.isSelected())
+			txtAreaPortugues.setText(txtAreaPortugues.getText().replaceAll("\\;", "\\,"));
 	}
 
 	private void limpaCampos() {
@@ -216,22 +222,22 @@ public class RevisarController implements Initializable {
 		limpaCampos();
 		pesquisar();
 	}
-	
+
 	@FXML
 	private void onBtnTraduzir() {
 		if (txtAreaIngles.getText().isEmpty())
 			return;
 
 		try {
-			String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
-					txtAreaIngles.getText(), cbContaGoolge.getValue()));
-			
+			String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+					Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(), cbContaGoolge.getValue()));
+
 			txtAreaPortugues.setText(Util.normalize(texto));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	private void onBtnJapaneseTanoshi() {
 		if (txtVocabulario.getText().isEmpty())
@@ -288,7 +294,7 @@ public class RevisarController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		cbContaGoolge.getItems().addAll(Api.values());
 		cbContaGoolge.getSelectionModel().selectLast();
-		
+
 		limpaCampos();
 
 		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
@@ -343,8 +349,7 @@ public class RevisarController implements Initializable {
 			if (newVal)
 				pesquisar();
 		});
-		
-		
+
 		pesquisar();
 	}
 
