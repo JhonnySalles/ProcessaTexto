@@ -93,10 +93,16 @@ public class MangaServices {
 		mangaDao.createBaseVocabulario(base);
 	}
 
+	private Boolean limpeza = true;
 	public void salvarAjustes(ObservableList<MangaTabela> tabelas) throws ExcessaoBd {
+		limpeza = true;
 		for (MangaTabela tabela : tabelas)
 			for (MangaVolume volume : tabela.getVolumes()) {
-
+				if (limpeza && volume.getLingua().compareTo(Language.JAPANESE) == 0) {
+					limpeza = false;
+					mangaDao.deletarVocabulario(tabela.getBase());
+				}
+				
 				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
 					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume, false));
 				else if (volume.isAlterado()) {

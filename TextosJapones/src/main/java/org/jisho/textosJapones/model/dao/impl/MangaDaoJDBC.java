@@ -866,6 +866,53 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
+	public void deletarVocabulario(String base) throws ExcessaoBd {
+		PreparedStatement stVolume = null;
+		PreparedStatement stCapitulo = null;
+		PreparedStatement stPagina = null;
+		PreparedStatement stVocabulario = null;
+		try {
+			stVocabulario = conn.prepareStatement(String.format("DELETE FROM %s_vocabulario", BASE_MANGA + base));
+			stPagina = conn
+					.prepareStatement(String.format("UPDATE %s_paginas SET is_processado = 0", BASE_MANGA + base));
+			stCapitulo = conn.prepareStatement(
+					String.format("UPDATE %s_capitulos SET is_processado = 0", BASE_MANGA + base));
+			stVolume = conn
+					.prepareStatement(String.format("UPDATE %s_volumes SET is_processado = 0", BASE_MANGA + base));
+
+			conn.setAutoCommit(false);
+			conn.beginRequest();
+			stVocabulario.executeUpdate();
+			stPagina.executeUpdate();
+			stCapitulo.executeUpdate();
+			stVolume.executeUpdate();
+			conn.commit();
+		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			System.out.println(stVocabulario.toString());
+			System.out.println(stPagina.toString());
+			System.out.println(stCapitulo.toString());
+			System.out.println(stVolume.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DB.closeStatement(stVocabulario);
+			DB.closeStatement(stPagina);
+			DB.closeStatement(stCapitulo);
+			DB.closeStatement(stVolume);
+		}
+	}
+
+	@Override
 	public void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd {
 		PreparedStatement stVolume = null;
 		PreparedStatement stCapitulo = null;
