@@ -16,6 +16,7 @@ public class Manga {
 	protected Integer volumeDestino;
 	protected Float capituloDestino;
 	protected Boolean alterado;
+	protected Boolean itemExcluido;
 
 	public String getBase() {
 		return base;
@@ -112,6 +113,14 @@ public class Manga {
 	public void setAlterado(Boolean alterado) {
 		this.alterado = alterado;
 	}
+	
+	public Boolean isItemExcluido() {
+		return itemExcluido;
+	}
+
+	public void setItemExcluido(Boolean itemExcluido) {
+		this.itemExcluido = itemExcluido;
+	}
 
 	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua) {
 		this.base = base;
@@ -126,6 +135,7 @@ public class Manga {
 		this.capituloDestino = capitulo;
 		this.volumeDestino = volume;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua,
@@ -142,6 +152,7 @@ public class Manga {
 		this.capituloDestino = capitulo;
 		this.volumeDestino = volume;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	public Manga() {
@@ -156,6 +167,7 @@ public class Manga {
 		this.volumeDestino = null;
 		this.capituloDestino = null;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	public Manga(String base, String manga) {
@@ -170,6 +182,7 @@ public class Manga {
 		this.volumeDestino = null;
 		this.capituloDestino = null;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	public Manga(String base, String manga, String linguagem) {
@@ -184,6 +197,7 @@ public class Manga {
 		this.volumeDestino = null;
 		this.capituloDestino = null;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	public Manga(String base, String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -197,6 +211,7 @@ public class Manga {
 		this.volumeDestino = volume;
 		this.capituloDestino = capitulo;
 		this.alterado = false;
+		this.itemExcluido = false;
 	}
 
 	@Override

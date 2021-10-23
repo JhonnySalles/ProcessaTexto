@@ -99,18 +99,83 @@ public class MangaServices {
 
 				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
 					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume, false));
-				else if (volume.isAlterado())
+				else if (volume.isAlterado()) {
+					if (volume.isItemExcluido()) {
+						MangaVolume aux = mangaDao.selectVolume(tabela.getBase(), volume.getId());
+						if (aux != null) {
+							aux.getCapitulos().forEach(anterior -> {
+								Boolean existe = false;
+								for (MangaCapitulo atual : volume.getCapitulos())
+									if (atual.getId().compareTo(anterior.getId()) == 0) {
+										existe = true;
+										break;
+									}
+
+								if (!existe)
+									try {
+										mangaDao.deleteCapitulo(tabela.getBase(), anterior);
+									} catch (ExcessaoBd e) {
+										e.printStackTrace();
+									}
+							});
+						}
+					}
 					mangaDao.updateVolume(tabela.getBase(), volume);
+				}
 
 				if (volume.getCapitulos().isEmpty())
 					mangaDao.deleteVolume(tabela.getBase(), volume);
 				else
 					for (MangaCapitulo capitulo : volume.getCapitulos())
-						if (capitulo.isAlterado())
+						if (capitulo.isAlterado()) {
+							if (capitulo.isItemExcluido()) {
+								MangaCapitulo aux = mangaDao.selectCapitulo(tabela.getBase(), capitulo.getId());
+								if (aux != null) {
+									aux.getPaginas().forEach(anterior -> {
+										Boolean existe = false;
+										for (MangaPagina atual : capitulo.getPaginas())
+											if (atual.getId().compareTo(anterior.getId()) == 0) {
+												existe = true;
+												break;
+											}
+
+										if (!existe)
+											try {
+												mangaDao.deletePagina(tabela.getBase(), anterior);
+											} catch (ExcessaoBd e) {
+												e.printStackTrace();
+											}
+									});
+								}
+							}
+							
+							for (MangaPagina pagina : capitulo.getPaginas())
+								if (pagina.isItemExcluido()) {
+									MangaPagina aux = mangaDao.selectPagina(tabela.getBase(), pagina.getId());
+									if (aux != null) {
+										aux.getTextos().forEach(anterior -> {
+											Boolean existe = false;
+											for (MangaTexto atual : pagina.getTextos())
+												if (atual.getId().compareTo(anterior.getId()) == 0) {
+													existe = true;
+													break;
+												}
+
+											if (!existe)
+												try {
+													mangaDao.deleteTexto(tabela.getBase(), anterior);
+												} catch (ExcessaoBd e) {
+													e.printStackTrace();
+												}
+										});
+									}
+								}
+
 							mangaDao.updateCapitulo(tabela.getBase(), volume.getId(), capitulo);
+						}
 			}
 	}
-	
+
 	public void salvarTraducao(String base, MangaVolume volume) throws ExcessaoBd {
 		mangaDao.deleteVolume(base, volume);
 		Long idVolume = mangaDao.insertVolume(base, volume, false);

@@ -23,6 +23,12 @@ public interface MangaDao {
 	void updatePagina(String base, MangaPagina obj) throws ExcessaoBd;
 
 	void updateTexto(String base, MangaTexto obj) throws ExcessaoBd;
+	
+	MangaVolume selectVolume(String base, Long id) throws ExcessaoBd;
+
+	MangaCapitulo selectCapitulo(String base, Long id) throws ExcessaoBd;
+	
+	MangaPagina selectPagina(String base, Long id) throws ExcessaoBd;
 
 	List<MangaTabela> selectAll(String base) throws ExcessaoBd;
 
@@ -52,6 +58,12 @@ public interface MangaDao {
 	Long insertTexto(String base, Long idPagina, MangaTexto obj, Boolean importando) throws ExcessaoBd;
 	
 	void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd;
+	
+	void deleteCapitulo(String base, MangaCapitulo obj) throws ExcessaoBd;
+	
+	void deletePagina(String base, MangaPagina obj) throws ExcessaoBd;
+	
+	void deleteTexto(String base, MangaTexto obj) throws ExcessaoBd;
 
 	List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
 

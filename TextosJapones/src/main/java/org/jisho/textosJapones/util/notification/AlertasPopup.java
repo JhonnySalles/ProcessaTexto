@@ -216,7 +216,7 @@ public class AlertasPopup {
 		});
 		cancelButton.getStyleClass().add("btnCancela");
 
-		layout.setActions(confirmButton, cancelButton);
+		layout.setActions(cancelButton, confirmButton);
 		alert.setContent(layout);
 
 		alert.onCloseRequestProperty().set(event1 -> nodeBlur.setEffect(null));

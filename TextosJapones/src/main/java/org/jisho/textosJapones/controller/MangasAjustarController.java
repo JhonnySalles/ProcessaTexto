@@ -364,6 +364,9 @@ public class MangasAjustarController implements Initializable {
 	}
 
 	private void setCapitulosChildreen(TreeItem<Manga> treeItem, Float capitulo) {
+		if ((treeItem.getValue() instanceof MangaCapitulo) && ((MangaCapitulo) treeItem.getValue()).isExtra())
+			return;
+		
 		if (treeItem.getValue().isProcessar()) {
 			treeItem.getValue().setAlterado(true);
 			treeItem.getValue().setCapituloDestino(capitulo);
@@ -372,6 +375,9 @@ public class MangasAjustarController implements Initializable {
 	}
 
 	private void setVolumesChildreen(TreeItem<Manga> treeItem, Integer volume) {
+		if ((treeItem.getValue() instanceof MangaCapitulo) && ((MangaCapitulo) treeItem.getValue()).isExtra())
+			return;
+		
 		if (treeItem.getValue().isProcessar()) {
 			treeItem.getValue().setAlterado(true);
 			treeItem.getValue().setVolumeDestino(volume);
@@ -399,16 +405,25 @@ public class MangasAjustarController implements Initializable {
 					if (treeItem.getValue() instanceof MangaCapitulo) {
 						MangaVolume volume = (MangaVolume) treeItem.getParent().getValue();
 						volume.getCapitulos().remove(treeItem.getValue());
+						volume.setAlterado(true);
+						volume.setItemExcluido(true);
 					} else if (treeItem.getValue() instanceof MangaPagina) {
 						MangaCapitulo capitulo = (MangaCapitulo) treeItem.getParent().getValue();
 						capitulo.getPaginas().remove(treeItem.getValue());
 						i = 1;
 						capitulo.getPaginas().forEach(t -> t.setNumero(i++));
+						capitulo.setAlterado(true);
+						capitulo.setItemExcluido(true);
 					} else {
 						MangaPagina pagina = (MangaPagina) treeItem.getParent().getValue();
 						pagina.getTextos().remove(treeItem.getValue());
 						i = 1;
 						pagina.getTextos().forEach(t -> t.setSequencia(i++));
+						pagina.setItemExcluido(true);
+						
+						MangaCapitulo capitulo = (MangaCapitulo) treeItem.getParent().getParent().getValue();
+						capitulo.setAlterado(true);
+						capitulo.setItemExcluido(true);
 					}
 
 					treeItem.getParent().getChildren().remove(treeItem);
@@ -426,14 +441,17 @@ public class MangasAjustarController implements Initializable {
 			MangaCapitulo capitulo = (MangaCapitulo) treeItem.getValue();
 			MangaVolume origem = (MangaVolume) treeItem.getParent().getValue();
 			origem.getCapitulos().remove(capitulo);
-			int position = volume.compareTo(capitulo.getVolume());
+			int position = volume.compareTo(capitulo.getVolumeDestino());
 			capitulo.setVolumeDestino(volume);
+			capitulo.setAlterado(true);
 
 			TreeItem<Manga> treeNext = null;
 			if (position > 0)
 				treeNext = treeItem.nextSibling();
 			else if (position < 0)
 				treeNext = treeItem.previousSibling();
+			else
+				return;
 
 			MangaVolume destino = null;
 			for (MangaTabela tabela : TABELAS)
@@ -455,7 +473,10 @@ public class MangasAjustarController implements Initializable {
 				for (TreeItem<Manga> language : treeLanguage.getChildren()) {
 					if (language.getValue().getVolumeDestino().equals(volume)) {
 						treeItem.getParent().getChildren().remove(treeItem);
-						language.getChildren().add(treeItem);
+						if (position < 0)
+							language.getChildren().add(treeItem);
+						else
+							language.getChildren().add(0, treeItem);
 						treeItem.getValue().setVolumeDestino(volume);
 						break;
 					}
@@ -479,8 +500,8 @@ public class MangasAjustarController implements Initializable {
 					if (origem.getVolumeDestino().compareTo(next.getVolumeDestino()) != 0)
 						return;
 
-					if ((position > 0 && next.getCapitulo().compareTo(capitulo.getCapitulo()) > 0)
-							|| (position < 0 && next.getCapitulo().compareTo(capitulo.getCapitulo()) < 0))
+					if ((position > 0 && next.getCapituloDestino().compareTo(capitulo.getCapituloDestino()) > 0)
+							|| (position < 0 && next.getCapituloDestino().compareTo(capitulo.getCapituloDestino()) < 0))
 						ajustaCapitulosDoVolume(treeNext, volume);
 				}
 			}
@@ -492,7 +513,7 @@ public class MangasAjustarController implements Initializable {
 				|| treeItem.getValue().getVolume().compareTo(original.getVolume()) != 0)
 			return;
 
-		setCapitulosChildreen(treeItem, treeItem.getValue().getCapitulo() - quantidade);
+		setCapitulosChildreen(treeItem, treeItem.getValue().getCapituloDestino() - quantidade);
 		ajustaCapitulosAnteriores(original, treeItem.previousSibling(), quantidade);
 	}
 
@@ -500,7 +521,7 @@ public class MangasAjustarController implements Initializable {
 		if (treeItem == null || treeItem.getValue().getVolumeDestino().compareTo(original.getVolumeDestino()) != 0)
 			return;
 
-		setCapitulosChildreen(treeItem, treeItem.getValue().getCapitulo() + quantidade);
+		setCapitulosChildreen(treeItem, treeItem.getValue().getCapituloDestino() + quantidade);
 		ajustaCapitulosPosteriores(original, treeItem.nextSibling(), quantidade);
 	}
 
@@ -554,6 +575,7 @@ public class MangasAjustarController implements Initializable {
 								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
 										Boolean newValue) {
 									item.setExtra(newValue);
+									item.setAlterado(true);
 								}
 							});
 
@@ -596,11 +618,12 @@ public class MangasAjustarController implements Initializable {
 
 				if ((row.getValue() instanceof MangaCapitulo) || (row.getValue() instanceof MangaVolume)) {
 					int value = event.getOldValue().compareTo(event.getNewValue());
-					row.getValue().setVolumeDestino(event.getNewValue());
-					row.getValue().setAlterado(true);
 					if (ckbReprocessarDemais.isSelected()) {
 						if (value != 0)
 							ajustaCapitulosDoVolume(row, event.getNewValue());
+					} else {
+						row.getValue().setVolumeDestino(event.getNewValue());
+						row.getValue().setAlterado(true);
 					}
 				}
 				treeBases.refresh();
@@ -617,14 +640,17 @@ public class MangasAjustarController implements Initializable {
 					return;
 
 				if (row.getValue() instanceof MangaCapitulo) {
-					int position = event.getNewValue().compareTo(event.getOldValue());
 					Integer diferenca = Float.valueOf(event.getNewValue() - event.getOldValue()).intValue();
 
 					if (ckbReprocessarDemais.isSelected()) {
-						if (position > 0)
-							ajustaCapitulosPosteriores(row.getValue(), row, diferenca);
-						else if (position < 0)
-							ajustaCapitulosAnteriores(row.getValue(), row, diferenca * -1);
+						if (((MangaCapitulo) row.getValue()).isExtra()) {
+							row.getValue().setAlterado(true);
+							row.getValue().setCapituloDestino(event.getNewValue());
+						} else {
+							setCapitulosChildreen(row, event.getNewValue());
+							ajustaCapitulosAnteriores(row.getValue(), row.previousSibling(), diferenca * -1);
+							ajustaCapitulosPosteriores(row.getValue(), row.nextSibling(), diferenca);
+						}
 					}
 				}
 				treeBases.refresh();
