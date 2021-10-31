@@ -30,7 +30,6 @@
                            </padding>
                            <children>
                               <JFXButton fx:id="btnExclusao" focusTraversable="false" minWidth="100.0" onAction="#onBtnEclusao" prefWidth="110.0" styleClass="background-White1" text="Salvar Exclusao" />
-                              <JFXButton fx:id="btnProcessarTudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarTudo" prefWidth="110.0" styleClass="background-White1" text="Processar tudo" />
                               <JFXButton fx:id="btnProcessar" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessar" prefWidth="110.0" styleClass="background-White1" text="Processar" />
                            </children>
                         </HBox>
@@ -38,9 +37,10 @@
                            <children>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                  <children>
-                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" minWidth="100.0" onAction="#onBtnAtualizar" prefWidth="110.0" styleClass="background-White1" text="Select" />
-                                    <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Update" />
                                     <JFXButton fx:id="btnDeletar" focusTraversable="false" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="110.0" styleClass="background-White1" text="Delete" />
+                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" minWidth="100.0" onAction="#onBtnAtualizar" prefWidth="110.0" styleClass="background-White1" text="Select" />
+                                    <JFXButton fx:id="btnProcessarTudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarTudo" prefWidth="110.0" styleClass="background-White1" text="Processar tudo" />
+                                    <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Update" />
                                     <Line endX="100.0" stroke="WHITE">
                                        <VBox.margin>
                                           <Insets bottom="5.0" top="5.0" />

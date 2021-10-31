@@ -44,7 +44,7 @@ public class TraduzirController implements Initializable {
 
 	@FXML
 	private AnchorPane apRoot;
-	
+
 	@FXML
 	private JFXTextField txtQuantidadeRegistros;
 
@@ -91,12 +91,7 @@ public class TraduzirController implements Initializable {
 	private TableColumn<Revisar, CheckBox> tcRevisado;
 
 	private RevisarServices service = new RevisarServices();
-	private LegendasController controller;
 	private ProcessarPalavra processar = new ProcessarPalavra();
-
-	public void setControllerPai(LegendasController controller) {
-		this.controller = controller;
-	}
 
 	@FXML
 	private void onBtnSalvar() {
@@ -126,7 +121,7 @@ public class TraduzirController implements Initializable {
 			// service.insertOrUpdate(salvar);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			AlertasPopup.ErroModal("Erro",	"Erro ao salvar as atualizações.");
+			AlertasPopup.ErroModal("Erro", "Erro ao salvar as atualizações.");
 		} finally {
 			MenuPrincipalController.getController().getLblLog().setText("Salvamento concluido.");
 
@@ -141,8 +136,7 @@ public class TraduzirController implements Initializable {
 			btnJapanDict.setDisable(false);
 			btnJisho.setDisable(false);
 
-			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
-					"Salvo com sucesso.");
+			AlertasPopup.AvisoModal("Salvo", "Salvo com sucesso.");
 			onBtnAtualizar();
 		}
 	}
@@ -151,7 +145,8 @@ public class TraduzirController implements Initializable {
 	private void onBtnAtualizar() {
 		try {
 			MenuPrincipalController.getController().getLblLog().setText("Atualizando.....");
-			tbVocabulario.setItems(FXCollections.observableArrayList(service.selectTraduzir(Integer.valueOf(txtQuantidadeRegistros.getText()))));
+			tbVocabulario.setItems(FXCollections
+					.observableArrayList(service.selectTraduzir(Integer.valueOf(txtQuantidadeRegistros.getText()))));
 
 			MenuPrincipalController.getController().getLblLog().setText("");
 		} catch (ExcessaoBd e) {
@@ -177,13 +172,13 @@ public class TraduzirController implements Initializable {
 		switch (MenuPrincipalController.getController().getSite()) {
 		case TODOS:
 			resultado = TanoshiJapanese.processa(kanji);
-			
+
 			if (resultado.isEmpty())
 				resultado = JapanDict.processa(kanji);
-			
+
 			if (resultado.isEmpty())
 				resultado = Jisho.processa(kanji);
-			
+
 			break;
 		case JAPANESE_TANOSHI:
 			resultado = TanoshiJapanese.processa(kanji);
@@ -256,7 +251,7 @@ public class TraduzirController implements Initializable {
 
 		desativar = false;
 		desmembrar = ckbDesmembrar.isSelected();
-		
+
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 		progress.getTitulo().setText("Tradução");
 		Task<Void> processarTudo = new Task<Void>() {
@@ -489,7 +484,7 @@ public class TraduzirController implements Initializable {
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		txtQuantidadeRegistros.textProperty().addListener((obs, oldValue, newValue) -> {
-			if(newValue != null && !newValue.matches("\\d*"))
+			if (newValue != null && !newValue.matches("\\d*"))
 				txtQuantidadeRegistros.setText(oldValue);
 			else if (newValue != null && newValue.isEmpty())
 				txtQuantidadeRegistros.setText("0");
