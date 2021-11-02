@@ -875,8 +875,8 @@ public class MangaDaoJDBC implements MangaDao {
 			stVocabulario = conn.prepareStatement(String.format("DELETE FROM %s_vocabulario", BASE_MANGA + base));
 			stPagina = conn
 					.prepareStatement(String.format("UPDATE %s_paginas SET is_processado = 0", BASE_MANGA + base));
-			stCapitulo = conn.prepareStatement(
-					String.format("UPDATE %s_capitulos SET is_processado = 0", BASE_MANGA + base));
+			stCapitulo = conn
+					.prepareStatement(String.format("UPDATE %s_capitulos SET is_processado = 0", BASE_MANGA + base));
 			stVolume = conn
 					.prepareStatement(String.format("UPDATE %s_volumes SET is_processado = 0", BASE_MANGA + base));
 
@@ -1086,10 +1086,10 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public Long insertVolume(String base, MangaVolume obj, Boolean importando) throws ExcessaoBd {
+	public Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INSERT_VOLUMES, importando ? base : BASE_MANGA + base),
+			st = conn.prepareStatement(String.format(INSERT_VOLUMES, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getManga());
@@ -1122,10 +1122,10 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj, Boolean importando) throws ExcessaoBd {
+	public Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INSERT_CAPITULOS, importando ? base : BASE_MANGA + base),
+			st = conn.prepareStatement(String.format(INSERT_CAPITULOS, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
 			st.setLong(1, idVolume);
@@ -1163,10 +1163,10 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public Long insertPagina(String base, Long idCapitulo, MangaPagina obj, Boolean importando) throws ExcessaoBd {
+	public Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INSERT_PAGINAS, importando ? base : BASE_MANGA + base),
+			st = conn.prepareStatement(String.format(INSERT_PAGINAS, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
 			st.setLong(1, idCapitulo);
@@ -1199,11 +1199,10 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public Long insertTexto(String base, Long idPagina, MangaTexto obj, Boolean importando) throws ExcessaoBd {
+	public Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INSERT_TEXTO, importando ? base : BASE_MANGA + base),
-					Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement(String.format(INSERT_TEXTO, BASE_MANGA + base), Statement.RETURN_GENERATED_KEYS);
 
 			st.setLong(1, idPagina);
 			st.setInt(2, obj.getSequencia());

@@ -54,13 +54,13 @@ public class MangaServices {
 	}
 
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
-		Long idVolume = mangaDao.insertVolume(base, volume, true);
+		Long idVolume = mangaDao.insertVolume(base, volume);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo, true);
+			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
-				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina, true);
+				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
 				for (MangaTexto texto : pagina.getTextos())
-					mangaDao.insertTexto(base, idPagina, texto, true);
+					mangaDao.insertTexto(base, idPagina, texto);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class MangaServices {
 				}
 				
 				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
-					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume, false));
+					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume));
 				else if (volume.isAlterado()) {
 					if (volume.isItemExcluido()) {
 						MangaVolume aux = mangaDao.selectVolume(tabela.getBase(), volume.getId());
@@ -184,13 +184,13 @@ public class MangaServices {
 
 	public void salvarTraducao(String base, MangaVolume volume) throws ExcessaoBd {
 		mangaDao.deleteVolume(base, volume);
-		Long idVolume = mangaDao.insertVolume(base, volume, false);
+		Long idVolume = mangaDao.insertVolume(base, volume);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo, false);
+			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
-				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina, false);
+				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
 				for (MangaTexto texto : pagina.getTextos())
-					mangaDao.insertTexto(base, idPagina, texto, false);
+					mangaDao.insertTexto(base, idPagina, texto);
 			}
 		}
 	}

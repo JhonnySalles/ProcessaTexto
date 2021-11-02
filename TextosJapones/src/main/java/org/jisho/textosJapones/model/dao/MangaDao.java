@@ -49,13 +49,13 @@ public interface MangaDao {
 
 	void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
 
-	Long insertVolume(String base, MangaVolume obj, Boolean importando) throws ExcessaoBd;
+	Long insertVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
-	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj, Boolean importando) throws ExcessaoBd;
+	Long insertCapitulo(String base, Long idVolume, MangaCapitulo obj) throws ExcessaoBd;
 
-	Long insertPagina(String base, Long idCapitulo, MangaPagina obj, Boolean importando) throws ExcessaoBd;
+	Long insertPagina(String base, Long idCapitulo, MangaPagina obj) throws ExcessaoBd;
 
-	Long insertTexto(String base, Long idPagina, MangaTexto obj, Boolean importando) throws ExcessaoBd;
+	Long insertTexto(String base, Long idPagina, MangaTexto obj) throws ExcessaoBd;
 	
 	void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd;
 	
