@@ -53,6 +53,8 @@ public class ProcessarMangas {
 	private Site siteDicionario;
 	private Boolean desativar = false;
 	private Integer traducoes = 0;
+	private Set<MangaVocabulario> vocabHistorico = new HashSet<>();
+	private Set<String> validaHistorico = new HashSet<>();
 
 	public ProcessarMangas(MangasProcessarController controller) {
 		this.controller = controller;
@@ -288,17 +290,22 @@ public class ProcessarMangas {
 
 	private String processaPalavras(List<String> palavras, Modo modo) {
 		String desmembrado = "";
-		for (String palavra : palavras) {
-			String resultado = getSignificado(palavra);
+		try {
+			for (String palavra : palavras) {
+				String resultado = getSignificado(palavra);
 
-			if (!resultado.trim().isEmpty())
-				desmembrado += palavra + " - " + resultado + "; ";
-			else if (modo.equals(Modo.B)) {
-				resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
-						MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
 				if (!resultado.trim().isEmpty())
-					desmembrado += resultado;
+					desmembrado += palavra + " - " + resultado + "; ";
+				else if (modo.equals(Modo.B)) {
+					resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
+							MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
+					if (!resultado.trim().isEmpty())
+						desmembrado += resultado;
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			desmembrado = "";
 		}
 
 		return desmembrado;
@@ -312,6 +319,18 @@ public class ProcessarMangas {
 	private void gerarVocabulario(String frase) throws ExcessaoBd {
 		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
 			if (m.surface().matches(pattern)) {
+				if (validaHistorico.contains(m.dictionaryForm())) {
+					MangaVocabulario vocabulario = vocabHistorico.stream()
+							.filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getPalavra())).findFirst()
+							.orElse(null);
+					if (vocabulario != null) {
+						vocabPagina.add(vocabulario);
+						vocabCapitulo.add(vocabulario);
+						vocabVolume.add(vocabulario);
+						continue;
+					}
+				}
+				
 				if (!vocabValida.contains(m.dictionaryForm())) {
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
@@ -331,6 +350,9 @@ public class ProcessarMangas {
 							vocabularioService.update(palavra);
 						}
 
+						validaHistorico.add(m.dictionaryForm());
+						vocabHistorico.add(vocabulario);
+						
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
@@ -382,6 +404,10 @@ public class ProcessarMangas {
 
 						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
 								m.readingForm(), false);
+						
+						validaHistorico.add(m.dictionaryForm());
+						vocabHistorico.add(vocabulario);
+						
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);

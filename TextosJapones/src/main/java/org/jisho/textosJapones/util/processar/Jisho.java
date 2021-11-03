@@ -62,7 +62,7 @@ public class Jisho {
 					js.printStackTrace();
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return retorno;
 		}
@@ -111,7 +111,7 @@ public class Jisho {
 	 *                   search methods
 	 * @throws IOException
 	 */
-	public void search(String searchWord) throws IOException {
+	public void search(String searchWord) throws Exception {
 
 		// variable for storing the url
 		URL url;
@@ -131,9 +131,8 @@ public class Jisho {
 		this.responseCode = conn.getResponseCode();
 
 		// check that the connection was successful, throw error otherwise
-		if (this.responseCode != 200) {
-			throw new RuntimeException("HttpResponseCode: " + responseCode);
-		}
+		if (this.responseCode != 200)
+			throw new Exception("HttpResponseCode: " + responseCode + '\n' + "url:" + url);
 
 		// create a scanner, prevent it from removing whitespace from our JSON data
 		Scanner input = new Scanner(url.openStream());

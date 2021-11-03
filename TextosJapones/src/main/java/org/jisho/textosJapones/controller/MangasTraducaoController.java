@@ -384,6 +384,11 @@ public class MangasTraducaoController implements Initializable {
 					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
+					
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(),
+							volume.getLingua().getSigla().toUpperCase()));
+					linguagemAnterior = volume.getLingua();
+					itmManga.getChildren().add(itmLingua);
 				}
 
 				if (linguagemAnterior == null || volume.getLingua().compareTo(linguagemAnterior) != 0) {

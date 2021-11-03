@@ -1,7 +1,6 @@
 package org.jisho.textosJapones.util.processar;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -42,13 +41,13 @@ public class JapanDict {
 
 					if (resultado.contains("; "))
 						resultado = resultado.substring(0, resultado.lastIndexOf("; "));
-					
+
 					return resultado;
 				}
 			}
 
 			return "";
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return "";
 		}
