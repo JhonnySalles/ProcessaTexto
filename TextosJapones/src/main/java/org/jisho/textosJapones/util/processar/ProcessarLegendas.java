@@ -75,7 +75,7 @@ public class ProcessarLegendas {
 				progress.getBarraProgresso().progressProperty().unbind();
 				progress.getLog().textProperty().unbind();
 			}
-			
+
 			@Override
 			protected void failed() {
 				super.failed();
@@ -137,6 +137,9 @@ public class ProcessarLegendas {
 	}
 
 	private Boolean usarRevisar = true;
+	private Set<Vocabulario> vocabHistorico = new HashSet<>();
+	private Set<String> validaHistorico = new HashSet<>();
+
 	public Set<String> vocabulario = new HashSet<>();
 	private Set<String> existe = new HashSet<>();
 
@@ -147,34 +150,53 @@ public class ProcessarLegendas {
 				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())
 						&& !existe.contains(m.dictionaryForm())) {
 					existe.add(m.dictionaryForm());
-					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
-					if (palavra != null) {
-						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabularios += palavra.getTraducao() + " ";
-						else
-							vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+					Vocabulario palavra = null;
+					if (validaHistorico.contains(m.dictionaryForm()))
+						palavra = vocabHistorico.stream()
+								.filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getVocabulario()))
+								.findFirst().orElse(null);
 
-						// Usado apenas para correção em formas em branco.
-						if (palavra.getFormaBasica().isEmpty()) {
-							palavra.setFormaBasica(m.dictionaryForm());
-							palavra.setLeitura(m.readingForm());
-							vocabularioService.update(palavra);
-						}
-
-						vocabulario.add(palavra.getFormaBasica());
-					} else if (usarRevisar) {
-						Revisar revisar = service.select(m.surface(), m.dictionaryForm());
-						if (revisar != null) {
-
-							if (!revisar.getTraducao().isEmpty() && revisar.getTraducao().substring(0, 2).matches(japanese))
-								vocabularios += revisar.getTraducao() + "¹ ";
+					if (palavra != null)
+						vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+					else {
+						palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
+						if (palavra != null) {
+							if (palavra.getTraducao().substring(0, 2).matches(japanese))
+								vocabularios += palavra.getTraducao() + " ";
 							else
-								vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
+								vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
 
-							vocabulario.add(m.dictionaryForm());
+							// Usado apenas para correção em formas em branco.
+							if (palavra.getFormaBasica().isEmpty()) {
+								palavra.setFormaBasica(m.dictionaryForm());
+								palavra.setLeitura(m.readingForm());
+								vocabularioService.update(palavra);
+							}
+
+							validaHistorico.add(m.dictionaryForm());
+							vocabHistorico.add(palavra);
+
+							vocabulario.add(palavra.getFormaBasica());
+						} else if (usarRevisar) {
+							Revisar revisar = service.select(m.surface(), m.dictionaryForm());
+							if (revisar != null) {
+
+								if (!revisar.getTraducao().isEmpty()
+										&& revisar.getTraducao().substring(0, 2).matches(japanese))
+									vocabularios += revisar.getTraducao() + "¹ ";
+								else {
+									vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
+									validaHistorico.add(m.dictionaryForm());
+									vocabHistorico
+											.add(new Vocabulario(m.dictionaryForm(), revisar.getTraducao() + "¹"));
+								}
+
+								vocabulario.add(m.dictionaryForm());
+							}
 						}
 					}
+
 				}
 			}
 		}
