@@ -94,7 +94,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
                         <JFXButton fx:id="btnFormatar" focusTraversable="false" minWidth="100.0" onAction="#onBtnFormatar" prefWidth="110.0" styleClass="background-White1" text="Formatar" />
-                        <JFXCheckBox fx:id="cbVirgulaPonto" checkedColor="#71afe5" selected="true" text="Substituir virgula e ponto" textFill="WHITE" unCheckedColor="#106ebe" />
+                        <JFXCheckBox fx:id="cbDuplicados" checkedColor="#71afe5" selected="true" text="Substituir duplicados" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </HBox>
                   <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />

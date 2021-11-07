@@ -11,7 +11,7 @@ public class Util {
 		String frase = texto.substring(0, 1).toUpperCase() + texto.substring(1).replaceAll("; ", ", ").concat(".");
 		if (frase.contains(".."))
 			frase = frase.replaceAll("\\.{2,}", ".");
-		return texto;
+		return frase;
 	}
 
 	public static Api next(Api api) {
