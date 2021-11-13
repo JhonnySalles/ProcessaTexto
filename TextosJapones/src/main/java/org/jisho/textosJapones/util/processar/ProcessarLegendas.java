@@ -90,6 +90,7 @@ public class ProcessarLegendas {
 
 	public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
 		existe.clear();
+		this.vocabulario.clear();
 		String vocabulario = "";
 		try (Dictionary dict = new DictionaryFactory().create("",
 				SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
@@ -142,6 +143,13 @@ public class ProcessarLegendas {
 
 	public Set<String> vocabulario = new HashSet<>();
 	private Set<String> existe = new HashSet<>();
+	
+	public void clearVocabulary() {
+		vocabHistorico.clear();
+		validaHistorico.clear();
+		vocabulario.clear();
+		existe.clear();
+	}
 
 	private String gerarVocabulario(String frase) throws ExcessaoBd {
 		String vocabularios = "";

@@ -289,11 +289,11 @@ public class LegendasGerarVocabularioController implements Initializable {
 						btnExecutarFila.setDisable(false);
 
 						tbLista.setDisable(false);
-						
+
 						progress.getBarraProgresso().progressProperty().unbind();
 						progress.getLog().textProperty().unbind();
 						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
-						
+
 						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 						txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
 
@@ -392,7 +392,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 							txtAreaVocabulario.setText(select.getVocabulario());
 						});
 
-						processar.vocabulario.clear();
+						processar.clearVocabulary();
 
 						try {
 							updateMessage("Limpando....");
