@@ -303,7 +303,7 @@ public class RevisarController implements Initializable {
 
 	final private String allFlag = ".*";
 	final private String japanese = "[\u3041-\u9FAF]";
-	final private String notJapanese = "[A-Za-z0-9 ,.à-úÀ-ú\\[\\]\\-\\(\\)]";
+	final private String notJapanese = "[A-Za-z0-9 ,;.à-úÀ-ú\\[\\]\\-\\(\\)]";
 	private String frasePortugues = "";
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -335,9 +335,11 @@ public class RevisarController implements Initializable {
 				txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 				pesquisar();
 
-				if (revisando != null && cbImportarFrase.isSelected() && !frasePortugues.isEmpty())
+				if (revisando != null && cbImportarFrase.isSelected() && !frasePortugues.isEmpty()) {
 					txtAreaPortugues.setText(frasePortugues);
-
+					onBtnFormatar();
+				}
+					
 				frasePortugues = "";
 			}
 		});
