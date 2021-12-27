@@ -17,6 +17,7 @@ import org.jisho.textosJapones.model.services.VocabularioServices;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.processar.JapanDict;
 import org.jisho.textosJapones.util.processar.Jisho;
+import org.jisho.textosJapones.util.processar.Kanshudo;
 import org.jisho.textosJapones.util.processar.Tangorin;
 import org.jisho.textosJapones.util.processar.TanoshiJapanese;
 import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
@@ -51,6 +52,9 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXCheckBox cbDuplicados;
+	
+	@FXML
+	private JFXCheckBox cbSubstituirKanji;
 
 	@FXML
 	private JFXButton btnSalvar;
@@ -80,9 +84,6 @@ public class RevisarController implements Initializable {
 	private JFXTextField txtPesquisar;
 
 	@FXML
-	private JFXCheckBox cbImportarFrase;
-
-	@FXML
 	private JFXCheckBox cbCorrecao;
 
 	@FXML
@@ -99,6 +100,9 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXButton btnJisho;
+
+	@FXML
+	private JFXButton btnKanshudo;
 
 	@FXML
 	private JFXTextArea txtAreaIngles;
@@ -267,7 +271,7 @@ public class RevisarController implements Initializable {
 		if (txtVocabulario.getText().isEmpty())
 			return;
 
-		Tangorin.processa(txtVocabulario.getText(), (controller) -> txtAreaIngles.setText(controller));
+		txtAreaIngles.setText(Tangorin.processa(txtVocabulario.getText()));
 		onBtnTraduzir();
 	}
 
@@ -286,6 +290,15 @@ public class RevisarController implements Initializable {
 			return;
 
 		txtAreaIngles.setText(Jisho.processa(txtVocabulario.getText()));
+		onBtnTraduzir();
+	}
+	
+	@FXML
+	private void onBtnKanshudo() {
+		if (txtVocabulario.getText().isEmpty())
+			return;
+
+		txtAreaIngles.setText(Kanshudo.processa(txtVocabulario.getText()));
 		onBtnTraduzir();
 	}
 
@@ -313,14 +326,14 @@ public class RevisarController implements Initializable {
 		limpaCampos();
 
 		txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
-			if (cbImportarFrase.isSelected())
+			if (cbSubstituirKanji.isSelected())
 				if (newVal.matches(allFlag + japanese + allFlag))
 					Platform.runLater(
 							() -> txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, "")));
 		});
 
 		txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
-			if (cbImportarFrase.isSelected())
+			if (cbSubstituirKanji.isSelected())
 				if (newVal.matches(allFlag + notJapanese + allFlag))
 					Platform.runLater(() -> {
 						txtPesquisar.setText(newVal.replaceFirst(" - ", "").replaceAll(notJapanese, ""));
@@ -335,7 +348,7 @@ public class RevisarController implements Initializable {
 				txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
 				pesquisar();
 
-				if (revisando != null && cbImportarFrase.isSelected() && !frasePortugues.isEmpty()) {
+				if (revisando != null && cbSubstituirKanji.isSelected() && !frasePortugues.isEmpty()) {
 					txtAreaPortugues.setText(frasePortugues);
 					onBtnFormatar();
 				}

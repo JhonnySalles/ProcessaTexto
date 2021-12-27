@@ -17,6 +17,7 @@ import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 import org.jisho.textosJapones.util.processar.JapanDict;
 import org.jisho.textosJapones.util.processar.Jisho;
+import org.jisho.textosJapones.util.processar.Kanshudo;
 import org.jisho.textosJapones.util.processar.ProcessarPalavra;
 import org.jisho.textosJapones.util.processar.Tangorin;
 import org.jisho.textosJapones.util.processar.TanoshiJapanese;
@@ -70,6 +71,12 @@ public class TraduzirController implements Initializable {
 	private JFXButton btnJisho;
 
 	@FXML
+	private JFXButton btnKanshudo;
+
+	@FXML
+	private JFXButton btnTangorin;
+
+	@FXML
 	private JFXCheckBox ckbDesmembrar;
 
 	@FXML
@@ -108,6 +115,8 @@ public class TraduzirController implements Initializable {
 			btnJapaneseTanoshi.setDisable(true);
 			btnJapanDict.setDisable(true);
 			btnJisho.setDisable(true);
+			btnTangorin.setDisable(true);
+			btnKanshudo.setDisable(true);
 
 			List<Revisar> update = tbVocabulario.getItems().stream()
 					.filter(revisar -> revisar.getRevisado().isSelected()).collect(Collectors.toList());
@@ -135,6 +144,8 @@ public class TraduzirController implements Initializable {
 			btnJapaneseTanoshi.setDisable(false);
 			btnJapanDict.setDisable(false);
 			btnJisho.setDisable(false);
+			btnTangorin.setDisable(false);
+			btnKanshudo.setDisable(false);
 
 			AlertasPopup.AvisoModal("Salvo", "Salvo com sucesso.");
 			onBtnAtualizar();
@@ -179,6 +190,9 @@ public class TraduzirController implements Initializable {
 			if (resultado.isEmpty())
 				resultado = Jisho.processa(kanji);
 
+			if (resultado.isEmpty())
+				resultado = Kanshudo.processa(kanji);
+
 			break;
 		case JAPANESE_TANOSHI:
 			resultado = TanoshiJapanese.processa(kanji);
@@ -188,6 +202,12 @@ public class TraduzirController implements Initializable {
 			break;
 		case JISHO:
 			resultado = Jisho.processa(kanji);
+			break;
+		case TANGORIN:
+			resultado = Tangorin.processa(kanji);
+			break;
+		case KANSHUDO:
+			resultado = Kanshudo.processa(kanji);
 			break;
 		default:
 		}
@@ -244,6 +264,8 @@ public class TraduzirController implements Initializable {
 		btnJapaneseTanoshi.setDisable(true);
 		btnJapanDict.setDisable(true);
 		btnJisho.setDisable(true);
+		btnTangorin.setDisable(true);
+		btnKanshudo.setDisable(true);
 		ckbDesmembrar.setDisable(true);
 
 		btnProcessarTudo.setAccessibleText("PROCESSANDO");
@@ -323,6 +345,8 @@ public class TraduzirController implements Initializable {
 						btnJapaneseTanoshi.setDisable(false);
 						btnJapanDict.setDisable(false);
 						btnJisho.setDisable(false);
+						btnTangorin.setDisable(false);
+						btnKanshudo.setDisable(false);
 						ckbDesmembrar.setDisable(false);
 
 						progress.getLog().textProperty().unbind();
@@ -388,11 +412,10 @@ public class TraduzirController implements Initializable {
 	private void onBtnTangorin() {
 		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
 			return;
-		int index = tbVocabulario.getSelectionModel().getSelectedIndex();
-		Tangorin.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario(), (controller) -> {
-			tbVocabulario.getItems().get(index).setIngles(controller);
-			tbVocabulario.refresh();
-		});
+
+		tbVocabulario.getSelectionModel().getSelectedItem()
+				.setIngles(Tangorin.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
+		tbVocabulario.refresh();
 	}
 
 	@FXML
@@ -429,6 +452,17 @@ public class TraduzirController implements Initializable {
 		if (ckbDesmembrar.isSelected() && tbVocabulario.getSelectionModel().getSelectedItem().getIngles().isEmpty())
 			tbVocabulario.getSelectionModel().getSelectedItem()
 					.setIngles(getDesmembrado(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
+
+		tbVocabulario.refresh();
+	}
+
+	@FXML
+	private void onBtnKanshudo() {
+		if (tbVocabulario.getItems().isEmpty() || tbVocabulario.getSelectionModel().getSelectedItem() == null)
+			return;
+
+		tbVocabulario.getSelectionModel().getSelectedItem()
+				.setIngles(Kanshudo.processa(tbVocabulario.getSelectionModel().getSelectedItem().getVocabulario()));
 
 		tbVocabulario.refresh();
 	}

@@ -32,10 +32,12 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapaneseTanoshi" prefWidth="110.0" styleClass="background-White1" text="Jap. Tanoshi" />
-                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapanDict" prefWidth="110.0" styleClass="background-White1" text="JapanDict" />
-                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="110.0" onAction="#onBtnJisho" prefWidth="110.0" styleClass="background-White1" text="Jisho" />
-                  <JFXButton fx:id="btnProcessarTudo" accessibleText="PROCESSAR" focusTraversable="false" minWidth="110.0" onAction="#onBtnProcessarTudo" prefWidth="110.0" styleClass="background-White1" text="Processar tudo" />
+                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapaneseTanoshi" prefWidth="100.0" styleClass="background-White1" text="Jap. Tanoshi" />
+                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapanDict" prefWidth="100.0" styleClass="background-White1" text="JapanDict" />
+                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="100.0" onAction="#onBtnJisho" prefWidth="100.0" styleClass="background-White1" text="Jisho" />
+                  <JFXButton fx:id="btnKanshudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnKanshudo" prefWidth="100.0" styleClass="background-White1" text="Kanshudo" />
+                  <JFXButton fx:id="btnTangorin" focusTraversable="false" minWidth="100.0" onAction="#onBtnTangorin" prefWidth="100.0" styleClass="background-White1" text="Tangorin" />
+                  <JFXButton fx:id="btnProcessarTudo" accessibleText="PROCESSAR" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarTudo" prefWidth="100.0" styleClass="background-White1" text="Processar tudo" />
                   <JFXCheckBox fx:id="ckbDesmembrar" checkedColor="#71afe5" text="Desmembrar kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
                </children>
                <padding>

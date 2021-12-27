@@ -40,9 +40,8 @@
                   <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Vocabulario" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                   <JFXTextField fx:id="txtSimilar" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Similares" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                   <JFXTextField fx:id="txtPesquisar" focusColor="#71afe5" labelFloat="true" promptText="Pesquisar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                  <VBox spacing="5.0">
+                  <VBox alignment="CENTER" spacing="5.0">
                      <children>
-                        <JFXCheckBox fx:id="cbImportarFrase" checkedColor="#71afe5" selected="true" text="Importar frase" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXCheckBox fx:id="cbCorrecao" checkedColor="#71afe5" text="Correção" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </VBox>
@@ -54,10 +53,11 @@
                </padding>
                <children>
                   <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="150.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                  <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="110.0" onAction="#onBtnTraduzir" prefWidth="110.0" styleClass="background-White1" text="Traduzir" />
-                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapaneseTanoshi" prefWidth="110.0" styleClass="background-White1" text="Jap. Tanoshi" />
-                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="110.0" onAction="#onBtnJapanDict" prefWidth="110.0" styleClass="background-White1" text="JapanDict" />
-                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="110.0" onAction="#onBtnJisho" prefWidth="110.0" styleClass="background-White1" text="Jisho" />
+                  <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="100.0" onAction="#onBtnTraduzir" prefWidth="100.0" styleClass="background-White1" text="Traduzir" />
+                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapaneseTanoshi" prefWidth="100.0" styleClass="background-White1" text="Jap. Tanoshi" />
+                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapanDict" prefWidth="100.0" styleClass="background-White1" text="JapanDict" />
+                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="100.0" onAction="#onBtnJisho" prefWidth="100.0" styleClass="background-White1" text="Jisho" />
+                  <JFXButton fx:id="btnKanshudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnKanshudo" prefWidth="100.0" styleClass="background-White1" text="Kanshudo" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
@@ -95,6 +95,7 @@
                      <children>
                         <JFXButton fx:id="btnFormatar" focusTraversable="false" minWidth="100.0" onAction="#onBtnFormatar" prefWidth="110.0" styleClass="background-White1" text="Formatar" />
                         <JFXCheckBox fx:id="cbDuplicados" checkedColor="#71afe5" selected="true" text="Substituir duplicados" textFill="WHITE" unCheckedColor="#106ebe" />
+                        <JFXCheckBox fx:id="cbSubstituirKanji" checkedColor="#71afe5" selected="true" text="Substituir kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </HBox>
                   <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
