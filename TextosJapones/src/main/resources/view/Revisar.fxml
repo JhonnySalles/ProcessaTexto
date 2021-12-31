@@ -28,8 +28,9 @@
                   </HBox>
                   <JFXCheckBox fx:id="cbAnime" checkedColor="#28d325" selected="true" text="Anime" textFill="WHITE" unCheckedColor="#19b516" />
                   <JFXCheckBox fx:id="cbManga" checkedColor="#1fd61c" text="Manga" textFill="WHITE" unCheckedColor="#19b516" />
-                  <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
+                  <JFXButton fx:id="btnExcluir" focusTraversable="false" minWidth="100.0" onAction="#onBtnExcluir" prefWidth="110.0" styleClass="background-White1" text="Excluir" />
                   <JFXButton fx:id="btnNovo" focusTraversable="false" minWidth="100.0" onAction="#onBtnNovo" prefWidth="110.0" styleClass="background-White1" text="Novo" />
+                  <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -39,6 +40,11 @@
                <children>
                   <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Vocabulario" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                   <JFXTextField fx:id="txtSimilar" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Similares" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <JFXCheckBox fx:id="cbSimilar" checkedColor="#71afe5" selected="true" text="Similar" textFill="WHITE" unCheckedColor="#106ebe" />
+                     </children>
+                  </VBox>
                   <JFXTextField fx:id="txtPesquisar" focusColor="#71afe5" labelFloat="true" promptText="Pesquisar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                   <VBox alignment="CENTER" spacing="5.0">
                      <children>

@@ -2,6 +2,7 @@ package org.jisho.textosJapones.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -55,6 +56,9 @@ public class RevisarController implements Initializable {
 	
 	@FXML
 	private JFXCheckBox cbSubstituirKanji;
+	
+	@FXML
+	private JFXButton btnExcluir;
 
 	@FXML
 	private JFXButton btnSalvar;
@@ -79,6 +83,9 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXTextField txtSimilar;
+	
+	@FXML
+	private JFXCheckBox cbSimilar;
 
 	@FXML
 	private JFXTextField txtPesquisar;
@@ -161,6 +168,28 @@ public class RevisarController implements Initializable {
 			pesquisar();
 		}
 	}
+	
+	@FXML
+	private void onBtnExcluir() {
+		if (revisando == null)
+			return;
+
+		Boolean error = false;
+		if (revisando != null) {
+			try {
+				service.delete(revisando);
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+				error = true;
+			}
+		} else
+			error = true;
+
+		if (!error) {
+			limpaCampos();
+			pesquisar();
+		}
+	}
 
 	@FXML
 	private void onBtnFormatar() {
@@ -221,7 +250,10 @@ public class RevisarController implements Initializable {
 				txtVocabulario.setText(corrigindo.getVocabulario());
 				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
 			} else if (revisando != null) {
-				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
+				if (cbSimilar.isSelected())
+					similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());		
+				else
+					similar = new ArrayList<Revisar>();
 
 				txtVocabulario.setText(revisando.getVocabulario());
 				txtAreaIngles.setText(revisando.getIngles());
