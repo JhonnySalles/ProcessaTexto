@@ -234,7 +234,7 @@ public class RevisarController implements Initializable {
 
 	public void pesquisar() {
 		txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
-
+		
 		try {
 			if (cbCorrecao.isSelected()) {
 				corrigindo = vocabulario.select(txtPesquisar.getText().trim());
@@ -246,6 +246,7 @@ public class RevisarController implements Initializable {
 			if (!txtPesquisar.getText().isEmpty() && revisando == null && corrigindo == null)
 				txtPesquisar.setUnFocusColor(Color.RED);
 
+			txtSimilar.setText("");
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
 				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
@@ -396,20 +397,29 @@ public class RevisarController implements Initializable {
 					robot.keyPress(KeyCode.TAB);
 			}
 		});
-
+		
 		cbCorrecao.selectedProperty().addListener((o, oldVal, newVal) -> {
 			if (newVal)
 				limpaCampos();
+			else
+				pesquisar();
+		});
+
+		cbSimilar.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (cbSimilar.isSelected())
+				pesquisar();
+			else {
+				txtSimilar.setText("");
+				similar = new ArrayList<Revisar>();
+			}
 		});
 
 		cbAnime.selectedProperty().addListener((o, oldVal, newVal) -> {
-			if (newVal)
-				pesquisar();
+			pesquisar();
 		});
 
 		cbManga.selectedProperty().addListener((o, oldVal, newVal) -> {
-			if (newVal)
-				pesquisar();
+			pesquisar();
 		});
 
 		pesquisar();
