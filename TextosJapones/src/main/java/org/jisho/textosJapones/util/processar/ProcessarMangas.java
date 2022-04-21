@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
@@ -64,7 +65,7 @@ public class ProcessarMangas {
 		this.desativar = desativar;
 	}
 
-	private Integer T, V, C;
+	private Integer V, C, Progress, Size;
 	private Set<MangaVocabulario> vocabVolume = new HashSet<>();
 	private Set<MangaVocabulario> vocabCapitulo = new HashSet<>();
 	private Set<MangaVocabulario> vocabPagina = new HashSet<>();
@@ -97,20 +98,25 @@ public class ProcessarMangas {
 						propVolume.set(.0);
 						propCapitulo.set(.0);
 
-						T = 0;
+						updateMessage("Calculando tempo necessário...");
+						Progress = 0;
+						Size = 0;
+						tabelas.stream().filter(t -> t.isProcessar()).collect(Collectors.toList())
+								.forEach(tabela -> tabela.getVolumes().stream().filter(v -> v.isProcessar())
+										.collect(Collectors.toList())
+										.forEach(volume -> volume.getCapitulos().stream().filter(c -> c.isProcessar())
+												.collect(Collectors.toList())
+												.forEach(capitulo -> capitulo.getPaginas().stream()
+														.filter(p -> p.isProcessar()).collect(Collectors.toList())
+														.forEach(pagina -> pagina.getTextos().forEach(texto -> {
+															if (texto.isProcessar())
+																Size++;
+														})))));
+						updateMessage("Iniciando...");
 						desativar = false;
 						for (MangaTabela tabela : tabelas) {
-							T++;
-
-							if (!tabela.isProcessar()) {
-								propTabela.set((double) T / tabelas.size());
-								Platform.runLater(() -> {
-									if (TaskbarProgressbar.isSupported())
-										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
-												Type.NORMAL);
-								});
+							if (!tabela.isProcessar())
 								continue;
-							}
 
 							V = 0;
 							for (MangaVolume volume : tabela.getVolumes()) {
@@ -182,13 +188,6 @@ public class ProcessarMangas {
 									break;
 								}
 							}
-
-							propTabela.set((double) T / tabelas.size());
-							Platform.runLater(() -> {
-								if (TaskbarProgressbar.isSupported())
-									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), T, tabelas.size(),
-											Type.NORMAL);
-							});
 
 							if (desativar)
 								break;
@@ -330,7 +329,7 @@ public class ProcessarMangas {
 						continue;
 					}
 				}
-				
+
 				if (!vocabValida.contains(m.dictionaryForm())) {
 					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
@@ -352,7 +351,7 @@ public class ProcessarMangas {
 
 						validaHistorico.add(m.dictionaryForm());
 						vocabHistorico.add(vocabulario);
-						
+
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
@@ -404,10 +403,10 @@ public class ProcessarMangas {
 
 						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
 								m.readingForm(), false);
-						
+
 						validaHistorico.add(m.dictionaryForm());
 						vocabHistorico.add(vocabulario);
-						
+
 						vocabValida.add(m.dictionaryForm());
 						vocabPagina.add(vocabulario);
 						vocabCapitulo.add(vocabulario);
@@ -416,6 +415,12 @@ public class ProcessarMangas {
 				}
 			}
 		}
+		Progress++;
+		propTabela.set((double) Progress / Size);
+		Platform.runLater(() -> {
+			if (TaskbarProgressbar.isSupported())
+				TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
+		});
 	}
 
 }
