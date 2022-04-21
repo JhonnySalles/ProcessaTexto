@@ -16,8 +16,8 @@ public class Kanshudo {
 	public static String processa(String kanji) {
 		String retorno = getNome(kanji);
 
-		if (retorno.isEmpty())
-			retorno = getSignificado(kanji);
+		/*if (retorno.isEmpty())
+			retorno = getSignificado(kanji);*/
 
 		return retorno;
 	}
