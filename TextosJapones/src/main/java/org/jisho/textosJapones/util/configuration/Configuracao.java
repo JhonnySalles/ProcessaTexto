@@ -12,7 +12,7 @@ import org.jisho.textosJapones.util.notification.Alertas;
 public class Configuracao {
 
 	public static void createProperties(String server, String port, String base, String user, String pws, String mysql,
-			String baseManga) {
+			String baseManga, String winrar) {
 		try (OutputStream os = new FileOutputStream("db.properties")) {
 			Properties props = new Properties();
 
@@ -22,6 +22,7 @@ public class Configuracao {
 			props.setProperty("user", user);
 			props.setProperty("password", pws);
 			props.setProperty("caminho_mysql", mysql);
+			props.setProperty("caminho_winrar", winrar);
 			props.setProperty("dataBase_manga", baseManga);
 			props.store(os, "");
 		} catch (IOException e) {
@@ -33,7 +34,7 @@ public class Configuracao {
 	public static Properties loadProperties() {
 		File f = new File("db.properties");
 		if (!f.exists())
-			createProperties("", "", "", "", "", "", "");
+			createProperties("", "", "", "", "", "", "", "");
 
 		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();

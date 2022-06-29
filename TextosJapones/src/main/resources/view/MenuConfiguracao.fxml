@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="260.0" prefWidth="300.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MenuConfiguracaoController">
+<AnchorPane prefHeight="260.0" prefWidth="300.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MenuConfiguracaoController">
    <children>
       <VBox layoutX="11.0" layoutY="21.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -22,7 +22,7 @@
             <HBox>
                <children>
                   <JFXTextField fx:id="txtCaminhoMysql" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho Mysql" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                  <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoMysql" prefWidth="35.0">
+                  <JFXButton fx:id="btnCaminhoMysql" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoMysql" prefWidth="35.0">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -34,6 +34,20 @@
                </children>
             </HBox>
             <JFXTextField fx:id="txtDataBaseManga" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base Manga" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
+            <HBox>
+               <children>
+                  <JFXTextField fx:id="txtCaminhoWinrar" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho Winrar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnCaminhoWinrar" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoWinrar" prefWidth="35.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/icoPasta_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>

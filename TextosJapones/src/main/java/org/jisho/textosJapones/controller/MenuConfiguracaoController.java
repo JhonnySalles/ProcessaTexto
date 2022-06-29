@@ -34,9 +34,16 @@ public class MenuConfiguracaoController implements Initializable {
 
 	@FXML
 	public JFXTextField txtCaminhoMysql;
+	
 
 	@FXML
-	public JFXButton btnCaminho;
+	public JFXTextField txtCaminhoWinrar;
+
+	@FXML
+	public JFXButton btnCaminhoMysql;
+	
+	@FXML
+	public JFXButton btnCaminhoWinrar;
 
 	@FXML
 	public JFXTextField txtDataBaseManga;
@@ -46,13 +53,20 @@ public class MenuConfiguracaoController implements Initializable {
 	@FXML
 	private void onBtnCarregarCaminhoMysql() {
 		controller.getPopPup().setDetached(true);
-		String caminho = selecionaPasta(txtCaminhoMysql.getText());
+		String caminho = selecionaPasta("Selecione a pasta do mysql", txtCaminhoMysql.getText());
 		txtCaminhoMysql.setText(caminho);
+	}
+	
+	@FXML
+	private void onBtnCarregarCaminhoWinrar() {
+		controller.getPopPup().setDetached(true);
+		txtCaminhoWinrar.setText(selecionaPasta("Selecione a pasta do winrar", txtCaminhoWinrar.getText()));
 	}
 
 	public void salvar() {
 		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtDataBase.getText(),
-				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText(), txtDataBaseManga.getText());
+				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText(), txtDataBaseManga.getText(),
+				txtCaminhoWinrar.getText());
 		controller.verificaConexao();
 	}
 
@@ -65,11 +79,12 @@ public class MenuConfiguracaoController implements Initializable {
 		txtUsuario.setText(ConexaoMysql.getUser());
 		pswSenha.setText(ConexaoMysql.getPassword());
 		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
+		txtCaminhoWinrar.setText(ConexaoMysql.getCaminhoWinrar());
 	}
 
-	private String selecionaPasta(String pasta) {
+	private String selecionaPasta(String titulo, String pasta) {
 		DirectoryChooser fileChooser = new DirectoryChooser();
-		fileChooser.setTitle("Selecione a pasta do mysql");
+		fileChooser.setTitle(titulo);
 
 		if (pasta != null && !pasta.isEmpty())
 			fileChooser.setInitialDirectory(new File(pasta));
@@ -80,7 +95,7 @@ public class MenuConfiguracaoController implements Initializable {
 		else
 			return caminho.getAbsolutePath();
 	}
-
+	
 	public void setControllerPai(MenuPrincipalController cnt) {
 		this.controller = cnt;
 	}

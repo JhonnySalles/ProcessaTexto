@@ -1,7 +1,9 @@
 package org.jisho.textosJapones.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -14,6 +16,7 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.util.mysql.ConexaoMysql;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.google.gson.ExclusionStrategy;
@@ -89,6 +92,12 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private JFXCheckBox ckbInverterOrdemTexto;
+	
+	@FXML
+	private JFXCheckBox ckbInserirArquivos;
+	
+	@FXML
+	private JFXCheckBox ckbExcluirAoInserirArquivos;
 
 	@FXML
 	private JFXCheckBox ckbMarcarTodos;
@@ -139,6 +148,11 @@ public class MangasJsonController implements Initializable {
 			AlertasPopup.AvisoModal("Aviso", "Necessário informar um caminho de destino.");
 			return;
 		}
+		
+		if (ckbInserirArquivos.isSelected() && ConexaoMysql.getCaminhoWinrar().isEmpty()) {
+			AlertasPopup.AvisoModal("Aviso", "Necessário informar o caminho do winrar nas configurações.");
+			return;
+		}
 
 		if (btnGerarJson.getAccessibleText().equalsIgnoreCase("GERANDO")) {
 			PAUSAR = true;
@@ -186,10 +200,86 @@ public class MangasJsonController implements Initializable {
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 	}
+	
+	private String patern = ".*\\.(zip|cbz|rar|cbr|tar)$";
+	private void insereDentroArquivos(String localPasta, String nome, Integer volume, String localJson) {
+		File pasta = new File(localPasta);
+		File arquivo = null;
+		for (File item : pasta.listFiles()) {
+			if (item.getName().toLowerCase().contains(".json"))
+				continue;
+			
+			if (!item.getName().toLowerCase().matches(patern))
+				continue;
+			
+			if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
+				 if (item.getName().toLowerCase().contains(nome) && 
+							(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ") || 
+							item.getName().toLowerCase().contains("volume " + String.format("%03d", volume) + " "))) {
+						arquivo = item;
+						break;
+				 }
+			} else if (item.getName().toLowerCase().contains(nome) && 
+					(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume)) || 
+					item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
+				arquivo = item;
+				break;
+			}
+		}
+
+		// Necessário adicionar o winrar no path do windows.
+		if (arquivo != null) {
+			File json = new File(localJson);
+			
+		    String comando = "cmd.exe /C cd " + winrar + " \n&&rar a -ep " + '"' + arquivo.getPath() + '"' + " " +
+		    '"' + json.getPath() + '"';
+		    System.out.println("cmd.exe /C cd " + winrar);
+		    System.out.println("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + json.getPath() + '"');
+	        try {
+	        	Runtime rt = Runtime.getRuntime();
+	        	
+	        	Process proc = rt.exec(comando);
+	        	System.out.println("Resultado: " + proc.waitFor());
+	        	
+	        	String resultado = "";
+	        	
+	        	BufferedReader stdInput = new BufferedReader(new 
+	        	     InputStreamReader(proc.getInputStream()));
+	        
+	        	String s = null;
+	        	while ((s = stdInput.readLine()) != null)
+	        		resultado += s + "\n";
+	        	
+	        	if (!resultado.isEmpty())
+	        		System.out.println("Output comand:\n" + resultado);
+	        	
+	        	s = null;
+	        	resultado = "";
+	        	BufferedReader stdError = new BufferedReader(new 
+	        	     InputStreamReader(proc.getErrorStream()));
+	        	
+	        	while ((s = stdError.readLine()) != null)
+	        		resultado += s + "\n";
+	        
+	        	if (!resultado.isEmpty())
+	        		System.out.println("Error comand:\n" + resultado + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
+	        	
+	            
+	    		if(excluirAoInserir)
+					json.delete();
+	
+	        } catch (Exception e) {
+	            System.out.println(e);
+	            e.printStackTrace();
+	        }
+		}
+	}
 
 	private Boolean isSepararCapitulo;
 	private Integer I;
 	private String error, destino;
+	private Boolean inserirArquivos, excluirAoInserir;
+	private String winrar;
 
 	private void gerar() {
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
@@ -207,6 +297,9 @@ public class MangasJsonController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
+					inserirArquivos = ckbInserirArquivos.isSelected();
+					excluirAoInserir = ckbExcluirAoInserirArquivos.isSelected();
+					winrar = ConexaoMysql.getCaminhoWinrar();
 					error = "";
 
 					updateMessage("Gravando Jsons....");
@@ -264,23 +357,33 @@ public class MangasJsonController implements Initializable {
 								for (MangaCapitulo capitulo : volume.getCapitulos()) {
 									if (!capitulo.isProcessar())
 										continue;
+									
+									String arquivo = destino + '/' + volume.getLingua() + " - "
+											+ volume.getManga() + " - Volume " +  String.format("%03d", volume.getVolume())
+											+ " Capitulo " + String.format("%03d", capitulo.getCapitulo()) + ".json";
 
-									FileWriter file = new FileWriter(destino + '/' + volume.getLingua() + " - "
-											+ volume.getManga() + " - Volume " + volume.getVolume().toString()
-											+ " Capitulo " + capitulo.getCapitulo().toString() + ".json");
+									FileWriter file = new FileWriter(arquivo);
 									gson.toJson(capitulo, file);
 									file.flush();
 									file.close();
 
+									if (inserirArquivos)
+										insereDentroArquivos(destino, volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
+									
 									if (PAUSAR)
 										break;
 								}
 							} else {
-								FileWriter file = new FileWriter(destino + '/' + volume.getLingua() + " - "
-										+ volume.getManga() + " - Volume " + volume.getVolume().toString() + ".json");
+								String arquivo = destino + '/' + volume.getLingua() + " - "
+										+ volume.getManga() + " - Volume " + String.format("%03d", volume.getVolume()) + ".json";
+								
+								FileWriter file = new FileWriter(arquivo);
 								gson.toJson(volume, file);
 								file.flush();
 								file.close();
+								
+								if (inserirArquivos)
+									insereDentroArquivos(destino, volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
 							}
 
 						}

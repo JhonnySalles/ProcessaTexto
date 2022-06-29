@@ -16,9 +16,10 @@ public class ConexaoMysql {
 	private static String PASSWORD = "";
 	private static String CAMINHO_MYSQL = "";
 	private static String DATA_BASE_MANGA = "";
+	private static String CAMINHO_WINRAR = "";
 
 	public static void setDadosConexao(String server, String port, String dataBase, String user, String psswd,
-			String mysql, String dataBaseManga) {
+			String mysql, String dataBaseManga, String winrar) {
 		SERVER = server;
 		PORT = port;
 		DATA_BASE = dataBase;
@@ -26,11 +27,12 @@ public class ConexaoMysql {
 		PASSWORD = psswd;
 		CAMINHO_MYSQL = mysql;
 		DATA_BASE_MANGA = dataBaseManga;
+		CAMINHO_WINRAR = winrar;
 		saveDadosConexao();
 	}
 
 	private static void saveDadosConexao() {
-		Configuracao.createProperties(SERVER, PORT, DATA_BASE, USER, PASSWORD, CAMINHO_MYSQL, DATA_BASE_MANGA);
+		Configuracao.createProperties(SERVER, PORT, DATA_BASE, USER, PASSWORD, CAMINHO_MYSQL, DATA_BASE_MANGA, CAMINHO_WINRAR);
 	}
 
 	public static String getServer() {
@@ -60,6 +62,10 @@ public class ConexaoMysql {
 	public static String getCaminhoMysql() {
 		return CAMINHO_MYSQL;
 	}
+	
+	public static String getCaminhoWinrar() {
+		return CAMINHO_WINRAR;
+	}
 
 	public static void getDadosConexao() {
 		Properties props = Configuracao.loadProperties();
@@ -70,6 +76,7 @@ public class ConexaoMysql {
 		PASSWORD = props.getProperty("password");
 		CAMINHO_MYSQL = props.getProperty("caminho_mysql");
 		DATA_BASE_MANGA = props.getProperty("dataBase_manga");
+		CAMINHO_WINRAR = props.getProperty("caminho_winrar");
 	}
 
 	public static String testaConexaoMySQL() {
