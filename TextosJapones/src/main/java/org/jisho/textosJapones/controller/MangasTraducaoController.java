@@ -200,7 +200,7 @@ public class MangasTraducaoController implements Initializable {
 								continue;
 
 							MangaVolume volumeTraduzido = new MangaVolume(null, volume.getManga(), volume.getVolume(),
-									Language.PORTUGUESE_GOOGLE);
+									Language.PORTUGUESE_GOOGLE, volume.getArquivo());
 
 							for (MangaCapitulo capitulo : volume.getCapitulos()) {
 								X++;

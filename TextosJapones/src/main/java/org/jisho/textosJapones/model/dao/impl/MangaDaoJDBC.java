@@ -30,8 +30,8 @@ public class MangaDaoJDBC implements MangaDao {
 	private String BASE_MANGA;
 
 	final private String CREATE_VOLUMES = "CREATE TABLE %s_volumes (id int(11) NOT NULL AUTO_INCREMENT, manga varchar(250) DEFAULT NULL, "
-			+ "  volume int(4) DEFAULT NULL, linguagem varchar(4) DEFAULT NULL, vocabulario longtext, is_processado tinyint(1) DEFAULT '0', "
-			+ "  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+			+ "  volume int(4) DEFAULT NULL, linguagem varchar(4) DEFAULT NULL, arquivo varchar(250) DEFAULT NULL, vocabulario longtext, "
+			+ "  is_processado tinyint(1) DEFAULT '0', PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 	final private String CREATE_CAPITULOS = "CREATE TABLE %s_capitulos (id INT(11) NOT NULL AUTO_INCREMENT, id_volume INT(11) DEFAULT NULL, "
 			+ "  manga LONGTEXT COLLATE utf8mb4_unicode_ci NOT NULL, volume INT(4) NOT NULL, "
 			+ "  capitulo DOUBLE NOT NULL, linguagem VARCHAR(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL, scan VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL, "
@@ -62,14 +62,14 @@ public class MangaDaoJDBC implements MangaDao {
 			+ "  CONSTRAINT %s_vocab_volume_fk FOREIGN KEY (id_volume) REFERENCES %s_volumes (id)"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
-	final private String UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = ?, volume = ?, linguagem = ?, is_processado = ? WHERE id = ?";
+	final private String UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = ?, manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
 	final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id = ?";
 
-	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (manga, volume, linguagem, is_processado) VALUES (?,?,?,?)";
+	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (manga, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?)";
 	final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado) VALUES (?,?,?,?,?,?,?,?,?)";
 	final private String INSERT_PAGINAS = "INSERT INTO %s_paginas (id_capitulo, nome, numero, hash_pagina, is_processado) VALUES (?,?,?,?,?)";
 	final private String INSERT_TEXTO = "INSERT INTO %s_textos (id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?)";
@@ -81,7 +81,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String DELETE_TEXTOS = "DELETE t FROM %s_textos AS t INNER JOIN %s_paginas AS p ON p.id = t.id_pagina "
 			+ "INNER JOIN %s_capitulos AS c ON c.id = p.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
 
-	final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.is_Processado FROM %s_volumes VOL %s WHERE %s GROUP BY VOL.id ORDER BY VOL.manga, VOL.linguagem, VOL.volume";
+	final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL %s WHERE %s GROUP BY VOL.id ORDER BY VOL.manga, VOL.linguagem, VOL.volume";
 	final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw, CAP.is_processado "
 			+ "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume, CAP.is_extra, CAP.capitulo";
 	final private String SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina, is_processado FROM %s_paginas WHERE id_capitulo = ? AND %s ";
@@ -126,8 +126,9 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setString(1, obj.getManga());
 			st.setInt(2, obj.getVolume());
 			st.setString(3, obj.getLingua().getSigla());
-			st.setBoolean(4, obj.getProcessado());
-			st.setLong(5, obj.getId());
+			st.setString(4, obj.getArquivo());
+			st.setBoolean(5, obj.getProcessado());
+			st.setLong(6, obj.getId());
 
 			insertVocabulario(base, obj.getId(), null, null, obj.getVocabularios());
 
@@ -384,7 +385,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
-						Language.getEnum(rs.getString("linguagem")),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
 						selectCapitulosTransferir(baseOrigem, rs.getLong("id"))));
 			return list;
 		} catch (SQLException e) {
@@ -412,7 +413,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
-						Language.getEnum(rs.getString("linguagem")),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
 						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
 						selectCapitulos(base, todos, rs.getLong("id"), apenasJapones)));
 			return list;
@@ -452,7 +453,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next())
 				list.add(new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
-						Language.getEnum(rs.getString("linguagem")),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
 						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
 						selectCapitulos(base, todos, rs.getLong("id"), capitulo, linguagem, inverterTexto)));
 			return list;
@@ -691,7 +692,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			if (rs.next())
 				return new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
-						Language.getEnum(rs.getString("linguagem")),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
 						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
 						selectCapitulos(base, true, rs.getLong("id"), false));
 			return null;
@@ -1095,7 +1096,8 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setString(1, obj.getManga());
 			st.setInt(2, obj.getVolume());
 			st.setString(3, obj.getLingua().getSigla());
-			st.setBoolean(4, obj.getProcessado());
+			st.setString(4, obj.getArquivo());
+			st.setBoolean(5, obj.getProcessado());
 
 			int rowsAffected = st.executeUpdate();
 

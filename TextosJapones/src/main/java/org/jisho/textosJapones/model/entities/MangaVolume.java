@@ -22,6 +22,8 @@ public class MangaVolume extends Manga {
 	private List<MangaCapitulo> capitulos;
 	@Expose
 	private Set<MangaVocabulario> vocabularios;
+	@Expose
+	private String arquivo;
 	private Boolean processado;
 
 	public Long getId() {
@@ -54,6 +56,15 @@ public class MangaVolume extends Manga {
 
 	public void setLingua(Language lingua) {
 		this.lingua = lingua;
+	}
+
+	
+	public String getArquivo() {
+		return arquivo;
+	}
+
+	public void setArquivo(String arquivo) {
+		this.arquivo = arquivo;
 	}
 
 	public List<MangaCapitulo> getCapitulos() {
@@ -97,42 +108,46 @@ public class MangaVolume extends Manga {
 		this.processado = false;
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();
+		this.arquivo = "";
 	}
 	
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua,  String arquivo) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
 		this.lingua = lingua;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = false;
-		this.processar = true;
+		this.arquivo = arquivo == null ? "" : arquivo;
 		this.capitulos = new ArrayList<MangaCapitulo>();
+		this.vocabularios = new HashSet<MangaVocabulario>();
+		this.processado = false;
+		this.processar = true;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, List<MangaCapitulo> capitulos) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, List<MangaCapitulo> capitulos) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
 		this.lingua = lingua;
+		this.arquivo =  arquivo == null ? "" : arquivo;
+		this.capitulos = capitulos;
 		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.processado = false;
 		this.processar = true;
-		this.capitulos = capitulos;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, Set<MangaVocabulario> vocabularios) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, Set<MangaVocabulario> vocabularios) {
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
 		this.lingua = lingua;
 		this.vocabularios = vocabularios;
+		this.arquivo = arquivo == null ? "" : arquivo;
 		this.processado = false;
 		this.processar = true;
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, Set<MangaVocabulario> vocabularios,
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, Set<MangaVocabulario> vocabularios,
 			List<MangaCapitulo> capitulos) {
 		this.id = id;
 		this.manga = manga;
@@ -140,6 +155,7 @@ public class MangaVolume extends Manga {
 		this.lingua = lingua;
 		this.capitulos = capitulos;
 		this.vocabularios = vocabularios;
+		this.arquivo = arquivo == null ? "" : arquivo;
 		this.processado = false;
 		this.processar = true;
 	}

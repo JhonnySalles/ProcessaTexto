@@ -466,7 +466,7 @@ public class MangasAjustarController implements Initializable {
 									&& it.getManga().equalsIgnoreCase(origem.getManga())
 									&& it.getLingua().compareTo(origem.getLingua()) == 0)
 							.findFirst().orElse(new MangaVolume(null, origem.getManga(), volume, origem.getLingua(),
-									new ArrayList<MangaCapitulo>()));
+									origem.getArquivo(), new ArrayList<MangaCapitulo>()));
 
 					destino.addCapitulos(capitulo);
 					if (destino.getId() == null)

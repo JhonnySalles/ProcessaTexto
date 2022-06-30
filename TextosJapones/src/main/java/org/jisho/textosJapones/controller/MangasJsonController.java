@@ -202,28 +202,46 @@ public class MangasJsonController implements Initializable {
 	}
 	
 	private String patern = ".*\\.(zip|cbz|rar|cbr|tar)$";
-	private void insereDentroArquivos(String localPasta, String nome, Integer volume, String localJson) {
+	private void insereDentroArquivos(String localPasta, String nomeArquivo, String nome, Integer volume, String localJson) {
 		File pasta = new File(localPasta);
 		File arquivo = null;
-		for (File item : pasta.listFiles()) {
-			if (item.getName().toLowerCase().contains(".json"))
-				continue;
-			
-			if (!item.getName().toLowerCase().matches(patern))
-				continue;
-			
-			if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
-				 if (item.getName().toLowerCase().contains(nome) && 
-							(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ") || 
-							item.getName().toLowerCase().contains("volume " + String.format("%03d", volume) + " "))) {
-						arquivo = item;
-						break;
-				 }
-			} else if (item.getName().toLowerCase().contains(nome) && 
-					(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume)) || 
-					item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
-				arquivo = item;
-				break;
+		
+		if (!nomeArquivo.isEmpty()) {
+			for (File item : pasta.listFiles()) {
+				if (item.getName().toLowerCase().contains(".json"))
+					continue;
+				
+				if (!item.getName().toLowerCase().matches(patern))
+					continue;
+				
+				if (item.getName().toLowerCase().contains(nomeArquivo)) {
+					arquivo = item;
+					break;
+				}
+			}
+		}
+		
+		if (arquivo == null) {
+			for (File item : pasta.listFiles()) {
+				if (item.getName().toLowerCase().contains(".json"))
+					continue;
+				
+				if (!item.getName().toLowerCase().matches(patern))
+					continue;
+				
+				if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
+					 if (item.getName().toLowerCase().contains(nome) && 
+								(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ") || 
+								item.getName().toLowerCase().contains("volume " + String.format("%03d", volume) + " "))) {
+							arquivo = item;
+							break;
+					 }
+				} else if (item.getName().toLowerCase().contains(nome) && 
+						(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume)) || 
+						item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
+					arquivo = item;
+					break;
+				}
 			}
 		}
 
@@ -368,7 +386,7 @@ public class MangasJsonController implements Initializable {
 									file.close();
 
 									if (inserirArquivos)
-										insereDentroArquivos(destino, volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
+										insereDentroArquivos(destino, volume.getArquivo().toLowerCase(), volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
 									
 									if (PAUSAR)
 										break;
@@ -383,7 +401,7 @@ public class MangasJsonController implements Initializable {
 								file.close();
 								
 								if (inserirArquivos)
-									insereDentroArquivos(destino, volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
+									insereDentroArquivos(destino, volume.getArquivo().toLowerCase(), volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
 							}
 
 						}
