@@ -472,6 +472,30 @@
 	visibility: visible;
 }
 
+
+/*---------- List View ----------*/
+.list-view {
+	-fx-background-color: #000000;
+}
+
+.list-view-row-cell:selected {
+	-fx-background-color: #4052ab;
+}
+
+.list-view .list-cell {
+	-fx-background-color: #333333;
+	-fx-text-fill: white;
+}
+
+.list-view .list-cell:odd {
+	-fx-background-color: #212121;
+	-fx-text-fill: white;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #4052ab;
+}
+
 /*---------- Progress Bar ----------*/
 .progress-bar {
 	-fx-background-color: #106ebe;
@@ -563,4 +587,15 @@
 	-fx-background-color: transparent;
 	-fx-border-width: 2;
 	-fx-border-color: #71afe5;
+}
+
+/*---------- Estilo vinculo arquivo ----------*/
+.background-SemiTransparent-Black {
+	-fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.background-page {
+    -fx-background-color: #595959;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
 }
