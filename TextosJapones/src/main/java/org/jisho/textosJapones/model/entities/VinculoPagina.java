@@ -13,19 +13,19 @@ public class VinculoPagina {
 	private String originalPathPagina;
 	private Integer originalPagina;
 	private Integer originalPaginas;
-	private Boolean originalPaginaDupla;
+	public Boolean isOriginalPaginaDupla;
 
 	private String vinculadoDireitaNomePagina;
 	private String vinculadoDireitaPathPagina;
 	private Integer vinculadoDireitaPagina;
 	private Integer vinculadoDireitaPaginas;
-	private Boolean vinculadoDireitaPaginaDupla;
+	public Boolean isVinculadoDireitaPaginaDupla;
 
 	private String vinculadoEsquerdaNomePagina;
 	private String vinculadoEsquerdaPathPagina;
 	private Integer vinculadoEsquerdaPagina;
 	private Integer vinculadoEsquerdaPaginas;
-	private Boolean vinculadoEsquerdaPaginaDupla;
+	public Boolean isVinculadoEsquerdaPaginaDupla;
 
 	private MangaPagina mangaPaginaOriginal;
 	private MangaPagina mangaPaginaDireita;
@@ -35,8 +35,8 @@ public class VinculoPagina {
 	private Image imagemVinculadoDireita;
 	private Image imagemVinculadoEsquerda;
 
-	private Boolean imagemDupla;
-	private Boolean naoVinculado;
+	public Boolean isImagemDupla;
+	public Boolean isNaoVinculado;
 
 	public Long getId() {
 		return id;
@@ -78,14 +78,6 @@ public class VinculoPagina {
 		this.originalPaginas = originalPaginas;
 	}
 
-	public Boolean getOriginalPaginaDupla() {
-		return originalPaginaDupla;
-	}
-
-	public void setOriginalPaginaDupla(Boolean originalPaginaDupla) {
-		this.originalPaginaDupla = originalPaginaDupla;
-	}
-
 	public String getVinculadoDireitaNomePagina() {
 		return vinculadoDireitaNomePagina;
 	}
@@ -118,14 +110,6 @@ public class VinculoPagina {
 		this.vinculadoDireitaPaginas = vinculadoDireitaPaginas;
 	}
 
-	public Boolean getVinculadoDireitaPaginaDupla() {
-		return vinculadoDireitaPaginaDupla;
-	}
-
-	public void setVinculadoDireitaPaginaDupla(Boolean vinculadoDireitaPaginaDupla) {
-		this.vinculadoDireitaPaginaDupla = vinculadoDireitaPaginaDupla;
-	}
-
 	public String getVinculadoEsquerdaNomePagina() {
 		return vinculadoEsquerdaNomePagina;
 	}
@@ -156,14 +140,6 @@ public class VinculoPagina {
 
 	public void setVinculadoEsquerdaPaginas(Integer vinculadoEsquerdaPaginas) {
 		this.vinculadoEsquerdaPaginas = vinculadoEsquerdaPaginas;
-	}
-
-	public Boolean getVinculadoEsquerdaPaginaDupla() {
-		return vinculadoEsquerdaPaginaDupla;
-	}
-
-	public void setVinculadoEsquerdaPaginaDupla(Boolean vinculadoEsquerdaPaginaDupla) {
-		this.vinculadoEsquerdaPaginaDupla = vinculadoEsquerdaPaginaDupla;
 	}
 
 	public MangaPagina getMangaPaginaOriginal() {
@@ -213,75 +189,90 @@ public class VinculoPagina {
 	public void setImagemVinculadoEsquerda(Image imagemVinculadoEsquerda) {
 		this.imagemVinculadoEsquerda = imagemVinculadoEsquerda;
 	}
+	
+	public void mesclar(VinculoPagina outro) {
+		this.vinculadoEsquerdaNomePagina = outro.vinculadoEsquerdaNomePagina;
+		this.vinculadoEsquerdaPathPagina = outro.vinculadoEsquerdaPathPagina;
+		this.vinculadoEsquerdaPagina = outro.vinculadoEsquerdaPagina;
+		this.vinculadoEsquerdaPaginas = outro.vinculadoEsquerdaPaginas;
+		this.isVinculadoEsquerdaPaginaDupla = outro.isVinculadoEsquerdaPaginaDupla;
+		this.mangaPaginaEsquerda = outro.mangaPaginaEsquerda;
+		this.imagemVinculadoEsquerda = outro.imagemVinculadoEsquerda;
 
-	public Boolean getImagemDupla() {
-		return imagemDupla;
-	}
+		this.vinculadoDireitaNomePagina = outro.vinculadoDireitaNomePagina;
+		this.vinculadoDireitaPathPagina = outro.vinculadoDireitaPathPagina;
+		this.vinculadoDireitaPagina = outro.vinculadoDireitaPagina;
+		this.vinculadoDireitaPaginas = outro.vinculadoDireitaPaginas;
+		this.isVinculadoDireitaPaginaDupla = outro.isVinculadoDireitaPaginaDupla;
+		this.mangaPaginaDireita = outro.mangaPaginaDireita;
+		this.imagemVinculadoDireita = outro.imagemVinculadoDireita;
 
-	public void setImagemDupla(Boolean imagemDupla) {
-		this.imagemDupla = imagemDupla;
-	}
-
-	public Boolean getNaoVinculado() {
-		return naoVinculado;
-	}
-
-	public void setNaoVinculado(Boolean naoVinculado) {
-		this.naoVinculado = naoVinculado;
 	}
 
 	public void addOriginal(VinculoPagina original) {
 		addOriginal(original.id, original.originalNomePagina, original.originalPathPagina, original.originalPagina,
-				original.originalPaginas, original.vinculadoEsquerdaPaginaDupla, original.mangaPaginaOriginal,
+				original.originalPaginas, original.isVinculadoEsquerdaPaginaDupla, original.mangaPaginaOriginal,
 				original.imagemOriginal);
 	}
 
 	public void addOriginal(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
-			Integer originalPaginas, Boolean vinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal,
+			Integer originalPaginas, Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal,
 			Image imagemOriginal) {
 		this.id = id;
 		this.originalNomePagina = originalNomePagina;
 		this.originalPathPagina = originalPathPagina;
 		this.originalPagina = originalPagina;
 		this.originalPaginas = originalPaginas;
-		this.vinculadoEsquerdaPaginaDupla = vinculadoEsquerdaPaginaDupla;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
 		this.mangaPaginaOriginal = mangaPaginaOriginal;
 		this.imagemOriginal = imagemOriginal;
+	}
+	
+	public void addVinculoEsquerdaApartirDireita(VinculoPagina vinculo) {
+		addVinculoEsquerda(vinculo.vinculadoDireitaNomePagina, vinculo.vinculadoDireitaPathPagina,
+				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.isVinculadoDireitaPaginaDupla,
+				vinculo.mangaPaginaDireita, vinculo.imagemVinculadoDireita);
 	}
 
 	public void addVinculoEsquerda(VinculoPagina vinculo) {
 		addVinculoEsquerda(vinculo.vinculadoDireitaNomePagina, vinculo.vinculadoDireitaPathPagina,
-				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.vinculadoEsquerdaPaginaDupla,
+				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.isVinculadoEsquerdaPaginaDupla,
 				vinculo.mangaPaginaDireita, vinculo.imagemVinculadoDireita);
 	}
 
 	public void addVinculoEsquerda(String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean vinculadoEsquerdaPaginaDupla,
+			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
 			MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda) {
 		this.vinculadoEsquerdaNomePagina = vinculadoEsquerdaNomePagina;
 		this.vinculadoEsquerdaPathPagina = vinculadoEsquerdaPathPagina;
 		this.vinculadoEsquerdaPagina = vinculadoEsquerdaPagina;
 		this.vinculadoEsquerdaPaginas = vinculadoEsquerdaPaginas;
-		this.vinculadoEsquerdaPaginaDupla = vinculadoEsquerdaPaginaDupla;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
 		this.mangaPaginaEsquerda = mangaPaginaEsquerda;
 		this.imagemVinculadoEsquerda = imagemVinculadoEsquerda;
+	}
+	
+	public void addVinculoDireitaApartirEsquerda(VinculoPagina vinculo) {
+		addVinculoDireita(vinculo.vinculadoDireitaNomePagina, vinculo.vinculadoDireitaPathPagina,
+				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.isVinculadoEsquerdaPaginaDupla,
+				vinculo.mangaPaginaDireita, vinculo.imagemVinculadoDireita);
 	}
 
 	public void addVinculoDireita(VinculoPagina vinculo) {
 		addVinculoDireita(vinculo.vinculadoDireitaNomePagina, vinculo.vinculadoDireitaPathPagina,
-				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.vinculadoDireitaPaginaDupla,
+				vinculo.vinculadoDireitaPagina, vinculo.vinculadoDireitaPaginas, vinculo.isVinculadoDireitaPaginaDupla,
 				vinculo.mangaPaginaDireita, vinculo.imagemVinculadoDireita);
 	}
 
 	public void addVinculoDireita(String vinculadoDireitaNomePagina, String vinculadoDireitaPathPagina,
-			Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas, Boolean vinculadoDireitaPaginaDupla,
+			Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas, Boolean isVinculadoDireitaPaginaDupla,
 			MangaPagina mangaPaginaDireita, Image imagemVinculadoDireita) {
 		if (this.vinculadoEsquerdaPagina == PAGINA_VAZIA) {
 			this.vinculadoEsquerdaNomePagina = vinculadoDireitaNomePagina;
 			this.vinculadoEsquerdaPathPagina = vinculadoDireitaPathPagina;
 			this.vinculadoEsquerdaPagina = vinculadoDireitaPagina;
 			this.vinculadoEsquerdaPaginas = vinculadoDireitaPaginas;
-			this.vinculadoEsquerdaPaginaDupla = vinculadoDireitaPaginaDupla;
+			this.isVinculadoEsquerdaPaginaDupla = isVinculadoDireitaPaginaDupla;
 			this.mangaPaginaEsquerda = mangaPaginaDireita;
 			this.imagemVinculadoEsquerda = imagemVinculadoDireita;
 		} else {
@@ -289,7 +280,7 @@ public class VinculoPagina {
 			this.vinculadoDireitaPathPagina = vinculadoDireitaPathPagina;
 			this.vinculadoDireitaPagina = vinculadoDireitaPagina;
 			this.vinculadoDireitaPaginas = vinculadoDireitaPaginas;
-			this.vinculadoDireitaPaginaDupla = vinculadoDireitaPaginaDupla;
+			this.isVinculadoDireitaPaginaDupla = isVinculadoDireitaPaginaDupla;
 			this.mangaPaginaDireita = mangaPaginaDireita;
 			this.imagemVinculadoDireita = imagemVinculadoDireita;
 		}
@@ -302,7 +293,7 @@ public class VinculoPagina {
 		this.vinculadoEsquerdaPaginas = this.vinculadoDireitaPaginas;
 		this.mangaPaginaEsquerda = this.mangaPaginaDireita;
 		this.imagemVinculadoEsquerda = this.imagemVinculadoDireita;
-		this.vinculadoEsquerdaPaginaDupla = this.vinculadoDireitaPaginaDupla;
+		this.isVinculadoEsquerdaPaginaDupla = this.isVinculadoDireitaPaginaDupla;
 		this.limparVinculadoDireita();
 	}
 
@@ -319,10 +310,10 @@ public class VinculoPagina {
 		this.mangaPaginaEsquerda = null;
 		this.imagemVinculadoDireita = null;
 		this.imagemVinculadoEsquerda = null;
-		this.vinculadoDireitaPaginaDupla = false;
-		this.vinculadoEsquerdaPaginaDupla = false;
-		this.imagemDupla = false;
-		this.naoVinculado = false;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = false;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = false;
 	}
 
 	public Boolean limparVinculadoEsquerda() {
@@ -346,7 +337,7 @@ public class VinculoPagina {
 			this.vinculadoEsquerdaPathPagina = "";
 			this.vinculadoEsquerdaPagina = PAGINA_VAZIA;
 			this.vinculadoEsquerdaPaginas = 0;
-			this.vinculadoEsquerdaPaginaDupla = false;
+			this.isVinculadoEsquerdaPaginaDupla = false;
 		}
 
 		return movido;
@@ -357,8 +348,8 @@ public class VinculoPagina {
 		this.vinculadoDireitaPathPagina = "";
 		this.vinculadoDireitaPagina = PAGINA_VAZIA;
 		this.vinculadoDireitaPaginas = 0;
-		this.vinculadoDireitaPaginaDupla = false;
-		this.imagemDupla = false;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isImagemDupla = false;
 	}
 
 	public VinculoPagina() {
@@ -381,15 +372,15 @@ public class VinculoPagina {
 		this.imagemOriginal = null;
 		this.imagemVinculadoDireita = null;
 		this.imagemVinculadoEsquerda = null;
-		this.originalPaginaDupla = false;
-		this.vinculadoDireitaPaginaDupla = false;
-		this.vinculadoEsquerdaPaginaDupla = false;
-		this.imagemDupla = false;
-		this.naoVinculado = false;
+		this.isOriginalPaginaDupla = false;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = false;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = false;
 	}
 
 	public VinculoPagina(String originalNomePagina, String originalPathPagina, Integer originalPagina,
-			Integer originalPaginas, Boolean originalPaginaDupla, MangaPagina mangaPaginaOriginal,
+			Integer originalPaginas, Boolean isOriginalPaginaDupla, MangaPagina mangaPaginaOriginal,
 			Image imagemOriginal) {
 		this.id = null;
 		this.originalNomePagina = originalNomePagina;
@@ -410,15 +401,15 @@ public class VinculoPagina {
 		this.imagemOriginal = imagemOriginal;
 		this.imagemVinculadoDireita = null;
 		this.imagemVinculadoEsquerda = null;
-		this.originalPaginaDupla = originalPaginaDupla;
-		this.vinculadoDireitaPaginaDupla = false;
-		this.vinculadoEsquerdaPaginaDupla = false;
-		this.imagemDupla = false;
-		this.naoVinculado = false;
+		this.isOriginalPaginaDupla = isOriginalPaginaDupla;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = false;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = false;
 	}
 
 	public VinculoPagina(String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean vinculadoEsquerdaPaginaDupla,
+			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
 			MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda, Boolean naoVinculado) {
 		this.id = null;
 		this.originalNomePagina = "";
@@ -439,59 +430,59 @@ public class VinculoPagina {
 		this.imagemOriginal = null;
 		this.imagemVinculadoDireita = null;
 		this.imagemVinculadoEsquerda = imagemVinculadoEsquerda;
-		this.originalPaginaDupla = false;
-		this.vinculadoDireitaPaginaDupla = false;
-		this.vinculadoEsquerdaPaginaDupla = vinculadoEsquerdaPaginaDupla;
-		this.imagemDupla = false;
-		this.naoVinculado = naoVinculado;
+		this.isOriginalPaginaDupla = false;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = naoVinculado;
 	}
 
 	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
-			Integer originalPaginas, Boolean originalPaginaDupla, String vinculadoDireitaNomePagina,
+			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
 			String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
-			Boolean vinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean vinculadoEsquerdaPaginaDupla,
-			MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita, MangaPagina mangaPaginaEsquerda,
-			Image imagemOriginal, Image imagemVinculadoDireita, Image imagemVinculadoEsquerda, Boolean imagemDupla,
-			Boolean naoVinculado) {
+			Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
+			String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
+			Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
+			MangaPagina mangaPaginaEsquerda, Image imagemOriginal, Image imagemVinculadoDireita,
+			Image imagemVinculadoEsquerda, Boolean imagemDupla, Boolean naoVinculado) {
 		this.id = id;
 		this.originalNomePagina = originalNomePagina;
 		this.originalPathPagina = originalPathPagina;
 		this.originalPagina = originalPagina;
 		this.originalPaginas = originalPaginas;
-		this.originalPaginaDupla = originalPaginaDupla;
+		this.isOriginalPaginaDupla = isOriginalPaginaDupla;
 		this.vinculadoDireitaNomePagina = vinculadoDireitaNomePagina;
 		this.vinculadoDireitaPathPagina = vinculadoDireitaPathPagina;
 		this.vinculadoDireitaPagina = vinculadoDireitaPagina;
 		this.vinculadoDireitaPaginas = vinculadoDireitaPaginas;
-		this.vinculadoDireitaPaginaDupla = vinculadoDireitaPaginaDupla;
+		this.isVinculadoDireitaPaginaDupla = isVinculadoDireitaPaginaDupla;
 		this.vinculadoEsquerdaNomePagina = vinculadoEsquerdaNomePagina;
 		this.vinculadoEsquerdaPathPagina = vinculadoEsquerdaPathPagina;
 		this.vinculadoEsquerdaPagina = vinculadoEsquerdaPagina;
 		this.vinculadoEsquerdaPaginas = vinculadoEsquerdaPaginas;
-		this.vinculadoEsquerdaPaginaDupla = vinculadoEsquerdaPaginaDupla;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
 		this.mangaPaginaOriginal = mangaPaginaOriginal;
 		this.mangaPaginaDireita = mangaPaginaDireita;
 		this.mangaPaginaEsquerda = mangaPaginaEsquerda;
 		this.imagemOriginal = imagemOriginal;
 		this.imagemVinculadoDireita = imagemVinculadoDireita;
 		this.imagemVinculadoEsquerda = imagemVinculadoEsquerda;
-		this.imagemDupla = imagemDupla;
-		this.naoVinculado = naoVinculado;
+		this.isImagemDupla = imagemDupla;
+		this.isNaoVinculado = naoVinculado;
 	}
 
 	@Override
 	public String toString() {
 		return "VinculoPagina [id=" + id + ", originalNomePagina=" + originalNomePagina + ", originalPathPagina="
 				+ originalPathPagina + ", originalPagina=" + originalPagina + ", originalPaginas=" + originalPaginas
-				+ ", originalPaginaDupla=" + originalPaginaDupla + ", vinculadoDireitaNomePagina="
+				+ ", isOriginalPaginaDupla=" + isOriginalPaginaDupla + ", vinculadoDireitaNomePagina="
 				+ vinculadoDireitaNomePagina + ", vinculadoDireitaPathPagina=" + vinculadoDireitaPathPagina
 				+ ", vinculadoDireitaPagina=" + vinculadoDireitaPagina + ", vinculadoDireitaPaginas="
-				+ vinculadoDireitaPaginas + ", vinculadoDireitaPaginaDupla=" + vinculadoDireitaPaginaDupla
+				+ vinculadoDireitaPaginas + ", isVinculadoDireitaPaginaDupla=" + isVinculadoDireitaPaginaDupla
 				+ ", vinculadoEsquerdaNomePagina=" + vinculadoEsquerdaNomePagina + ", vinculadoEsquerdaPathPagina="
 				+ vinculadoEsquerdaPathPagina + ", vinculadoEsquerdaPagina=" + vinculadoEsquerdaPagina
-				+ ", vinculadoEsquerdaPaginas=" + vinculadoEsquerdaPaginas + ", vinculadoEsquerdaPaginaDupla="
-				+ vinculadoEsquerdaPaginaDupla + ", imagemDupla=" + imagemDupla + ", naoVinculado=" + naoVinculado
+				+ ", vinculadoEsquerdaPaginas=" + vinculadoEsquerdaPaginas + ", isVinculadoEsquerdaPaginaDupla="
+				+ isVinculadoEsquerdaPaginaDupla + ", imagemDupla=" + isImagemDupla + ", naoVinculado=" + isNaoVinculado
 				+ "]";
 	}
 

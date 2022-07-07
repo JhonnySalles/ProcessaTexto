@@ -27,7 +27,7 @@
             		      <HBox alignment="CENTER_LEFT" spacing="10.0">
             		         <children>
                               <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" visibleRowCount="20" />
-            		            <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+            		            <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" />
             		         </children>
             		         <opaqueInsets>
             		            <Insets />
@@ -50,20 +50,20 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <JFXTextField fx:id="txtArquivoOriginal" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
-            		            <JFXButton fx:id="btnOriginal" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnOriginal" prefWidth="130.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Original" />
+                              <JFXTextField fx:id="txtArquivoOriginal" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
+            		            <JFXButton fx:id="btnOriginal" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnOriginal" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Original" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <JFXTextField fx:id="txtArquivoVinculado" editable="false" focusColor="#71afe5" labelFloat="true" promptText="Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
-            		            <JFXButton fx:id="btnVinculado" buttonType="RAISED" onAction="#onBtnVinculado" prefWidth="130.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Vinculado" />
+                              <JFXTextField fx:id="txtArquivoVinculado" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
+            		            <JFXButton fx:id="btnVinculado" buttonType="RAISED" onAction="#onBtnVinculado" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Vinculado" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <JFXButton fx:id="btnDeletar" buttonType="RAISED" onAction="#onBtnDeletar" prefWidth="120.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
-                              <JFXButton fx:id="btnSalvar" buttonType="RAISED" onAction="#onBtnSalvar" prefWidth="120.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
+                              <JFXButton fx:id="btnDeletar" buttonType="RAISED" onAction="#onBtnDeletar" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
+                              <JFXButton fx:id="btnSalvar" buttonType="RAISED" onAction="#onBtnSalvar" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
                            </children>
                         </HBox>
                      </children>

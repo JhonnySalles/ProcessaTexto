@@ -130,8 +130,7 @@ public class MangasVincularController implements Initializable {
 				: (arquivoVinculado != null ? arquivoVinculado.getPath() : null);
 		arquivoOriginal = selectFile("Selecione o arquivo de origem", pasta);
 		if (!selecionarArquivo())
-			;
-		carregarArquivo(arquivoOriginal, true);
+			carregarArquivo(arquivoOriginal, true);
 	}
 
 	@FXML
@@ -140,8 +139,7 @@ public class MangasVincularController implements Initializable {
 				: (arquivoOriginal != null ? arquivoOriginal.getPath() : null);
 		arquivoVinculado = selectFile("Selecione o arquivo de origem", pasta);
 		if (!selecionarArquivo())
-			;
-		carregarArquivo(arquivoVinculado, false);
+			carregarArquivo(arquivoVinculado, false);
 	}
 
 	@FXML
@@ -212,10 +210,12 @@ public class MangasVincularController implements Initializable {
 			return false;
 
 		try {
+			String arquivoOriginal = this.arquivoOriginal != null ? this.arquivoOriginal.getName() : "";
+			String arquivoVinculado = this.arquivoVinculado != null ? this.arquivoVinculado.getName() : "";
+
 			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), txtManga.getText(),
-					spnVolume.getValue(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(),
-					arquivoOriginal.getName(), cbLinguagemVinculado.getSelectionModel().getSelectedItem(),
-					arquivoVinculado.getName());
+					spnVolume.getValue(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(), arquivoOriginal,
+					cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
 
 			if (vinculo != null) {
 				this.vinculo = vinculo;
