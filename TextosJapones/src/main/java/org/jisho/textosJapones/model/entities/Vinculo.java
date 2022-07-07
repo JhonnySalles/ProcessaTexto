@@ -5,23 +5,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.jisho.textosJapones.model.enums.Language;
+
 public class Vinculo {
 
-	private String id;
+	private Long id;
 	private String nomeArquivoOriginal;
 	private String nomeArquivoVinculado;
+	private Language linguagemOriginal;
+	private Language linguagemVinculado;
 	private MangaVolume volumeOriginal;
 	private MangaVolume volumeVinculado;
 	private List<VinculoPagina> vinculados;
 	private List<VinculoPagina> naoVinculados;
 	private LocalDateTime dataCriacao;
 	private LocalDateTime ultimaAlteracao;
+	private String base;
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -57,6 +62,22 @@ public class Vinculo {
 		this.volumeVinculado = volumeVinculado;
 	}
 
+	public Language getLinguagemOriginal() {
+		return linguagemOriginal;
+	}
+
+	public void setLinguagemOriginal(Language linguagemOriginal) {
+		this.linguagemOriginal = linguagemOriginal;
+	}
+
+	public Language getLinguagemVinculado() {
+		return linguagemVinculado;
+	}
+
+	public void setLinguagemVinculado(Language linguagemVinculado) {
+		this.linguagemVinculado = linguagemVinculado;
+	}
+
 	public List<VinculoPagina> getVinculados() {
 		return vinculados;
 	}
@@ -89,53 +110,73 @@ public class Vinculo {
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
+	public String getBase() {
+		return base;
+	}
+
+	public void setBase(String base) {
+		this.base = base;
+	}
+
 	public Vinculo() {
 		this.id = null;
 		this.nomeArquivoOriginal = "";
 		this.nomeArquivoVinculado = "";
 		this.volumeOriginal = null;
 		this.volumeVinculado = null;
+		this.linguagemOriginal = null;
+		this.linguagemVinculado = null;
 		this.vinculados = new ArrayList<VinculoPagina>();
 		this.naoVinculados = new ArrayList<VinculoPagina>();
 		this.dataCriacao = LocalDateTime.now();
 		this.ultimaAlteracao = LocalDateTime.now();
+		this.base = "";
 	}
 
-	public Vinculo(String nomeArquivoOriginal, MangaVolume volumeOriginal) {
+	public Vinculo(String base, String nomeArquivoOriginal, Language linguagemOriginal, MangaVolume volumeOriginal) {
 		this.id = null;
+		this.base = base;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
 		this.nomeArquivoVinculado = null;
 		this.volumeOriginal = volumeOriginal;
 		this.volumeVinculado = null;
+		this.linguagemOriginal = linguagemOriginal;
+		this.linguagemVinculado = null;
 		this.vinculados = new ArrayList<VinculoPagina>();
 		this.naoVinculados = new ArrayList<VinculoPagina>();
 		this.dataCriacao = LocalDateTime.now();
 		this.ultimaAlteracao = LocalDateTime.now();
 	}
 
-	public Vinculo(String id, String nomeArquivoOriginal, String nomeArquivoVinculado, MangaVolume volumeOriginal, 
-			MangaVolume volumeVinculado, LocalDateTime dataCriacao,	LocalDateTime ultimaAlteracao) {
-		super();
+	public Vinculo(Long id, String base, String nomeArquivoOriginal, Language linguagemOriginal,
+			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
+			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao) {
 		this.id = id;
+		this.base = base;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
 		this.nomeArquivoVinculado = nomeArquivoVinculado;
 		this.volumeOriginal = volumeOriginal;
 		this.volumeVinculado = volumeVinculado;
+		this.linguagemOriginal = linguagemOriginal;
+		this.linguagemVinculado = linguagemVinculado;
 		this.vinculados = new ArrayList<VinculoPagina>();
 		this.naoVinculados = new ArrayList<VinculoPagina>();
 		this.dataCriacao = dataCriacao;
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
-	public Vinculo(String id, String nomeArquivoOriginal, String nomeArquivoVinculado, MangaVolume volumeOriginal, 
-			MangaVolume volumeVinculado, LocalDateTime dataCriacao,	LocalDateTime ultimaAlteracao,
+	public Vinculo(Long id, String base, String nomeArquivoOriginal, Language linguagemOriginal,
+			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
+			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao,
 			List<VinculoPagina> vinculados, List<VinculoPagina> naoVinculados) {
-		super();
 		this.id = id;
+		this.base = base;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
-		this.nomeArquivoVinculado = nomeArquivoVinculado;	
+		this.nomeArquivoVinculado = nomeArquivoVinculado;
 		this.volumeOriginal = volumeOriginal;
 		this.volumeVinculado = volumeVinculado;
+		this.linguagemOriginal = linguagemOriginal;
+		this.linguagemVinculado = linguagemVinculado;
 		this.vinculados = vinculados;
 		this.naoVinculados = naoVinculados;
 		this.dataCriacao = dataCriacao;
@@ -145,12 +186,14 @@ public class Vinculo {
 	@Override
 	public String toString() {
 		return "Vinculo [id=" + id + ", nomeArquivoOriginal=" + nomeArquivoOriginal + ", nomeArquivoVinculado="
-				+ nomeArquivoVinculado + ", dataCriacao=" + dataCriacao + ", ultimaAlteracao=" + ultimaAlteracao + "]";
+				+ nomeArquivoVinculado + ", linguagemOriginal=" + linguagemOriginal + ", linguagemVinculado="
+				+ linguagemVinculado + ", dataCriacao=" + dataCriacao + ", ultimaAlteracao=" + ultimaAlteracao
+				+ ", base=" + base + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nomeArquivoOriginal, nomeArquivoVinculado);
+		return Objects.hash(base, linguagemOriginal, linguagemVinculado, nomeArquivoOriginal, nomeArquivoVinculado);
 	}
 
 	@Override
@@ -162,7 +205,9 @@ public class Vinculo {
 		if (getClass() != obj.getClass())
 			return false;
 		Vinculo other = (Vinculo) obj;
-		return Objects.equals(id, other.id) && Objects.equals(nomeArquivoOriginal, other.nomeArquivoOriginal)
+		return Objects.equals(base, other.base) && linguagemOriginal == other.linguagemOriginal
+				&& linguagemVinculado == other.linguagemVinculado
+				&& Objects.equals(nomeArquivoOriginal, other.nomeArquivoOriginal)
 				&& Objects.equals(nomeArquivoVinculado, other.nomeArquivoVinculado);
 	}
 

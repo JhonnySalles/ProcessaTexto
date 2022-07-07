@@ -388,10 +388,10 @@ public class VinculoPagina {
 		this.naoVinculado = false;
 	}
 
-	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
+	public VinculoPagina(String originalNomePagina, String originalPathPagina, Integer originalPagina,
 			Integer originalPaginas, Boolean originalPaginaDupla, MangaPagina mangaPaginaOriginal,
 			Image imagemOriginal) {
-		this.id = id;
+		this.id = null;
 		this.originalNomePagina = originalNomePagina;
 		this.originalPathPagina = originalPathPagina;
 		this.originalPagina = originalPagina;

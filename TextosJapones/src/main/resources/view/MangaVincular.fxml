@@ -26,7 +26,7 @@
                      <children>
             		      <HBox alignment="CENTER_LEFT" spacing="10.0">
             		         <children>
-            		            <JFXTextField fx:id="txtBase" focusColor="#71afe5" labelFloat="true" promptText="Base" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                              <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" visibleRowCount="20" />
             		            <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
             		         </children>
             		         <opaqueInsets>

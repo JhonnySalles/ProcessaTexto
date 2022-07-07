@@ -4,6 +4,7 @@ import org.jisho.textosJapones.model.dao.impl.EstatisticaDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.MangaDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.ProcessarDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.RevisarDaoJDBC;
+import org.jisho.textosJapones.model.dao.impl.VincularDaoJDBC;
 import org.jisho.textosJapones.model.dao.impl.VocabularioDaoJDBC;
 import org.jisho.textosJapones.util.mysql.DB;
 
@@ -28,5 +29,10 @@ public class DaoFactory {
 	public static MangaDao createMangaDao() {
 		return new MangaDaoJDBC(DB.getConnection());
 	}
+	
+	public static VincularDao createVincularDao() {
+		return new VincularDaoJDBC(DB.getConnection());
+	}
+
 
 }

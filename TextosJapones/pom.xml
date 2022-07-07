@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.jisho</groupId>
@@ -44,29 +42,29 @@
 
 					<options>
 						<option>--add-opens</option>
-                        <option>javafx.graphics/javafx.css=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.base/com.sun.javafx.binding=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
-                        <option>--add-opens</option>
-                        <option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
-                        <option>--add-exports</option>
-                        <option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
-                        <option>--add-exports</option>
-                        <option>javafx.controls/com.sun.javafx.scene.control=com.jfoenix</option>
-                        <option>--add-exports</option>
-                        <option>javafx.base/com.sun.javafx.binding=com.jfoenix</option>
-                        <option>--add-exports</option>
-                        <option>javafx.graphics/com.sun.javafx.stage=com.jfoenix</option>
-                        <option>--add-exports</option>
-                        <option>javafx.base/com.sun.javafx.event=com.jfoenix</option>
+						<option>javafx.graphics/javafx.css=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.base/com.sun.javafx.binding=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+						<option>--add-opens</option>
+						<option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.controls/com.sun.javafx.scene.control=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.binding=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.graphics/com.sun.javafx.stage=com.jfoenix</option>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.event=com.jfoenix</option>
 					</options>
 				</configuration>
 			</plugin>
@@ -203,6 +201,20 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.8</version>
 		</dependency>
-		
+
+		<!-- Winrar -->
+		<dependency>
+			<groupId>com.github.junrar</groupId>
+			<artifactId>junrar</artifactId>
+			<version>7.5.2</version>
+		</dependency>
+
+		<!-- 7zip e Tar -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.21</version>
+		</dependency>
+
 	</dependencies>
 </project>
