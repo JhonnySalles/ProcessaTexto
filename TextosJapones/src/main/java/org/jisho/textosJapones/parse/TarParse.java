@@ -51,10 +51,10 @@ public class TarParse implements Parse {
 			entry = is.getNextTarEntry();
 		}
 
-		Collections.sort(mEntradas, new NaturalOrderComparator() {
+		Collections.sort(mEntradas, new NaturalOrderComparator<TarEntry>() {
 			@Override
-			public String stringValue(Object o) {
-				return ((TarEntry) o).entry.getName();
+			public String stringValue(TarEntry o) {
+				return o.entry.getName();
 			}
 		});
 	}

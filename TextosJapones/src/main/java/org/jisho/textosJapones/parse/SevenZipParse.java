@@ -36,26 +36,29 @@ public class SevenZipParse implements Parse {
 	public void parse(File file) throws IOException {
 		mEntrada = new ArrayList<>();
 		SevenZFile sevenZFile = new SevenZFile(file);
+		try {
+			SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+			while (entry != null) {
+				if (entry.isDirectory()) {
+					continue;
+				}
+				if (Util.isImage(entry.getName())) {
+					byte[] content = new byte[(int) entry.getSize()];
+					sevenZFile.read(content);
+					mEntrada.add(new SevenZEntry(entry, content));
+				}
+				entry = sevenZFile.getNextEntry();
+			}
 
-		SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-		while (entry != null) {
-			if (entry.isDirectory()) {
-				continue;
-			}
-			if (Util.isImage(entry.getName())) {
-				byte[] content = new byte[(int) entry.getSize()];
-				sevenZFile.read(content);
-				mEntrada.add(new SevenZEntry(entry, content));
-			}
-			entry = sevenZFile.getNextEntry();
+			Collections.sort(mEntrada, new NaturalOrderComparator<SevenZEntry>() {
+				@Override
+				public String stringValue(SevenZEntry o) {
+					return o.entry.getName();
+				}
+			});
+		} finally {
+			sevenZFile.close();
 		}
-
-		Collections.sort(mEntrada, new NaturalOrderComparator() {
-			@Override
-			public String stringValue(Object o) {
-				return ((SevenZEntry) o).entry.getName();
-			}
-		});
 	}
 
 	@Override

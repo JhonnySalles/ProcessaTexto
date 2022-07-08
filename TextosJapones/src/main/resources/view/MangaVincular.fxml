@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasVincularController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasVincularController">
    <children>          
 	  <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		   <children>
@@ -26,7 +26,7 @@
                      <children>
             		      <HBox alignment="CENTER_LEFT" spacing="10.0">
             		         <children>
-                              <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" visibleRowCount="20" />
+                              <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
             		            <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" />
             		         </children>
             		         <opaqueInsets>
@@ -42,6 +42,12 @@
                                  </children>
                               </VBox>
                               <JFXComboBox fx:id="cbLinguagemOrigem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <JFXComboBox fx:id="cbLinguagemVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                              <JFXButton fx:id="btnCarregarLegendas" buttonType="RAISED" onAction="#onBtnCarregarLegendas" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Carregar legendas" />
                            </children>
                         </HBox>
                      </children>
@@ -73,7 +79,6 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-                  <JFXComboBox fx:id="cbLinguagemVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
                   <JFXButton fx:id="btnRecarregar" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnRecarregar" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Recarregar">
                      <tooltip>
                         <Tooltip text="Recarregar" />

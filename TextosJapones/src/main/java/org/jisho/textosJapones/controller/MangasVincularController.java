@@ -43,6 +43,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
@@ -93,6 +94,9 @@ public class MangasVincularController implements Initializable {
 	private JFXButton btnRecarregar;
 
 	@FXML
+	private JFXButton btnCarregarLegendas;
+
+	@FXML
 	private JFXButton btnOrderAutomatico;
 
 	@FXML
@@ -133,6 +137,11 @@ public class MangasVincularController implements Initializable {
 
 	public MangasController getControllerPai() {
 		return controller;
+	}
+
+	@FXML
+	private void onBtnCarregarLegendas() {
+		carregarLegendas();
 	}
 
 	@FXML
@@ -237,6 +246,32 @@ public class MangasVincularController implements Initializable {
 		arquivoVinculado = null;
 		parseOriginal = null;
 		parseVinculado = null;
+	}
+
+	private Boolean carregarLegendas() {
+		if (cbBase.getSelectionModel().getSelectedItem() == null
+				|| cbBase.getSelectionModel().getSelectedItem().isBlank() || txtManga.getText().isEmpty()) {
+			AlertasPopup.AvisoModal("Aviso", "Necessário selecionar a base e o manga.");
+			return false;
+		}
+
+		MangaVolume volumeOriginal = service.selectVolume(cbBase.getSelectionModel().getSelectedItem(),
+				txtManga.getText(), spnVolume.getValue(), cbLinguagemOrigem.getSelectionModel().getSelectedItem());
+
+		MangaVolume volumeVinculado = service.selectVolume(cbBase.getSelectionModel().getSelectedItem(),
+				txtManga.getText(), spnVolume.getValue(), cbLinguagemVinculado.getSelectionModel().getSelectedItem());
+
+		vinculo.setVolumeOriginal(volumeOriginal);
+		vinculo.setVolumeVinculado(volumeVinculado);
+
+		if (volumeOriginal == null && volumeVinculado == null)
+			AlertasPopup.AvisoModal("Aviso", "Não encontrado nenhum item com as informações repassadas.");
+		else if (volumeOriginal == null)
+			AlertasPopup.AvisoModal("Aviso", "Manga original não encontrado.");
+		else if (volumeVinculado == null)
+			AlertasPopup.AvisoModal("Aviso", "Manga vinculado não encontrado.");
+
+		return volumeOriginal != null && volumeVinculado != null;
 	}
 
 	private Boolean selecionarArquivo() {
@@ -536,19 +571,20 @@ public class MangasVincularController implements Initializable {
 		return manga;
 	}
 
-	private void selecionaBase() {
+	private void selecionaBase(String base) {
 		autoCompleteManga.getSuggestions().clear();
 
-		if (cbBase.getSelectionModel().getSelectedItem() != null
-				&& !cbBase.getSelectionModel().getSelectedItem().isEmpty()) {
-			try {
-				List<String> mangas = service.getMangas(cbBase.getSelectionModel().getSelectedItem());
-				autoCompleteManga.getSuggestions().addAll(mangas);
-			} catch (ExcessaoBd e) {
-				e.printStackTrace();
-				System.out.println("Erro ao consultar as sugestões de mangas.");
-			}
+		if (base == null || base.isEmpty())
+			return;
+
+		try {
+			List<String> mangas = service.getMangas(cbBase.getSelectionModel().getSelectedItem());
+			autoCompleteManga.getSuggestions().addAll(mangas);
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			System.out.println("Erro ao consultar as sugestões de mangas.");
 		}
+
 	}
 
 	private void linkaCelulas() {
@@ -597,7 +633,31 @@ public class MangasVincularController implements Initializable {
 		}
 
 		cbBase.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-			System.out.println(newValue);
+			if (!newValue.isEmpty()) {
+				if (cbBase.getItems().isEmpty())
+					cbBase.setUnFocusColor(Color.RED);
+				else {
+					cbBase.setUnFocusColor(Color.web("#106ebe"));
+					if (cbBase.getItems().contains(newValue))
+						selecionaBase(newValue);
+				}
+			}
+		});
+
+		JFXAutoCompletePopup<String> autoCompletePopup = new JFXAutoCompletePopup<>();
+		autoCompletePopup.getSuggestions().addAll(cbBase.getItems());
+
+		autoCompletePopup.setSelectionHandler(event -> {
+			cbBase.setValue(event.getObject());
+		});
+
+		cbBase.getEditor().textProperty().addListener(observable -> {
+			autoCompletePopup.filter(item -> item.toLowerCase().contains(cbBase.getEditor().getText().toLowerCase()));
+			if (autoCompletePopup.getFilteredSuggestions().isEmpty() || cbBase.showingProperty().get()
+					|| cbBase.getEditor().getText().isEmpty())
+				autoCompletePopup.hide();
+			else
+				autoCompletePopup.show(cbBase.getEditor());
 		});
 
 		txtManga.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -615,6 +675,9 @@ public class MangasVincularController implements Initializable {
 		});
 
 		txtManga.textProperty().addListener(observable -> {
+			if (cbBase.getItems().isEmpty())
+				cbBase.setUnFocusColor(Color.RED);
+
 			autoCompleteManga.filter(string -> string.toLowerCase().contains(txtManga.getText().toLowerCase()));
 			if (autoCompleteManga.getFilteredSuggestions().isEmpty() || txtManga.getText().isEmpty())
 				autoCompleteManga.hide();

@@ -29,7 +29,7 @@ public class VincularDaoJDBC implements VincularDao {
 
 	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
-			+ " AND Table_Name LIKE '%%_volumes%%' AND Table_Name GROUP BY Tabela ";
+			+ " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ";
 
 	final private String SELECT_MANGAS = "SELECT Manga FROM %s_volumes GROUP BY manga ORDER BY manga";
 

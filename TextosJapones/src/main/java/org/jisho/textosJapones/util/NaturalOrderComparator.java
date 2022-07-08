@@ -22,7 +22,7 @@ misrepresented as being the original software.
 
 import java.util.*;
 
-public abstract class NaturalOrderComparator implements Comparator {
+public abstract class NaturalOrderComparator<T> implements Comparator<T> {
 	int compareRight(String a, String b) {
 		int bias = 0;
 		int ia = 0;
@@ -55,9 +55,9 @@ public abstract class NaturalOrderComparator implements Comparator {
 		}
 	}
 
-	public abstract String stringValue(Object o);
+	public abstract String stringValue(T o);
 
-	public int compare(Object o1, Object o2) {
+	public int compare(T o1, T o2) {
 		String a = stringValue(o1);
 		String b = stringValue(o2);
 

@@ -165,6 +165,13 @@
 	-fx-text-fill: white;
 }
 
+.jfx-autocomplete-popup .list-cell {
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: #bfbfbf;
+	-fx-background-color: #000000;
+}
+
+
 /*----------  Titulo background ----------*/
 .tituloBackground {
 	-fx-background-color: linear-gradient(to right top, #0277BD, #1A237E);
