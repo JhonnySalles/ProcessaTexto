@@ -470,6 +470,33 @@ public class VinculoPagina {
 		this.isImagemDupla = imagemDupla;
 		this.isNaoVinculado = naoVinculado;
 	}
+	
+	public VinculoPagina(VinculoPagina manga) {
+		this.id = null;
+		this.originalNomePagina = manga.originalNomePagina;
+		this.originalPathPagina = manga.originalPathPagina;
+		this.originalPagina = manga.originalPagina;
+		this.originalPaginas = manga.originalPaginas;
+		this.vinculadoDireitaNomePagina = "";
+		this.vinculadoDireitaPathPagina = "";
+		this.vinculadoDireitaPagina = PAGINA_VAZIA;
+		this.vinculadoDireitaPaginas = 0;
+		this.vinculadoEsquerdaNomePagina = "";
+		this.vinculadoEsquerdaPathPagina = "";
+		this.vinculadoEsquerdaPagina = PAGINA_VAZIA;
+		this.vinculadoEsquerdaPaginas = 0;
+		this.mangaPaginaOriginal = manga.mangaPaginaOriginal;
+		this.mangaPaginaDireita = null;
+		this.mangaPaginaEsquerda = null;
+		this.imagemOriginal = manga.imagemOriginal;
+		this.imagemVinculadoDireita = null;
+		this.imagemVinculadoEsquerda = null;
+		this.isOriginalPaginaDupla = manga.isOriginalPaginaDupla;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = false;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = false;
+	}
 
 	@Override
 	public String toString() {

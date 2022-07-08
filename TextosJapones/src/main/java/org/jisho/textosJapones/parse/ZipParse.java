@@ -1,40 +1,42 @@
 package org.jisho.textosJapones.parse;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.jisho.textosJapones.util.Util;
 
-import java.util.zip.ZipEntry;
-
 public class ZipParse implements Parse {
 
-	private ZipFile mZipFile;
-	private ArrayList<ZipEntry> mEntries;
-	private ArrayList<ZipEntry> mSubtitles;
+	private ZipFile mArquivoZip;
+	private ArrayList<ZipEntry> mEntrada;
+	private ArrayList<ZipEntry> mLegendas;
 
 	@Override
 	public void parse(File file) throws IOException {
-		mZipFile = new ZipFile(file.getAbsolutePath());
-		mEntries = new ArrayList<ZipEntry>();
+		mArquivoZip = new ZipFile(file.getAbsolutePath());
+		mEntrada = new ArrayList<ZipEntry>();
 
-		Enumeration<? extends ZipEntry> e = mZipFile.entries();
+		Enumeration<? extends ZipEntry> e = mArquivoZip.entries();
 		while (e.hasMoreElements()) {
 			ZipEntry ze = e.nextElement();
 			if (!ze.isDirectory() && Util.isImage(ze.getName())) {
-				mEntries.add(ze);
+				mEntrada.add(ze);
 			}
 		}
 
-		Collections.sort(mEntries, new Comparator<ZipEntry>() {
+		Collections.sort(mEntrada, new Comparator<ZipEntry>() {
 			public int compare(ZipEntry a, ZipEntry b) {
 				return a.getName().compareTo(b.getName());
 			}
@@ -42,47 +44,85 @@ public class ZipParse implements Parse {
 	}
 
 	@Override
-	public int numPages() {
-		return mEntries.size();
+	public int getSize() {
+		return mEntrada.size();
 	}
 
 	@Override
-	public InputStream getPage(int num) throws IOException {
-		return mZipFile.getInputStream(mEntries.get(num));
+	public InputStream getPagina(int num) throws IOException {
+		return mArquivoZip.getInputStream(mEntrada.get(num));
 	}
 
 	@Override
-	public String getType() {
+	public String getTipo() {
 		return "zip";
 	}
 
 	@Override
-	public void destroy() throws IOException {
-		mZipFile.close();
+	public void destroi() throws IOException {
+		mArquivoZip.close();
 	}
 
 	@Override
-	public List<String> getSubtitles() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getLegenda() {
+		List<String> legendas = new ArrayList<String>();
+		mLegendas.forEach((it) -> {
+			InputStream sub;
+			BufferedReader reader;
+			try {
+				sub = mArquivoZip.getInputStream(it);
+				reader = new BufferedReader(new InputStreamReader(sub, "UTF-8"));
+				StringBuilder content = new StringBuilder();
+
+				var line = reader.readLine();
+				while (line != null) {
+					content.append(line);
+					line = reader.readLine();
+				}
+
+				legendas.add(content.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		return legendas;
 	}
 
 	@Override
-	public Map<String, Integer> getSubtitlesNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getLegendaNomes() {
+		Map<String, Integer> arquivos = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mLegendas.size(); i++) {
+			String path = Util.getNome(getName(mLegendas.get(i)));
+			if (!path.isEmpty() && !arquivos.containsKey(path))
+				arquivos.put(path, i);
+		}
+
+		return arquivos;
+	}
+
+	private String getName(ZipEntry entry) {
+		return entry.getName();
 	}
 
 	@Override
-	public String getPagePath(Integer num) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPaginaPasta(Integer num) {
+		if (mEntrada.size() < num)
+			return null;
+		return getName(mEntrada.get(num));
 	}
 
 	@Override
-	public Map<String, Integer> getPagePaths() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getPastas() {
+		Map<String, Integer> pastas = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mEntrada.size(); i++) {
+			String path = Util.getPasta(getName(mEntrada.get(i)));
+			if (!path.isEmpty() && !pastas.containsKey(path))
+				pastas.put(path, i);
+		}
+
+		return pastas;
 	}
 
 }

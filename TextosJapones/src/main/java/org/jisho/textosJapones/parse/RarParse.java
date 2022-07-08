@@ -1,13 +1,16 @@
 package org.jisho.textosJapones.parse;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,56 +22,51 @@ import com.github.junrar.rarfile.FileHeader;
 
 public class RarParse implements Parse {
 
-	private ArrayList<FileHeader> mHeaders = new ArrayList<FileHeader>();
-	private Archive mArchive;
-	private File mCacheDir;
-	private Boolean mSolidFileExtracted = false;
-	private ArrayList<FileHeader> mSubtitles = new ArrayList<FileHeader>();
+	private Archive mArquivo;
+	private File mPastaCache;
+	private ArrayList<FileHeader> mCabecalhos = new ArrayList<FileHeader>();
+	private ArrayList<FileHeader> mLegendas = new ArrayList<FileHeader>();
 
 	@Override
 	public void parse(File file) throws IOException {
 		try {
-			mArchive = new Archive(file);
+			mArquivo = new Archive(file);
 		} catch (RarException e) {
 			throw new IOException("unable to open archive");
 		}
 
-		FileHeader header = mArchive.nextFileHeader();
-		while (header != null) {
-			if (!header.isDirectory()) {
-				String name = getName(header);
+		FileHeader cabecalho = mArquivo.nextFileHeader();
+		while (cabecalho != null) {
+			if (!cabecalho.isDirectory()) {
+				String name = getName(cabecalho);
 				if (Util.isImage(name)) {
-					mHeaders.add(header);
+					mCabecalhos.add(cabecalho);
 				}
 			}
 
-			header = mArchive.nextFileHeader();
+			cabecalho = mArquivo.nextFileHeader();
 		}
 
-		Collections.sort(mHeaders, new Comparator<FileHeader>() {
+		Collections.sort(mCabecalhos, new Comparator<FileHeader>() {
 			public int compare(FileHeader a, FileHeader b) {
 				return getName(a).compareTo(getName(b));
 			}
 		});
 	}
 
-	private String getName(FileHeader header) {
-		return header.getFileName();
+	@Override
+	public int getSize() {
+		return mCabecalhos.size();
 	}
 
 	@Override
-	public int numPages() {
-		return mHeaders.size();
-	}
-
-	@Override
-	public InputStream getPage(int num) throws IOException {
+	public InputStream getPagina(int num) throws IOException {
 		try {
-			FileHeader header = mHeaders.get(num);
+			FileHeader cabecalho = mCabecalhos.get(num);
 
-			if (mCacheDir != null) {
-				String name = getName(header);
-				File cacheFile = new File(mCacheDir, Util.MD5(name));
+			if (mPastaCache != null) {
+				String name = getName(cabecalho);
+				File cacheFile = new File(mPastaCache, Util.MD5(name));
 
 				if (cacheFile.exists()) {
 					return new FileInputStream(cacheFile);
@@ -78,7 +76,7 @@ public class RarParse implements Parse {
 					if (!cacheFile.exists()) {
 						FileOutputStream os = new FileOutputStream(cacheFile);
 						try {
-							mArchive.extractFile(header, os);
+							mArquivo.extractFile(cabecalho, os);
 						} catch (Exception e) {
 							os.close();
 							cacheFile.delete();
@@ -89,61 +87,99 @@ public class RarParse implements Parse {
 				}
 				return new FileInputStream(cacheFile);
 			}
-			return mArchive.getInputStream(header);
+			return mArquivo.getInputStream(cabecalho);
 		} catch (RarException e) {
 			throw new IOException("unable to parse rar");
 		}
 	}
 
 	@Override
-	public void destroy() throws IOException {
-		if (mCacheDir != null) {
-			for (File f : mCacheDir.listFiles()) {
+	public void destroi() throws IOException {
+		if (mPastaCache != null) {
+			for (File f : mPastaCache.listFiles()) {
 				f.delete();
 			}
-			mCacheDir.delete();
+			mPastaCache.delete();
 		}
-		mArchive.close();
+		mArquivo.close();
 	}
 
 	@Override
-	public String getType() {
+	public String getTipo() {
 		return "rar";
 	}
 
 	public void setCacheDirectory(File cacheDirectory) {
-		mCacheDir = cacheDirectory;
-		if (!mCacheDir.exists()) {
-			mCacheDir.mkdir();
+		mPastaCache = cacheDirectory;
+		if (!mPastaCache.exists()) {
+			mPastaCache.mkdir();
 		}
-		if (mCacheDir.listFiles() != null) {
-			for (File f : mCacheDir.listFiles()) {
+		if (mPastaCache.listFiles() != null) {
+			for (File f : mPastaCache.listFiles()) {
 				f.delete();
 			}
 		}
 	}
 
 	@Override
-	public List<String> getSubtitles() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getLegenda() {
+		List<String> legendas = new ArrayList<String>();
+		mLegendas.forEach((it) -> {
+			InputStream sub;
+			BufferedReader reader;
+			try {
+				sub = mArquivo.getInputStream(it);
+				reader = new BufferedReader(new InputStreamReader(sub, "UTF-8"));
+				StringBuilder content = new StringBuilder();
+
+				var line = reader.readLine();
+				while (line != null) {
+					content.append(line);
+					line = reader.readLine();
+				}
+
+				legendas.add(content.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		return legendas;
 	}
 
 	@Override
-	public Map<String, Integer> getSubtitlesNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getLegendaNomes() {
+		Map<String, Integer> arquivos = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mLegendas.size(); i++) {
+			String path = Util.getNome(getName(mLegendas.get(i)));
+			if (!path.isEmpty() && !arquivos.containsKey(path))
+				arquivos.put(path, i);
+		}
+
+		return arquivos;
+	}
+
+	private String getName(FileHeader header) {
+		return header.getFileName();
 	}
 
 	@Override
-	public String getPagePath(Integer num) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPaginaPasta(Integer num) {
+		if (mCabecalhos.size() < num)
+			return null;
+		return getName(mCabecalhos.get(num));
 	}
 
 	@Override
-	public Map<String, Integer> getPagePaths() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getPastas() {
+		Map<String, Integer> pastas = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mCabecalhos.size(); i++) {
+			String path = Util.getPasta(getName(mCabecalhos.get(i)));
+			if (!path.isEmpty() && !pastas.containsKey(path))
+				pastas.put(path, i);
+		}
+
+		return pastas;
 	}
 }

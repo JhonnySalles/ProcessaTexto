@@ -27,7 +27,7 @@ public class VincularDaoJDBC implements VincularDao {
 			+ " AND Table_Name LIKE '%%_vinculo%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
 
 	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
-			+ " FROM information_schema.tables WHERE table_schema = '%s' " 	
+			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_volumes%%' AND Table_Name GROUP BY Tabela ";
 
 	final private String CREATE_TABELA_VINCULO = "CREATE TABLE %s_vinculo (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
@@ -75,14 +75,28 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  CONSTRAINT %s_vinculo_nao_vinculado_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
-	final private static String INSERT = "INSERT IGNORE INTO Vinculo (kanji, leitura, tipo, quantidade, percentual, media, percMedia, corSequencial) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	final private static String UPDATE = "UPDATE Vinculo SET tipo = ?, quantidade = ?, percentual = ?, media = ?, percMedia = ?, corSequencial = ? WHERE kanji = ? AND leitura = ? ;";
-	final private static String DELETE = "DELETE FROM Vinculo WHERE kanji = ? AND leitura = ? ;";
-	final private static String SELECT = "SELECT kanji, leitura, tipo, quantidade, percentual, media, percMedia, corSequencial FROM Vinculo WHERE kanji = ? AND leitura = ? ;";
-	final private static String SELECT_KANJI = "SELECT kanji, leitura, tipo, quantidade, percentual, media, percMedia, corSequencial FROM Vinculo WHERE kanji = ? ;";
-	final private static String SELECT_ALL = "SELECT kanji, leitura, tipo, quantidade, percentual, media, percMedia, corSequencial FROM Vinculo WHERE 1 > 0;";
+	final private static String INSERT_VINCULO = "INSERT INTO %s_vinculo (original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+	final private static String UPDATE_VINCULO = "UPDATE %s_vinculo SET original_arquivo = ?, original_linguagem = ?, id_volume_original = ?, vinculado_arquivo = ?, vinculado_linguagem = ?, id_volume_vinculado = ?, ultima_alteracao = ? WHERE id = ? ;";
+	final private static String DELETE_VINCULO = "DELETE FROM %s_vinculo WHERE id = ? ;";
+	final private static String SELECT_VINCULO = "SELECT id, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo WHERE original_arquivo = ? AND original_linguagem = ? AND vinculado_arquivo = ? AND vinculado_linguagem = ? ;";
 
-	final private static String PESQUISA = "SELECT sequencia, word, readInfo, frequency, tabela FROM words_kanji_info WHERE word LIKE ";
+	final private static String INSERT_PAGINA = "INSERT IGNORE INTO %s_vinculo_pagina (id_vinculo, original_nome, original_pasta, original_pagina, original_paginas, original_pagina_dupla, id_original_pagina, "
+			+ "  vinculado_direita_nome, vinculado_direita_pasta, vinculado_direita_pagina, vinculado_direita_paginas, vinculado_direita_pagina_dupla, id_vinculado_direita_pagina, "
+			+ "  vinculado_esquerda_nome, vinculado_esquerda_pasta, vinculado_esquerda_pagina, vinculado_esquerda_paginas, vinculado_esquerda_pagina_dupla, id_vinculado_esquerda_paginas, "
+			+ "  imagem_dupla) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+	final private static String UPDATE_PAGINA = "UPDATE %s_vinculo_pagina SET id_vinculo = ?, original_nome = ?, original_pasta = ?, original_pagina = ?, original_paginas = ?, original_pagina_dupla = ?, id_original_pagina = ?, "
+			+ "  vinculado_direita_nome = ?, vinculado_direita_pasta = ?, vinculado_direita_pagina = ?, vinculado_direita_paginas = ?, vinculado_direita_pagina_dupla = ?, id_vinculado_direita_pagina = ?,"
+			+ "  vinculado_esquerda_nome = ?, vinculado_esquerda_pasta = ?, vinculado_esquerda_pagina = ?, vinculado_esquerda_paginas = ?, vinculado_esquerda_pagina_dupla = ?, id_vinculado_esquerda_paginas = ?,"
+			+ "  imagem_dupla = ? WHERE id = ? ;";
+	final private static String DELETE_PAGINA = "DELETE FROM %s_vinculo_pagina WHERE id_vinculo = ? ;";
+	final private static String SELECT_PAGINA = "SELECT id, original_nome, original_pasta, original_pagina, original_paginas, original_pagina_dupla, id_original_pagina, \n"
+			+ "  vinculado_direita_nome, vinculado_direita_pasta, vinculado_direita_pagina, vinculado_direita_paginas, vinculado_direita_pagina_dupla, id_vinculado_direita_pagina,\n"
+			+ "  vinculado_esquerda_nome, vinculado_esquerda_pasta, vinculado_esquerda_pagina, vinculado_esquerda_paginas, vinculado_esquerda_pagina_dupla, id_vinculado_esquerda_paginas,\n"
+			+ "  imagem_dupla FROM %s_vinculo_pagina WHERE id_vinculo = ? ;";
+
+	final private static String INSERT_PAGINA_NAO_VINCULADA = "INSERT IGNORE INTO Vinculo (id_vinculo, nome, pasta, pagina, paginas, pagina_dupla) VALUES (?, ?, ?, ?, ?, ?);";
+	final private static String DELETE_PAGINA_NAO_VINCULADA = "DELETE FROM %s_vinculo_pagina_nao_vinculado WHERE id_vinculo = ? ;";
+	final private static String SELECT_PAGINA_NAO_VINCULADA = "SELECT id, id_vinculo, nome, pasta, pagina, paginas, pagina_dupla FROM Vinculo WHERE id_vinculo = ? ;";
 
 	public VincularDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -136,7 +150,7 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(SELECT);
+			//st = conn.prepareStatement(SELECT);
 			/*
 			 * st.setString(1, kanji); st.setString(2, leitura);
 			 */
@@ -164,7 +178,7 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(SELECT);
+			//st = conn.prepareStatement(SELECT);
 			/*
 			 * st.setString(1, kanji); st.setString(2, leitura);
 			 */
@@ -190,7 +204,7 @@ public class VincularDaoJDBC implements VincularDao {
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(DELETE);
+			//st = conn.prepareStatement(DELETE);
 
 			// st.setString(1, obj.getKanji());
 			// st.setString(2, obj.getLeitura());
@@ -304,8 +318,7 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(
-					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1)));
+			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1)));
 			rs = st.executeQuery();
 
 			List<String> list = new ArrayList<>();

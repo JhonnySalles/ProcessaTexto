@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
+import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
@@ -18,8 +20,8 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.parse.Parse;
-import org.jisho.textosJapones.parse.ParseFactory;
 import org.jisho.textosJapones.util.Util;
+import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -104,6 +106,9 @@ public class MangasVincularController implements Initializable {
 	@FXML
 	private ListView<VinculoPagina> lvPaginasVinculadas;
 
+	@FXML
+	private ListView<VinculoPagina> lvPaginasNaoVinculadas;
+
 	private File arquivoOriginal;
 	private File arquivoVinculado;
 	private Parse parseOriginal;
@@ -131,15 +136,24 @@ public class MangasVincularController implements Initializable {
 		arquivoOriginal = selectFile("Selecione o arquivo de origem", pasta);
 		if (!selecionarArquivo())
 			carregarArquivo(arquivoOriginal, true);
+		else
+			carregaDados(arquivoOriginal, true);
 	}
 
 	@FXML
 	private void onBtnVinculado() {
+		if (arquivoOriginal == null) {
+			AlertasPopup.AvisoModal("Selecione o arquivo original", "Necessário informar o arquivo original primeiro");
+			return;
+		}
+
 		String pasta = arquivoVinculado != null ? arquivoVinculado.getPath()
 				: (arquivoOriginal != null ? arquivoOriginal.getPath() : null);
-		arquivoVinculado = selectFile("Selecione o arquivo de origem", pasta);
+		arquivoVinculado = selectFile("Selecione o arquivo vinculado", pasta);
 		if (!selecionarArquivo())
 			carregarArquivo(arquivoVinculado, false);
+		else
+			carregaDados(arquivoOriginal, false);
 	}
 
 	@FXML
@@ -151,6 +165,7 @@ public class MangasVincularController implements Initializable {
 			service.delete(cbBase.getSelectionModel().getSelectedItem(), vinculo);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
+			AlertasPopup.ErroModal("Erro ao deletar", e.getMessage());
 		}
 	}
 
@@ -172,12 +187,12 @@ public class MangasVincularController implements Initializable {
 
 	@FXML
 	private void onBtnOrderPaginaDupla() {
-
+		service.ordenarPaginaDupla(vinculado, naoVinculado, ckbPaginaDuplaCalculada.isSelected());
 	}
 
 	@FXML
 	private void onBtnOrderPaginaUnica() {
-
+		service.ordenarPaginaSimples(vinculado, naoVinculado);
 	}
 
 	@FXML
@@ -228,6 +243,7 @@ public class MangasVincularController implements Initializable {
 			}
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
+			AlertasPopup.ErroModal("Erro ao abrir o arquivo", e.getMessage());
 		}
 		return false;
 	}
@@ -238,7 +254,7 @@ public class MangasVincularController implements Initializable {
 		Boolean dupla = false;
 		String md5 = "";
 		try {
-			imput = parse.getPage(pagina);
+			imput = parse.getPagina(pagina);
 			md5 = Util.MD5(imput);
 			image = new Image(imput);
 			dupla = (image.getWidth() / image.getHeight()) > 0.9;
@@ -250,50 +266,98 @@ public class MangasVincularController implements Initializable {
 	}
 
 	private void carregarArquivo(File arquivo, Boolean isManga) {
-		Parse parse = ParseFactory.create(arquivo);
+		Parse parse = Util.criaParse(arquivo);
 
 		if (parse != null) {
 			naoVinculado.clear();
 
 			if (isManga) {
 				txtArquivoOriginal.setText(arquivo.getName());
+				Util.destroiParse(parseOriginal);
 				parseOriginal = parse;
 				parseVinculado = null;
 				txtArquivoVinculado.setText("");
 
 				ArrayList<VinculoPagina> list = new ArrayList<VinculoPagina>();
-				for (int x = 0; x <= parse.numPages(); x++) {
-					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
+				for (int x = 0; x <= parseOriginal.getSize(); x++) {
+					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal, x);
 					Pair<Boolean, String> detalhe = image.getValue();
-					list.add(new VinculoPagina(Util.getNomeDaPasta(parse.getPagePath(x)),
-							Util.getPasta(parse.getPagePath(x)), x, parse.numPages(), detalhe.getKey(),
-							findPagina(parse.getPagePath(x), detalhe.getValue()), image.getKey()));
+					list.add(new VinculoPagina(Util.getNome(parseOriginal.getPaginaPasta(x)),
+							Util.getPasta(parseOriginal.getPaginaPasta(x)), x, parse.getSize(), detalhe.getKey(),
+							findPagina(parseOriginal.getPaginaPasta(x), detalhe.getValue(), x), image.getKey()));
 				}
 
 				vinculado = FXCollections.observableArrayList(list);
 				lvPaginasVinculadas.setItems(vinculado);
 			} else {
 				txtArquivoVinculado.setText(arquivo.getName());
+				Util.destroiParse(parseVinculado);
 				parseVinculado = parse;
 
-				for (int x = 0; x <= parse.numPages(); x++) {
-					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
+				for (int x = 0; x <= parseVinculado.getSize(); x++) {
+					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado, x);
 					Pair<Boolean, String> detalhe = image.getValue();
 
 					if (x < vinculado.size()) {
 						VinculoPagina item = vinculado.get(x);
 						item.limparVinculado();
 						item.setVinculadoEsquerdaPagina(x);
-						item.setVinculadoEsquerdaNomePagina(Util.getNomeDaPasta(parse.getPagePath(x)));
-						item.setVinculadoEsquerdaPathPagina(Util.getPasta(parse.getPagePath(x)));
-						item.setVinculadoEsquerdaPaginas(parse.numPages());
-						item.setVinculadoEsquerdaPaginaDupla(detalhe.getKey());
+						item.setVinculadoEsquerdaNomePagina(Util.getNome(parseVinculado.getPaginaPasta(x)));
+						item.setVinculadoEsquerdaPathPagina(Util.getPasta(parseVinculado.getPaginaPasta(x)));
+						item.setVinculadoEsquerdaPaginas(parseVinculado.getSize());
+						item.isVinculadoEsquerdaPaginaDupla = detalhe.getKey();
 						item.setImagemVinculadoEsquerda(image.getKey());
-						item.setMangaPaginaEsquerda(findPagina(parse.getPagePath(x), detalhe.getValue()));
+						item.setMangaPaginaEsquerda(
+								findPagina(parseVinculado.getPaginaPasta(x), detalhe.getValue(), x));
 					} else
-						naoVinculado.add(new VinculoPagina(Util.getNomeDaPasta(parse.getPagePath(x)),
-								Util.getPasta(parse.getPagePath(x)), x, parse.numPages(), detalhe.getKey(),
-								findPagina(parse.getPagePath(x), detalhe.getValue()), image.getKey(), true));
+						naoVinculado.add(new VinculoPagina(Util.getNome(parseVinculado.getPaginaPasta(x)),
+								Util.getPasta(parseVinculado.getPaginaPasta(x)), x, parseVinculado.getSize(),
+								detalhe.getKey(), findPagina(parseVinculado.getPaginaPasta(x), detalhe.getValue(), x),
+								image.getKey(), true));
+				}
+			}
+		}
+	}
+
+	private void carregaDados(File arquivo, Boolean isManga) {
+		if (isManga) {
+			Util.destroiParse(parseOriginal);
+			parseOriginal = Util.criaParse(arquivo);
+		} else {
+			Util.destroiParse(parseVinculado);
+			parseVinculado = Util.criaParse(arquivo);
+
+		}
+
+		for (VinculoPagina pagina : vinculado) {
+			if (isManga) {
+				Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal, pagina.getOriginalPagina());
+				pagina.isOriginalPaginaDupla = image.getValue().getKey();
+				pagina.setImagemOriginal(image.getKey());
+			} else {
+				if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+							pagina.getVinculadoEsquerdaPagina());
+					pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+					pagina.setImagemVinculadoEsquerda(image.getKey());
+				}
+
+				if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
+					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+							pagina.getVinculadoDireitaPagina());
+					pagina.isVinculadoDireitaPaginaDupla = image.getValue().getKey();
+					pagina.setImagemVinculadoDireita(image.getKey());
+				}
+			}
+		}
+
+		if (!isManga) {
+			for (VinculoPagina pagina : naoVinculado) {
+				if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+							pagina.getVinculadoEsquerdaPagina());
+					pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+					pagina.setImagemVinculadoEsquerda(image.getKey());
 				}
 			}
 		}
@@ -317,7 +381,7 @@ public class MangasVincularController implements Initializable {
 			service.salvar(cbBase.getSelectionModel().getSelectedItem(), vinculo);
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			System.out.println("Erro ao gravar");
+			AlertasPopup.ErroModal("Erro ao salvar", e.getMessage());
 		}
 	}
 
@@ -335,9 +399,111 @@ public class MangasVincularController implements Initializable {
 		return fileChooser.showOpenDialog(null);
 	}
 
-	private MangaPagina findPagina(String caminho, String hash) {
+	private Boolean isExtra = false;
+	private Float capitulo = -1f;
+
+	private MangaPagina findPagina(String caminho, String hash, Integer pagina) {
 		MangaVolume volume = vinculo.getVolumeOriginal();
-		return null;
+		MangaPagina manga = null;
+
+		isExtra = false;
+		capitulo = -1f;
+		String arquivo = Util.getNome(caminho);
+		String pasta = Util.getPasta(caminho).toLowerCase();
+		if (pasta.contains("capítulo"))
+			capitulo = Float.valueOf(pasta.substring(pasta.indexOf("capítulo")).replaceAll("[^\\d.]", ""));
+		else if (pasta.contains("capitulo"))
+			capitulo = Float.valueOf(pasta.substring(pasta.indexOf("capitulo")).replaceAll("[^\\d.]", ""));
+		else if (pasta.contains("extra")) {
+			capitulo = Float.valueOf(pasta.substring(pasta.indexOf("extra")).replaceAll("[^\\d.]", ""));
+			isExtra = true;
+		}
+
+		if (capitulo > -1) {
+			List<MangaCapitulo> capitulos = volume.getCapitulos().stream()
+					.filter((it) -> it.getCapitulo().compareTo(capitulo) == 0 && it.isExtra() == isExtra)
+					.collect(Collectors.toList());
+
+			Optional<MangaCapitulo> item = capitulos.stream()
+					.filter((it) -> it.getPaginas().stream().anyMatch((pg) -> pg.getHash().equalsIgnoreCase(hash)))
+					.findFirst();
+
+			if (item.isPresent())
+				manga = item.get().getPaginas().stream().filter((it) -> it.getHash().equalsIgnoreCase(hash)).findFirst()
+						.get();
+
+			if (manga == null) {
+				item = capitulos.stream().filter(
+						(it) -> it.getPaginas().stream().anyMatch((pg) -> pg.getNomePagina().equalsIgnoreCase(arquivo)))
+						.findFirst();
+
+				if (item.isPresent())
+					manga = item.get().getPaginas().stream()
+							.filter((it) -> it.getNomePagina().equalsIgnoreCase(arquivo)).findFirst().get();
+			}
+
+			if (manga == null) {
+				item = capitulos.stream().filter(
+						(it) -> it.getPaginas().stream().anyMatch((pg) -> pg.getPagina().compareTo(pagina) == 0))
+						.findFirst();
+
+				if (item.isPresent())
+					manga = item.get().getPaginas().stream().filter((it) -> it.getPagina().compareTo(pagina) == 0)
+							.findFirst().get();
+			}
+
+		} else {
+			boolean parar = false;
+			for (MangaCapitulo cap : volume.getCapitulos()) {
+				for (MangaPagina pag : cap.getPaginas()) {
+					if (pag.getHash().equalsIgnoreCase(hash)) {
+						manga = pag;
+						parar = true;
+						break;
+					}
+					if (parar)
+						break;
+				}
+				if (parar)
+					break;
+			}
+
+			if (manga == null) {
+				parar = false;
+				for (MangaCapitulo cap : volume.getCapitulos()) {
+					for (MangaPagina pag : cap.getPaginas()) {
+						if (pag.getNomePagina().equalsIgnoreCase(arquivo)) {
+							manga = pag;
+							parar = true;
+							break;
+						}
+						if (parar)
+							break;
+					}
+					if (parar)
+						break;
+				}
+			}
+
+			if (manga == null) {
+				parar = false;
+				for (MangaCapitulo cap : volume.getCapitulos()) {
+					for (MangaPagina pag : cap.getPaginas()) {
+						if (pag.getPagina().compareTo(pagina) == 0) {
+							manga = pag;
+							parar = true;
+							break;
+						}
+						if (parar)
+							break;
+					}
+					if (parar)
+						break;
+				}
+			}
+		}
+
+		return manga;
 	}
 
 	private void linkaCelulas() {
@@ -353,8 +519,8 @@ public class MangasVincularController implements Initializable {
 							setText(null);
 							setGraphic(null);
 						} else {
-							FXMLLoader mLLoader = new FXMLLoader(MangaVincularLineController.getFxmlLocate());
-							MangaVincularLineController controller = mLLoader.getController();
+							FXMLLoader mLLoader = new FXMLLoader(MangaVincularCelulaController.getFxmlLocate());
+							MangaVincularCelulaController controller = mLLoader.getController();
 
 							try {
 								mLLoader.load();
@@ -382,7 +548,7 @@ public class MangasVincularController implements Initializable {
 			cbBase.getItems().setAll(service.getTabelas());
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
-			System.out.println("Erro ao carregar as tabelas.");
+			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}
 
 		cbBase.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {

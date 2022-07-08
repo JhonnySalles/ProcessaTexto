@@ -2,13 +2,18 @@ package org.jisho.textosJapones.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 import org.jisho.textosJapones.model.enums.Api;
+import org.jisho.textosJapones.parse.Parse;
+import org.jisho.textosJapones.parse.ParseFactory;
+import org.jisho.textosJapones.parse.RarParse;
 
 public class Util {
 
@@ -45,6 +50,29 @@ public class Util {
 			break;
 		}
 		return next;
+	}
+
+	private static String PASTA_CACHE = new File(".").getAbsolutePath() + "/cache/";
+	private static Random random = new Random();
+
+	public static Parse criaParse(File arquivo) {
+		Parse parse = ParseFactory.create(arquivo);
+		if (parse instanceof RarParse)
+			((RarParse) parse).setCacheDirectory(new File(PASTA_CACHE, arquivo.getName() + random.nextInt(1000)));
+
+		return parse;
+	}
+
+	public static void destroiParse(Parse parse) {
+		if (parse == null)
+			return;
+
+		if (parse instanceof RarParse)
+			try {
+				((RarParse) parse).destroi();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public static Boolean isJson(String filename) {
@@ -132,7 +160,7 @@ public class Util {
 		}
 	}
 
-	public static String getNomeDaPasta(String path) {
+	public static String getNome(String path) {
 		String name = path;
 		if (path.contains("/"))
 			name = path.substring(path.lastIndexOf("/"), path.length());

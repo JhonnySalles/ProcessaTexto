@@ -1,13 +1,16 @@
 package org.jisho.textosJapones.parse;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +21,8 @@ import org.jisho.textosJapones.util.Util;
 
 public class TarParse implements Parse {
 
-	private List<TarEntry> mEntries;
+	private List<TarEntry> mEntradas;
+	private List<TarEntry> mLegendas;
 
 	private class TarEntry {
 		final TarArchiveEntry entry;
@@ -32,7 +36,7 @@ public class TarParse implements Parse {
 
 	@Override
 	public void parse(File file) throws IOException {
-		mEntries = new ArrayList<>();
+		mEntradas = new ArrayList<>();
 
 		BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
 		TarArchiveInputStream is = new TarArchiveInputStream(fis);
@@ -42,12 +46,12 @@ public class TarParse implements Parse {
 				continue;
 			}
 			if (Util.isImage(entry.getName())) {
-				mEntries.add(new TarEntry(entry, Util.toByteArray(is)));
+				mEntradas.add(new TarEntry(entry, Util.toByteArray(is)));
 			}
 			entry = is.getNextTarEntry();
 		}
 
-		Collections.sort(mEntries, new NaturalOrderComparator() {
+		Collections.sort(mEntradas, new NaturalOrderComparator() {
 			@Override
 			public String stringValue(Object o) {
 				return ((TarEntry) o).entry.getName();
@@ -56,47 +60,84 @@ public class TarParse implements Parse {
 	}
 
 	@Override
-	public int numPages() {
-		return mEntries.size();
+	public int getSize() {
+		return mEntradas.size();
 	}
 
 	@Override
-	public InputStream getPage(int num) throws IOException {
-		return new ByteArrayInputStream(mEntries.get(num).bytes);
+	public InputStream getPagina(int num) throws IOException {
+		return new ByteArrayInputStream(mEntradas.get(num).bytes);
 	}
 
 	@Override
-	public String getType() {
+	public String getTipo() {
 		return "tar";
 	}
 
 	@Override
-	public void destroy() throws IOException {
+	public void destroi() throws IOException {
 
 	}
 
 	@Override
-	public List<String> getSubtitles() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getLegenda() {
+		List<String> legendas = new ArrayList<String>();
+		mLegendas.forEach((it) -> {
+			InputStream sub = new ByteArrayInputStream(it.bytes);
+			BufferedReader reader;
+			try {
+				reader = new BufferedReader(new InputStreamReader(sub, "UTF-8"));
+				StringBuilder content = new StringBuilder();
+
+				var line = reader.readLine();
+				while (line != null) {
+					content.append(line);
+					line = reader.readLine();
+				}
+
+				legendas.add(content.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		return legendas;
 	}
 
 	@Override
-	public Map<String, Integer> getSubtitlesNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getLegendaNomes() {
+		Map<String, Integer> arquivos = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mLegendas.size(); i++) {
+			String path = Util.getNome(getName(mLegendas.get(i)));
+			if (!path.isEmpty() && !arquivos.containsKey(path))
+				arquivos.put(path, i);
+		}
+
+		return arquivos;
+	}
+
+	private String getName(TarEntry obj) {
+		return obj.entry.getName();
 	}
 
 	@Override
-	public String getPagePath(Integer num) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPaginaPasta(Integer num) {
+		if (mEntradas.size() < num)
+            return null;
+        return getName(mEntradas.get(num));
 	}
 
 	@Override
-	public Map<String, Integer> getPagePaths() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Integer> getPastas() {
+		Map<String, Integer> pastas = new HashMap<String, Integer>();
+
+		for (var i = 0; i < mEntradas.size(); i++) {
+			String path = Util.getPasta(getName(mEntradas.get(i)));
+			if (!path.isEmpty() && !pastas.containsKey(path))
+				pastas.put(path, i);
+		}
+
+        return pastas;
 	}
 
 }

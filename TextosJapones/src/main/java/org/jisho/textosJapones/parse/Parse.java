@@ -7,21 +7,21 @@ import java.util.List;
 import java.util.Map;
 
 public interface Parse {
-	void parse(File file) throws IOException;
+	void parse(File arquivo) throws IOException;
 
-	void destroy() throws IOException;
+	void destroi() throws IOException;
 
-	String getType();
+	String getTipo();
 
-	InputStream getPage(int num) throws IOException;
+	InputStream getPagina(int numero) throws IOException;
 
-	int numPages();
+	int getSize();
 
-	List<String> getSubtitles();
+	List<String> getLegenda();
 
-	Map<String, Integer> getSubtitlesNames();
+	Map<String, Integer> getLegendaNomes();
 
-	String getPagePath(Integer num);
+	String getPaginaPasta(Integer num);
 
-	Map<String, Integer> getPagePaths();
+	Map<String, Integer> getPastas();
 }

@@ -12,7 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-public class MangaVincularLineController implements Initializable {
+public class MangaVincularCelulaController implements Initializable {
 
 	@FXML
 	public HBox hbRoot;
@@ -88,6 +88,6 @@ public class MangaVincularLineController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangaVincularLineController.class.getResource("/view/MangaVincularLine.fxml");
+		return MangaVincularCelulaController.class.getResource("/view/MangaVincularCelula.fxml");
 	}
 }

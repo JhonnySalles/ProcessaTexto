@@ -1,16 +1,20 @@
 package org.jisho.textosJapones.model.services;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.model.dao.DaoFactory;
 import org.jisho.textosJapones.model.dao.VincularDao;
+import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 public class VincularServices {
 
@@ -63,12 +67,23 @@ public class VincularServices {
 		return dao.getTabelas();
 	}
 
-	public void reorderDoublePages(ObservableList<VinculoPagina> vinculado,
-			ObservableList<VinculoPagina> naoVinculado) {
-		reorderDoublePages(vinculado, naoVinculado, false);
+	public void addNaoVinculado(ObservableList<VinculoPagina> naoVinculado, VinculoPagina pagina) {
+		if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+			naoVinculado.add(new VinculoPagina(pagina.getVinculadoEsquerdaNomePagina(),
+					pagina.getVinculadoEsquerdaPathPagina(), pagina.getVinculadoEsquerdaPagina(),
+					pagina.getVinculadoEsquerdaPaginas(), pagina.isVinculadoEsquerdaPaginaDupla,
+					pagina.getMangaPaginaEsquerda(), pagina.getImagemVinculadoEsquerda(), true));
+
+		if (pagina.isImagemDupla) {
+			naoVinculado.add(new VinculoPagina(pagina.getVinculadoDireitaNomePagina(),
+					pagina.getVinculadoDireitaPathPagina(), pagina.getVinculadoDireitaPagina(),
+					pagina.getVinculadoDireitaPaginas(), pagina.isVinculadoDireitaPaginaDupla,
+					pagina.getMangaPaginaDireita(), pagina.getImagemVinculadoDireita(), true));
+			pagina.limparVinculadoDireita();
+		}
 	}
 
-	public void reorderDoublePages(ObservableList<VinculoPagina> vinculado, ObservableList<VinculoPagina> naoVinculado,
+	public void ordenarPaginaDupla(ObservableList<VinculoPagina> vinculado, ObservableList<VinculoPagina> naoVinculado,
 			Boolean isUsePaginaDuplaCalculada) {
 		if (vinculado == null || vinculado.isEmpty())
 			return;
@@ -209,166 +224,204 @@ public class VincularServices {
 
 	}
 
-	/*
-	 * private void reorderSimplePages(isNotify: Boolean = true) { if
-	 * (mFileLink.value == null || mFileLink.value!!.path.isEmpty()) return
-	 * 
-	 * val hasDualImage = mPagesLink.value?.any { it.dualImage } ?: false
-	 * 
-	 * if (hasDualImage) { if (isNotify) notifyMessages(Pages.LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_SIMPLE_PAGES_START)
-	 * 
-	 * val indexChanges = mutableSetOf<Int>() val pagesLink = mPagesLink.value!! var
-	 * amount = 0 pagesLink.forEach { if (it.dualImage) amount += 1 } var
-	 * amountNotLink = (amount * 2) - pagesLink.size
-	 * 
-	 * if (amountNotLink > 0) { for (i in (pagesLink.size - 1) downTo 0) { val item
-	 * = pagesLink[i] if (item.fileLinkPage == PageLinkConsts.VALUES.PAGE_EMPTY)
-	 * continue
-	 * 
-	 * val page = pagesLink[i] if (item.dualImage) { addNotLinked(page)
-	 * amountNotLink -= 2 page.clearFileLink() } else if (item.fileLinkPage !=
-	 * PageLinkConsts.VALUES.PAGE_EMPTY) { addNotLinked(page) amountNotLink--
-	 * page.clearLeftFileLink() }
-	 * 
-	 * if (amountNotLink < 1) break }
-	 * 
-	 * mPagesNotLinked.value!!.sortBy { it.fileLinkPage }
-	 * 
-	 * if (isNotify) notifyMessages(Pages.NOT_LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_ITEM_CHANGE) }
-	 * 
-	 * var padding = 0 for (i in (pagesLink.size - 1) downTo 0) { if
-	 * (pagesLink[i].fileLinkPage != PageLinkConsts.VALUES.PAGE_EMPTY) { padding = i
-	 * +1 break } }
-	 * 
-	 * val pagesLinkTemp = mutableListOf<PageLink>()
-	 * 
-	 * for (i in pagesLink.size - 1 downTo 0) { val newPage = PageLink(pagesLink[i])
-	 * pagesLinkTemp.add(newPage)
-	 * 
-	 * if (i - padding >= 0) { val page = pagesLink[i - padding]
-	 * 
-	 * if (page.dualImage) { newPage.addLeftFromRightFileLinkImage(page)
-	 * page.clearRightFileLink() padding-- } else newPage.addLeftFileLinkImage(page)
-	 * }
-	 * 
-	 * indexChanges.addAll(arrayOf(i, i - padding)) }
-	 * 
-	 * pagesLinkTemp.sortBy { it.mangaPage } mPagesLink.value =
-	 * ArrayList(pagesLinkTemp)
-	 * 
-	 * if (isNotify) { for (index in indexChanges) notifyMessages(Pages.LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_ITEM_CHANGE, index)
-	 * 
-	 * notifyMessages(Pages.LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_SIMPLE_PAGES_FINISHED) } }
-	 * }
-	 * 
-	 * private void autoReorderDoublePages(type: Pages, isClear: Boolean = false,
-	 * isNotify: Boolean = true) { if (mFileLink.value == null ||
-	 * mFileLink.value!!.path.isEmpty()) return
-	 * 
-	 * if (isNotify) notifyMessages(type,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_AUTO_PAGES_START)
-	 * 
-	 * val hasDualImage = if (isClear) { reorderSimplePages(false) false } else
-	 * mPagesLink.value?.any { it.dualImage } ?: false
-	 * 
-	 * if (!hasDualImage && (mFileLink.value?.id == null || isClear)) { val
-	 * indexChanges = mutableSetOf<Int>() val pagesLink = mPagesLink.value!! val
-	 * lastIndex = pagesLink.size - 1 for ((index, page) in pagesLink.withIndex()) {
-	 * if (page.fileLinkPage == PageLinkConsts.VALUES.PAGE_EMPTY || index >=
-	 * lastIndex) continue
-	 * 
-	 * if (page.isMangaDualPage && page.isFileLeftDualPage) continue
-	 * 
-	 * if (page.isMangaDualPage) { val nextPage = pagesLink[index + 1]
-	 * 
-	 * if (nextPage.fileLinkPage == PageLinkConsts.VALUES.PAGE_EMPTY ||
-	 * nextPage.isFileLeftDualPage) continue
-	 * 
-	 * indexChanges.addAll(arrayOf(index, index + 1))
-	 * page.addRightFromLeftFileLinkImage(nextPage) nextPage.clearFileLink()
-	 * 
-	 * for ((idxNext, next) in pagesLink.withIndex()) { if (idxNext < (index + 1) ||
-	 * idxNext >= lastIndex) continue
-	 * 
-	 * val aux = pagesLink[idxNext + 1] next.addLeftFileLinkImage(aux)
-	 * aux.clearLeftFileLink() indexChanges.addAll(arrayOf(idxNext, idxNext + 1)) }
-	 * } else if (page.isFileLeftDualPage) { if (pagesLink[index + 1].fileLinkPage
-	 * == PageLinkConsts.VALUES.PAGE_EMPTY) continue
-	 * 
-	 * indexChanges.addAll(arrayOf(index, index + 1)) var indexEmpty = lastIndex for
-	 * (i in (index + 1) until lastIndex) { if (pagesLink[i].fileLinkPage ==
-	 * PageLinkConsts.VALUES.PAGE_EMPTY) { indexEmpty = i break } }
-	 * 
-	 * addNotLinked(pagesLink[indexEmpty])
-	 * 
-	 * for (i in indexEmpty downTo (index + 2)) { val aux = pagesLink[i - 1]
-	 * pagesLink[i].addLeftFileLinkImage(aux) aux.clearLeftFileLink()
-	 * indexChanges.addAll(arrayOf(i, i - 1)) } } }
-	 * 
-	 * if (isNotify) for (index in indexChanges) notifyMessages(type,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_ITEM_CHANGE, index) }
-	 * 
-	 * if (isNotify) notifyMessages(type,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_AUTO_PAGES_FINISHED) }
-	 * 
-	 * private void reorderBySortPages() { if (mFileLink.value == null ||
-	 * mFileLink.value!!.path.isEmpty()) return
-	 * 
-	 * notifyMessages(Pages.LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_SORTED_PAGES_START)
-	 * 
-	 * val pagesNotLink = mPagesNotLinked.value!! val pagesLink = mPagesLink.value!!
-	 * val pagesLinkTemp = mutableListOf<PageLink>() val pagesNotLinkTemp =
-	 * arrayListOf<PageLink>() var maxNumPage = 0
-	 * 
-	 * for (page in pagesLink) { if (page.fileLinkPage > maxNumPage) maxNumPage =
-	 * page.fileLinkPage
-	 * 
-	 * if (page.fileRightLinkPage > maxNumPage) maxNumPage = page.fileLinkPage }
-	 * 
-	 * for (page in pagesNotLink) { if (page.fileLinkPage > maxNumPage) maxNumPage =
-	 * page.fileLinkPage }
-	 * 
-	 * for (page in pagesLink) { if (page.mangaPage ==
-	 * PageLinkConsts.VALUES.PAGE_EMPTY) continue
-	 * 
-	 * if (page.mangaPage > maxNumPage) break else { val pageLink = PageLink(page)
-	 * pagesLinkTemp.add(pageLink)
-	 * 
-	 * val findPageLink = pagesLink.find { it.fileLinkPage == page.mangaPage ||
-	 * it.fileRightLinkPage == page.mangaPage } ?: pagesNotLink.find {
-	 * it.fileLinkPage == page.mangaPage }
-	 * 
-	 * if (findPageLink != null) { if (pageLink.fileRightLinkPage == page.mangaPage)
-	 * pageLink.addLeftFromRightFileLinkImage(findPageLink) else
-	 * pageLink.addLeftFileLinkImage(findPageLink) } } }
-	 * 
-	 * if (maxNumPage >= pagesLinkTemp.size) { for (numPage in pagesLinkTemp.size
-	 * until maxNumPage) { val pageLink = pagesLink.find { it.fileLinkPage ==
-	 * numPage || it.fileRightLinkPage == numPage } ?: pagesNotLink.find {
-	 * it.fileLinkPage == numPage }
-	 * 
-	 * if (pageLink != null) { if (pageLink.fileLinkPage == numPage)
-	 * pagesNotLinkTemp.add( PageLink( pageLink.idFile, true, pageLink.fileLinkPage,
-	 * pageLink.fileLinkPages, pageLink.fileLinkPageName, pageLink.fileLinkPagePath,
-	 * pageLink.isFileLeftDualPage, pageLink.imageLeftFileLinkPage ) ) else
-	 * pagesNotLinkTemp.add( PageLink( pageLink.idFile, true,
-	 * pageLink.fileRightLinkPage, pageLink.fileLinkPages,
-	 * pageLink.fileRightLinkPageName, pageLink.fileRightLinkPagePath,
-	 * pageLink.isFileRightDualPage, pageLink.imageRightFileLinkPage ) ) } } }
-	 * 
-	 * pagesLink.clear() pagesNotLink.clear() pagesLinkTemp.sortBy { it.mangaPage }
-	 * pagesNotLinkTemp.sortBy { it.fileLinkPage }
-	 * 
-	 * mPagesLink.value = ArrayList(pagesLinkTemp) mPagesNotLinked.value =
-	 * pagesNotLinkTemp
-	 * 
-	 * notifyMessages(Pages.LINKED,
-	 * PageLinkConsts.MESSAGES.MESSAGE_PAGES_LINK_REORDER_SORTED_PAGES_FINISHED) }
-	 */
+	private Integer qtde = 0;
+
+	public void ordenarPaginaSimples(ObservableList<VinculoPagina> vinculado,
+			ObservableList<VinculoPagina> naoVinculado) {
+
+		if (vinculado == null || vinculado.isEmpty())
+			return;
+
+		Boolean existeImagem = vinculado.stream().anyMatch((it) -> it.isImagemDupla);
+
+		if (existeImagem) {
+			qtde = 0;
+			vinculado.forEach((it) -> {
+				if (it.isImagemDupla)
+					qtde++;
+			});
+
+			for (var i = vinculado.size(); i <= (vinculado.size() - 1 - qtde); i--)
+				addNaoVinculado(naoVinculado, vinculado.get(i));
+
+			Integer processado = qtde;
+			for (var i = vinculado.size(); i <= 0; i--) {
+				VinculoPagina pagina = vinculado.get(i - processado);
+				if (pagina.isImagemDupla) {
+					vinculado.get(i).addVinculoEsquerdaApartirDireita(pagina);
+					pagina.limparVinculadoDireita();
+					processado--;
+				} else
+					vinculado.get(i).addVinculoEsquerda(pagina);
+
+				if (processado <= 0)
+					break;
+			}
+		}
+	}
+
+	public void autoReordenarPaginaDupla(ObservableList<VinculoPagina> vinculado,
+			ObservableList<VinculoPagina> naoVinculado) {
+		autoReordenarPaginaDupla(vinculado, naoVinculado, false);
+	}
+
+	public void autoReordenarPaginaDupla(ObservableList<VinculoPagina> vinculado,
+			ObservableList<VinculoPagina> naoVinculado, Boolean isLimpar) {
+
+		if (vinculado == null || vinculado.isEmpty())
+			return;
+
+		Boolean temImagemDupla = false;
+		if (isLimpar)
+			ordenarPaginaSimples(vinculado, naoVinculado);
+		else
+			temImagemDupla = vinculado.stream().anyMatch((it) -> it.isImagemDupla);
+
+		if (!temImagemDupla && isLimpar) {
+			Integer lastIndex = vinculado.size() - 1;
+
+			for (VinculoPagina pagina : vinculado) {
+				int index = vinculado.indexOf(pagina);
+
+				if (pagina.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA || index >= lastIndex)
+					continue;
+
+				if (pagina.isOriginalPaginaDupla && pagina.isVinculadoEsquerdaPaginaDupla)
+					continue;
+
+				if (pagina.isOriginalPaginaDupla) {
+					VinculoPagina proximo = vinculado.get(index + 1);
+
+					if (proximo.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA
+							|| proximo.isVinculadoEsquerdaPaginaDupla)
+						continue;
+
+					pagina.addVinculoDireitaApartirEsquerda(proximo);
+					proximo.limparVinculado();
+
+					for (var idxNext = (index + 1); idxNext <= vinculado.size(); idxNext++) {
+						if (idxNext < (index + 1) || idxNext >= lastIndex)
+							continue;
+
+						VinculoPagina aux = vinculado.get(idxNext + 1);
+						proximo.addVinculoEsquerda(aux);
+						aux.limparVinculadoEsquerda();
+					}
+				} else if (pagina.isVinculadoEsquerdaPaginaDupla) {
+					if (vinculado.get(index + 1).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA)
+						continue;
+
+					Integer indexEmpty = lastIndex;
+					for (var i = (index + 1); i <= lastIndex; i++) {
+						if (vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
+							indexEmpty = i;
+							break;
+						}
+					}
+
+					addNaoVinculado(naoVinculado, vinculado.get(indexEmpty));
+					for (var i = indexEmpty; i >= (index + 2); i--) {
+						VinculoPagina aux = vinculado.get(i - 1);
+						vinculado.get(i).addVinculoEsquerda(aux);
+						aux.limparVinculadoEsquerda();
+					}
+				}
+			}
+
+		}
+	}
+
+	private Integer numeroPagina;
+
+	public void reordenarPeloNumeroPagina(ObservableList<VinculoPagina> vinculado,
+			ObservableList<VinculoPagina> naoVinculado, Boolean isLimpar) {
+
+		if (vinculado == null || vinculado.isEmpty())
+			return;
+
+		List<VinculoPagina> vinculadoTemp = new ArrayList<VinculoPagina>();
+		List<VinculoPagina> naoVinculadoTemp = new ArrayList<VinculoPagina>();
+		Integer maxNumPag = 0;
+
+		for (VinculoPagina pagina : vinculado) {
+			if (pagina.getVinculadoEsquerdaPagina() > maxNumPag)
+				maxNumPag = pagina.getVinculadoEsquerdaPagina();
+
+			if (pagina.getVinculadoDireitaPagina() > maxNumPag)
+				maxNumPag = pagina.getVinculadoDireitaPagina();
+		}
+
+		for (VinculoPagina pagina : naoVinculado) {
+			if (pagina.getVinculadoEsquerdaPagina() > maxNumPag)
+				maxNumPag = pagina.getVinculadoEsquerdaPagina();
+		}
+
+		for (VinculoPagina pagina : vinculado) {
+			if (pagina.getOriginalPagina() == VinculoPagina.PAGINA_VAZIA)
+				continue;
+
+			if (pagina.getOriginalPagina() > maxNumPag)
+				break;
+			else {
+				VinculoPagina novo = new VinculoPagina(pagina);
+				vinculadoTemp.add(novo);
+
+				Optional<VinculoPagina> encontrado = vinculado.stream()
+						.filter((it) -> it.getVinculadoEsquerdaPagina().compareTo(pagina.getOriginalPagina()) == 0
+								|| it.getVinculadoDireitaPagina().compareTo(pagina.getOriginalPagina()) == 0)
+						.findFirst();
+
+				if (encontrado.isEmpty())
+					encontrado = naoVinculado.stream()
+							.filter((it) -> it.getVinculadoEsquerdaPagina().compareTo(pagina.getOriginalPagina()) == 0)
+							.findFirst();
+
+				if (encontrado.isPresent()) {
+					if (encontrado.get().getVinculadoDireitaPagina() == pagina.getOriginalPagina())
+						novo.addVinculoEsquerdaApartirDireita(encontrado.get());
+					else
+						novo.addVinculoEsquerda(encontrado.get());
+				}
+			}
+		}
+
+		if (maxNumPag >= vinculadoTemp.size()) {
+			for (numeroPagina = naoVinculado.size(); numeroPagina <= maxNumPag; numeroPagina++) {
+				Optional<VinculoPagina> encontrado = vinculado.stream()
+						.filter((it) -> it.getVinculadoEsquerdaPagina().compareTo(numeroPagina) == 0
+								|| it.getVinculadoDireitaPagina().compareTo(numeroPagina) == 0)
+						.findFirst();
+
+				if (encontrado.isEmpty())
+					encontrado = naoVinculado.stream()
+							.filter((it) -> it.getVinculadoEsquerdaPagina().compareTo(numeroPagina) == 0).findFirst();
+
+				if (encontrado.isPresent()) {
+					VinculoPagina item = encontrado.get();
+					if (item.getVinculadoEsquerdaPagina() == numeroPagina)
+						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoEsquerdaNomePagina(),
+								item.getVinculadoEsquerdaPathPagina(), item.getVinculadoEsquerdaPagina(),
+								item.getVinculadoEsquerdaPaginas(), item.isVinculadoEsquerdaPaginaDupla,
+								item.getMangaPaginaEsquerda(), item.getImagemVinculadoEsquerda(), true));
+					else
+						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoDireitaNomePagina(),
+								item.getVinculadoDireitaPathPagina(), item.getVinculadoDireitaPagina(),
+								item.getVinculadoDireitaPaginas(), item.isVinculadoDireitaPaginaDupla,
+								item.getMangaPaginaDireita(), item.getImagemVinculadoDireita(), true));
+				}
+			}
+		}
+
+		vinculado.clear();
+		naoVinculado.clear();
+		vinculadoTemp
+				.sort((VinculoPagina a, VinculoPagina b) -> a.getOriginalPagina().compareTo(b.getOriginalPagina()));
+		naoVinculadoTemp.sort((VinculoPagina a, VinculoPagina b) -> a.getVinculadoEsquerdaPagina()
+				.compareTo(b.getVinculadoEsquerdaPagina()));
+
+		vinculado.addAll(vinculadoTemp);
+		naoVinculadoTemp.addAll(naoVinculadoTemp);
+
+	}
 
 }
