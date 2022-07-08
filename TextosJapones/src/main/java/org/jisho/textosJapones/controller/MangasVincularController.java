@@ -23,6 +23,7 @@ import org.jisho.textosJapones.parse.Parse;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
 
+import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -71,6 +72,9 @@ public class MangasVincularController implements Initializable {
 	private JFXButton btnVinculado;
 
 	@FXML
+	private JFXButton btnLimpar;
+
+	@FXML
 	private JFXButton btnDeletar;
 
 	@FXML
@@ -108,6 +112,8 @@ public class MangasVincularController implements Initializable {
 
 	@FXML
 	private ListView<VinculoPagina> lvPaginasNaoVinculadas;
+
+	JFXAutoCompletePopup<String> autoCompleteManga;
 
 	private File arquivoOriginal;
 	private File arquivoVinculado;
@@ -154,6 +160,11 @@ public class MangasVincularController implements Initializable {
 			carregarArquivo(arquivoVinculado, false);
 		else
 			carregaDados(arquivoOriginal, false);
+	}
+
+	@FXML
+	private void onBtnLimpar() {
+		limpar();
 	}
 
 	@FXML
@@ -212,6 +223,15 @@ public class MangasVincularController implements Initializable {
 		txtArquivoVinculado.setText("");
 		ckbPaginaDuplaCalculada.selectedProperty().set(true);
 		spnVolume.getValueFactory().setValue(0);
+
+		vinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
+		naoVinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
+
+		lvPaginasVinculadas.setItems(vinculado);
+		lvPaginasNaoVinculadas.setItems(naoVinculado);
+
+		Util.destroiParse(parseOriginal);
+		Util.destroiParse(parseVinculado);
 
 		arquivoOriginal = null;
 		arquivoVinculado = null;
@@ -274,9 +294,14 @@ public class MangasVincularController implements Initializable {
 			if (isManga) {
 				txtArquivoOriginal.setText(arquivo.getName());
 				Util.destroiParse(parseOriginal);
+				Util.destroiParse(parseVinculado);
 				parseOriginal = parse;
 				parseVinculado = null;
 				txtArquivoVinculado.setText("");
+				MangaVolume volume = service.selectVolume(cbBase.getSelectionModel().getSelectedItem(),
+						txtManga.getText(), spnVolume.getValue(),
+						cbLinguagemOrigem.getSelectionModel().getSelectedItem());
+				vinculo.setVolumeOriginal(volume);
 
 				ArrayList<VinculoPagina> list = new ArrayList<VinculoPagina>();
 				for (int x = 0; x <= parseOriginal.getSize(); x++) {
@@ -284,7 +309,8 @@ public class MangasVincularController implements Initializable {
 					Pair<Boolean, String> detalhe = image.getValue();
 					list.add(new VinculoPagina(Util.getNome(parseOriginal.getPaginaPasta(x)),
 							Util.getPasta(parseOriginal.getPaginaPasta(x)), x, parse.getSize(), detalhe.getKey(),
-							findPagina(parseOriginal.getPaginaPasta(x), detalhe.getValue(), x), image.getKey()));
+							findPagina(volume, parseOriginal.getPaginaPasta(x), detalhe.getValue(), x),
+							image.getKey()));
 				}
 
 				vinculado = FXCollections.observableArrayList(list);
@@ -293,6 +319,8 @@ public class MangasVincularController implements Initializable {
 				txtArquivoVinculado.setText(arquivo.getName());
 				Util.destroiParse(parseVinculado);
 				parseVinculado = parse;
+
+				MangaVolume volume = vinculo.getVolumeVinculado();
 
 				for (int x = 0; x <= parseVinculado.getSize(); x++) {
 					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado, x);
@@ -308,11 +336,12 @@ public class MangasVincularController implements Initializable {
 						item.isVinculadoEsquerdaPaginaDupla = detalhe.getKey();
 						item.setImagemVinculadoEsquerda(image.getKey());
 						item.setMangaPaginaEsquerda(
-								findPagina(parseVinculado.getPaginaPasta(x), detalhe.getValue(), x));
+								findPagina(volume, parseVinculado.getPaginaPasta(x), detalhe.getValue(), x));
 					} else
 						naoVinculado.add(new VinculoPagina(Util.getNome(parseVinculado.getPaginaPasta(x)),
 								Util.getPasta(parseVinculado.getPaginaPasta(x)), x, parseVinculado.getSize(),
-								detalhe.getKey(), findPagina(parseVinculado.getPaginaPasta(x), detalhe.getValue(), x),
+								detalhe.getKey(),
+								findPagina(volume, parseVinculado.getPaginaPasta(x), detalhe.getValue(), x),
 								image.getKey(), true));
 				}
 			}
@@ -390,7 +419,7 @@ public class MangasVincularController implements Initializable {
 		fileChooser.setTitle(titulo);
 
 		if (pasta != null && !pasta.isEmpty())
-			fileChooser.setInitialDirectory(new File(pasta));
+			fileChooser.setInitialDirectory(new File(Util.getCaminho(pasta)));
 
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("ALL FILES", "*.*"),
 				new FileChooser.ExtensionFilter("ZIP", "*.zip"), new FileChooser.ExtensionFilter("CBZ", "*.cbz"),
@@ -402,8 +431,9 @@ public class MangasVincularController implements Initializable {
 	private Boolean isExtra = false;
 	private Float capitulo = -1f;
 
-	private MangaPagina findPagina(String caminho, String hash, Integer pagina) {
-		MangaVolume volume = vinculo.getVolumeOriginal();
+	private MangaPagina findPagina(MangaVolume volume, String caminho, String hash, Integer pagina) {
+		if (volume == null)
+			return null;
 		MangaPagina manga = null;
 
 		isExtra = false;
@@ -506,6 +536,21 @@ public class MangasVincularController implements Initializable {
 		return manga;
 	}
 
+	private void selecionaBase() {
+		autoCompleteManga.getSuggestions().clear();
+
+		if (cbBase.getSelectionModel().getSelectedItem() != null
+				&& !cbBase.getSelectionModel().getSelectedItem().isEmpty()) {
+			try {
+				List<String> mangas = service.getMangas(cbBase.getSelectionModel().getSelectedItem());
+				autoCompleteManga.getSuggestions().addAll(mangas);
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+				System.out.println("Erro ao consultar as sugestões de mangas.");
+			}
+		}
+	}
+
 	private void linkaCelulas() {
 		lvPaginasVinculadas.setCellFactory(new Callback<ListView<VinculoPagina>, ListCell<VinculoPagina>>() {
 			@Override
@@ -561,6 +606,20 @@ public class MangasVincularController implements Initializable {
 				if (ke.getCode().equals(KeyCode.ENTER))
 					robot.keyPress(KeyCode.TAB);
 			}
+		});
+
+		autoCompleteManga = new JFXAutoCompletePopup<String>();
+
+		autoCompleteManga.setSelectionHandler(event -> {
+			txtManga.setText(event.getObject());
+		});
+
+		txtManga.textProperty().addListener(observable -> {
+			autoCompleteManga.filter(string -> string.toLowerCase().contains(txtManga.getText().toLowerCase()));
+			if (autoCompleteManga.getFilteredSuggestions().isEmpty() || txtManga.getText().isEmpty())
+				autoCompleteManga.hide();
+			else
+				autoCompleteManga.show(txtManga);
 		});
 
 		spnVolume.setOnKeyPressed(new EventHandler<KeyEvent>() {

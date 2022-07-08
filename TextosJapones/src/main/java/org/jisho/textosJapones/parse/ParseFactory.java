@@ -15,9 +15,9 @@ public class ParseFactory {
 		String fileName = file.getAbsolutePath().toLowerCase();
 
 		if (Util.isRar(fileName)) {
-			parser = new ZipParse();
-		} else if (Util.isZip(fileName)) {
 			parser = new RarParse();
+		} else if (Util.isZip(fileName)) {
+			parser = new ZipParse();
 		} else if (Util.isSevenZ(fileName)) {
 			parser = new SevenZipParse();
 		} else if (Util.isTarball(fileName)) {
@@ -33,6 +33,7 @@ public class ParseFactory {
 		try {
 			parse.parse(file);
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 		return parse;

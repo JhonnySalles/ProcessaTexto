@@ -58,7 +58,7 @@ public class Util {
 	public static Parse criaParse(File arquivo) {
 		Parse parse = ParseFactory.create(arquivo);
 		if (parse instanceof RarParse)
-			((RarParse) parse).setCacheDirectory(new File(PASTA_CACHE, arquivo.getName() + random.nextInt(1000)));
+			((RarParse) parse).setCacheDirectory(new File(PASTA_CACHE, getNomeSemExtenssao(arquivo.getName()) + random.nextInt(1000)));
 
 		return parse;
 	}
@@ -162,24 +162,24 @@ public class Util {
 
 	public static String getNome(String path) {
 		String name = path;
-		if (path.contains("/"))
-			name = path.substring(path.lastIndexOf("/"), path.length());
-		else if (path.contains("\\"))
-			name = path.substring(path.lastIndexOf("\\"), path.length());
+		if (name.contains("/"))
+			name = name.substring(name.lastIndexOf("/"), name.length());
+		else if (name.contains("\\"))
+			name = name.substring(name.lastIndexOf("\\"), name.length());
 
 		return name;
 	}
 
 	public static String getNomeSemExtenssao(String path) {
-		String name = "";
+		String name = path;
 
-		if (path.contains("/"))
-			name = path.substring(path.lastIndexOf("/"), path.length());
-		else if (path.contains("\\"))
-			name = path.substring(path.lastIndexOf("\\"), path.length());
+		if (name.contains("/"))
+			name = name.substring(name.lastIndexOf("/"), name.length());
+		else if (name.contains("\\"))
+			name = name.substring(name.lastIndexOf("\\"), name.length());
 
 		if (name.contains("."))
-			name.substring(0, path.lastIndexOf("."));
+			name = name.substring(0, name.lastIndexOf("."));
 
 		return name;
 	}
@@ -205,6 +205,17 @@ public class Util {
 			folder = folder.substring(folder.lastIndexOf("/"), folder.length());
 		else if (folder.contains("\\"))
 			folder = folder.substring(folder.lastIndexOf("\\"), folder.length());
+
+		return folder;
+	}
+	
+	public static String getCaminho(String path) {
+		String folder = path;
+
+		if (folder.contains("/"))
+			folder = folder.substring(0, folder.lastIndexOf("/"));
+		else if (folder.contains("\\"))
+			folder = folder.substring(0, folder.lastIndexOf("\\"));
 
 		return folder;
 	}

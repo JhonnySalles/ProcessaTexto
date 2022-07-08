@@ -6,19 +6,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.model.dao.DaoFactory;
+import org.jisho.textosJapones.model.dao.MangaDao;
 import org.jisho.textosJapones.model.dao.VincularDao;
-import org.jisho.textosJapones.model.entities.MangaPagina;
+import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
 
 public class VincularServices {
 
 	private VincularDao dao = DaoFactory.createVincularDao();
+	private MangaDao mangaDao = DaoFactory.createMangaDao();
 
 	public void salvar(String base, Vinculo obj) throws ExcessaoBd {
 		if (obj.getId() == null)
@@ -29,6 +30,15 @@ public class VincularServices {
 
 	public void update(String base, Vinculo obj) throws ExcessaoBd {
 		dao.update(base, obj);
+	}
+
+	public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) {
+		try {
+			return mangaDao.selectVolume(base, manga, volume, linguagem);
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public Vinculo select(String base, String manga, Integer volume, Language original, String arquivoOriginal,
@@ -65,6 +75,10 @@ public class VincularServices {
 
 	public List<String> getTabelas() throws ExcessaoBd {
 		return dao.getTabelas();
+	}
+	
+	public List<String> getMangas(String base) throws ExcessaoBd {
+		return dao.getMangas(base);
 	}
 
 	public void addNaoVinculado(ObservableList<VinculoPagina> naoVinculado, VinculoPagina pagina) {

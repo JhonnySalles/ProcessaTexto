@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.jisho.textosJapones.model.dao.VincularDao;
+import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.enums.Language;
@@ -29,6 +30,8 @@ public class VincularDaoJDBC implements VincularDao {
 	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_volumes%%' AND Table_Name GROUP BY Tabela ";
+
+	final private String SELECT_MANGAS = "SELECT Manga FROM %s_volumes GROUP BY manga ORDER BY manga";
 
 	final private String CREATE_TABELA_VINCULO = "CREATE TABLE %s_vinculo (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
 			+ "  original_arquivo VARCHAR(250) DEFAULT NULL," + "  original_linguagem VARCHAR(4) DEFAULT NULL,"
@@ -150,7 +153,7 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			//st = conn.prepareStatement(SELECT);
+			// st = conn.prepareStatement(SELECT);
 			/*
 			 * st.setString(1, kanji); st.setString(2, leitura);
 			 */
@@ -178,7 +181,7 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			//st = conn.prepareStatement(SELECT);
+			// st = conn.prepareStatement(SELECT);
 			/*
 			 * st.setString(1, kanji); st.setString(2, leitura);
 			 */
@@ -204,7 +207,7 @@ public class VincularDaoJDBC implements VincularDao {
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			//st = conn.prepareStatement(DELETE);
+			// st = conn.prepareStatement(DELETE);
 
 			// st.setString(1, obj.getKanji());
 			// st.setString(2, obj.getLeitura());
@@ -325,6 +328,29 @@ public class VincularDaoJDBC implements VincularDao {
 
 			while (rs.next())
 				list.add(rs.getString("Tabela"));
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public List<String> getMangas(String base) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(String.format(SELECT_MANGAS, BASE_MANGA + base));
+			rs = st.executeQuery();
+
+			List<String> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(rs.getString("Manga"));
 
 			return list;
 		} catch (SQLException e) {

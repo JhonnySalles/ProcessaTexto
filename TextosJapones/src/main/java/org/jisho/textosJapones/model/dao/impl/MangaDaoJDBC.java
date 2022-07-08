@@ -87,6 +87,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina, is_processado FROM %s_paginas WHERE id_capitulo = ? AND %s ";
 	final private String SELECT_TEXTOS = "SELECT id, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2 FROM %s_textos WHERE id_pagina = ? ";
 
+	final private String FIND_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.is_Processado FROM %s_volumes VOL WHERE manga = ? AND volume = ? AND linguagem = ? LIMIT 1";
 	final private String SELECT_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
 	final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw, CAP.is_processado "
 			+ "FROM %s_capitulos CAP WHERE id = ?";
@@ -672,6 +673,32 @@ public class MangaDaoJDBC implements MangaDao {
 						rs.getInt("posicao_y1"), rs.getInt("posicao_x2"), rs.getInt("posicao_y2")));
 
 			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+	
+	@Override
+	public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(String.format(FIND_VOLUME, BASE_MANGA + base));
+			st.setString(1, manga);
+			st.setInt(2, volume);
+			st.setString(3, linguagem.getSigla());
+			rs = st.executeQuery();
+
+			if (rs.next())
+				return new MangaVolume(rs.getLong("id"), rs.getString("manga"), rs.getInt("volume"),
+						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
+						selectVocabulario(base, "id_volume = " + rs.getLong("id"), false),
+						selectCapitulos(base, true, rs.getLong("id"), false));
+			return null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);

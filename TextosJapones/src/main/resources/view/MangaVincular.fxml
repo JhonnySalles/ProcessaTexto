@@ -62,6 +62,7 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
+                              <JFXButton fx:id="btnLimpar" buttonType="RAISED" onAction="#onBtnLimpar" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Limpar" />
                               <JFXButton fx:id="btnDeletar" buttonType="RAISED" onAction="#onBtnDeletar" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
                               <JFXButton fx:id="btnSalvar" buttonType="RAISED" onAction="#onBtnSalvar" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
                            </children>

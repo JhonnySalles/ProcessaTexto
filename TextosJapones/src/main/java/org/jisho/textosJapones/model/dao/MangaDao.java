@@ -24,6 +24,8 @@ public interface MangaDao {
 
 	void updateTexto(String base, MangaTexto obj) throws ExcessaoBd;
 	
+	MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) throws ExcessaoBd;
+	
 	MangaVolume selectVolume(String base, Long id) throws ExcessaoBd;
 
 	MangaCapitulo selectCapitulo(String base, Long id) throws ExcessaoBd;

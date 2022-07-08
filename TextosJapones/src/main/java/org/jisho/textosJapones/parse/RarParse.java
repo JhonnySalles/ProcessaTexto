@@ -111,13 +111,12 @@ public class RarParse implements Parse {
 
 	public void setCacheDirectory(File cacheDirectory) {
 		mPastaCache = cacheDirectory;
-		if (!mPastaCache.exists()) {
-			mPastaCache.mkdir();
-		}
+		if (!mPastaCache.exists())
+			mPastaCache.mkdirs();
+		
 		if (mPastaCache.listFiles() != null) {
-			for (File f : mPastaCache.listFiles()) {
+			for (File f : mPastaCache.listFiles())
 				f.delete();
-			}
 		}
 	}
 
