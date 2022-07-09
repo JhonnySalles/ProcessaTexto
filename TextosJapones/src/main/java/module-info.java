@@ -12,6 +12,7 @@ module TextosJapones {
 	exports org.jisho.textosJapones.model.enums;
 	exports org.jisho.textosJapones;
 	exports org.jisho.textosJapones.model.entities;
+	exports org.jisho.textosJapones.util.listener;
 
 	requires transitive java.sql;
 	requires transitive com.jfoenix;

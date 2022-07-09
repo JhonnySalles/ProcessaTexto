@@ -578,8 +578,7 @@
 	-fx-border-width: 2;
 }
 
-.spinner .increment-arrow-button .increment-arrow, .spinner .decrement-arrow-button .decrement-arrow
-	{
+.spinner .increment-arrow-button .increment-arrow, .spinner .decrement-arrow-button .decrement-arrow {
 	-fx-background-color: #106ebe;
 	-fx-font-size: 20px;
 }
@@ -597,12 +596,62 @@
 }
 
 /*---------- Estilo vinculo arquivo ----------*/
-.background-SemiTransparent-Black {
+.list-black .list-view {
+	-fx-background-color: #000000;
+}
+
+.list-black .list-view-row-cell:selected {
+	-fx-background-color: #4052ab;
+}
+
+.list-black .list-view .list-cell {
+	-fx-background-color: #333333;
+	-fx-text-fill: white;
+}
+
+.list-black .list-view .list-cell:odd {
+	-fx-background-color: #212121;
+	-fx-text-fill: white;
+}
+
+.list-black .list-view .list-cell:selected {
+    -fx-background-color: #4052ab;
+}
+
+.background-title {
 	-fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-border-radius: 10;
+    -fx-background-radius: 0 0 10 10;
 }
 
 .background-page {
-    -fx-background-color: #595959;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
+}
+
+.on-drag-not-linked:drag-iniciado {
+    -fx-background-image: url("../images/file_link/icoNaoVinculada.png");
+    -fx-background-position: center;
+    -fx-background-size: 50 50;
+    -fx-background-repeat: no-repeat;
+}
+
+.on-drag-not-linked:drag-selecionado {
+    -fx-background-image: url("../images/file_link/icoNaoVinculada.png");
+    -fx-background-position: center;
+    -fx-background-size: 50 50;
+    -fx-background-repeat: no-repeat;
+}
+
+.on-drag:drag-iniciado {
+	-fx-border-width: 2;
+    -fx-border-color: #00cc00;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0)
+}
+
+.on-drag:drag-selecionado {
+	-fx-border-width: 2;
+    -fx-border-color: #00cc00;
+    -fx-background-color: #02471c;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0)
 }

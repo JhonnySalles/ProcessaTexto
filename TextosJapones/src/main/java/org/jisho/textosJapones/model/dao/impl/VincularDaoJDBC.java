@@ -25,6 +25,10 @@ public class VincularDaoJDBC implements VincularDao {
 
 	final private String EXIST_TABELA_VOCABULARIO = "SELECT Table_Name AS Tabela "
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
+			+ " AND Table_Name LIKE '%%_vocabulario%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
+
+	final private String EXIST_TABELA_VINCULO = "SELECT Table_Name AS Tabela "
+			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_vinculo%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
 
 	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
@@ -263,8 +267,23 @@ public class VincularDaoJDBC implements VincularDao {
 					String.format(EXIST_TABELA_VOCABULARIO, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), nome));
 			rs = st.executeQuery();
 
+			if (!rs.next())
+				return false;
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
+		} finally {
+			DB.closeStatement(st);
+		}
+
+		try {
+			st = conn.prepareStatement(
+					String.format(EXIST_TABELA_VINCULO, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), nome));
+			rs = st.executeQuery();
+
 			if (rs.next())
-				return true;
+				return false;
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();
@@ -313,7 +332,7 @@ public class VincularDaoJDBC implements VincularDao {
 			DB.closeStatement(st);
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override

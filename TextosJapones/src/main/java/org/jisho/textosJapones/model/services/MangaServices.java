@@ -94,6 +94,7 @@ public class MangaServices {
 	}
 
 	private Boolean limpeza = true;
+
 	public void salvarAjustes(ObservableList<MangaTabela> tabelas) throws ExcessaoBd {
 		limpeza = true;
 		for (MangaTabela tabela : tabelas)
@@ -102,7 +103,7 @@ public class MangaServices {
 					limpeza = false;
 					mangaDao.deletarVocabulario(tabela.getBase());
 				}
-				
+
 				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
 					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume));
 				else if (volume.isAlterado()) {
@@ -154,7 +155,7 @@ public class MangaServices {
 									});
 								}
 							}
-							
+
 							for (MangaPagina pagina : capitulo.getPaginas())
 								if (pagina.isItemExcluido()) {
 									MangaPagina aux = mangaDao.selectPagina(tabela.getBase(), pagina.getId());

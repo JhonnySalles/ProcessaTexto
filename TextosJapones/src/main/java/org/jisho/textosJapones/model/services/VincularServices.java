@@ -8,13 +8,16 @@ import java.util.stream.Collectors;
 import org.jisho.textosJapones.model.dao.DaoFactory;
 import org.jisho.textosJapones.model.dao.MangaDao;
 import org.jisho.textosJapones.model.dao.VincularDao;
+import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.util.Util;
 
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 public class VincularServices {
 
@@ -22,6 +25,9 @@ public class VincularServices {
 	private MangaDao mangaDao = DaoFactory.createMangaDao();
 
 	public void salvar(String base, Vinculo obj) throws ExcessaoBd {
+		if (base == null)
+			return;
+		
 		if (obj.getId() == null)
 			insert(base, obj);
 		else
@@ -29,10 +35,16 @@ public class VincularServices {
 	}
 
 	public void update(String base, Vinculo obj) throws ExcessaoBd {
+		if (base == null)
+			return;
+		
 		dao.update(base, obj);
 	}
 
 	public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) {
+		if (base == null)
+			return null;
+
 		try {
 			return mangaDao.selectVolume(base, manga, volume, linguagem);
 		} catch (ExcessaoBd e) {
@@ -43,6 +55,9 @@ public class VincularServices {
 
 	public Vinculo select(String base, String manga, Integer volume, Language original, String arquivoOriginal,
 			Language vinculado, String arquivoVinculado) throws ExcessaoBd {
+		if (base == null)
+			return null;
+
 		if (original != null && arquivoOriginal == null)
 			return select(base, manga, volume, original, vinculado);
 		else if (original == null && arquivoOriginal != null)
@@ -53,46 +68,60 @@ public class VincularServices {
 
 	public Vinculo select(String base, String manga, Integer volume, String original, String vinculado)
 			throws ExcessaoBd {
+		if (base == null)
+			return null;
+
 		return dao.select(base, manga, volume, original, vinculado);
 	}
 
 	public Vinculo select(String base, String manga, Integer volume, Language original, Language vinculado)
 			throws ExcessaoBd {
+		if (base == null)
+			return null;
+		
 		return dao.select(base, manga, volume, original, vinculado);
 	}
 
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
+		if (base == null)
+			return;
+		
 		dao.delete(base, obj);
 	}
 
 	public Long insert(String base, Vinculo obj) throws ExcessaoBd {
+		if (base == null)
+			return null;
+		
 		return dao.insert(base, obj);
 	}
 
-	public Boolean createTabelas(String nome) throws ExcessaoBd {
-		return dao.createTabelas(nome);
+	public Boolean createTabelas(String base) throws ExcessaoBd {
+		return dao.createTabelas(base);
 	}
 
 	public List<String> getTabelas() throws ExcessaoBd {
 		return dao.getTabelas();
 	}
-	
+
 	public List<String> getMangas(String base) throws ExcessaoBd {
 		return dao.getMangas(base);
 	}
 
 	public void addNaoVinculado(ObservableList<VinculoPagina> naoVinculado, VinculoPagina pagina) {
 		if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-			naoVinculado.add(new VinculoPagina(pagina.getVinculadoEsquerdaNomePagina(),
-					pagina.getVinculadoEsquerdaPathPagina(), pagina.getVinculadoEsquerdaPagina(),
-					pagina.getVinculadoEsquerdaPaginas(), pagina.isVinculadoEsquerdaPaginaDupla,
-					pagina.getMangaPaginaEsquerda(), pagina.getImagemVinculadoEsquerda(), true));
+			naoVinculado.add(
+					new VinculoPagina(pagina.getVinculadoEsquerdaNomePagina(), pagina.getVinculadoEsquerdaPathPagina(),
+							pagina.getVinculadoEsquerdaPagina(), pagina.getVinculadoEsquerdaPaginas(),
+							pagina.isVinculadoEsquerdaPaginaDupla, pagina.getMangaPaginaEsquerda(),
+							pagina.getImagemVinculadoEsquerda(), true, pagina.getVinculadoEsquerdaHash()));
 
 		if (pagina.isImagemDupla) {
-			naoVinculado.add(new VinculoPagina(pagina.getVinculadoDireitaNomePagina(),
-					pagina.getVinculadoDireitaPathPagina(), pagina.getVinculadoDireitaPagina(),
-					pagina.getVinculadoDireitaPaginas(), pagina.isVinculadoDireitaPaginaDupla,
-					pagina.getMangaPaginaDireita(), pagina.getImagemVinculadoDireita(), true));
+			naoVinculado.add(
+					new VinculoPagina(pagina.getVinculadoDireitaNomePagina(), pagina.getVinculadoDireitaPathPagina(),
+							pagina.getVinculadoDireitaPagina(), pagina.getVinculadoDireitaPaginas(),
+							pagina.isVinculadoDireitaPaginaDupla, pagina.getMangaPaginaDireita(),
+							pagina.getImagemVinculadoDireita(), true, pagina.getVinculadoDireitaHash()));
 			pagina.limparVinculadoDireita();
 		}
 	}
@@ -348,7 +377,7 @@ public class VincularServices {
 	private Integer numeroPagina;
 
 	public void reordenarPeloNumeroPagina(ObservableList<VinculoPagina> vinculado,
-			ObservableList<VinculoPagina> naoVinculado, Boolean isLimpar) {
+			ObservableList<VinculoPagina> naoVinculado) {
 
 		if (vinculado == null || vinculado.isEmpty())
 			return;
@@ -416,12 +445,14 @@ public class VincularServices {
 						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoEsquerdaNomePagina(),
 								item.getVinculadoEsquerdaPathPagina(), item.getVinculadoEsquerdaPagina(),
 								item.getVinculadoEsquerdaPaginas(), item.isVinculadoEsquerdaPaginaDupla,
-								item.getMangaPaginaEsquerda(), item.getImagemVinculadoEsquerda(), true));
+								item.getMangaPaginaEsquerda(), item.getImagemVinculadoEsquerda(), true,
+								item.getVinculadoEsquerdaHash()));
 					else
 						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoDireitaNomePagina(),
 								item.getVinculadoDireitaPathPagina(), item.getVinculadoDireitaPagina(),
 								item.getVinculadoDireitaPaginas(), item.isVinculadoDireitaPaginaDupla,
-								item.getMangaPaginaDireita(), item.getImagemVinculadoDireita(), true));
+								item.getMangaPaginaDireita(), item.getImagemVinculadoDireita(), true,
+								item.getVinculadoDireitaHash()));
 				}
 			}
 		}
@@ -436,6 +467,71 @@ public class VincularServices {
 		vinculado.addAll(vinculadoTemp);
 		naoVinculadoTemp.addAll(naoVinculadoTemp);
 
+	}
+
+	public MangaPagina findPagina(List<MangaPagina> paginas, List<MangaPagina> encontrados, String path, String hash,
+			String nomePagina, Integer numeroPagina) {
+		MangaPagina manga = null;
+
+		Pair<Float, Boolean> capitulo = Util.getCapitulo(path);
+
+		if (capitulo != null) {
+			Optional<MangaPagina> encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+					.filter(pg -> pg.getCapitulo() != null && pg.getCapitulo().compareTo(capitulo.getKey()) == 0)
+					.filter(pg -> pg.getHash() != null && pg.getHash().equalsIgnoreCase(hash)).findFirst();
+
+			if (encontrado.isPresent() && !encontrado.get().getHash().isEmpty())
+				manga = encontrado.get();
+
+			if (manga == null) {
+				encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+						.filter(pg -> pg.getCapitulo() != null && pg.getCapitulo().compareTo(capitulo.getKey()) == 0)
+						.filter(pg -> pg.getNomePagina() != null && pg.getNomePagina().equalsIgnoreCase(nomePagina))
+						.findFirst();
+
+				if (encontrado.isPresent())
+					manga = encontrado.get();
+			}
+
+			if (manga == null) {
+				encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+						.filter(pg -> pg.getCapitulo() != null && pg.getCapitulo().compareTo(capitulo.getKey()) == 0)
+						.filter(pg -> pg.getNumero() != null && pg.getNumero().compareTo(numeroPagina) == 0)
+						.findFirst();
+
+				if (encontrado.isPresent())
+					manga = encontrado.get();
+			}
+		} else {
+			Optional<MangaPagina> encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+					.filter(pg -> pg.getHash() != null && pg.getHash().equalsIgnoreCase(hash)).findFirst();
+
+			if (encontrado.isPresent() && !encontrado.get().getHash().isEmpty())
+				manga = encontrado.get();
+
+			if (manga == null) {
+				encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+						.filter(pg -> pg.getNomePagina() != null && pg.getNomePagina().equalsIgnoreCase(nomePagina))
+						.findFirst();
+
+				if (encontrado.isPresent())
+					manga = encontrado.get();
+			}
+
+			if (manga == null) {
+				encontrado = paginas.stream().filter(pg -> !encontrados.contains(pg))
+						.filter(pg -> pg.getNumero() != null && pg.getNumero().compareTo(numeroPagina) == 0)
+						.findFirst();
+
+				if (encontrado.isPresent())
+					manga = encontrado.get();
+			}
+		}
+
+		if (manga != null)
+			encontrados.add(manga);
+
+		return manga;
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.jisho.textosJapones.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +14,16 @@ import org.jisho.textosJapones.parse.Parse;
 import org.jisho.textosJapones.parse.ParseFactory;
 import org.jisho.textosJapones.parse.RarParse;
 
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.DataFormat;
+import javafx.util.Pair;
+
 public class Util {
+
+	final public static DataFormat VINCULO_ITEM_FORMAT = new DataFormat("custom.item.vinculo");
+	final public static DataFormat NUMERO_PAGINA_ITEM_FORMAT = new DataFormat("custom.item.numero.pagina");
 
 	public static String normalize(String texto) {
 		if (texto == null || texto.isEmpty())
@@ -58,7 +66,8 @@ public class Util {
 	public static Parse criaParse(File arquivo) {
 		Parse parse = ParseFactory.create(arquivo);
 		if (parse instanceof RarParse)
-			((RarParse) parse).setCacheDirectory(new File(PASTA_CACHE, getNomeSemExtenssao(arquivo.getName()) + random.nextInt(1000)));
+			((RarParse) parse).setCacheDirectory(
+					new File(PASTA_CACHE, getNomeSemExtenssao(arquivo.getName()) + random.nextInt(1000)));
 
 		return parse;
 	}
@@ -110,17 +119,12 @@ public class Util {
 	}
 
 	public static String MD5(InputStream image) {
-		InputStream input = null;
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			image.transferTo(baos);
-			input = new ByteArrayInputStream(baos.toByteArray());
-
 			byte[] buffer = new byte[1024];
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			int numRead = 0;
 			while (numRead != -1) {
-				numRead = input.read(buffer);
+				numRead = image.read(buffer);
 				if (numRead > 0)
 					digest.update(buffer, 0, numRead);
 			}
@@ -137,7 +141,7 @@ public class Util {
 			e.printStackTrace();
 		} finally {
 			try {
-				input.close();
+				image.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -163,9 +167,9 @@ public class Util {
 	public static String getNome(String path) {
 		String name = path;
 		if (name.contains("/"))
-			name = name.substring(name.lastIndexOf("/"), name.length());
+			name = name.substring(name.lastIndexOf("/") + 1, name.length());
 		else if (name.contains("\\"))
-			name = name.substring(name.lastIndexOf("\\"), name.length());
+			name = name.substring(name.lastIndexOf("\\") + 1, name.length());
 
 		return name;
 	}
@@ -174,9 +178,9 @@ public class Util {
 		String name = path;
 
 		if (name.contains("/"))
-			name = name.substring(name.lastIndexOf("/"), name.length());
+			name = name.substring(name.lastIndexOf("/") + 1, name.length());
 		else if (name.contains("\\"))
-			name = name.substring(name.lastIndexOf("\\"), name.length());
+			name = name.substring(name.lastIndexOf("\\") + 1, name.length());
 
 		if (name.contains("."))
 			name = name.substring(0, name.lastIndexOf("."));
@@ -191,6 +195,28 @@ public class Util {
 			return path;
 	}
 
+	public static Pair<Float, Boolean> getCapitulo(String path) {
+		Pair<Float, Boolean> capitulo = null;
+		Float numero = -1f;
+		Boolean extra = false;
+
+		String pasta = Util.getPasta(path).toLowerCase();
+
+		if (pasta.contains("capítulo"))
+			numero = Float.valueOf(pasta.substring(pasta.indexOf("capítulo")).replaceAll("[^\\d.]", ""));
+		else if (pasta.contains("capitulo"))
+			numero = Float.valueOf(pasta.substring(pasta.indexOf("capitulo")).replaceAll("[^\\d.]", ""));
+		else if (pasta.contains("extra")) {
+			numero = Float.valueOf(pasta.substring(pasta.indexOf("extra")).replaceAll("[^\\d.]", ""));
+			extra = true;
+		}
+
+		if (numero > -1)
+			capitulo = new Pair<Float, Boolean>(numero, extra);
+
+		return capitulo;
+	}
+
 	public static String getPasta(String path) {
 		// Two validations are needed, because the rar file only has the base values,
 		// with the beginning already in the folder when it exists
@@ -202,13 +228,13 @@ public class Util {
 			folder = folder.substring(0, folder.lastIndexOf("\\"));
 
 		if (folder.contains("/"))
-			folder = folder.substring(folder.lastIndexOf("/"), folder.length());
+			folder = folder.substring(folder.lastIndexOf("/") + 1, folder.length());
 		else if (folder.contains("\\"))
-			folder = folder.substring(folder.lastIndexOf("\\"), folder.length());
+			folder = folder.substring(folder.lastIndexOf("\\") + 1, folder.length());
 
 		return folder;
 	}
-	
+
 	public static String getCaminho(String path) {
 		String folder = path;
 
@@ -218,5 +244,11 @@ public class Util {
 			folder = folder.substring(0, folder.lastIndexOf("\\"));
 
 		return folder;
+	}
+
+	public static WritableImage criaSnapshot(Node node) {
+		SnapshotParameters snapshotParams = new SnapshotParameters();
+		WritableImage image = node.snapshot(snapshotParams, null);
+		return image;
 	}
 }
