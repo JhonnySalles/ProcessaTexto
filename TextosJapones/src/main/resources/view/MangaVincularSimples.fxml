@@ -8,11 +8,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox fx:id="hbRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangaVincularSimplesController">
+<HBox fx:id="hbRoot" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangaVincularSimplesController">
    <children>
-      <AnchorPane fx:id="root" maxHeight="300.0" maxWidth="200.0" minHeight="300.0" minWidth="200.0" prefHeight="300.0" prefWidth="200.0" styleClass="background-page">
+      <AnchorPane fx:id="root" maxHeight="300.0" maxWidth="200.0" minHeight="200.0" minWidth="100.0" prefHeight="200.0" prefWidth="130.0" styleClass="background-page">
          <children>
-            <ImageView fx:id="imagem" fitHeight="300.0" fitWidth="200.0" layoutX="39.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ImageView fx:id="imagem" fitHeight="200.0" fitWidth="130.0" layoutX="39.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Text fx:id="numero" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <VBox style="-fx-opacity: 5;" styleClass="background-SemiTransparent-Black" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
@@ -23,7 +23,7 @@
                   </Text>
                </children>
                <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </VBox>
          </children>

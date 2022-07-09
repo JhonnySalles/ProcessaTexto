@@ -385,6 +385,7 @@ public class VinculoPagina implements Serializable {
 			this.vinculadoEsquerdaPaginas = 0;
 			this.isVinculadoEsquerdaPaginaDupla = false;
 			this.vinculadoEsquerdaHash = "";
+			this.imagemVinculadoEsquerda = null;
 		}
 
 		return movido;
@@ -398,6 +399,7 @@ public class VinculoPagina implements Serializable {
 		this.isVinculadoDireitaPaginaDupla = false;
 		this.isImagemDupla = false;
 		this.vinculadoDireitaHash = "";
+		this.imagemVinculadoDireita = null;
 	}
 
 	public VinculoPagina() {

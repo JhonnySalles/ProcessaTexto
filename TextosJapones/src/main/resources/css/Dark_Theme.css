@@ -207,6 +207,7 @@
 /*---------- Estilos do scroll ----------*/
 .scroll-pane {
 	-fx-background-color: black;
+	-fx-background: black;
 }
 
 .scroll-bar:horizontal, .scroll-bar:vertical {
@@ -604,17 +605,17 @@
 	-fx-background-color: #4052ab;
 }
 
-.list-black .list-view .list-cell {
-	-fx-background-color: #333333;
+.list-black .list-cell {
+	-fx-background-color: #000000;
 	-fx-text-fill: white;
 }
 
-.list-black .list-view .list-cell:odd {
-	-fx-background-color: #212121;
+.list-black .list-cell:odd {
+	-fx-background-color: #000000;
 	-fx-text-fill: white;
 }
 
-.list-black .list-view .list-cell:selected {
+.list-black .list-cell:selected {
     -fx-background-color: #4052ab;
 }
 
@@ -622,6 +623,11 @@
 	-fx-background-color: rgba(0, 0, 0, 0.5);
     -fx-border-radius: 10;
     -fx-background-radius: 0 0 10 10;
+}
+
+.bacground-vinculo-funcoes {
+	-fx-background-color: #212121;
+	-fx-background: #212121;
 }
 
 .background-page {
@@ -643,15 +649,17 @@
     -fx-background-repeat: no-repeat;
 }
 
+
 .on-drag:drag-iniciado {
 	-fx-border-width: 2;
     -fx-border-color: #00cc00;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0)
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
 
 .on-drag:drag-selecionado {
 	-fx-border-width: 2;
     -fx-border-color: #00cc00;
     -fx-background-color: #02471c;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0)
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }

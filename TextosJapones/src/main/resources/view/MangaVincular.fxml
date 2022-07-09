@@ -3,45 +3,47 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTabPane?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasVincularController">
-   <children>          
-	  <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-		   <children>
-            <VBox prefWidth="300.0" spacing="10.0">
-               <children>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0">
-                     <children>
-                        <JFXTextField fx:id="txtArquivoOriginal" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
-      		            <JFXButton fx:id="btnOriginal" accessibleText="PROCESSAR" buttonType="RAISED" minWidth="120.0" onAction="#onBtnOriginal" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Original" />
-                        <JFXTextField fx:id="txtArquivoVinculado" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
-      		            <JFXButton fx:id="btnVinculado" buttonType="RAISED" minWidth="120.0" onAction="#onBtnVinculado" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Arquivo Vinculado" />
-                     </children>
-                     <VBox.margin>
-                        <Insets top="5.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-               <padding>
-                  <Insets top="5.0" />
-               </padding>
-            </VBox>
-            <HBox spacing="10.0" VBox.vgrow="ALWAYS">
-               <children>
+   <children>
+      <HBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ScrollPane fitToWidth="true" minWidth="250.0" styleClass="bacground-vinculo-funcoes">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <content>
                   <VBox prefWidth="200.0" spacing="15.0">
                      <children>
+                        <HBox spacing="5.0">
+                           <children>
+                              <JFXTextField fx:id="txtArquivoOriginal" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Arquivo Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
+            		            <JFXButton fx:id="btnOriginal" accessibleText="PROCESSAR" buttonType="RAISED" minWidth="70.0" onAction="#onBtnOriginal" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Original" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="5.0">
+                           <children>
+                              <JFXTextField fx:id="txtArquivoVinculado" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Arquivo Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
+            		            <JFXButton fx:id="btnVinculado" buttonType="RAISED" minWidth="70.0" onAction="#onBtnVinculado" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Vinculado" />
+                           </children>
+                        </HBox>
                         <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
       		            <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" />
                         <VBox alignment="CENTER_LEFT">
@@ -69,7 +71,7 @@
                               </JFXButton>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
                               <JFXButton fx:id="btnOrderAutomatico" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderAutomatico" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção automática">
                                  <tooltip>
@@ -129,25 +131,67 @@
                         </JFXButton>
                         <JFXButton fx:id="btnDeletar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="200.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
                         <JFXButton fx:id="btnSalvar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="200.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
+                        <JFXTabPane VBox.vgrow="ALWAYS">
+                           <tabs>
+                            <Tab text="Original">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <JFXListView fx:id="lvCapitulosOriginal" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                            <Tab text="Vinculado">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <JFXListView fx:id="lvCapitulosVinculado" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                           </tabs>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </JFXTabPane>
                      </children>
-                     <HBox.margin>
-                        <Insets top="10.0" />
-                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+                     </padding>
                   </VBox>
-                  <ListView fx:id="lvPaginasNaoVinculadas" maxWidth="150.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               </content>
+            </ScrollPane>
+            <ListView fx:id="lvPaginasNaoVinculadas" maxWidth="150.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <styleClass>
+                  <String fx:value="paneBorder" />
+                  <String fx:value="list-black" />
+                  <String fx:value="on-drag-not-linked" />
+                  <String fx:value="on-drag" />
+               </styleClass>
+            </ListView>
+            <AnchorPane HBox.hgrow="ALWAYS">
+               <children>
+                  <ListView fx:id="lvPaginasVinculadas" prefHeight="300.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <styleClass>
                         <String fx:value="paneBorder" />
-                        <String fx:value="on-drag-not-linked" />
-                        <String fx:value="on-drag" />
+                        <String fx:value="list-black" />
                      </styleClass></ListView>
-                  <ListView fx:id="lvPaginasVinculadas" prefHeight="300.0" prefWidth="300.0" styleClass="paneBorder" HBox.hgrow="ALWAYS" />
+                  <AnchorPane fx:id="apDragScroolUp" maxHeight="150.0" minHeight="150.0" onDragOver="#onDragScroolUp" prefHeight="150.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Pane maxHeight="50.0" minWidth="50.0" onDragOver="#onDragScroolUpFast" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="apDragScroolDown" maxHeight="150.0" minHeight="150.0" onDragOver="#onDragScroolDown" prefHeight="150.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <Pane maxHeight="50.0" minWidth="50.0" onDragOver="#onDragScroolDownFast" prefHeight="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
                </children>
-            </HBox>
-		   </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-		</VBox>                
+            </AnchorPane>
+         </children>
+      </HBox>                
    </children>
    <styleClass>
       <String fx:value="background-Black2" />

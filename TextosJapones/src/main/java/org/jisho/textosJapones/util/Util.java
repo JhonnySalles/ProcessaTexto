@@ -7,6 +7,10 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.jisho.textosJapones.model.enums.Api;
@@ -14,8 +18,12 @@ import org.jisho.textosJapones.parse.Parse;
 import org.jisho.textosJapones.parse.ParseFactory;
 import org.jisho.textosJapones.parse.RarParse;
 
+import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.ListView;
+import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.DataFormat;
 import javafx.util.Pair;
@@ -250,5 +258,53 @@ public class Util {
 		SnapshotParameters snapshotParams = new SnapshotParameters();
 		WritableImage image = node.snapshot(snapshotParams, null);
 		return image;
+	}
+
+	public static Integer getFirstVisibleIndex(ListView<?> t) {
+		try {
+			ListViewSkin<?> ts = (ListViewSkin<?>) t.getSkin();
+			VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+			Integer first = vf.getFirstVisibleCell().getIndex();
+			// System.out.println("##### Scrolling last " + first);
+			return first;
+		} catch (Exception ex) {
+			System.out.println("##### Scrolling: Exception " + ex);
+			return null;
+		}
+
+	}
+
+	public static Integer getLastVisibleIndex(ListView<?> t) {
+		try {
+			ListViewSkin<?> ts = (ListViewSkin<?>) t.getSkin();
+			VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+			Integer last = vf.getLastVisibleCell().getIndex();
+			// System.out.println("##### Scrolling last " + last);
+			return last;
+		} catch (Exception ex) {
+			System.out.println("##### Scrolling: Exception " + ex);
+			return null;
+		}
+	}
+
+	public static void getCapitulos(Parse parse, Map<String, Integer> lista, ListView<String> tabela) {
+		Pair<Map<String, Integer>, List<String>> capitulos = getCapitulos(parse);
+
+		lista.clear();
+		lista.putAll(capitulos.getKey());
+		tabela.setItems(FXCollections.observableArrayList(capitulos.getValue()));
+	}
+
+	public static Pair<Map<String, Integer>, List<String>> getCapitulos(Parse parse) {
+		if (parse == null)
+			return new Pair<Map<String, Integer>, List<String>>(new HashMap<String, Integer>(),
+					new ArrayList<String>());
+		Map<String, Integer> capitulos = parse.getPastas() ;
+		List<String> descricao = new ArrayList<String>(capitulos.keySet());
+		descricao.sort((a, b) -> a.compareToIgnoreCase(b));
+		Pair<Map<String, Integer>, List<String>> itens = new Pair<Map<String, Integer>, List<String>>(capitulos,
+				descricao);
+
+		return itens;
 	}
 }

@@ -15,7 +15,7 @@
          <children>
             <ImageView fx:id="originalImagem" fitHeight="300.0" fitWidth="230.0" nodeOrientation="INHERIT" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Text fx:id="originalNumero" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <VBox alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <VBox fx:id="originalNomeRoot" alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Text fx:id="originalNomePagina" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
                      <font>
@@ -33,7 +33,7 @@
          <children>
             <ImageView fx:id="esquerdaImagem" fitHeight="300.0" fitWidth="230.0" layoutX="39.0" layoutY="89.0" nodeOrientation="INHERIT" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Text fx:id="esquerdaNumero" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <VBox alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <VBox fx:id="esquerdaNomeRoot" alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Text fx:id="esquerdaNomePagina" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
                      <font>
@@ -55,7 +55,7 @@
          <children>
             <ImageView fx:id="direitaImagem" fitHeight="300.0" fitWidth="230.0" layoutX="39.0" layoutY="89.0" nodeOrientation="INHERIT" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Text fx:id="direitaNumero" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <VBox alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <VBox fx:id="direitaNomeRoot" alignment="CENTER_LEFT" styleClass="background-title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Text fx:id="direitaNomePagina" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
                      <font>
