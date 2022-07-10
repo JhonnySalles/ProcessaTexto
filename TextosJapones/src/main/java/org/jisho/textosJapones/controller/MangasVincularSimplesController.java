@@ -18,13 +18,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class MangaVincularSimplesController implements Initializable {
+public class MangasVincularSimplesController implements Initializable {
 
 	@FXML
 	public HBox hbRoot;
-	
+
 	@FXML
 	public AnchorPane root;
 
@@ -35,34 +36,37 @@ public class MangaVincularSimplesController implements Initializable {
 	public Text numero;
 
 	@FXML
+	public VBox nomeRoot;
+
+	@FXML
 	public Text nomePagina;
-	
+
 	private VinculoListener listener;
-	
+
 	public void setDados(VinculoPagina vinculo) {
 		imagem.setImage(vinculo.getImagemVinculadoEsquerda());
 		numero.setText(vinculo.getVinculadoEsquerdaPagina().toString());
 		nomePagina.setText(vinculo.getVinculadoEsquerdaNomePagina());
-		
-		root.setOnDragDetected(new EventHandler <MouseEvent>() {
-            public void handle(MouseEvent event) {	                
-                listener.onDragStart();
-                Dragboard db = root.startDragAndDrop(TransferMode.ANY);
-                
-                db.setDragView(Util.criaSnapshot(root), event.getX(), event.getY());
-                
-                vinculo.onDragOrigem = Pagina.NAO_VINCULADO;
-                ClipboardContent content = new ClipboardContent();
-                content.put(Util.VINCULO_ITEM_FORMAT, vinculo);
-                content.put(Util.NUMERO_PAGINA_ITEM_FORMAT, vinculo.getVinculadoEsquerdaPagina().toString());
-                content.putString(vinculo.getVinculadoEsquerdaNomePagina());
-                db.setContent(content);
-                
-                event.consume();
-            }
-        });
+
+		root.setOnDragDetected(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent event) {
+				listener.onDragStart();
+				Dragboard db = root.startDragAndDrop(TransferMode.ANY);
+
+				db.setDragView(Util.criaSnapshot(root), event.getX(), event.getY());
+
+				vinculo.onDragOrigem = Pagina.NAO_VINCULADO;
+				ClipboardContent content = new ClipboardContent();
+				content.put(Util.VINCULO_ITEM_FORMAT, vinculo);
+				content.put(Util.NUMERO_PAGINA_ITEM_FORMAT, vinculo.getVinculadoEsquerdaPagina().toString());
+				content.putString(vinculo.getVinculadoEsquerdaNomePagina());
+				db.setContent(content);
+
+				event.consume();
+			}
+		});
 	}
-	
+
 	public void setListener(VinculoListener listener) {
 		this.listener = listener;
 	}
@@ -73,10 +77,11 @@ public class MangaVincularSimplesController implements Initializable {
 		imagem.fitWidthProperty().bind(root.widthProperty());
 		imagem.fitHeightProperty().bind(root.heightProperty());
 		imagem.setPreserveRatio(true);
-		
+		imagem.fitWidthProperty().bind(nomeRoot.widthProperty());
+
 	}
 
 	public static URL getFxmlLocate() {
-		return MangaVincularSimplesController.class.getResource("/view/MangaVincularSimples.fxml");
+		return MangasVincularSimplesController.class.getResource("/view/MangaVincularSimples.fxml");
 	}
 }

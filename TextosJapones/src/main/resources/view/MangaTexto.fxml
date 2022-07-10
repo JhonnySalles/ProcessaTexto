@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasTextoController">
+   <children>
+      <HBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox alignment="TOP_CENTER" spacing="15.0">
+               <children>
+                  <JFXButton fx:id="btnRecarregar" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Recarregar">
+                     <tooltip>
+                        <Tooltip text="Recarregar" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/file_link/icoRecarregar.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="btnOrderSequencia" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção sequencia da página">
+                     <tooltip>
+                        <Tooltip text="Ordenanção sequencia da página" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/file_link/icoOrdenarSequencia.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="btnOrderPaginaDupla" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenar página dupla">
+                     <tooltip>
+                        <Tooltip text="Ordenar página dupla" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/file_link/icoOrdenarPaginaDupla.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="btnOrderPaginaUnica" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenar página unica">
+                     <tooltip>
+                        <Tooltip text="Ordenar página unica" />
+                     </tooltip>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/file_link/icoOrdenarPaginaUnica.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+               <padding>
+                  <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+               </padding>
+            </VBox>
+            <AnchorPane HBox.hgrow="ALWAYS">
+               <children>
+                  <ListView fx:id="lvPaginasVinculadas" prefHeight="300.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <styleClass>
+                        <String fx:value="paneBorder" />
+                        <String fx:value="list-black" />
+                     </styleClass></ListView>
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>                
+   </children>
+   <styleClass>
+      <String fx:value="background-Black2" />
+      <String fx:value="paneBorder" />
+   </styleClass>
+</AnchorPane>

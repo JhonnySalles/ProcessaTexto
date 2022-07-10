@@ -23,7 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class MangaVincularCelulaController implements Initializable {
+public class MangasVincularCelulaController implements Initializable {
 
 	final PseudoClass ON_DRAG_SELECIONADO = PseudoClass.getPseudoClass("drag-selecionado");
 
@@ -38,7 +38,7 @@ public class MangaVincularCelulaController implements Initializable {
 
 	@FXML
 	public Text originalNumero;
-	
+
 	@FXML
 	public VBox originalNomeRoot;
 
@@ -53,7 +53,7 @@ public class MangaVincularCelulaController implements Initializable {
 
 	@FXML
 	public Text esquerdaNumero;
-	
+
 	@FXML
 	public VBox esquerdaNomeRoot;
 
@@ -71,7 +71,7 @@ public class MangaVincularCelulaController implements Initializable {
 
 	@FXML
 	public VBox direitaNomeRoot;
-	
+
 	@FXML
 	public Text direitaNomePagina;
 
@@ -81,32 +81,31 @@ public class MangaVincularCelulaController implements Initializable {
 		originalImagem.setImage(vinculo.getImagemOriginal());
 		originalNumero.setText(vinculo.getOriginalPagina().toString());
 		originalNomePagina.setText(vinculo.getOriginalNomePagina());
-		
+
 		hbRoot.setOnDragEntered(new EventHandler<DragEvent>() {
 			public void handle(DragEvent event) {
 				if (vinculo.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
 					direitaRoot.setVisible(true);
 					direitaRoot.setPrefWidth(esquerdaRoot.getWidth());
 				}
-	
+
 			}
 		});
-		
+
 		hbRoot.setOnDragExited(new EventHandler<DragEvent>() {
 			public void handle(DragEvent event) {
 				if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
 					direitaRoot.setVisible(false);
-	
+
 			}
 		});
-		
+
 		hbRoot.setOnDragDone(new EventHandler<DragEvent>() {
 			public void handle(DragEvent event) {
 				if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
 					direitaRoot.setVisible(false);
 			}
 		});
-
 
 		if (vinculo.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
 			limpaDrop(direitaRoot);
@@ -196,7 +195,7 @@ public class MangaVincularCelulaController implements Initializable {
 
 	}
 
-	private void configuraDrop(AnchorPane pane,  VinculoPagina destino, Pagina tipo) {
+	private void configuraDrop(AnchorPane pane, VinculoPagina destino, Pagina tipo) {
 		pane.setOnDragOver(new EventHandler<DragEvent>() {
 			public void handle(DragEvent event) {
 				if (event.getGestureSource() != pane && event.getDragboard().hasContent(Util.VINCULO_ITEM_FORMAT))
@@ -210,7 +209,7 @@ public class MangaVincularCelulaController implements Initializable {
 			public void handle(DragEvent event) {
 				if (event.getGestureSource() != pane)
 					pane.pseudoClassStateChanged(ON_DRAG_SELECIONADO, true);
-		
+
 				event.consume();
 			}
 		});
@@ -249,20 +248,23 @@ public class MangaVincularCelulaController implements Initializable {
 		originalImagem.fitWidthProperty().bind(originalRoot.widthProperty());
 		originalImagem.fitHeightProperty().bind(originalRoot.heightProperty());
 		originalImagem.setPreserveRatio(true);
+		originalImagem.fitWidthProperty().bind(originalNomeRoot.widthProperty());
 
 		esquerdaImagem.fitWidthProperty().bind(esquerdaRoot.widthProperty());
 		esquerdaImagem.fitHeightProperty().bind(esquerdaRoot.heightProperty());
 		esquerdaImagem.setPreserveRatio(true);
+		esquerdaImagem.fitWidthProperty().bind(esquerdaNomeRoot.widthProperty());
 
 		direitaImagem.fitWidthProperty().bind(direitaRoot.widthProperty());
 		direitaImagem.fitHeightProperty().bind(direitaRoot.heightProperty());
 		direitaImagem.setPreserveRatio(true);
+		direitaImagem.fitWidthProperty().bind(direitaNomeRoot.widthProperty());
 
 		direitaRoot.managedProperty().bind(direitaRoot.visibleProperty());
 
 	}
 
 	public static URL getFxmlLocate() {
-		return MangaVincularCelulaController.class.getResource("/view/MangaVincularCelula.fxml");
+		return MangasVincularCelulaController.class.getResource("/view/MangaVincularCelula.fxml");
 	}
 }

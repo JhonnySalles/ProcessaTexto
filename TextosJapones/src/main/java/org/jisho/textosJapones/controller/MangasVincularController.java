@@ -151,7 +151,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private ListView<String> lvCapitulosVinculado;
 
-	JFXAutoCompletePopup<String> autoCompleteManga;
+	private JFXAutoCompletePopup<String> autoCompleteManga;
 
 	private File arquivoOriginal;
 	private File arquivoVinculado;
@@ -1117,7 +1117,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 						if (empty || item == null)
 							setGraphic(null);
 						else {
-							FXMLLoader mLLoader = new FXMLLoader(MangaVincularCelulaController.getFxmlLocate());
+							FXMLLoader mLLoader = new FXMLLoader(MangasVincularCelulaController.getFxmlLocate());
 
 							try {
 								mLLoader.load();
@@ -1125,7 +1125,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								e.printStackTrace();
 							}
 
-							MangaVincularCelulaController controller = mLLoader.getController();
+							MangasVincularCelulaController controller = mLLoader.getController();
 							controller.setDados(item);
 							controller.setListener(MangasVincularController.this);
 
@@ -1150,7 +1150,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 						if (empty || item == null)
 							setGraphic(null);
 						else {
-							FXMLLoader mLLoader = new FXMLLoader(MangaVincularSimplesController.getFxmlLocate());
+							FXMLLoader mLLoader = new FXMLLoader(MangasVincularSimplesController.getFxmlLocate());
 
 							try {
 								mLLoader.load();
@@ -1158,7 +1158,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								e.printStackTrace();
 							}
 
-							MangaVincularSimplesController controller = mLLoader.getController();
+							MangasVincularSimplesController controller = mLLoader.getController();
 							controller.setDados(item);
 							controller.setListener(MangasVincularController.this);
 
