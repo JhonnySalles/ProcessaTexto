@@ -106,8 +106,10 @@ public class VincularServices {
 		return dao.getTabelas();
 	}
 
-	public List<String> getMangas(String base) throws ExcessaoBd {
-		return dao.getMangas(base);
+	public List<String> getMangas(String base, Language linguagem) throws ExcessaoBd {
+		if (base == null || linguagem == null)
+			return new ArrayList<String>();
+		return dao.getMangas(base, linguagem);
 	}
 
 	// ------------------------------------------------------------------------

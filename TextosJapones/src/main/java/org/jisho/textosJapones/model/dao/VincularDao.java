@@ -23,7 +23,7 @@ public interface VincularDao {
 
 	Boolean createTabelas(String nome) throws ExcessaoBd;
 
-	List<String> getMangas(String base) throws ExcessaoBd;
+	List<String> getMangas(String base, Language linguagem) throws ExcessaoBd;
 
 	List<String> getTabelas() throws ExcessaoBd;
 
