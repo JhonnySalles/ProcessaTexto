@@ -53,10 +53,10 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXCheckBox cbDuplicados;
-	
+
 	@FXML
 	private JFXCheckBox cbSubstituirKanji;
-	
+
 	@FXML
 	private JFXButton btnExcluir;
 
@@ -83,7 +83,7 @@ public class RevisarController implements Initializable {
 
 	@FXML
 	private JFXTextField txtSimilar;
-	
+
 	@FXML
 	private JFXCheckBox cbSimilar;
 
@@ -168,7 +168,7 @@ public class RevisarController implements Initializable {
 			pesquisar();
 		}
 	}
-	
+
 	@FXML
 	private void onBtnExcluir() {
 		if (revisando == null)
@@ -195,25 +195,25 @@ public class RevisarController implements Initializable {
 	private void onBtnFormatar() {
 		if (txtAreaPortugues.getText().isEmpty())
 			return;
-		
+
 		if (cbDuplicados.isSelected()) {
 			String separador = null;
-			
+
 			if (txtAreaPortugues.getText().contains(";"))
 				separador = "\\;";
 			else if (txtAreaPortugues.getText().contains(","))
 				separador = "\\,";
-			
+
 			if (separador != null) {
 				String[] split = txtAreaPortugues.getText().toLowerCase().split(separador);
-				split[split.length -1] = split[split.length -1].replace(".", "");
+				split[split.length - 1] = split[split.length - 1].replace(".", "");
 				split = Arrays.stream(split).map(String::trim).toArray(String[]::new);
 				String limpo = Arrays.stream(split).distinct().collect(Collectors.joining(", "));
 				txtAreaPortugues.setText(limpo + ".");
 			}
 		}
 
-		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));		
+		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));
 	}
 
 	private void limpaCampos() {
@@ -232,38 +232,61 @@ public class RevisarController implements Initializable {
 		txtAreaPortugues.setText("");
 	}
 
-	public void pesquisar() {
-		txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
-		
-		try {
-			if (cbCorrecao.isSelected()) {
-				corrigindo = vocabulario.select(txtPesquisar.getText().trim());
-				if (corrigindo.getTraducao().isEmpty())
-					corrigindo = null;
-			} else
-				revisando = service.selectRevisar(txtPesquisar.getText(), cbAnime.isSelected(), cbManga.isSelected());
-
-			if (!txtPesquisar.getText().isEmpty() && revisando == null && corrigindo == null)
-				txtPesquisar.setUnFocusColor(Color.RED);
-
+	private Boolean pesquisaCorrecao(String pesquisar) throws ExcessaoBd {
+		corrigindo = vocabulario.select(pesquisar);
+		if (corrigindo != null && !corrigindo.getTraducao().isEmpty()) {
 			txtSimilar.setText("");
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
 				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
-			} else if (revisando != null) {
-				if (cbSimilar.isSelected())
-					similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());		
+			}
+
+			return true;
+		} else
+			return false;
+	}
+
+	private Boolean pesquisaRevisao(String pesquisar) throws ExcessaoBd {
+		revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected());
+		if (revisando != null) {
+			if (cbSimilar.isSelected())
+				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
+			else
+				similar = new ArrayList<Revisar>();
+
+			txtVocabulario.setText(revisando.getVocabulario());
+			txtAreaIngles.setText(revisando.getIngles());
+			txtAreaPortugues.setText(Util.normalize(revisando.getTraducao()));
+
+			if (similar.size() > 0)
+				txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));
+			else
+				txtSimilar.setText("");
+
+			return true;
+		} else
+			return false;
+	}
+
+	public void pesquisar() {
+		txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
+		String pesquisar = txtPesquisar.getText().trim();
+
+		try {
+			if (pesquisar.isEmpty())
+				pesquisaRevisao(pesquisar);
+			else if (cbCorrecao.isSelected() && pesquisaCorrecao(pesquisar))
+				return;
+			else if (pesquisaRevisao(pesquisar))
+				return;
+			else {
+				txtPesquisar.setUnFocusColor(Color.RED);
+
+				if (!cbCorrecao.isSelected())
+					cbCorrecao.setSelected(true);
 				else
-					similar = new ArrayList<Revisar>();
-
-				txtVocabulario.setText(revisando.getVocabulario());
-				txtAreaIngles.setText(revisando.getIngles());
-				txtAreaPortugues.setText(Util.normalize(revisando.getTraducao()));
-
-				if (similar.size() > 0)
-					txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));
-			} else
-				limpaCampos();
+					limpaCampos();
+			}
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 		}
@@ -325,7 +348,7 @@ public class RevisarController implements Initializable {
 		txtAreaIngles.setText(Jisho.processa(txtVocabulario.getText()));
 		onBtnTraduzir();
 	}
-	
+
 	@FXML
 	private void onBtnKanshudo() {
 		if (txtVocabulario.getText().isEmpty())
@@ -369,10 +392,11 @@ public class RevisarController implements Initializable {
 			if (cbSubstituirKanji.isSelected())
 				if (newVal.matches(allFlag + notJapanese + allFlag))
 					Platform.runLater(() -> {
-						txtPesquisar.setText(newVal.replaceFirst(" - ", "").replaceAll(notJapanese, ""));
+						String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
+						txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
 
 						if (newVal.matches(allFlag + japanese + allFlag))
-							frasePortugues = newVal.replaceFirst(" - ", "").replaceAll(japanese, "");
+							frasePortugues = texto.replaceAll(japanese, "");
 					});
 		});
 
@@ -385,7 +409,7 @@ public class RevisarController implements Initializable {
 					txtAreaPortugues.setText(frasePortugues);
 					onBtnFormatar();
 				}
-					
+
 				frasePortugues = "";
 			}
 		});
@@ -397,12 +421,12 @@ public class RevisarController implements Initializable {
 					robot.keyPress(KeyCode.TAB);
 			}
 		});
-		
+
 		cbCorrecao.selectedProperty().addListener((o, oldVal, newVal) -> {
 			if (newVal)
-				limpaCampos();
-			else
 				pesquisar();
+			else
+				limpaCampos();
 		});
 
 		cbSimilar.selectedProperty().addListener((o, oldVal, newVal) -> {
