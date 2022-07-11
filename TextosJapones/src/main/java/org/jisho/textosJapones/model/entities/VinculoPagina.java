@@ -496,6 +496,74 @@ public class VinculoPagina implements Serializable {
 		this.vinculadoDireitaHash = "";
 		this.vinculadoEsquerdaHash = vinculadoEsquerdaHash;
 	}
+	
+	public VinculoPagina(Long id, String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
+			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
+			MangaPagina mangaPaginaEsquerda, Boolean naoVinculado) {
+		this.id = id;
+		this.originalNomePagina = "";
+		this.originalPathPagina = "";
+		this.originalPagina = PAGINA_VAZIA;
+		this.originalPaginas = 0;
+		this.vinculadoDireitaNomePagina = "";
+		this.vinculadoDireitaPathPagina = "";
+		this.vinculadoDireitaPagina = PAGINA_VAZIA;
+		this.vinculadoDireitaPaginas = 0;
+		this.vinculadoEsquerdaNomePagina = vinculadoEsquerdaNomePagina;
+		this.vinculadoEsquerdaPathPagina = vinculadoEsquerdaPathPagina;
+		this.vinculadoEsquerdaPagina = vinculadoEsquerdaPagina;
+		this.vinculadoEsquerdaPaginas = vinculadoEsquerdaPaginas;
+		this.mangaPaginaOriginal = null;
+		this.mangaPaginaDireita = null;
+		this.mangaPaginaEsquerda = mangaPaginaEsquerda;
+		this.imagemOriginal = null;
+		this.imagemVinculadoDireita = null;
+		this.imagemVinculadoEsquerda = null;
+		this.isOriginalPaginaDupla = false;
+		this.isVinculadoDireitaPaginaDupla = false;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
+		this.isImagemDupla = false;
+		this.isNaoVinculado = naoVinculado;
+		this.originalHash = "";
+		this.vinculadoDireitaHash = "";
+		this.vinculadoEsquerdaHash = "";
+	}
+	
+	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
+			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
+			String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
+			Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
+			String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
+			Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
+			MangaPagina mangaPaginaEsquerda, Boolean imagemDupla, Boolean naoVinculado) {
+		this.id = id;
+		this.originalNomePagina = originalNomePagina;
+		this.originalPathPagina = originalPathPagina;
+		this.originalPagina = originalPagina;
+		this.originalPaginas = originalPaginas;
+		this.isOriginalPaginaDupla = isOriginalPaginaDupla;
+		this.vinculadoDireitaNomePagina = vinculadoDireitaNomePagina;
+		this.vinculadoDireitaPathPagina = vinculadoDireitaPathPagina;
+		this.vinculadoDireitaPagina = vinculadoDireitaPagina;
+		this.vinculadoDireitaPaginas = vinculadoDireitaPaginas;
+		this.isVinculadoDireitaPaginaDupla = isVinculadoDireitaPaginaDupla;
+		this.vinculadoEsquerdaNomePagina = vinculadoEsquerdaNomePagina;
+		this.vinculadoEsquerdaPathPagina = vinculadoEsquerdaPathPagina;
+		this.vinculadoEsquerdaPagina = vinculadoEsquerdaPagina;
+		this.vinculadoEsquerdaPaginas = vinculadoEsquerdaPaginas;
+		this.isVinculadoEsquerdaPaginaDupla = isVinculadoEsquerdaPaginaDupla;
+		this.mangaPaginaOriginal = mangaPaginaOriginal;
+		this.mangaPaginaDireita = mangaPaginaDireita;
+		this.mangaPaginaEsquerda = mangaPaginaEsquerda;
+		this.imagemOriginal = null;
+		this.imagemVinculadoDireita = null;
+		this.imagemVinculadoEsquerda = null;
+		this.isImagemDupla = imagemDupla;
+		this.isNaoVinculado = naoVinculado;
+		this.originalHash = "";
+		this.vinculadoDireitaHash = "";
+		this.vinculadoEsquerdaHash = "";
+	}
 
 	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
 			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.jisho.textosJapones.model.dao.VincularDao;
+import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vinculo;
@@ -20,6 +21,8 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 import org.jisho.textosJapones.util.configuration.Configuracao;
 import org.jisho.textosJapones.util.mysql.DB;
+
+import javafx.scene.image.Image;
 
 public class VincularDaoJDBC implements VincularDao {
 
@@ -261,6 +264,78 @@ public class VincularDaoJDBC implements VincularDao {
 		return null;
 	}
 
+	private MangaPagina selectPagina(String base, Long id) {
+		if (id == null)
+			return null;
+
+		return null;
+	}
+
+	private void selectVinculados(String base, Long idVinculo) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(String.format(SELECT_PAGINA, BASE_MANGA + base));
+			st.setLong(1, idVinculo);
+			rs = st.executeQuery();
+
+			List<VinculoPagina> list = new ArrayList<VinculoPagina>();
+			while (rs.next()) {
+				MangaPagina mangaPaginaOriginal = selectPagina(base, rs.getLong(7));
+				MangaPagina mangaPaginaDireita = selectPagina(base, rs.getLong(7));
+				MangaPagina mangaPaginaEsquerda = selectPagina(base, rs.getLong(7));
+				
+				list.add(new VinculoPagina(rs.getLong(1), rs.getString(2), rs.getString(2), rs.getInt(2), rs.getInt(2),
+						rs.getBoolean(2), rs.getString(2), rs.getString(2), rs.getInt(2), rs.getInt(2),
+						rs.getBoolean(2), rs.getString(2), rs.getString(2), rs.getInt(2), rs.getInt(2),
+						rs.getBoolean(2), mangaPaginaOriginal, mangaPaginaDireita, mangaPaginaEsquerda,
+						rs.getBoolean(0), true));
+			}
+
+			/*
+			 * Long id, String originalNomePagina, String originalPathPagina, Integer
+			 * originalPagina, Integer originalPaginas, Boolean isOriginalPaginaDupla,
+			 * String vinculadoDireitaNomePagina, String vinculadoDireitaPathPagina, Integer
+			 * vinculadoDireitaPagina, Integer vinculadoDireitaPaginas, Boolean
+			 * isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina, String
+			 * vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer
+			 * vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina
+			 * mangaPaginaOriginal, MangaPagina mangaPaginaDireita, MangaPagina
+			 * mangaPaginaEsquerda, Boolean imagemDupla, Boolean naoVinculado
+			 */
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
+	private List<VinculoPagina> selectNaoVinculados(String base, Long idVinculo) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+
+			st = conn.prepareStatement(String.format(SELECT_PAGINA_NAO_VINCULADA, BASE_MANGA + base));
+			st.setLong(1, idVinculo);
+			rs = st.executeQuery();
+
+			List<VinculoPagina> list = new ArrayList<VinculoPagina>();
+			while (rs.next())
+				list.add(new VinculoPagina(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5),
+						rs.getBoolean(6), selectPagina(base, rs.getLong(7)), true));
+
+			return list;
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
 	@Override
 	public Vinculo select(String base, String manga, Integer volume, Language original, String arquivoOriginal,
 			Language vinculado, String arquivoVinculado) throws ExcessaoBd {
@@ -324,14 +399,60 @@ public class VincularDaoJDBC implements VincularDao {
 		return null;
 	}
 
+	private void deleteVinculado(String base, Long idVinculo) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(DELETE_PAGINA, BASE_MANGA + base));
+
+			st.setLong(1, idVinculo);
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
+	private void deleteNaoVinculado(String base, Long idVinculo) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(DELETE_PAGINA_NAO_VINCULADA, BASE_MANGA + base));
+
+			st.setLong(1, idVinculo);
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
 	@Override
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			// st = conn.prepareStatement(DELETE);
+			deleteVinculado(base, obj.getId());
+			deleteNaoVinculado(base, obj.getId());
 
-			// st.setString(1, obj.getKanji());
-			// st.setString(2, obj.getLeitura());
+			st = conn.prepareStatement(String.format(DELETE_VINCULO, BASE_MANGA + base));
+
+			st.setLong(1, obj.getId());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -349,21 +470,98 @@ public class VincularDaoJDBC implements VincularDao {
 
 	}
 
-	@Override
-	public void update(String base, Vinculo obj) throws ExcessaoBd {
+	private void updateVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			/*
-			 * st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, BASE_MANGA +
-			 * base, tabela), Statement.RETURN_GENERATED_KEYS);
-			 */
 
-			// st.setLong(1, id);
+			st = conn.prepareStatement(String.format(UPDATE_PAGINA, BASE_MANGA + base),
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setLong(1, idVinculo);
+			st.setString(2, pagina.getOriginalNomePagina());
+			st.setString(3, pagina.getOriginalPathPagina());
+			st.setInt(4, pagina.getOriginalPagina());
+			st.setInt(5, pagina.getOriginalPaginas());
+			st.setBoolean(6, pagina.isOriginalPaginaDupla);
+			st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+
+			st.setString(8, pagina.getVinculadoDireitaNomePagina());
+			st.setString(9, pagina.getVinculadoDireitaPathPagina());
+			st.setInt(10, pagina.getVinculadoDireitaPagina());
+			st.setInt(11, pagina.getVinculadoDireitaPaginas());
+			st.setBoolean(12, pagina.isVinculadoDireitaPaginaDupla);
+
+			if (pagina.getMangaPaginaDireita() != null)
+				st.setLong(13, pagina.getMangaPaginaDireita().getId());
+			else
+				st.setNString(13, null);
+
+			st.setString(14, pagina.getVinculadoEsquerdaNomePagina());
+			st.setString(15, pagina.getVinculadoEsquerdaPathPagina());
+			st.setInt(16, pagina.getVinculadoEsquerdaPagina());
+			st.setInt(17, pagina.getVinculadoEsquerdaPaginas());
+			st.setBoolean(18, pagina.isVinculadoEsquerdaPaginaDupla);
+
+			if (pagina.getMangaPaginaEsquerda() != null)
+				st.setLong(19, pagina.getMangaPaginaEsquerda().getId());
+			else
+				st.setNString(19, null);
+
+			st.setBoolean(20, pagina.isImagemDupla);
+			st.setLong(21, pagina.getId());
+
 			int rowsAffected = st.executeUpdate();
 
 			if (rowsAffected < 1) {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next())
+					pagina.setId(rs.getLong(1));
+
+			}
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
+	private void updateNaoVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
+		insertNaoVinculados(base, idVinculo, pagina);
+	}
+
+	@Override
+	public void update(String base, Vinculo obj) throws ExcessaoBd {
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(String.format(UPDATE_VINCULO, BASE_MANGA + base),
+					Statement.RETURN_GENERATED_KEYS);
+
+			st.setString(1, obj.getNomeArquivoOriginal());
+			st.setString(2, obj.getLinguagemOriginal().getSigla());
+			st.setLong(3, obj.getVolumeOriginal().getId());
+			st.setString(4, obj.getNomeArquivoVinculado());
+			st.setString(5, obj.getLinguagemVinculado().getSigla());
+			st.setLong(6, obj.getVolumeOriginal().getId());
+			st.setTimestamp(7, Timestamp.valueOf(obj.getUltimaAlteracao()));
+			st.setLong(8, obj.getId());
+
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected < 1) {
+				System.out.println(st.toString());
+				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+			} else {
+				for (VinculoPagina pagina : obj.getVinculados())
+					updateVinculados(base, obj.getId(), pagina);
+
+				deleteNaoVinculado(base, obj.getId());
+				for (VinculoPagina pagina : obj.getNaoVinculados())
+					updateNaoVinculados(base, obj.getId(), pagina);
 			}
 		} catch (SQLException e) {
 			System.out.println(st.toString());
