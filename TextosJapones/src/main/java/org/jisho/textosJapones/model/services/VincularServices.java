@@ -55,33 +55,39 @@ public class VincularServices {
 		}
 	}
 
-	public Vinculo select(String base, String manga, Integer volume, Language original, String arquivoOriginal,
-			Language vinculado, String arquivoVinculado) throws ExcessaoBd {
-		if (base == null)
+	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
+			String arquivoOriginal, String mangaVinculado, Language linguagemVinculado, String arquivoVinculado)
+			throws ExcessaoBd {
+		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
-		if (original != null && arquivoOriginal == null)
-			return select(base, manga, volume, original, vinculado);
-		else if (original == null && arquivoOriginal != null)
-			return select(base, manga, volume, arquivoOriginal, arquivoVinculado);
+		if (linguagemOriginal != null && linguagemVinculado != null
+				&& (mangaOriginal == null || mangaOriginal.isBlank())
+				&& (arquivoOriginal == null || mangaOriginal.isBlank()))
+			return select(base, volume, mangaOriginal, linguagemOriginal, mangaVinculado, linguagemVinculado);
+		else if (linguagemOriginal == null && linguagemVinculado == null
+				&& (mangaOriginal != null && !mangaOriginal.isBlank())
+				&& (arquivoOriginal != null && !mangaOriginal.isBlank()))
+			return select(base, volume, mangaOriginal, arquivoOriginal, mangaVinculado, arquivoVinculado);
 		else
-			return dao.select(base, manga, volume, original, arquivoOriginal, vinculado, arquivoVinculado);
+			return dao.select(base, volume, mangaOriginal, linguagemOriginal, arquivoOriginal, mangaVinculado,
+					linguagemVinculado, arquivoVinculado);
 	}
 
-	public Vinculo select(String base, String manga, Integer volume, String original, String vinculado)
-			throws ExcessaoBd {
-		if (base == null)
+	public Vinculo select(String base, Integer volume, String mangaOriginal, String original, String mangaVinculado,
+			String vinculado) throws ExcessaoBd {
+		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
-		return dao.select(base, manga, volume, original, vinculado);
+		return dao.select(base, volume, mangaOriginal, original, mangaVinculado, vinculado);
 	}
 
-	public Vinculo select(String base, String manga, Integer volume, Language original, Language vinculado)
-			throws ExcessaoBd {
-		if (base == null)
+	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
+			String mangaVinculado, Language linguagemVinculado) throws ExcessaoBd {
+		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
-		return dao.select(base, manga, volume, original, vinculado);
+		return dao.select(base, volume, mangaOriginal, linguagemOriginal, mangaVinculado, linguagemVinculado);
 	}
 
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {

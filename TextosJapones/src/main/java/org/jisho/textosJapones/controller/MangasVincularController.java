@@ -672,10 +672,10 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			String arquivoOriginal = this.arquivoOriginal != null ? this.arquivoOriginal.getName() : "";
 			String arquivoVinculado = this.arquivoVinculado != null ? this.arquivoVinculado.getName() : "";
 
-			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), txtMangaOriginal.getText(),
-					spnVolume.getValue(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(), arquivoOriginal,
-					cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
-
+			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), spnVolume.getValue(),
+					txtMangaOriginal.getText(),	cbLinguagemOrigem.getSelectionModel().getSelectedItem(), arquivoOriginal,
+					txtMangaVinculado.getText(), cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
+	
 			if (vinculo != null) {
 				this.vinculo = vinculo;
 

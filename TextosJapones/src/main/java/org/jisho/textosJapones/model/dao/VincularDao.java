@@ -10,12 +10,14 @@ public interface VincularDao {
 
 	void update(String base, Vinculo obj) throws ExcessaoBd;
 
-	Vinculo select(String base, String manga, Integer volume, Language original, String arquivoOriginal,
-			Language vinculado, String arquivoVinculado) throws ExcessaoBd;
+	Vinculo select(String base, Integer volume, String mangaOriginal, Language original, String arquivoOriginal,
+			String mangaVinculado, Language vinculado, String arquivoVinculado) throws ExcessaoBd;
 
-	Vinculo select(String base, String manga, Integer volume, String original, String vinculado) throws ExcessaoBd;
+	Vinculo select(String base, Integer volume, String mangaOriginal, String arquivoOriginal,
+			 String mangaVinculado, String arquivoVinculado) throws ExcessaoBd;
 
-	Vinculo select(String base, String manga, Integer volume, Language original, Language vinculado) throws ExcessaoBd;
+	Vinculo select(String base, Integer volume, String mangaOriginal, Language original,
+			String mangaVinculado, Language vinculado) throws ExcessaoBd;
 
 	void delete(String base, Vinculo obj) throws ExcessaoBd;
 
