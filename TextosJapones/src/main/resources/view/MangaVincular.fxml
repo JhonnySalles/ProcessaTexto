@@ -55,9 +55,10 @@
       		            <JFXTextField fx:id="txtMangaOriginal" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Manga Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
                         <JFXComboBox fx:id="cbLinguagemVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Linguagem do Vinculo" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
                         <JFXTextField fx:id="txtMangaVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Manga Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
+                        <JFXButton fx:id="btnCarregarLegendas" buttonType="RAISED" minWidth="100.0" onAction="#onBtnCarregarLegendas" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Carregar legendas" />
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <JFXButton fx:id="btnCarregarLegendas" buttonType="RAISED" minWidth="120.0" onAction="#onBtnCarregarLegendas" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Carregar legendas" />
+                              <JFXButton fx:id="btnVisualizarLegendas" buttonType="RAISED" minWidth="100.0" onAction="#onBtnVisualizarLegendas" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Visualizar Legendas" />
                               <JFXButton fx:id="btnRecarregar" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnRecarregar" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Recarregar">
                                  <tooltip>
                                     <Tooltip text="Recarregar" />
@@ -125,13 +126,13 @@
                            </children>
                         </HBox>
                         <JFXCheckBox fx:id="ckbPaginaDuplaCalculada" checkedColor="#71afe5" selected="true" text="Página dupla calculada?" textFill="WHITE" unCheckedColor="#106ebe" />
-                        <JFXButton fx:id="btnLimpar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnLimpar" prefWidth="200.0" ripplerFill="#0095ff" styleClass="background-White1" text="Limpar">
+                        <JFXButton fx:id="btnLimpar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnLimpar" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Limpar">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
                         </JFXButton>
-                        <JFXButton fx:id="btnDeletar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="200.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
-                        <JFXButton fx:id="btnSalvar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="200.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
+                        <JFXButton fx:id="btnDeletar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Deletar arquivo" />
+                        <JFXButton fx:id="btnSalvar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Salvar" />
                         <JFXTabPane VBox.vgrow="ALWAYS">
                            <tabs>
                             <Tab text="Original">

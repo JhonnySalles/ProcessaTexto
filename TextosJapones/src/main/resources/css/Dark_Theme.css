@@ -619,6 +619,19 @@
     -fx-background-color: #4052ab;
 }
 
+.table-black .table-row-cell {
+	-fx-background-color: #000000;
+}
+
+.table-black .table-row-cell:odd {
+	-fx-background-color: #000000;
+}
+
+.table-black .table-row-cell:selected {
+	-fx-background-color: #4052ab;
+}
+
+
 .background-title {
 	-fx-background-color: rgba(0, 0, 0, 0.5);
     -fx-border-radius: 10;

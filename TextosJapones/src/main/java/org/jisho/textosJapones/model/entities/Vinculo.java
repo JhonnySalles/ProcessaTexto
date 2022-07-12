@@ -10,6 +10,8 @@ import org.jisho.textosJapones.model.enums.Language;
 public class Vinculo {
 
 	private Long id;
+	private String base;
+	private Integer volume;
 	private String nomeArquivoOriginal;
 	private String nomeArquivoVinculado;
 	private Language linguagemOriginal;
@@ -20,7 +22,6 @@ public class Vinculo {
 	private List<VinculoPagina> naoVinculados;
 	private LocalDateTime dataCriacao;
 	private LocalDateTime ultimaAlteracao;
-	private String base;
 
 	public Long getId() {
 		return id;
@@ -28,6 +29,22 @@ public class Vinculo {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getBase() {
+		return base;
+	}
+
+	public void setBase(String base) {
+		this.base = base;
+	}
+
+	public Integer getVolume() {
+		return volume;
+	}
+
+	public void setVolume(Integer volume) {
+		this.volume = volume;
 	}
 
 	public String getNomeArquivoOriginal() {
@@ -110,16 +127,10 @@ public class Vinculo {
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
-	public String getBase() {
-		return base;
-	}
-
-	public void setBase(String base) {
-		this.base = base;
-	}
-
 	public Vinculo() {
 		this.id = null;
+		this.base = "";
+		this.volume = 0;
 		this.nomeArquivoOriginal = "";
 		this.nomeArquivoVinculado = "";
 		this.volumeOriginal = null;
@@ -130,12 +141,13 @@ public class Vinculo {
 		this.naoVinculados = new ArrayList<VinculoPagina>();
 		this.dataCriacao = LocalDateTime.now();
 		this.ultimaAlteracao = LocalDateTime.now();
-		this.base = "";
 	}
 
-	public Vinculo(String base, String nomeArquivoOriginal, Language linguagemOriginal, MangaVolume volumeOriginal) {
+	public Vinculo(String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
+			MangaVolume volumeOriginal) {
 		this.id = null;
 		this.base = base;
+		this.volume = volume;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
 		this.nomeArquivoVinculado = null;
 		this.volumeOriginal = volumeOriginal;
@@ -148,11 +160,12 @@ public class Vinculo {
 		this.ultimaAlteracao = LocalDateTime.now();
 	}
 
-	public Vinculo(Long id, String base, String nomeArquivoOriginal, Language linguagemOriginal,
+	public Vinculo(Long id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
 			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
 			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao) {
 		this.id = id;
 		this.base = base;
+		this.volume = volume;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
 		this.nomeArquivoVinculado = nomeArquivoVinculado;
 		this.volumeOriginal = volumeOriginal;
@@ -165,12 +178,13 @@ public class Vinculo {
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
-	public Vinculo(Long id, String base, String nomeArquivoOriginal, Language linguagemOriginal,
+	public Vinculo(Long id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
 			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
 			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao,
 			List<VinculoPagina> vinculados, List<VinculoPagina> naoVinculados) {
 		this.id = id;
 		this.base = base;
+		this.volume = volume;
 		this.nomeArquivoOriginal = nomeArquivoOriginal;
 		this.nomeArquivoVinculado = nomeArquivoVinculado;
 		this.volumeOriginal = volumeOriginal;
@@ -185,10 +199,10 @@ public class Vinculo {
 
 	@Override
 	public String toString() {
-		return "Vinculo [id=" + id + ", nomeArquivoOriginal=" + nomeArquivoOriginal + ", nomeArquivoVinculado="
-				+ nomeArquivoVinculado + ", linguagemOriginal=" + linguagemOriginal + ", linguagemVinculado="
-				+ linguagemVinculado + ", dataCriacao=" + dataCriacao + ", ultimaAlteracao=" + ultimaAlteracao
-				+ ", base=" + base + "]";
+		return "Vinculo [id=" + id + ", base=" + base + ", volume=" + volume + ", nomeArquivoOriginal="
+				+ nomeArquivoOriginal + ", nomeArquivoVinculado=" + nomeArquivoVinculado + ", linguagemOriginal="
+				+ linguagemOriginal + ", linguagemVinculado=" + linguagemVinculado + ", dataCriacao=" + dataCriacao
+				+ ", ultimaAlteracao=" + ultimaAlteracao + "]";
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class VincularServices {
 	private MangaDao mangaDao = DaoFactory.createMangaDao();
 
 	public void salvar(String base, Vinculo obj) throws ExcessaoBd {
-		if (base == null)
+		if (base == null || base.isEmpty())
 			return;
 
 		if (obj.getId() == null)
@@ -37,14 +37,14 @@ public class VincularServices {
 	}
 
 	public void update(String base, Vinculo obj) throws ExcessaoBd {
-		if (base == null)
+		if (base == null || base.isEmpty())
 			return;
 
 		dao.update(base, obj);
 	}
 
 	public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) {
-		if (base == null)
+		if (base == null || base.isEmpty())
 			return null;
 
 		try {
@@ -58,7 +58,7 @@ public class VincularServices {
 	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
 			String arquivoOriginal, String mangaVinculado, Language linguagemVinculado, String arquivoVinculado)
 			throws ExcessaoBd {
-		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
 		if (linguagemOriginal != null && linguagemVinculado != null
@@ -76,7 +76,7 @@ public class VincularServices {
 
 	public Vinculo select(String base, Integer volume, String mangaOriginal, String original, String mangaVinculado,
 			String vinculado) throws ExcessaoBd {
-		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
 		return dao.select(base, volume, mangaOriginal, original, mangaVinculado, vinculado);
@@ -84,27 +84,29 @@ public class VincularServices {
 
 	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
 			String mangaVinculado, Language linguagemVinculado) throws ExcessaoBd {
-		if (base == null || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
 			return null;
 
 		return dao.select(base, volume, mangaOriginal, linguagemOriginal, mangaVinculado, linguagemVinculado);
 	}
 
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
-		if (base == null)
+		if (base == null || base.isEmpty())
 			return;
 
 		dao.delete(base, obj);
 	}
 
 	public Long insert(String base, Vinculo obj) throws ExcessaoBd {
-		if (base == null)
+		if (base == null || base.isEmpty())
 			return null;
 
 		return dao.insert(base, obj);
 	}
 
 	public Boolean createTabelas(String base) throws ExcessaoBd {
+		if (base == null || base.isEmpty())
+			return false;
 		return dao.createTabelas(base);
 	}
 

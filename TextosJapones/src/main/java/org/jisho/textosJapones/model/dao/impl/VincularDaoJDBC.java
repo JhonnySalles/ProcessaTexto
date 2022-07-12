@@ -48,11 +48,12 @@ public class VincularDaoJDBC implements VincularDao {
 	final private String SELECT_MANGAS = "SELECT Manga FROM %s_volumes WHERE linguagem = '%s' GROUP BY manga ORDER BY manga";
 
 	final private String CREATE_TABELA_VINCULO = "CREATE TABLE %s_vinculo (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
-			+ "  original_arquivo VARCHAR(250) DEFAULT NULL," + "  original_linguagem VARCHAR(4) DEFAULT NULL,"
-			+ "  id_volume_original INT(11) DEFAULT NULL," + "  vinculado_arquivo VARCHAR(250) DEFAULT NULL,"
-			+ "  vinculado_linguagem VARCHAR(4) DEFAULT NULL," + "  id_volume_vinculado INT(11) DEFAULT NULL,"
-			+ "  data_criacao DATETIME DEFAULT NULL," + "  ultima_alteracao DATETIME DEFAULT NULL,"
-			+ "  PRIMARY KEY (id)," + "  KEY %s_vinculo_original_fk (id_volume_original),"
+			+ "  volume int(11) DEFAULT NULL," + "  original_arquivo VARCHAR(250) DEFAULT NULL,"
+			+ "  original_linguagem VARCHAR(4) DEFAULT NULL," + "  id_volume_original INT(11) DEFAULT NULL,"
+			+ "  vinculado_arquivo VARCHAR(250) DEFAULT NULL," + "  vinculado_linguagem VARCHAR(4) DEFAULT NULL,"
+			+ "  id_volume_vinculado INT(11) DEFAULT NULL," + "  data_criacao DATETIME DEFAULT NULL,"
+			+ "  ultima_alteracao DATETIME DEFAULT NULL," + "  PRIMARY KEY (id),"
+			+ "  KEY %s_vinculo_original_fk (id_volume_original),"
 			+ "  KEY %s_vinculo_vinculado_fk (id_volume_vinculado),"
 			+ "  CONSTRAINT %s_vinculo_original_fk FOREIGN KEY (id_volume_original) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE,"
 			+ "  CONSTRAINT %s_vinculo_vinculado_fk FOREIGN KEY (id_volume_vinculado) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE"
@@ -94,16 +95,16 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  CONSTRAINT %s_vinculo_nao_vinculado_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
-	final private static String INSERT_VINCULO = "INSERT INTO %s_vinculo (original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	final private static String UPDATE_VINCULO = "UPDATE %s_vinculo SET original_arquivo = ?, original_linguagem = ?, id_volume_original = ?, vinculado_arquivo = ?, vinculado_linguagem = ?, id_volume_vinculado = ?, ultima_alteracao = ? WHERE id = ? ;";
+	final private static String INSERT_VINCULO = "INSERT INTO %s_vinculo (volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+	final private static String UPDATE_VINCULO = "UPDATE %s_vinculo SET volume = ?, original_arquivo = ?, original_linguagem = ?, id_volume_original = ?, vinculado_arquivo = ?, vinculado_linguagem = ?, id_volume_vinculado = ?, ultima_alteracao = ? WHERE id = ? ;";
 	final private static String DELETE_VINCULO = "DELETE FROM %s_vinculo WHERE id = ? ;";
-	final private static String SELECT_VINCULO_CAMPOS = "SELECT id, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo ";
+	final private static String SELECT_VINCULO_CAMPOS = "SELECT id, volume, original_arquivo, original_linguagem, volume, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo ";
 	final private static String SELECT_VINCULO = SELECT_VINCULO_CAMPOS
-			+ "WHERE original_arquivo = ? AND original_linguagem = ? AND vinculado_arquivo = ? AND vinculado_linguagem = ? ;";
+			+ "WHERE volume = ? AND original_arquivo = ? AND original_linguagem = ? AND vinculado_arquivo = ? AND vinculado_linguagem = ? ;";
 	final private static String SELECT_VINCULO_ARQUIVO = SELECT_VINCULO_CAMPOS
-			+ "WHERE original_arquivo = ? AND vinculado_arquivo = ? ;";
+			+ "WHERE volume = ? AND original_arquivo = ? AND vinculado_arquivo = ? ;";
 	final private static String SELECT_VINCULO_LINGUAGEM = SELECT_VINCULO_CAMPOS
-			+ "WHERE original_linguagem = ? AND vinculado_linguagem = ? ;";
+			+ "WHERE volume = ? AND original_linguagem = ? AND vinculado_linguagem = ? ;";
 
 	final private static String INSERT_PAGINA = "INSERT IGNORE INTO %s_vinculo_pagina (id_vinculo, original_nome, original_pasta, original_pagina, original_paginas, original_pagina_dupla, id_original_pagina, "
 			+ "  vinculado_direita_nome, vinculado_direita_pasta, vinculado_direita_pagina, vinculado_direita_paginas, vinculado_direita_pagina_dupla, id_vinculado_direita_pagina, "
@@ -236,14 +237,15 @@ public class VincularDaoJDBC implements VincularDao {
 			st = conn.prepareStatement(String.format(INSERT_VINCULO, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getNomeArquivoOriginal());
-			st.setString(2, obj.getLinguagemOriginal().getSigla());
-			st.setLong(3, obj.getVolumeOriginal().getId());
-			st.setString(4, obj.getNomeArquivoVinculado());
-			st.setString(5, obj.getLinguagemVinculado().getSigla());
-			st.setLong(6, obj.getVolumeOriginal().getId());
-			st.setTimestamp(7, Timestamp.valueOf(obj.getDataCriacao()));
-			st.setTimestamp(8, Timestamp.valueOf(obj.getUltimaAlteracao()));
+			st.setInt(1, obj.getVolume());
+			st.setString(2, obj.getNomeArquivoOriginal());
+			st.setString(3, obj.getLinguagemOriginal().getSigla());
+			st.setLong(4, obj.getVolumeOriginal().getId());
+			st.setString(5, obj.getNomeArquivoVinculado());
+			st.setString(6, obj.getLinguagemVinculado().getSigla());
+			st.setLong(7, obj.getVolumeOriginal().getId());
+			st.setTimestamp(8, Timestamp.valueOf(obj.getDataCriacao()));
+			st.setTimestamp(9, Timestamp.valueOf(obj.getUltimaAlteracao()));
 
 			int rowsAffected = st.executeUpdate();
 
@@ -285,7 +287,7 @@ public class VincularDaoJDBC implements VincularDao {
 		if (volume != null) {
 			Optional<MangaCapitulo> capitulo = volume.getCapitulos().stream()
 					.filter(cp -> cp.getPaginas().stream().anyMatch(pg -> pg.getId().compareTo(id) == 0)).findFirst();
-			
+
 			if (capitulo.isPresent())
 				pagina = capitulo.get().getPaginas().stream().filter(pg -> pg.getId().compareTo(id) == 0).findFirst()
 						.get();
@@ -381,11 +383,12 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(4));
-				volumeVinculado = selectVolume(base, rs.getLong(7));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getString(2), Language.getEnum(rs.getString(3)),
-						volumeOriginal, rs.getString(5), Language.getEnum(rs.getString(6)), volumeVinculado,
-						LocalDateTime.parse(rs.getString(8)), LocalDateTime.parse(rs.getString(9)));
+				volumeOriginal = selectVolume(base, rs.getLong(5));
+				volumeVinculado = selectVolume(base, rs.getLong(8));
+				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
+						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
+						LocalDateTime.parse(rs.getString(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -419,11 +422,12 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(4));
-				volumeVinculado = selectVolume(base, rs.getLong(7));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getString(2), Language.getEnum(rs.getString(3)),
-						volumeOriginal, rs.getString(5), Language.getEnum(rs.getString(6)), volumeVinculado,
-						LocalDateTime.parse(rs.getString(8)), LocalDateTime.parse(rs.getString(9)));
+				volumeOriginal = selectVolume(base, rs.getLong(5));
+				volumeVinculado = selectVolume(base, rs.getLong(8));
+				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
+						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
+						LocalDateTime.parse(rs.getString(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -457,11 +461,12 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(4));
-				volumeVinculado = selectVolume(base, rs.getLong(7));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getString(2), Language.getEnum(rs.getString(3)),
-						volumeOriginal, rs.getString(5), Language.getEnum(rs.getString(6)), volumeVinculado,
-						LocalDateTime.parse(rs.getString(8)), LocalDateTime.parse(rs.getString(9)));
+				volumeOriginal = selectVolume(base, rs.getLong(5));
+				volumeVinculado = selectVolume(base, rs.getLong(8));
+				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
+						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
+						LocalDateTime.parse(rs.getString(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -622,14 +627,15 @@ public class VincularDaoJDBC implements VincularDao {
 			st = conn.prepareStatement(String.format(UPDATE_VINCULO, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getNomeArquivoOriginal());
-			st.setString(2, obj.getLinguagemOriginal().getSigla());
-			st.setLong(3, obj.getVolumeOriginal().getId());
-			st.setString(4, obj.getNomeArquivoVinculado());
-			st.setString(5, obj.getLinguagemVinculado().getSigla());
-			st.setLong(6, obj.getVolumeOriginal().getId());
-			st.setTimestamp(7, Timestamp.valueOf(obj.getUltimaAlteracao()));
-			st.setLong(8, obj.getId());
+			st.setInt(1, obj.getVolume());
+			st.setString(2, obj.getNomeArquivoOriginal());
+			st.setString(3, obj.getLinguagemOriginal().getSigla());
+			st.setLong(4, obj.getVolumeOriginal().getId());
+			st.setString(5, obj.getNomeArquivoVinculado());
+			st.setString(6, obj.getLinguagemVinculado().getSigla());
+			st.setLong(7, obj.getVolumeOriginal().getId());
+			st.setTimestamp(8, Timestamp.valueOf(obj.getUltimaAlteracao()));
+			st.setLong(9, obj.getId());
 
 			int rowsAffected = st.executeUpdate();
 

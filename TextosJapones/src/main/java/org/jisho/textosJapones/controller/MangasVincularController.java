@@ -25,7 +25,8 @@ import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.parse.Parse;
 import org.jisho.textosJapones.util.ListaExecucoes;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.components.NoSelectionModel;
+import org.jisho.textosJapones.util.animation.Animacao;
+import org.jisho.textosJapones.util.components.ListViewNoSelectionModel;
 import org.jisho.textosJapones.util.listener.VinculoListener;
 import org.jisho.textosJapones.util.listener.VinculoServiceListener;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
@@ -122,6 +123,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private JFXButton btnCarregarLegendas;
 
 	@FXML
+	private JFXButton btnVisualizarLegendas;
+
+	@FXML
 	private JFXButton btnOrderAutomatico;
 
 	@FXML
@@ -200,6 +204,11 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			}
 			return false;
 		});
+	}
+
+	@FXML
+	private void onBtnVisualizarLegendas() {
+		visualizarLegendas(null);
 	}
 
 	@FXML
@@ -382,6 +391,17 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	@Override
 	public Boolean onDuploClique(Node root, VinculoPagina vinculo, Pagina origem) {
+		VinculoPagina item = null;
+		if (origem == Pagina.VINCULADO_DIREITA)
+			item = getVinculoOriginal(origem, vinculo);
+		else if (origem == Pagina.VINCULADO_ESQUERDA)
+			item = getVinculoOriginal(origem, vinculo);
+
+		if (item != null)
+			visualizarLegendas(vinculado.indexOf(item));
+		else
+			visualizarLegendas(null);
+
 		return true;
 	}
 
@@ -471,6 +491,21 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		arquivoVinculado = null;
 		parseOriginal = null;
 		parseVinculado = null;
+	}
+
+	private void visualizarLegendas(Integer index) {
+		FXMLLoader loader = new FXMLLoader(MangasTextoController.getFxmlLocate());
+		try {
+			AnchorPane newRoot = loader.load();
+			MangasTextoController controlador = loader.getController();
+			controlador.setDados(vinculado);
+			controlador.setControllerPai(this);
+			controlador.scroolTo(index);
+
+			new Animacao().abrirPane(this.controller.getStackPane(), newRoot);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Boolean carregarLegendas() {
@@ -673,9 +708,10 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			String arquivoVinculado = this.arquivoVinculado != null ? this.arquivoVinculado.getName() : "";
 
 			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), spnVolume.getValue(),
-					txtMangaOriginal.getText(),	cbLinguagemOrigem.getSelectionModel().getSelectedItem(), arquivoOriginal,
-					txtMangaVinculado.getText(), cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
-	
+					txtMangaOriginal.getText(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(),
+					arquivoOriginal, txtMangaVinculado.getText(),
+					cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
+
 			if (vinculo != null) {
 				this.vinculo = vinculo;
 
@@ -1165,8 +1201,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	}
 
 	private void preparaCelulas() {
-		lvPaginasVinculadas.setSelectionModel(new NoSelectionModel<VinculoPagina>());
-		lvPaginasNaoVinculadas.setSelectionModel(new NoSelectionModel<VinculoPagina>());
+		lvPaginasVinculadas.setSelectionModel(new ListViewNoSelectionModel<VinculoPagina>());
+		lvPaginasNaoVinculadas.setSelectionModel(new ListViewNoSelectionModel<VinculoPagina>());
 
 		lvPaginasVinculadas.setCellFactory(new Callback<ListView<VinculoPagina>, ListCell<VinculoPagina>>() {
 			@Override

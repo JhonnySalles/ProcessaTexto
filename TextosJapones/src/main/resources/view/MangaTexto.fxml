@@ -3,7 +3,8 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -11,20 +12,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasTextoController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasTextoController">
    <children>
-      <HBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox alignment="TOP_CENTER" spacing="15.0">
                <children>
-                  <JFXButton fx:id="btnRecarregar" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Recarregar">
+                  <JFXButton fx:id="btnClose" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnClose" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-Transparent" text="Recarregar">
                      <tooltip>
                         <Tooltip text="Recarregar" />
                      </tooltip>
                      <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" scaleX="1.5" scaleY="1.5">
                            <image>
-                              <Image url="@../images/file_link/icoRecarregar.png" />
+                              <Image url="@../images/file_link/icoClose.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -67,16 +68,23 @@
                   </JFXButton>
                </children>
                <padding>
-                  <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+                  <Insets bottom="20.0" left="5.0" right="5.0" top="20.0" />
                </padding>
             </VBox>
             <AnchorPane HBox.hgrow="ALWAYS">
                <children>
-                  <ListView fx:id="lvPaginasVinculadas" prefHeight="300.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TableView fx:id="tvPaginasVinculadas" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn fx:id="tcMangaOriginal" minWidth="200.0" prefWidth="400.0" text="Manga Original" />
+                        <TableColumn fx:id="tcTextoOriginal" minWidth="100.0" prefWidth="200.0" text="Texto Original" />
+                        <TableColumn fx:id="tcMangaVinculado" minWidth="200.0" prefWidth="400.0" text="Manga Vinculado" />
+                        <TableColumn fx:id="tcTextoVinculado" minWidth="100.0" prefWidth="200.0" text="Texto Vinculado" />
+                    </columns>
                      <styleClass>
                         <String fx:value="paneBorder" />
-                        <String fx:value="list-black" />
-                     </styleClass></ListView>
+                        <String fx:value="table-black" />
+                     </styleClass>
+                  </TableView>
                </children>
             </AnchorPane>
          </children>
