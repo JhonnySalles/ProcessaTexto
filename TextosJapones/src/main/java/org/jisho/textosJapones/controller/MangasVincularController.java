@@ -578,8 +578,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 							vinculado.parallelStream().forEach(vi -> {
 								vi.setMangaPaginaOriginal(service.findPagina(paginasOriginal, encontrados,
-										vi.getOriginalPathPagina(), vi.getOriginalHash(), vi.getOriginalNomePagina(),
-										vi.getOriginalPagina()));
+										vi.getOriginalPathPagina(), vi.getOriginalNomePagina(), vi.getOriginalPagina(),
+										vi.getOriginalHash()));
 
 								I++;
 								updateProgress(I, Max);
@@ -602,13 +602,13 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							vinculado.parallelStream().forEach(vi -> {
 								if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
 									vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaHash(),
-											vi.getVinculadoEsquerdaNomePagina(), vi.getVinculadoEsquerdaPagina()));
+											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaNomePagina(),
+											vi.getVinculadoEsquerdaPagina(), vi.getVinculadoEsquerdaHash()));
 
 								if (vi.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
 									vi.setMangaPaginaDireita(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoDireitaPathPagina(), vi.getVinculadoDireitaHash(),
-											vi.getVinculadoDireitaNomePagina(), vi.getVinculadoDireitaPagina()));
+											vi.getVinculadoDireitaPathPagina(), vi.getVinculadoDireitaNomePagina(),
+											vi.getVinculadoDireitaPagina(), vi.getVinculadoDireitaHash()));
 
 								I++;
 								updateProgress(I, Max);
@@ -622,8 +622,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							naoVinculado.parallelStream().forEach(vi -> {
 								if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
 									vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaHash(),
-											vi.getVinculadoEsquerdaNomePagina(), vi.getVinculadoEsquerdaPagina()));
+											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaNomePagina(),
+											vi.getVinculadoEsquerdaPagina(), vi.getVinculadoEsquerdaHash()));
 
 								I++;
 								updateProgress(I, Max);
@@ -827,7 +827,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 									list.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
 											parse.getSize(), detalhe.getKey(), service.findPagina(paginas, encontrados,
-													path, Util.getPasta(path), detalhe.getValue(), x),
+													path, Util.getPasta(path), x, detalhe.getValue()),
 											image.getKey(), detalhe.getValue()));
 
 									X = x;
@@ -873,13 +873,12 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										item.isVinculadoEsquerdaPaginaDupla = detalhe.getKey();
 										item.setImagemVinculadoEsquerda(image.getKey());
 										item.setMangaPaginaEsquerda(service.findPagina(paginas, encontrados, path,
-												Util.getPasta(path), detalhe.getValue(), x));
+												Util.getPasta(path), x, detalhe.getValue()));
 										item.setVinculadoEsquerdaHash(detalhe.getValue());
 									} else
 										naoVinculado.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
-												parseVinculado.getSize(), detalhe.getKey(),
-												service.findPagina(paginas, encontrados, path, Util.getPasta(path),
-														detalhe.getValue(), x),
+												parseVinculado.getSize(), detalhe.getKey(), service.findPagina(paginas,
+														encontrados, path, Util.getPasta(path), x, detalhe.getValue()),
 												image.getKey(), true, detalhe.getValue()));
 
 									X = x;

@@ -53,10 +53,10 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  vinculado_arquivo VARCHAR(250) DEFAULT NULL," + "  vinculado_linguagem VARCHAR(4) DEFAULT NULL,"
 			+ "  id_volume_vinculado INT(11) DEFAULT NULL," + "  data_criacao DATETIME DEFAULT NULL,"
 			+ "  ultima_alteracao DATETIME DEFAULT NULL," + "  PRIMARY KEY (id),"
-			+ "  KEY %s_vinculo_original_fk (id_volume_original),"
-			+ "  KEY %s_vinculo_vinculado_fk (id_volume_vinculado),"
-			+ "  CONSTRAINT %s_vinculo_original_fk FOREIGN KEY (id_volume_original) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE,"
-			+ "  CONSTRAINT %s_vinculo_vinculado_fk FOREIGN KEY (id_volume_vinculado) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE"
+			+ "  KEY %s_original_volume_fk (id_volume_original),"
+			+ "  KEY %s_vinculado_volume_fk (id_volume_vinculado),"
+			+ "  CONSTRAINT %s_vinculo_original_volume_fk FOREIGN KEY (id_volume_original) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE,"
+			+ "  CONSTRAINT %s_vinculo_vinculado_volume_fk FOREIGN KEY (id_volume_vinculado) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private String CREATE_TABELA_VINCULO_PAGINA = "CREATE TABLE %s_vinculo_pagina ("
@@ -75,13 +75,13 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  vinculado_esquerda_pagina_dupla TINYINT(1) DEFAULT NULL,"
 			+ "  id_vinculado_esquerda_paginas INT(11) DEFAULT NULL," + "  imagem_dupla TINYINT(1) DEFAULT NULL,"
 			+ "  PRIMARY KEY (id)," + "  KEY %s_vinculo_fk (id_vinculo),"
-			+ "  KEY %s_vinculado_original_pagina_fk (id_original_pagina),"
-			+ "  KEY %s_vinculado_direita_pagina_fk (id_vinculado_direita_pagina),"
-			+ "  KEY %s_vinculado_esquerda_pagina_fk (id_vinculado_esquerda_paginas),"
+			+ "  KEY %s_original_pagina_fk (id_original_pagina),"
+			+ "  KEY %s_direita_pagina_fk (id_vinculado_direita_pagina),"
+			+ "  KEY %s_esquerda_pagina_fk (id_vinculado_esquerda_paginas),"
 			+ "  CONSTRAINT %s_vinculado_direita_pagina_fk FOREIGN KEY (id_vinculado_direita_pagina) REFERENCES %s_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE,"
 			+ "  CONSTRAINT %s_vinculado_esquerda_pagina_fk FOREIGN KEY (id_vinculado_esquerda_paginas) REFERENCES %s_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE,"
 			+ "  CONSTRAINT %s_vinculado_original_pagina_fk FOREIGN KEY (id_original_pagina) REFERENCES %s_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE,"
-			+ "  CONSTRAINT %s_vinculo_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE"
+			+ "  CONSTRAINT %s_vinculo_vinculo_pagina_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private String CREATE_TABELA_NAO_VINCULADOS = "CREATE TABLE %s_vinculo_pagina_nao_vinculado ("
@@ -89,10 +89,10 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  nome VARCHAR(250) DEFAULT NULL," + "  pasta VARCHAR(500) DEFAULT NULL,"
 			+ "  pagina INT(11) DEFAULT NULL," + "  paginas INT(11) DEFAULT NULL,"
 			+ "  pagina_dupla TINYINT(1) DEFAULT NULL," + "  id_vinculado_pagina int(11) DEFAULT NULL,"
-			+ "  PRIMARY KEY (id)," + "  KEY %s_nao_vinculado_pagina_fk (id_vinculado_pagina),"
-			+ "  KEY %s_vinculo_nao_vinculado_fk (id_vinculo),"
+			+ "  PRIMARY KEY (id)," + "  KEY %s_vinculado_pagina_fk (id_vinculado_pagina),"
+			+ "  KEY %s_vinculo_fk (id_vinculo),"
 			+ "  CONSTRAINT %s_vinculo_nao_vinculado_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE,"
-			+ "  CONSTRAINT %s_vinculo_nao_vinculado_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE"
+			+ "  CONSTRAINT %s_nao_vinculado_pagina_fk FOREIGN KEY (id_vinculado_pagina) REFERENCES %s_vinculo_pagina (id) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private static String INSERT_VINCULO = "INSERT INTO %s_vinculo (volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
