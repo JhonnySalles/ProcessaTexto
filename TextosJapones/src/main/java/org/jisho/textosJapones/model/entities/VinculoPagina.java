@@ -35,9 +35,9 @@ public class VinculoPagina implements Serializable {
 	private Integer vinculadoEsquerdaPaginas;
 	public Boolean isVinculadoEsquerdaPaginaDupla;
 
-	private MangaPagina mangaPaginaOriginal;
-	private MangaPagina mangaPaginaDireita;
-	private MangaPagina mangaPaginaEsquerda;
+	private transient MangaPagina mangaPaginaOriginal;
+	private transient MangaPagina mangaPaginaDireita;
+	private transient MangaPagina mangaPaginaEsquerda;
 
 	private transient Image imagemOriginal;
 	private transient Image imagemVinculadoDireita;
@@ -386,6 +386,7 @@ public class VinculoPagina implements Serializable {
 			this.isVinculadoEsquerdaPaginaDupla = false;
 			this.vinculadoEsquerdaHash = "";
 			this.imagemVinculadoEsquerda = null;
+			this.mangaPaginaEsquerda = null;
 		}
 
 		return movido;
@@ -400,6 +401,7 @@ public class VinculoPagina implements Serializable {
 		this.isImagemDupla = false;
 		this.vinculadoDireitaHash = "";
 		this.imagemVinculadoDireita = null;
+		this.mangaPaginaDireita = null;
 	}
 
 	public VinculoPagina() {
@@ -496,7 +498,7 @@ public class VinculoPagina implements Serializable {
 		this.vinculadoDireitaHash = "";
 		this.vinculadoEsquerdaHash = vinculadoEsquerdaHash;
 	}
-	
+
 	public VinculoPagina(Long id, String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
 			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
 			MangaPagina mangaPaginaEsquerda, Boolean naoVinculado) {
@@ -528,7 +530,7 @@ public class VinculoPagina implements Serializable {
 		this.vinculadoDireitaHash = "";
 		this.vinculadoEsquerdaHash = "";
 	}
-	
+
 	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
 			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
 			String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,

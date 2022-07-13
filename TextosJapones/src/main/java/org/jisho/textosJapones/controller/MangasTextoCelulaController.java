@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 
 public class MangasTextoCelulaController implements Initializable {
 
@@ -22,29 +23,26 @@ public class MangasTextoCelulaController implements Initializable {
 	@FXML
 	public JFXSlider slider;
 
-	public void setDados(Image imagemOriginal) {
+	@FXML
+	public Text pagina;
+
+	public void setDados(Image imagemOriginal, String namePagina) {
 		imagem.setImage(imagemOriginal);
+		pagina.setText(namePagina);
 	}
 
-	private void configuraZoom(ImageView imagem, JFXSlider slider) {
+	private double zoom = 0;
+
+	private void configuraZoom() {
 		slider.setMin(1);
 		slider.setMax(4);
-		slider.setMaxWidth(200);
-		slider.setMaxHeight(200);
+		slider.setValue(1);
 
 		slider.valueProperty().addListener(e -> {
-			double zoom = slider.getValue();
-			imagem.setFitWidth(zoom * 4);
-			imagem.setFitHeight(zoom * 3);
+			zoom = slider.getValue();
+			imagem.setScaleX(zoom);
+			imagem.setScaleY(zoom);
 		});
-
-		/*
-		 * imagem.setOnMousePressed(e->{ initx = e.getSceneX(); inity = e.getSceneY();
-		 * });
-		 * 
-		 * imagem.setOnMouseDragged(e->{ initx = e.getSceneX(); inity = e.getSceneY();
-		 * });
-		 */
 	}
 
 	@Override
@@ -52,7 +50,7 @@ public class MangasTextoCelulaController implements Initializable {
 		imagem.fitWidthProperty().bind(root.widthProperty());
 		imagem.setPreserveRatio(true);
 
-		configuraZoom(imagem, slider);
+		configuraZoom();
 	}
 
 	public static URL getFxmlLocate() {

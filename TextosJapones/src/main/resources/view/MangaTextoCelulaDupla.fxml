@@ -4,28 +4,65 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<HBox fx:id="hbRoot" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasTextoCelulaDuplaController">
+<HBox fx:id="hbRoot" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasTextoCelulaDuplaController">
    <children>
       <AnchorPane fx:id="esquerdaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0">
          <children>
-            <ImageView fx:id="esquerdaImagem" fitHeight="400.0" fitWidth="300.0" nodeOrientation="INHERIT" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <JFXSlider fx:id="esquerdaSlider" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </JFXSlider>
+            <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <center>
+                  <ImageView fx:id="esquerdaImagem" fitHeight="400.0" fitWidth="300.0" nodeOrientation="INHERIT" pickOnBounds="true" />
+               </center>
+            </BorderPane>
+            <VBox layoutY="366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <JFXSlider fx:id="esquerdaSlider" VBox.vgrow="ALWAYS">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </JFXSlider>
+                  <VBox styleClass="background-title">
+                     <children>
+                        <Text fx:id="esquerdaPagina" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="direitaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0">
          <children>
-            <ImageView fx:id="direitaImagem" fitHeight="400.0" fitWidth="300.0" nodeOrientation="INHERIT" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <JFXSlider fx:id="direitaSlider" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </JFXSlider>
+            <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <center>
+                  <ImageView fx:id="direitaImagem" fitHeight="400.0" fitWidth="300.0" nodeOrientation="INHERIT" pickOnBounds="true" />
+               </center>
+            </BorderPane>
+            <VBox layoutY="366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <JFXSlider fx:id="direitaSlider" VBox.vgrow="ALWAYS">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </JFXSlider>
+                  <VBox styleClass="background-title">
+                     <children>
+                        <Text fx:id="direitaPagina" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
          </children>
       </AnchorPane>
    </children>

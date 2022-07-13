@@ -23,6 +23,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 public class MangasTextoController implements Initializable {
@@ -106,7 +110,16 @@ public class MangasTextoController implements Initializable {
 									try {
 										mLLoader.load();
 										MangasTextoCelulaController controller = mLLoader.getController();
-										controller.setDados(item);
+										String pagina = "";
+
+										if (getTableRow().getItem() != null) {
+											MangaPagina manga = getTableRow().getItem().getMangaPaginaOriginal();
+
+											if (manga != null)
+												pagina = "Pag: " + manga.getNumero() + " - " + manga.getNomePagina();
+										}
+
+										controller.setDados(item, pagina);
 										setGraphic(controller.root);
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -119,7 +132,7 @@ public class MangasTextoController implements Initializable {
 					}
 				});
 
-		tcMangaVinculado.setCellValueFactory(new PropertyValueFactory<>("imagemVinculadoDireita"));
+		tcMangaVinculado.setCellValueFactory(new PropertyValueFactory<>("imagemVinculadoEsquerda"));
 		tcMangaVinculado
 				.setCellFactory(new Callback<TableColumn<VinculoPagina, Image>, TableCell<VinculoPagina, Image>>() {
 					@Override
@@ -163,14 +176,27 @@ public class MangasTextoController implements Initializable {
 								if (empty)
 									setGraphic(null);
 								else {
-									JFXTextArea text = new JFXTextArea();
-									text.getStyleClass().add("background-Blue3");
+									Text text = new Text();
+									text.setFill(Paint.valueOf("white"));
 									text.getStyleClass().add("texto-stilo");
-									setGraphic(text);
 
-									if (item != null)
-										text.setText(item.getTextos().stream().map(MangaTexto::getTexto)
+									JFXTextArea area = new JFXTextArea();
+									area.getStyleClass().add("background-Blue3");
+									area.getStyleClass().add("texto-stilo");
+									VBox.setVgrow(area, Priority.ALWAYS);
+
+									VBox container = new VBox();
+									container.getChildren().addAll(text, area);
+									container.setSpacing(5);
+									VBox.setVgrow(container, Priority.ALWAYS);
+									setGraphic(container);
+
+									if (item != null) {
+										area.setText(item.getTextos().stream().map(MangaTexto::getTexto)
 												.collect(Collectors.joining("\n")));
+
+										text.setText("Pag: " + item.getNumero() + " - " + item.getNomePagina());
+									}
 								}
 							}
 						};
@@ -178,7 +204,7 @@ public class MangasTextoController implements Initializable {
 					}
 				});
 
-		tcTextoVinculado.setCellValueFactory(new PropertyValueFactory<>("mangaPaginaDireita"));
+		tcTextoVinculado.setCellValueFactory(new PropertyValueFactory<>("mangaPaginaEsquerda"));
 		tcTextoVinculado.setCellFactory(
 				new Callback<TableColumn<VinculoPagina, MangaPagina>, TableCell<VinculoPagina, MangaPagina>>() {
 					@Override
@@ -191,28 +217,45 @@ public class MangasTextoController implements Initializable {
 								if (empty)
 									setGraphic(null);
 								else {
-									JFXTextArea text = new JFXTextArea();
-									text.getStyleClass().add("background-Blue3");
+									Text text = new Text();
+									text.setFill(Paint.valueOf("white"));
 									text.getStyleClass().add("texto-stilo");
-									setGraphic(text);
+
+									JFXTextArea area = new JFXTextArea();
+									area.getStyleClass().add("background-Blue3");
+									area.getStyleClass().add("texto-stilo");
+									VBox.setVgrow(area, Priority.ALWAYS);
+
+									VBox container = new VBox();
+									container.getChildren().addAll(text, area);
+									container.setSpacing(5);
+									VBox.setVgrow(container, Priority.ALWAYS);
+									setGraphic(container);
 
 									String textos = "";
+									String pagina = "";
 
-									if (item != null)
+									if (item != null) {
 										textos = item.getTextos().stream().map(MangaTexto::getTexto)
 												.collect(Collectors.joining("\n"));
+										pagina = "Pag: " + item.getNumero() + " - " + item.getNomePagina();
+									}
 
 									VinculoPagina linha = getTableRow().getItem();
 
 									if (linha != null) {
 										MangaPagina direita = linha.getMangaPaginaDireita();
 
-										if (direita != null)
+										if (direita != null) {
 											textos += direita.getTextos().stream().map(MangaTexto::getTexto)
 													.collect(Collectors.joining("\n"));
+
+											pagina += " | " + "Pag: " + item.getNumero() + " - " + item.getNomePagina();
+										}
 									}
 
-									text.setText(textos);
+									area.setText(textos);
+									text.setText(pagina);
 
 								}
 							}

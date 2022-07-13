@@ -22,6 +22,7 @@ public class ListaExecucoes {
 
 	List<LambdaFunction> list = new ArrayList<LambdaFunction>();
 
+	private Boolean abort = false;
 	private Boolean isProcessed = false;
 
 	/**
@@ -49,6 +50,7 @@ public class ListaExecucoes {
 	 * @author Jhonny de Salles Noschang
 	 */
 	public void addExecucao(LambdaFunction action) {
+		abort = false;
 		if (action == null)
 			throw new IllegalArgumentException();
 
@@ -77,12 +79,17 @@ public class ListaExecucoes {
 			process();
 	}
 
+	public void abortProcess() {
+		abort = true;
+		list.clear();
+	}
+
 	private void process() {
 		if (!list.isEmpty()) {
 			try {
 				isProcessed = true;
 				LambdaFunction action = list.remove(0);
-				Boolean isAwait = action.call();
+				Boolean isAwait = action.call(abort);
 
 				if (!isAwait)
 					endProcess();
@@ -109,7 +116,7 @@ public class ListaExecucoes {
 	 *         obrigatório a chamada da função <b>endProcess.</b>
 	 */
 	public interface LambdaFunction {
-		Boolean call();
+		Boolean call(Boolean abort);
 	}
 
 }

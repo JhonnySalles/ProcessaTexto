@@ -736,6 +736,9 @@ public class VincularServices {
 	public MangaPagina findPagina(List<MangaPagina> paginas, List<MangaPagina> encontrados, String path,
 			String nomePagina, Integer numeroPagina, String hash) {
 		MangaPagina manga = null;
+		
+		if (paginas.isEmpty())
+			return manga;
 
 		Pair<Float, Boolean> capitulo = Util.getCapitulo(path);
 

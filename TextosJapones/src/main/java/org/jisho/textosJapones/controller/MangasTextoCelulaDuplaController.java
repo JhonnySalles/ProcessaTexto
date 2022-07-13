@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 public class MangasTextoCelulaDuplaController implements Initializable {
 
@@ -28,6 +29,9 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 	public JFXSlider esquerdaSlider;
 
 	@FXML
+	public Text esquerdaPagina;
+
+	@FXML
 	public AnchorPane direitaRoot;
 
 	@FXML
@@ -36,34 +40,61 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 	@FXML
 	public JFXSlider direitaSlider;
 
+	@FXML
+	public Text direitaPagina;
+
 	public void setDados(VinculoPagina vinculo) {
-		esquerdaImagem.setImage(vinculo.getImagemVinculadoEsquerda());
-		direitaImagem.setImage(vinculo.getImagemVinculadoDireita());
-		if (vinculo.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
-			direitaRoot.setVisible(true);
-		else
+		if (vinculo == null) {
+			esquerdaImagem.setImage(null);
+			direitaImagem.setImage(null);
 			direitaRoot.setVisible(false);
+			esquerdaPagina.setText("");
+			direitaPagina.setText("");
+		} else {
+			esquerdaImagem.setImage(vinculo.getImagemVinculadoEsquerda());
+			direitaImagem.setImage(vinculo.getImagemVinculadoDireita());
+			if (vinculo.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+				direitaRoot.setVisible(true);
+			else
+				direitaRoot.setVisible(false);
+
+			if (vinculo.getMangaPaginaEsquerda() != null)
+				esquerdaPagina.setText("Pag: " + vinculo.getMangaPaginaEsquerda().getNumero() + " - "
+						+ vinculo.getMangaPaginaEsquerda().getNomePagina());
+			else
+				esquerdaPagina.setText("");
+
+			if (vinculo.getMangaPaginaDireita() != null)
+				direitaPagina.setText("Pag: " + vinculo.getMangaPaginaDireita().getNumero() + " - "
+						+ vinculo.getMangaPaginaDireita().getNomePagina());
+			else
+				direitaPagina.setText("");
+		}
+
 	}
 
-	private void configuraZoom(ImageView imagem, JFXSlider slider) {
-		slider.setMin(1);
-		slider.setMax(4);
-		slider.setMaxWidth(200);
-		slider.setMaxHeight(200);
+	private double esqZoom = 0, dirZoom = 0;
 
-		slider.valueProperty().addListener(e -> {
-			double zoom = slider.getValue();
-			imagem.setFitWidth(zoom * 4);
-			imagem.setFitHeight(zoom * 3);
+	private void configuraZoom() {
+		esquerdaSlider.setMin(1);
+		esquerdaSlider.setMax(4);
+		esquerdaSlider.setValue(1);
+
+		esquerdaSlider.valueProperty().addListener(e -> {
+			esqZoom = esquerdaSlider.getValue();
+			esquerdaImagem.setScaleX(esqZoom);
+			esquerdaImagem.setScaleY(esqZoom);
 		});
 
-		/*
-		 * imagem.setOnMousePressed(e->{ initx = e.getSceneX(); inity = e.getSceneY();
-		 * });
-		 * 
-		 * imagem.setOnMouseDragged(e->{ initx = e.getSceneX(); inity = e.getSceneY();
-		 * });
-		 */
+		direitaSlider.setMin(1);
+		direitaSlider.setMax(4);
+		direitaSlider.setValue(1);
+
+		direitaSlider.valueProperty().addListener(e -> {
+			dirZoom = direitaSlider.getValue();
+			direitaImagem.setScaleX(dirZoom);
+			direitaImagem.setScaleY(dirZoom);
+		});
 	}
 
 	@Override
@@ -76,8 +107,7 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 
 		direitaRoot.managedProperty().bind(direitaRoot.visibleProperty());
 
-		configuraZoom(esquerdaImagem, esquerdaSlider);
-		configuraZoom(direitaImagem, direitaSlider);
+		configuraZoom();
 
 	}
 

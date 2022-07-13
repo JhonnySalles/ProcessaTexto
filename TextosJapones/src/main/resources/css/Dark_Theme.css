@@ -638,6 +638,10 @@
 
 .background-title {
 	-fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.background-title-rounded {
+	-fx-background-color: rgba(0, 0, 0, 0.5);
     -fx-border-radius: 10;
     -fx-background-radius: 0 0 10 10;
 }
