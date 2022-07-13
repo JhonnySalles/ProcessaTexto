@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
-import org.jisho.textosJapones.controller.MangasProcessarController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;

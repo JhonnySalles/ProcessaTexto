@@ -22,7 +22,9 @@ import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
 import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.DataFormat;
@@ -287,6 +289,33 @@ public class Util {
 		}
 	}
 
+	public static Integer getFirstVisibleIndex(TableView<?> t) {
+		try {
+			TableViewSkin<?> ts = (TableViewSkin<?>) t.getSkin();
+			VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(1);
+			Integer first = vf.getFirstVisibleCell().getIndex();
+			// System.out.println("##### Scrolling last " + first);
+			return first;
+		} catch (Exception ex) {
+			System.out.println("##### Scrolling: Exception " + ex);
+			return null;
+		}
+
+	}
+
+	public static Integer getLastVisibleIndex(TableView<?> t) {
+		try {
+			TableViewSkin<?> ts = (TableViewSkin<?>) t.getSkin();
+			VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(1);
+			Integer last = vf.getLastVisibleCell().getIndex();
+			// System.out.println("##### Scrolling last " + last);
+			return last;
+		} catch (Exception ex) {
+			System.out.println("##### Scrolling: Exception " + ex);
+			return null;
+		}
+	}
+
 	public static void getCapitulos(Parse parse, Map<String, Integer> lista, ListView<String> tabela) {
 		Pair<Map<String, Integer>, List<String>> capitulos = getCapitulos(parse);
 
@@ -299,7 +328,7 @@ public class Util {
 		if (parse == null)
 			return new Pair<Map<String, Integer>, List<String>>(new HashMap<String, Integer>(),
 					new ArrayList<String>());
-		Map<String, Integer> capitulos = parse.getPastas() ;
+		Map<String, Integer> capitulos = parse.getPastas();
 		List<String> descricao = new ArrayList<String>(capitulos.keySet());
 		descricao.sort((a, b) -> a.compareToIgnoreCase(b));
 		Pair<Map<String, Integer>, List<String>> itens = new Pair<Map<String, Integer>, List<String>>(capitulos,

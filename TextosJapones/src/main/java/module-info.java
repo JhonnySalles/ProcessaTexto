@@ -4,6 +4,7 @@
  */
 module TextosJapones {
 	exports org.jisho.textosJapones.controller;
+	exports org.jisho.textosJapones.controller.mangas;
 	exports org.jisho.textosJapones.model.dao;
 	exports org.jisho.textosJapones.model.dao.impl;
 	exports org.jisho.textosJapones.util.mysql;
@@ -37,6 +38,7 @@ module TextosJapones {
 	requires org.apache.commons.compress;
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
+	opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
 	opens org.jisho.textosJapones.util.processar to com.google.gson;
 }

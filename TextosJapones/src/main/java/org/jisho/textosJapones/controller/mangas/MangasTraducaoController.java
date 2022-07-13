@@ -1,9 +1,11 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
@@ -537,11 +539,6 @@ public class MangasTraducaoController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasTraducaoController.class.getResource("/view/MangaTraducao.fxml");
+		return MangasTraducaoController.class.getResource("/view/mangas/MangaTraducao.fxml");
 	}
-
-	public static String getIconLocate() {
-		return "/images/icoTextoJapones_128.png";
-	}
-
 }

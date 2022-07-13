@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
@@ -54,6 +56,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -62,6 +68,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
@@ -141,7 +148,13 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private JFXCheckBox ckbPaginaDuplaCalculada;
 
 	@FXML
-	private ListView<VinculoPagina> lvPaginasVinculadas;
+	private TableView<VinculoPagina> tvPaginasVinculadas;
+
+	@FXML
+	private TableColumn<VinculoPagina, Integer> tcMangaOriginal;
+
+	@FXML
+	private TableColumn<VinculoPagina, Integer> tcMangaVinculado;
 
 	@FXML
 	private ListView<VinculoPagina> lvPaginasNaoVinculadas;
@@ -290,9 +303,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnRecarregar() {
 		EXECUCOES.addExecucao(abort -> {
-			lvPaginasVinculadas.refresh();
+			tvPaginasVinculadas.refresh();
 			lvPaginasNaoVinculadas.refresh();
-			lvPaginasVinculadas.requestLayout();
+			tvPaginasVinculadas.requestLayout();
 			lvPaginasNaoVinculadas.requestLayout();
 
 			Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Recarregar.");
@@ -304,9 +317,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnOrderAutomatico() {
 		service.autoReordenarPaginaDupla(false);
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação automatica.");
@@ -315,9 +328,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnOrderPaginaDupla() {
 		service.ordenarPaginaDupla(ckbPaginaDuplaCalculada.isSelected());
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação página dupla.");
@@ -326,9 +339,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnOrderPaginaUnica() {
 		service.ordenarPaginaSimples();
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação página simples.");
@@ -337,9 +350,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnOrderSequencia() {
 		service.reordenarPeloNumeroPagina();
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação pela sequencia.");
@@ -353,9 +366,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private void onDragScroolUp(DragEvent event) {
 		if ((System.currentTimeMillis() - lastTime) > SLOW) {
 			lastTime = System.currentTimeMillis();
-			Integer index = Util.getFirstVisibleIndex(lvPaginasVinculadas);
+			Integer index = Util.getFirstVisibleIndex(tvPaginasVinculadas);
 			if (index != null && index > 0)
-				lvPaginasVinculadas.scrollTo(index - 1);
+				tvPaginasVinculadas.scrollTo(index - 1);
 		}
 	}
 
@@ -363,9 +376,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private void onDragScroolUpFast(DragEvent event) {
 		if ((System.currentTimeMillis() - lastTime) > FAST) {
 			lastTime = System.currentTimeMillis();
-			Integer index = Util.getFirstVisibleIndex(lvPaginasVinculadas);
+			Integer index = Util.getFirstVisibleIndex(tvPaginasVinculadas);
 			if (index != null && index > 0)
-				lvPaginasVinculadas.scrollTo(index - 1);
+				tvPaginasVinculadas.scrollTo(index - 1);
 		}
 	}
 
@@ -373,9 +386,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private void onDragScroolDown(DragEvent event) {
 		if ((System.currentTimeMillis() - lastTime) > SLOW) {
 			lastTime = System.currentTimeMillis();
-			Integer index = Util.getFirstVisibleIndex(lvPaginasVinculadas);
-			if (index != null && (index - 1) < lvPaginasVinculadas.getItems().size())
-				lvPaginasVinculadas.scrollTo(index + 1);
+			Integer index = Util.getFirstVisibleIndex(tvPaginasVinculadas);
+			if (index != null && (index - 1) < tvPaginasVinculadas.getItems().size())
+				tvPaginasVinculadas.scrollTo(index + 1);
 		}
 	}
 
@@ -383,9 +396,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private void onDragScroolDownFast(DragEvent event) {
 		if ((System.currentTimeMillis() - lastTime) > FAST) {
 			lastTime = System.currentTimeMillis();
-			Integer index = Util.getFirstVisibleIndex(lvPaginasVinculadas);
-			if (index != null && (index - 1) < lvPaginasVinculadas.getItems().size())
-				lvPaginasVinculadas.scrollTo(index + 1);
+			Integer index = Util.getFirstVisibleIndex(tvPaginasVinculadas);
+			if (index != null && (index - 1) < tvPaginasVinculadas.getItems().size())
+				tvPaginasVinculadas.scrollTo(index + 1);
 		}
 	}
 
@@ -421,9 +434,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		else if (origem == Pagina.VINCULADO_ESQUERDA)
 			service.onMovimentaEsquerda(itemOrigem, itemDestino);
 
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 	}
 
@@ -483,11 +496,11 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		vinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
 		naoVinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
 
-		lvPaginasVinculadas.setItems(vinculado);
+		tvPaginasVinculadas.setItems(vinculado);
 		lvPaginasNaoVinculadas.setItems(naoVinculado);
-		lvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();
-		lvPaginasVinculadas.requestLayout();
+		tvPaginasVinculadas.requestLayout();
 		lvPaginasNaoVinculadas.requestLayout();
 
 		Util.destroiParse(parseOriginal);
@@ -919,7 +932,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								}
 
 								vinculado = FXCollections.observableArrayList(list);
-								Platform.runLater(() -> lvPaginasVinculadas.setItems(vinculado));
+								Platform.runLater(() -> tvPaginasVinculadas.setItems(vinculado));
 							} else {
 								txtArquivoVinculado.setText(arquivo.getName());
 								Util.destroiParse(parseVinculado);
@@ -999,7 +1012,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 							MenuPrincipalController.getController().getLblLog().setText("");
 							habilita();
-							lvPaginasVinculadas.refresh();
+							tvPaginasVinculadas.refresh();
+							tvPaginasVinculadas.requestLayout();
 
 							EXECUCOES.endProcess();
 						});
@@ -1017,7 +1031,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 							MenuPrincipalController.getController().getLblLog().setText("");
 							habilita();
-							lvPaginasVinculadas.refresh();
+							tvPaginasVinculadas.refresh();
+							tvPaginasVinculadas.requestLayout();
 
 							EXECUCOES.endProcess();
 						});
@@ -1187,18 +1202,18 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		if (isManga) {
 			Integer numero = capitulosOriginal.get(capitulo);
-			Optional<VinculoPagina> pagina = lvPaginasVinculadas.getItems().stream()
+			Optional<VinculoPagina> pagina = tvPaginasVinculadas.getItems().stream()
 					.filter(pg -> pg.getOriginalPagina().compareTo(numero) == 0).findFirst();
 			if (pagina.isPresent())
-				lvPaginasVinculadas.scrollTo(pagina.get());
+				tvPaginasVinculadas.scrollTo(pagina.get());
 		} else {
 			Integer numero = capitulosVinculado.get(capitulo);
-			Optional<VinculoPagina> pagina = lvPaginasVinculadas.getItems().stream()
+			Optional<VinculoPagina> pagina = tvPaginasVinculadas.getItems().stream()
 					.filter(pg -> pg.getVinculadoEsquerdaPagina().compareTo(numero) == 0
 							|| pg.getVinculadoDireitaPagina().compareTo(numero) == 0)
 					.findFirst();
 			if (pagina.isPresent())
-				lvPaginasVinculadas.scrollTo(pagina.get());
+				tvPaginasVinculadas.scrollTo(pagina.get());
 			else {
 				pagina = lvPaginasNaoVinculadas.getItems().stream()
 						.filter(pg -> pg.getVinculadoEsquerdaPagina().compareTo(numero) == 0).findFirst();
@@ -1263,9 +1278,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 					service.addNaoVInculado(getVinculoOriginal(vinculo.onDragOrigem, vinculo), vinculo.onDragOrigem);
 
-					lvPaginasVinculadas.refresh();
+					tvPaginasVinculadas.refresh();
 					lvPaginasNaoVinculadas.refresh();
-					lvPaginasVinculadas.requestLayout();
+					tvPaginasVinculadas.requestLayout();
 					lvPaginasNaoVinculadas.requestLayout();
 
 					success = true;
@@ -1284,46 +1299,76 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	}
 
 	private void preparaCelulas() {
-		lvPaginasVinculadas.setSelectionModel(new ListViewNoSelectionModel<VinculoPagina>());
+		// lvPaginasVinculadas.setSelectionModel(new
+		// ListViewNoSelectionModel<VinculoPagina>());
 		lvPaginasNaoVinculadas.setSelectionModel(new ListViewNoSelectionModel<VinculoPagina>());
 
-		lvPaginasVinculadas.setCellFactory(new Callback<ListView<VinculoPagina>, ListCell<VinculoPagina>>() {
-			@Override
-			public ListCell<VinculoPagina> call(ListView<VinculoPagina> studentListView) {
-				ListCell<VinculoPagina> cell = new ListCell<VinculoPagina>() {
+		tcMangaOriginal.setCellValueFactory(new PropertyValueFactory<>("originalPagina"));
+		tcMangaOriginal
+				.setCellFactory(new Callback<TableColumn<VinculoPagina, Integer>, TableCell<VinculoPagina, Integer>>() {
 					@Override
-					public void updateItem(VinculoPagina item, boolean empty) {
-						super.updateItem(item, empty);
+					public TableCell<VinculoPagina, Integer> call(TableColumn<VinculoPagina, Integer> param) {
+						TableCell<VinculoPagina, Integer> cell = new TableCell<VinculoPagina, Integer>() {
+							@Override
+							public void updateItem(Integer item, boolean empty) {
+								setText(null);
+								if (empty || item == null)
+									setGraphic(null);
+								else {
+									FXMLLoader mLLoader = new FXMLLoader(
+											MangasVincularCelulaSimplesController.getFxmlLocate());
 
-						setText(null);
-
-						if (empty || item == null)
-							setGraphic(null);
-						else {
-							FXMLLoader mLLoader = new FXMLLoader(MangasVincularCelulaController.getFxmlLocate());
-
-							try {
-								mLLoader.load();
-							} catch (IOException e) {
-								e.printStackTrace();
+									try {
+										mLLoader.load();
+										MangasVincularCelulaSimplesController controller = mLLoader.getController();
+										controller.setDados(getTableRow().getItem());
+										setGraphic(controller.root);
+									} catch (IOException e) {
+										e.printStackTrace();
+										setGraphic(null);
+									}
+								}
 							}
-
-							MangasVincularCelulaController controller = mLLoader.getController();
-							controller.setDados(item);
-							controller.setListener(MangasVincularController.this);
-
-							setGraphic(controller.hbRoot);
-						}
+						};
+						return cell;
 					}
-				};
+				});
 
-				return cell;
-			}
-		});
+		tcMangaVinculado.setCellValueFactory(new PropertyValueFactory<>("vinculadoEsquerdaPagina"));
+		tcMangaVinculado
+				.setCellFactory(new Callback<TableColumn<VinculoPagina, Integer>, TableCell<VinculoPagina, Integer>>() {
+					@Override
+					public TableCell<VinculoPagina, Integer> call(TableColumn<VinculoPagina, Integer> param) {
+						TableCell<VinculoPagina, Integer> cell = new TableCell<VinculoPagina, Integer>() {
+							@Override
+							public void updateItem(Integer item, boolean empty) {
+								setText(null);
+								if (empty || item == null)
+									setGraphic(null);
+								else {
+									FXMLLoader mLLoader = new FXMLLoader(
+											MangasVincularCelulaDuplaController.getFxmlLocate());
 
+									try {
+										mLLoader.load();
+										MangasVincularCelulaDuplaController controller = mLLoader.getController();
+										controller.setDados(getTableRow().getItem());
+										controller.setListener(MangasVincularController.this);
+										setGraphic(controller.root);
+									} catch (IOException e) {
+										e.printStackTrace();
+										setGraphic(null);
+									}
+								}
+							}
+						};
+						return cell;
+					}
+				});
+		
 		lvPaginasNaoVinculadas.setCellFactory(new Callback<ListView<VinculoPagina>, ListCell<VinculoPagina>>() {
 			@Override
-			public ListCell<VinculoPagina> call(ListView<VinculoPagina> studentListView) {
+			public ListCell<VinculoPagina> call(ListView<VinculoPagina> list) {
 				ListCell<VinculoPagina> cell = new ListCell<VinculoPagina>() {
 					@Override
 					public void updateItem(VinculoPagina item, boolean empty) {
@@ -1333,7 +1378,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 						if (empty || item == null)
 							setGraphic(null);
 						else {
-							FXMLLoader mLLoader = new FXMLLoader(MangasVincularSimplesController.getFxmlLocate());
+							FXMLLoader mLLoader = new FXMLLoader(MangasVincularCelulaPequenaController.getFxmlLocate());
 
 							try {
 								mLLoader.load();
@@ -1341,11 +1386,11 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								e.printStackTrace();
 							}
 
-							MangasVincularSimplesController controller = mLLoader.getController();
+							MangasVincularCelulaPequenaController controller = mLLoader.getController();
 							controller.setDados(item);
 							controller.setListener(MangasVincularController.this);
 
-							setGraphic(controller.hbRoot);
+							setGraphic(controller.root);
 						}
 					}
 				};
@@ -1544,11 +1589,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasVincularController.class.getResource("/view/MangaVincular.fxml");
-	}
-
-	public static String getIconLocate() {
-		return "/images/icoTextoJapones_128.png";
+		return MangasVincularController.class.getResource("/view/mangas/MangaVincular.fxml");
 	}
 
 }

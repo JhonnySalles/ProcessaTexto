@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -112,7 +112,6 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasTextoCelulaDuplaController.class.getResource("/view/MangaTextoCelulaDupla.fxml");
+		return MangasTextoCelulaDuplaController.class.getResource("/view/mangas/MangaTextoCelulaDupla.fxml");
 	}
-
 }

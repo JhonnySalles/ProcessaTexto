@@ -1,10 +1,11 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
@@ -747,7 +748,7 @@ public class MangasAjustarController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasAjustarController.class.getResource("/view/MangaAjustes.fxml");
+		return MangasAjustarController.class.getResource("/view/mangas/MangaAjustar.fxml");
 	}
 
 	public static String getIconLocate() {

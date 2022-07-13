@@ -13,6 +13,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -21,7 +23,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MangasVincularController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasVincularController">
    <children>
       <HBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -66,7 +68,7 @@
                                  <graphic>
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../images/file_link/icoRecarregar.png" />
+                                          <Image url="@../../images/file_link/icoRecarregar.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -82,7 +84,7 @@
                                  <graphic>
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../images/file_link/icoOrdenarAutomatica.png" />
+                                          <Image url="@../../images/file_link/icoOrdenarAutomatica.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -94,7 +96,7 @@
                                  <graphic>
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../images/file_link/icoOrdenarSequencia.png" />
+                                          <Image url="@../../images/file_link/icoOrdenarSequencia.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -106,7 +108,7 @@
                                  <graphic>
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../images/file_link/icoOrdenarPaginaDupla.png" />
+                                          <Image url="@../../images/file_link/icoOrdenarPaginaDupla.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -118,7 +120,7 @@
                                  <graphic>
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../images/file_link/icoOrdenarPaginaUnica.png" />
+                                          <Image url="@../../images/file_link/icoOrdenarPaginaUnica.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -175,11 +177,16 @@
             </ListView>
             <AnchorPane HBox.hgrow="ALWAYS">
                <children>
-                  <ListView fx:id="lvPaginasVinculadas" prefHeight="300.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TableView fx:id="tvPaginasVinculadas" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn fx:id="tcMangaOriginal" minWidth="200.0" prefWidth="400.0" text="Manga Original" />
+                      <TableColumn fx:id="tcMangaVinculado" minWidth="200.0" prefWidth="400.0" text="MangaVinculado" />
+                    </columns>
                      <styleClass>
                         <String fx:value="paneBorder" />
-                        <String fx:value="list-black" />
-                     </styleClass></ListView>
+                        <String fx:value="table-black" />
+                     </styleClass>
+                  </TableView>
                   <AnchorPane fx:id="apDragScroolUp" maxHeight="150.0" minHeight="150.0" onDragOver="#onDragScroolUp" prefHeight="150.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Pane maxHeight="50.0" minWidth="50.0" onDragOver="#onDragScroolUpFast" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

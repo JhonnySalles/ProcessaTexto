@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.io.IOException;
 import java.net.URL;
@@ -278,11 +278,6 @@ public class MangasTextoController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasTextoController.class.getResource("/view/MangaTexto.fxml");
+		return MangasTextoController.class.getResource("/view/mangas/MangaTexto.fxml");
 	}
-
-	public static String getIconLocate() {
-		return "/images/icoTextoJapones_128.png";
-	}
-
 }

@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,14 +17,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class MangasVincularSimplesController implements Initializable {
-
-	@FXML
-	public HBox hbRoot;
+public class MangasVincularCelulaPequenaController implements Initializable {
 
 	@FXML
 	public AnchorPane root;
@@ -36,7 +32,7 @@ public class MangasVincularSimplesController implements Initializable {
 	public Text numero;
 
 	@FXML
-	public VBox nomeRoot;
+	public VBox containerNome;
 
 	@FXML
 	public Text nomePagina;
@@ -77,11 +73,11 @@ public class MangasVincularSimplesController implements Initializable {
 		imagem.fitWidthProperty().bind(root.widthProperty());
 		imagem.fitHeightProperty().bind(root.heightProperty());
 		imagem.setPreserveRatio(true);
-		imagem.fitWidthProperty().bind(nomeRoot.widthProperty());
+		imagem.fitWidthProperty().bind(containerNome.widthProperty());
 
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasVincularSimplesController.class.getResource("/view/MangaVincularSimples.fxml");
+		return MangasVincularCelulaPequenaController.class.getResource("/view/mangas/MangaVincularCelulaPequena.fxml");
 	}
 }

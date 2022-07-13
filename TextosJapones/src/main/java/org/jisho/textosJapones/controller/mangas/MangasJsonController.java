@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.controller;
+package org.jisho.textosJapones.controller.mangas;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaTabela;
@@ -700,11 +702,7 @@ public class MangasJsonController implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasJsonController.class.getResource("/view/MangaJson.fxml");
-	}
-
-	public static String getIconLocate() {
-		return "/images/icoTextoJapones_128.png";
+		return MangasJsonController.class.getResource("/view/mangas/MangaJson.fxml");
 	}
 
 }
