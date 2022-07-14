@@ -308,11 +308,11 @@ public class VincularServices {
 					qtde++;
 			});
 
-			for (var i = vinculado.size(); i <= (vinculado.size() - 1 - qtde); i--)
+			for (var i = vinculado.size() - 1; i >= (vinculado.size() - 1 - qtde); i--)
 				addNaoVinculado(vinculado.get(i));
 
 			Integer processado = qtde;
-			for (var i = vinculado.size(); i <= 0; i--) {
+			for (var i = vinculado.size() - 1; i >= 0; i--) {
 				VinculoPagina pagina = vinculado.get(i - processado);
 				if (pagina.isImagemDupla) {
 					vinculado.get(i).addVinculoEsquerdaApartirDireita(pagina);
@@ -365,7 +365,7 @@ public class VincularServices {
 					pagina.addVinculoDireitaApartirEsquerda(proximo);
 					proximo.limparVinculado();
 
-					for (var idxNext = (index + 1); idxNext <= vinculado.size(); idxNext++) {
+					for (var idxNext = (index + 1); idxNext < vinculado.size(); idxNext++) {
 						if (idxNext < (index + 1) || idxNext >= lastIndex)
 							continue;
 
@@ -454,7 +454,7 @@ public class VincularServices {
 		}
 
 		if (maxNumPag >= vinculadoTemp.size()) {
-			for (numeroPagina = naoVinculado.size(); numeroPagina <= maxNumPag; numeroPagina++) {
+			for (numeroPagina = naoVinculado.size() - 1; numeroPagina <= maxNumPag; numeroPagina++) {
 				Optional<VinculoPagina> encontrado = vinculado.stream()
 						.filter((it) -> it.getVinculadoEsquerdaPagina().compareTo(numeroPagina) == 0
 								|| it.getVinculadoDireitaPagina().compareTo(numeroPagina) == 0)
@@ -695,11 +695,11 @@ public class VincularServices {
 			if (origem != Pagina.VINCULADO_DIREITA && destino == Pagina.VINCULADO_ESQUERDA)
 				itemDestino.addVinculoEsquerda(itemOrigem);
 			else if (origem != Pagina.VINCULADO_DIREITA && destino != Pagina.VINCULADO_ESQUERDA)
-				itemDestino.addVinculoDireita(itemOrigem);
+				itemDestino.addVinculoDireitaApartirEsquerda(itemOrigem);
 			else if (origem == Pagina.VINCULADO_DIREITA && destino == Pagina.VINCULADO_ESQUERDA)
 				itemDestino.addVinculoEsquerda(itemOrigem);
 			else if (origem == Pagina.VINCULADO_DIREITA && destino != Pagina.VINCULADO_ESQUERDA)
-				itemDestino.addVinculoDireita(itemOrigem);
+				itemDestino.addVinculoDireitaApartirEsquerda(itemOrigem);
 
 			Boolean movido = false;
 			switch (origem) {
@@ -736,7 +736,7 @@ public class VincularServices {
 	public MangaPagina findPagina(List<MangaPagina> paginas, List<MangaPagina> encontrados, String path,
 			String nomePagina, Integer numeroPagina, String hash) {
 		MangaPagina manga = null;
-		
+
 		if (paginas.isEmpty())
 			return manga;
 

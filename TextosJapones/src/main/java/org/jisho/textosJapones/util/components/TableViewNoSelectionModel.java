@@ -1,12 +1,12 @@
 package org.jisho.textosJapones.util.components;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableView.TableViewSelectionModel;
 
-public class TableViewNoSelectionModel<T> extends TableViewSelectionModel<T> {
+public class TableViewNoSelectionModel<T> extends TableView.TableViewSelectionModel<T> {
 
 	public TableViewNoSelectionModel(TableView<T> tableView) {
 		super(tableView);
@@ -14,27 +14,7 @@ public class TableViewNoSelectionModel<T> extends TableViewSelectionModel<T> {
 
 	@Override
 	public ObservableList<TablePosition> getSelectedCells() {
-		return null;
-	}
-
-	@Override
-	public boolean isSelected(int row, TableColumn<T, ?> column) {
-		return false;
-	}
-
-	@Override
-	public void select(int row, TableColumn<T, ?> column) {
-
-	}
-
-	@Override
-	public void clearAndSelect(int row, TableColumn<T, ?> column) {
-
-	}
-
-	@Override
-	public void clearSelection(int row, TableColumn<T, ?> column) {
-
+		return FXCollections.emptyObservableList();
 	}
 
 	@Override
@@ -54,6 +34,101 @@ public class TableViewNoSelectionModel<T> extends TableViewSelectionModel<T> {
 
 	@Override
 	public void selectBelowCell() {
+
+	}
+
+	@Override
+	public void clearSelection(int i, TableColumn tableColumn) {
+
+	}
+
+	@Override
+	public void clearAndSelect(int i, TableColumn tableColumn) {
+
+	}
+
+	@Override
+	public void select(int i, TableColumn tableColumn) {
+
+	}
+
+	@Override
+	public boolean isSelected(int i, TableColumn tableColumn) {
+		return false;
+	}
+
+	@Override
+	public ObservableList<Integer> getSelectedIndices() {
+		return FXCollections.emptyObservableList();
+	}
+
+	@Override
+	public ObservableList getSelectedItems() {
+		return FXCollections.emptyObservableList();
+	}
+
+	@Override
+	public void selectIndices(int i, int... ints) {
+
+	}
+
+	@Override
+	public void selectAll() {
+
+	}
+
+	@Override
+	public void clearAndSelect(int i) {
+
+	}
+
+	@Override
+	public void select(int i) {
+
+	}
+
+	@Override
+	public void select(Object o) {
+
+	}
+
+	@Override
+	public void clearSelection(int i) {
+
+	}
+
+	@Override
+	public void clearSelection() {
+
+	}
+
+	@Override
+	public boolean isSelected(int i) {
+		return false;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
+	@Override
+	public void selectPrevious() {
+
+	}
+
+	@Override
+	public void selectNext() {
+
+	}
+
+	@Override
+	public void selectFirst() {
+
+	}
+
+	@Override
+	public void selectLast() {
 
 	}
 

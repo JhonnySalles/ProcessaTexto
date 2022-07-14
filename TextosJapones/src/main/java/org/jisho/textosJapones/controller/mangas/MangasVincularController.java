@@ -29,6 +29,7 @@ import org.jisho.textosJapones.util.ListaExecucoes;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.animation.Animacao;
 import org.jisho.textosJapones.util.components.ListViewNoSelectionModel;
+import org.jisho.textosJapones.util.components.TableViewNoSelectionModel;
 import org.jisho.textosJapones.util.listener.VinculoListener;
 import org.jisho.textosJapones.util.listener.VinculoServiceListener;
 import org.jisho.textosJapones.util.notification.AlertasPopup;
@@ -43,6 +44,8 @@ import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -68,7 +71,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
@@ -1299,8 +1304,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	}
 
 	private void preparaCelulas() {
-		// lvPaginasVinculadas.setSelectionModel(new
-		// ListViewNoSelectionModel<VinculoPagina>());
+		tvPaginasVinculadas.setSelectionModel(new TableViewNoSelectionModel<VinculoPagina>(tvPaginasVinculadas));
 		lvPaginasNaoVinculadas.setSelectionModel(new ListViewNoSelectionModel<VinculoPagina>());
 
 		tcMangaOriginal.setCellValueFactory(new PropertyValueFactory<>("originalPagina"));
@@ -1354,6 +1358,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										MangasVincularCelulaDuplaController controller = mLLoader.getController();
 										controller.setDados(getTableRow().getItem());
 										controller.setListener(MangasVincularController.this);
+										HBox.setHgrow(controller.root, Priority.ALWAYS);
 										setGraphic(controller.root);
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -1365,7 +1370,20 @@ public class MangasVincularController implements Initializable, VinculoListener,
 						return cell;
 					}
 				});
-		
+
+		tvPaginasVinculadas.widthProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) {
+				Pane header = (Pane) tvPaginasVinculadas.lookup("TableHeaderRow");
+				if (header.isVisible()) {
+					header.setMaxHeight(0);
+					header.setMinHeight(0);
+					header.setPrefHeight(0);
+					header.setVisible(false);
+				}
+			}
+		});
+
 		lvPaginasNaoVinculadas.setCellFactory(new Callback<ListView<VinculoPagina>, ListCell<VinculoPagina>>() {
 			@Override
 			public ListCell<VinculoPagina> call(ListView<VinculoPagina> list) {

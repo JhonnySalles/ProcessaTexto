@@ -242,6 +242,8 @@ public class VinculoPagina implements Serializable {
 
 		this.vinculadoDireitaHash = outro.vinculadoDireitaHash;
 		this.vinculadoEsquerdaHash = outro.vinculadoEsquerdaHash;
+		
+		this.isImagemDupla = outro.isImagemDupla;
 
 	}
 
@@ -316,6 +318,7 @@ public class VinculoPagina implements Serializable {
 			this.mangaPaginaEsquerda = mangaPaginaDireita;
 			this.imagemVinculadoEsquerda = imagemVinculadoDireita;
 			this.vinculadoEsquerdaHash = vinculadoDireitaHash;
+			this.isImagemDupla = this.vinculadoDireitaPagina != PAGINA_VAZIA;
 		} else {
 			this.vinculadoDireitaNomePagina = vinculadoDireitaNomePagina;
 			this.vinculadoDireitaPathPagina = vinculadoDireitaPathPagina;
@@ -325,6 +328,7 @@ public class VinculoPagina implements Serializable {
 			this.mangaPaginaDireita = mangaPaginaDireita;
 			this.imagemVinculadoDireita = imagemVinculadoDireita;
 			this.vinculadoDireitaHash = vinculadoDireitaHash;
+			this.isImagemDupla = true;
 		}
 	}
 
@@ -387,6 +391,7 @@ public class VinculoPagina implements Serializable {
 			this.vinculadoEsquerdaHash = "";
 			this.imagemVinculadoEsquerda = null;
 			this.mangaPaginaEsquerda = null;
+			this.isImagemDupla = false;
 		}
 
 		return movido;

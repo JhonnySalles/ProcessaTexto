@@ -9,6 +9,7 @@ import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.util.animation.Animacao;
+import org.jisho.textosJapones.util.components.TableViewNoSelectionModel;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
@@ -90,8 +91,7 @@ public class MangasTextoController implements Initializable {
 	}
 
 	private void preparaCelulas() {
-		// tvPaginasVinculadas.setSelectionModel(new
-		// TableViewNoSelectionModel<VinculoPagina>(tvPaginasVinculadas));
+		tvPaginasVinculadas.setSelectionModel(new TableViewNoSelectionModel<VinculoPagina>(tvPaginasVinculadas));
 
 		tcMangaOriginal.setCellValueFactory(new PropertyValueFactory<>("imagemOriginal"));
 		tcMangaOriginal

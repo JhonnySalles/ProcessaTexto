@@ -63,42 +63,40 @@ public class MangasVincularCelulaDuplaController implements Initializable {
 	private VinculoListener listener;
 
 	public void setDados(VinculoPagina vinculo) {
+		root.setOnDragEntered(new EventHandler<DragEvent>() {
+			public void handle(DragEvent event) {
+				if (vinculo.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+					direitaContainer.setVisible(true);
+					direitaContainer.setPrefWidth(esquerdaContainer.getWidth());
+				}
+
+			}
+		});
+
+		root.setOnDragExited(new EventHandler<DragEvent>() {
+			public void handle(DragEvent event) {
+				if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
+					direitaContainer.setVisible(false);
+
+			}
+		});
+
+		root.setOnDragDone(new EventHandler<DragEvent>() {
+			public void handle(DragEvent event) {
+				if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
+					direitaContainer.setVisible(false);
+			}
+		});
+		
 		if (vinculo != null) {
-			root.setOnDragEntered(new EventHandler<DragEvent>() {
-				public void handle(DragEvent event) {
-					if (vinculo.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
-						direitaContainer.setVisible(true);
-						direitaContainer.setPrefWidth(esquerdaContainer.getWidth());
-					}
-
-				}
-			});
-
-			root.setOnDragExited(new EventHandler<DragEvent>() {
-				public void handle(DragEvent event) {
-					if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
-						direitaContainer.setVisible(false);
-
-				}
-			});
-
-			root.setOnDragDone(new EventHandler<DragEvent>() {
-				public void handle(DragEvent event) {
-					if (!vinculo.isImagemDupla && vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
-						direitaContainer.setVisible(false);
-				}
-			});
-
+			configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_DIREITA);
 			if (vinculo.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
-				limpaDrop(esquerdaContainer);
 				esquerdaContainer.setOnDragDetected(null);
 				esquerdaImagem.setImage(vinculo.getImagemVinculadoEsquerda());
 				esquerdaNumero.setText("");
 				esquerdaNomePagina.setText("");
 				esquerdaNome.setVisible(false);
 			} else {
-				configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_DIREITA);
-
 				esquerdaContainer.setOnDragDetected(new EventHandler<MouseEvent>() {
 					public void handle(MouseEvent event) {
 						listener.onDragStart();
@@ -130,7 +128,7 @@ public class MangasVincularCelulaDuplaController implements Initializable {
 				esquerdaNome.setVisible(true);
 			}
 
-			configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_ESQUERDA);
+			configuraDrop(direitaContainer, vinculo, Pagina.VINCULADO_DIREITA);
 
 			if (vinculo.getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA) {
 				direitaContainer.setOnDragDetected(null);
@@ -169,11 +167,11 @@ public class MangasVincularCelulaDuplaController implements Initializable {
 				direitaNomePagina.setText(vinculo.getVinculadoDireitaNomePagina());
 			}
 		} else {
+			configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_DIREITA);
 			esquerdaImagem.setImage(null);
 			esquerdaNumero.setText("");
 			esquerdaNomePagina.setText("");
 			esquerdaNome.setVisible(false);
-			limpaDrop(esquerdaContainer);
 
 			direitaContainer.setVisible(false);
 			direitaImagem.setImage(null);
