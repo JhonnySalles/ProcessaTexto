@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioServices;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.notification.Notificacoes;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;

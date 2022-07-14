@@ -2,18 +2,17 @@
 
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import java.lang.String?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane fx:id="apRoot" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasController">
+<AnchorPane fx:id="apRoot" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasController">
    <children>
       <StackPane fx:id="stackPane" layoutX="5.0" layoutY="11.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <AnchorPane fx:id="apConteinerRoot" styleClass="background-Black1" stylesheets="@../../css/Dark_Theme.css">
                <children>
-                  <JFXTabPane style="-fx-border-color: black; -fx-border-width: 1;" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <JFXTabPane style="-fx-border-color: black; -fx-border-width: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <tabs>
                         <Tab text="Vincular">
                           <content>
@@ -66,9 +65,6 @@
                         </Tab>
                      </tabs>
                   </JFXTabPane>
-                  <ProgressBar fx:id="barraProgressoVolumes" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <ProgressBar fx:id="barraProgressoCapitulos" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <ProgressBar fx:id="barraProgressoPaginas" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                  </children>
             </AnchorPane>
          </children>

@@ -8,8 +8,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaTabela;
@@ -17,9 +20,6 @@ import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
-import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
-import org.jisho.textosJapones.util.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;

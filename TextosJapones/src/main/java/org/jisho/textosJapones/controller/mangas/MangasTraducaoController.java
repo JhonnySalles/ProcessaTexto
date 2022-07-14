@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Manga;
@@ -15,10 +17,8 @@ import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
-import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;

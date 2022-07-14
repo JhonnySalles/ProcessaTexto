@@ -3,17 +3,18 @@
  *
  */
 module TextosJapones {
+	exports org.jisho.textosJapones;
 	exports org.jisho.textosJapones.controller;
+	exports org.jisho.textosJapones.controller.legendas;
 	exports org.jisho.textosJapones.controller.mangas;
-	exports org.jisho.textosJapones.model.dao;
-	exports org.jisho.textosJapones.model.dao.impl;
-	exports org.jisho.textosJapones.util.mysql;
-	exports org.jisho.textosJapones.util.animation;
+	exports org.jisho.textosJapones.database.dao;
+	exports org.jisho.textosJapones.database.dao.implement;
+	exports org.jisho.textosJapones.database.mysql;
+	exports org.jisho.textosJapones.components.animation;
 	exports org.jisho.textosJapones.model.services;
 	exports org.jisho.textosJapones.model.enums;
-	exports org.jisho.textosJapones;
 	exports org.jisho.textosJapones.model.entities;
-	exports org.jisho.textosJapones.util.listener;
+	exports org.jisho.textosJapones.components.listener;
 
 	requires transitive java.sql;
 	requires transitive com.jfoenix;
@@ -39,6 +40,7 @@ module TextosJapones {
 
 	opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
+	opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;
 	opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
-	opens org.jisho.textosJapones.util.processar to com.google.gson;
+	opens org.jisho.textosJapones.processar to com.google.gson;
 }

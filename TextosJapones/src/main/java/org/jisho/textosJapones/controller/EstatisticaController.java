@@ -7,12 +7,12 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jisho.textosJapones.components.animation.Animacao;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
 import org.jisho.textosJapones.model.entities.Estatistica;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.EstatisticaServices;
-import org.jisho.textosJapones.util.animation.Animacao;
-import org.jisho.textosJapones.util.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
 
 import com.google.common.collect.Sets;
 import com.jfoenix.controls.JFXButton;

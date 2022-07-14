@@ -3,8 +3,8 @@ package org.jisho.textosJapones.model.services;
 import java.util.List;
 import java.util.Set;
 
-import org.jisho.textosJapones.model.dao.DaoFactory;
-import org.jisho.textosJapones.model.dao.MangaDao;
+import org.jisho.textosJapones.database.dao.DaoFactory;
+import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;

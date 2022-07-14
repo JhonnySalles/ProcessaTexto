@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.jisho.textosJapones.util.notification.Alertas;
+import org.jisho.textosJapones.components.notification.Alertas;
 
 public class Configuracao {
 

@@ -8,17 +8,17 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
 import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.processar.kanjiStatics.ImportaEstatistica;
+import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.kanjiStatics.ImportaEstatistica;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.notification.Notificacoes;
-import org.jisho.textosJapones.util.tokenizers.SudachiTokenizer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;

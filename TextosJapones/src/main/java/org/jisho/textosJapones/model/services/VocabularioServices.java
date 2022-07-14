@@ -3,8 +3,8 @@ package org.jisho.textosJapones.model.services;
 import java.util.List;
 import java.util.Set;
 
-import org.jisho.textosJapones.model.dao.DaoFactory;
-import org.jisho.textosJapones.model.dao.VocabularioDao;
+import org.jisho.textosJapones.database.dao.DaoFactory;
+import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 

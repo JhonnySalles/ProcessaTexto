@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Manga;
@@ -14,9 +16,7 @@ import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
-import org.jisho.textosJapones.util.CheckBoxTreeTableCellCustom;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.processar.ProcessarMangas;
+import org.jisho.textosJapones.processar.ProcessarMangas;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -106,6 +106,15 @@ public class MangasProcessarController implements Initializable {
 	@FXML
 	private JFXCheckBox ckbCriarBase;
 
+	@FXML
+	private ProgressBar barraProgressoVolumes;
+
+	@FXML
+	private ProgressBar barraProgressoCapitulos;
+
+	@FXML
+	private ProgressBar barraProgressoPaginas;
+
 	private ProcessarMangas mangas;
 	private MangaServices service = new MangaServices();
 	private ObservableList<MangaTabela> TABELAS;
@@ -162,9 +171,9 @@ public class MangasProcessarController implements Initializable {
 		btnProcessar.setText("Processar");
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-		controller.getBarraProgressoVolumes().setProgress(0);
-		controller.getBarraProgressoCapitulos().setProgress(0);
-		controller.getBarraProgressoPaginas().setProgress(0);
+		getBarraProgressoVolumes().setProgress(0);
+		getBarraProgressoCapitulos().setProgress(0);
+		getBarraProgressoPaginas().setProgress(0);
 	}
 
 	public AnchorPane getRoot() {
@@ -172,15 +181,15 @@ public class MangasProcessarController implements Initializable {
 	}
 
 	public ProgressBar getBarraProgressoVolumes() {
-		return controller.getBarraProgressoVolumes();
+		return barraProgressoVolumes;
 	}
 
 	public ProgressBar getBarraProgressoCapitulos() {
-		return controller.getBarraProgressoCapitulos();
+		return barraProgressoCapitulos;
 	}
 
 	public ProgressBar getBarraProgressoPaginas() {
-		return controller.getBarraProgressoPaginas();
+		return barraProgressoPaginas;
 	}
 
 	private String BASE_ORIGEM, BASE_DESTINO;
@@ -250,7 +259,7 @@ public class MangasProcessarController implements Initializable {
 					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
 
 					btnTransferir.setDisable(false);
-					controller.getBarraProgressoVolumes().setProgress(0);
+					getBarraProgressoVolumes().setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 
 					if (!error.isEmpty())
@@ -283,8 +292,8 @@ public class MangasProcessarController implements Initializable {
 		BASE = txtBase.getText().trim();
 		MANGA = txtManga.getText().trim();
 
-		controller.getBarraProgressoCapitulos().setProgress(-1);
-		controller.getBarraProgressoVolumes().setProgress(-1);
+		getBarraProgressoCapitulos().setProgress(-1);
+		getBarraProgressoVolumes().setProgress(-1);
 
 		if (TaskbarProgressbar.isSupported())
 			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
@@ -313,8 +322,8 @@ public class MangasProcessarController implements Initializable {
 					btnCarregar.setDisable(false);
 					btnProcessar.setDisable(false);
 					treeBases.setDisable(false);
-					controller.getBarraProgressoCapitulos().setProgress(0);
-					controller.getBarraProgressoVolumes().setProgress(0);
+					getBarraProgressoCapitulos().setProgress(0);
+					getBarraProgressoVolumes().setProgress(0);
 					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 				});
 

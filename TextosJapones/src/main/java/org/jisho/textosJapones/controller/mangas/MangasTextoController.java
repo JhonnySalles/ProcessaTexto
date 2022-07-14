@@ -5,11 +5,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.jisho.textosJapones.components.TableViewNoSelectionModel;
+import org.jisho.textosJapones.components.animation.Animacao;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
-import org.jisho.textosJapones.util.animation.Animacao;
-import org.jisho.textosJapones.util.components.TableViewNoSelectionModel;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;

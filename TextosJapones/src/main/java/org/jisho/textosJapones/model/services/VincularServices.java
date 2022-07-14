@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.jisho.textosJapones.model.dao.DaoFactory;
-import org.jisho.textosJapones.model.dao.MangaDao;
-import org.jisho.textosJapones.model.dao.VincularDao;
+import org.jisho.textosJapones.components.listener.VinculoServiceListener;
+import org.jisho.textosJapones.database.dao.DaoFactory;
+import org.jisho.textosJapones.database.dao.MangaDao;
+import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
@@ -16,7 +17,6 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Pagina;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.listener.VinculoServiceListener;
 
 import javafx.collections.ObservableList;
 import javafx.util.Pair;

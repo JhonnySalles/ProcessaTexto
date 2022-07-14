@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.jisho.textosJapones.fileparse.Parse;
+import org.jisho.textosJapones.fileparse.ParseFactory;
+import org.jisho.textosJapones.fileparse.RarParse;
 import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.parse.Parse;
-import org.jisho.textosJapones.parse.ParseFactory;
-import org.jisho.textosJapones.parse.RarParse;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Node;

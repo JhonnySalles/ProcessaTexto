@@ -9,16 +9,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
+import org.jisho.textosJapones.components.animation.Animacao;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.components.notification.Notificacoes;
+import org.jisho.textosJapones.database.mysql.Backup;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
 import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.enums.Site;
-import org.jisho.textosJapones.util.animation.Animacao;
-import org.jisho.textosJapones.util.mysql.Backup;
-import org.jisho.textosJapones.util.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.notification.Notificacoes;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;

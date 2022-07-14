@@ -3,10 +3,10 @@ package org.jisho.textosJapones.controller.mangas;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.jisho.textosJapones.components.listener.VinculoListener;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Pagina;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.listener.VinculoListener;
 
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;

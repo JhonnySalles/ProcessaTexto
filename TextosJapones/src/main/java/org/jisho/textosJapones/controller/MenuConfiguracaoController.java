@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
 import org.jisho.textosJapones.util.constraints.Validadores;
-import org.jisho.textosJapones.util.mysql.ConexaoMysql;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;

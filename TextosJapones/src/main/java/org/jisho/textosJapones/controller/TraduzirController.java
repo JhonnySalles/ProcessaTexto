@@ -8,20 +8,20 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.processar.JapanDict;
+import org.jisho.textosJapones.processar.Jisho;
+import org.jisho.textosJapones.processar.Kanshudo;
+import org.jisho.textosJapones.processar.ProcessarPalavra;
+import org.jisho.textosJapones.processar.Tangorin;
+import org.jisho.textosJapones.processar.TanoshiJapanese;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.notification.AlertasPopup;
-import org.jisho.textosJapones.util.processar.JapanDict;
-import org.jisho.textosJapones.util.processar.Jisho;
-import org.jisho.textosJapones.util.processar.Kanshudo;
-import org.jisho.textosJapones.util.processar.ProcessarPalavra;
-import org.jisho.textosJapones.util.processar.Tangorin;
-import org.jisho.textosJapones.util.processar.TanoshiJapanese;
-import org.jisho.textosJapones.util.scriptGoogle.ScriptGoogle;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
