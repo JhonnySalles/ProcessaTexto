@@ -143,7 +143,10 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setInt(4, pagina.getOriginalPagina());
 			st.setInt(5, pagina.getOriginalPaginas());
 			st.setBoolean(6, pagina.isOriginalPaginaDupla);
-			st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+			if (pagina.getMangaPaginaOriginal() != null)
+				st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+			else
+				st.setNString(7, null);
 
 			st.setString(8, pagina.getVinculadoDireitaNomePagina());
 			st.setString(9, pagina.getVinculadoDireitaPathPagina());
@@ -255,15 +258,15 @@ public class VincularDaoJDBC implements VincularDao {
 			} else {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
-					Long id = rs.getLong(1);
-
+					obj.setId(rs.getLong(1));
+					
 					for (VinculoPagina pagina : obj.getVinculados())
-						insertVinculados(base, id, pagina);
+						insertVinculados(base, obj.getId(), pagina);
 
 					for (VinculoPagina pagina : obj.getNaoVinculados())
-						insertNaoVinculados(base, id, pagina);
+						insertNaoVinculados(base, obj.getId(), pagina);
 
-					return id;
+					return obj.getId();
 				}
 			}
 		} catch (SQLException e) {
@@ -569,7 +572,11 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setInt(4, pagina.getOriginalPagina());
 			st.setInt(5, pagina.getOriginalPaginas());
 			st.setBoolean(6, pagina.isOriginalPaginaDupla);
-			st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+			
+			if (pagina.getMangaPaginaOriginal() != null)
+				st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+			else
+				st.setNString(7, null);
 
 			st.setString(8, pagina.getVinculadoDireitaNomePagina());
 			st.setString(9, pagina.getVinculadoDireitaPathPagina());
