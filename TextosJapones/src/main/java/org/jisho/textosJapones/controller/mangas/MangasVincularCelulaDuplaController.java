@@ -89,7 +89,7 @@ public class MangasVincularCelulaDuplaController implements Initializable {
 		});
 		
 		if (vinculo != null) {
-			configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_DIREITA);
+			configuraDrop(esquerdaContainer, vinculo, Pagina.VINCULADO_ESQUERDA);
 			if (vinculo.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
 				esquerdaContainer.setOnDragDetected(null);
 				esquerdaImagem.setImage(vinculo.getImagemVinculadoEsquerda());

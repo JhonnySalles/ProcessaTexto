@@ -445,12 +445,12 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		VinculoPagina itemOrigem = getVinculoOriginal(origem, vinculoOrigem);
 		VinculoPagina itemDestino = getVinculoOriginal(destino, vinculoDestino);
 
-		if (origem == Pagina.NAO_VINCULADO)
-			service.fromNaoVinculado(itemOrigem, itemDestino, destino);
-		else if (origem == Pagina.VINCULADO_DIREITA || destino == Pagina.VINCULADO_DIREITA)
+		if (origem == Pagina.VINCULADO_DIREITA || destino == Pagina.VINCULADO_DIREITA)
 			service.onMovimentaDireita(origem, itemOrigem, destino, itemDestino);
 		else if (origem == Pagina.VINCULADO_ESQUERDA)
 			service.onMovimentaEsquerda(itemOrigem, itemDestino);
+		else if (origem == Pagina.NAO_VINCULADO)
+			service.fromNaoVinculado(itemOrigem, itemDestino, destino);
 
 		tvPaginasVinculadas.refresh();
 		lvPaginasNaoVinculadas.refresh();

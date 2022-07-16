@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 public class Kanshudo {
 
-	final private static String LINK_WORD = "https://www.kanshudo.com/searchw?q={kanji}";
+	//final private static String LINK_WORD = "https://www.kanshudo.com/searchw?q={kanji}";
 	final private static String LINK_NAME = "https://www.kanshudo.com/searchn?q={kanji}";
 
 	public static String processa(String kanji) {
@@ -63,7 +63,7 @@ public class Kanshudo {
 		}
 	}
 
-	private static String getSignificado(String kanji) {
+	/*private static String getSignificado(String kanji) {
 		try {
 			String url = LINK_WORD.replace("{kanji}", kanji);
 
@@ -103,5 +103,5 @@ public class Kanshudo {
 			e.printStackTrace();
 			return "";
 		}
-	}
+	}*/
 }

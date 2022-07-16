@@ -378,7 +378,7 @@ public class VincularServices {
 						continue;
 
 					Integer indexEmpty = lastIndex;
-					for (var i = (index + 1); i <= lastIndex; i++) {
+					for (var i = (index + 1); i < lastIndex; i++) {
 						if (vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
 							indexEmpty = i;
 							break;
@@ -556,58 +556,57 @@ public class VincularServices {
 
 		ObservableList<VinculoPagina> vinculado = listener.getVinculados();
 
-		Integer origemnIndex = vinculado.indexOf(origem);
+		Integer origemIndex = vinculado.indexOf(origem);
 		Integer destinoIndex = vinculado.indexOf(destino);
-		Integer diferenca = destinoIndex - origemnIndex;
+		Integer diferenca = destinoIndex - origemIndex;
 
-		if (origemnIndex > destinoIndex) {
+		if (origemIndex > destinoIndex) {
 			Integer limite = vinculado.size() - 1;
 
 			Integer index = vinculado.indexOf(
-					vinculado.stream().filter(it -> it.getImagemVinculadoEsquerda() != null).findFirst().get());
+					vinculado.stream().filter(it -> it.getImagemVinculadoEsquerda() == null).findFirst().get());
 			if (index < 0)
 				index = limite;
 
-			for (var i = index; i >= origemnIndex; i--)
-				if (vinculado.get(i).getVinculadoDireitaPagina() == VinculoPagina.PAGINA_VAZIA)
+			for (var i = index; i >= origemIndex; i--)
+				if (vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA)
 					limite = i;
 
-			for (var i = destinoIndex; i >= origemnIndex; i--)
+			for (var i = destinoIndex; i < origemIndex; i++)
 				addNaoVinculado(vinculado.get(i));
 
 			diferenca *= -1;
 
-			for (var i = destinoIndex; i >= limite; i--) {
+			for (var i = destinoIndex; i < limite; i++) {
 				if (i == destinoIndex)
-					vinculado.get(i).addVinculoEsquerda(destino);
+					vinculado.get(i).addVinculoEsquerda(origem);
 				else if ((i + diferenca) > (limite))
 					continue;
 				else {
 					vinculado.get(i).addVinculoEsquerda(vinculado.get(i + diferenca));
-					vinculado.get(i + diferenca).limparVinculadoDireita();
+					vinculado.get(i + diferenca).limparVinculadoEsquerda();
 				}
-
 			}
 
-			for (var i = destinoIndex; i >= limite; i--)
+			for (var i = destinoIndex; i < limite; i++)
 				if (vinculado.get(i).isImagemDupla
-						&& vinculado.get(0).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA
-						&& vinculado.get(0).getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
-					vinculado.get(0).moverDireitaParaEsquerda();
+						&& vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA
+						&& vinculado.get(i).getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+					vinculado.get(i).moverDireitaParaEsquerda();
 
 		} else {
 			Integer limite = vinculado.size() - 1;
 			Integer espacos = 0;
 
-			for (var i = origemnIndex; i >= limite; i--)
-				if (vinculado.get(0).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA)
+			for (var i = origemIndex; i < limite; i++)
+				if (vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA)
 					espacos++;
 
 			if (diferenca > espacos) {
 				for (var i = limite; i >= (limite - diferenca); i--)
 					addNaoVinculado(vinculado.get(i));
 
-				for (var i = limite; i >= origemnIndex; i--) {
+				for (var i = limite; i >= origemIndex; i--) {
 					if (i < destinoIndex)
 						vinculado.get(i).limparVinculadoEsquerda();
 					else
@@ -616,8 +615,8 @@ public class VincularServices {
 			} else {
 				espacos = 0;
 
-				for (var i = origemnIndex; i >= limite; i--) {
-					if (vinculado.get(0).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
+				for (var i = origemIndex; i < limite; i++) {
+					if (vinculado.get(i).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
 						espacos++;
 
 						if (espacos >= diferenca) {
@@ -630,9 +629,9 @@ public class VincularServices {
 				espacos = 0;
 				Integer index;
 
-				for (var i = limite; i >= origemnIndex; i--) {
+				for (var i = limite; i >= origemIndex; i--) {
 					if (i < destinoIndex)
-						vinculado.get(0).limparVinculadoEsquerda(true);
+						vinculado.get(i).limparVinculadoEsquerda(true);
 					else {
 						index = i - (1 + espacos);
 						if (vinculado.get(index).getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA) {
@@ -654,18 +653,18 @@ public class VincularServices {
 	}
 
 	public void onMovimentaDireita(Pagina origem, VinculoPagina itemOrigem, Pagina destino, VinculoPagina itemDestino) {
-		if (origem == null || destino == null)
+		if (itemOrigem == null || itemDestino == null || (itemOrigem == itemDestino && destino == Pagina.VINCULADO_DIREITA))
 			return;
 
 		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
 
-		if (origem != Pagina.VINCULADO_DIREITA && itemDestino.isImagemDupla)
+		if (destino != Pagina.VINCULADO_ESQUERDA && itemDestino.isImagemDupla)
 			naoVinculado.add(new VinculoPagina(itemDestino.getVinculadoDireitaNomePagina(),
 					itemDestino.getVinculadoDireitaPathPagina(), itemDestino.getVinculadoDireitaPagina(),
 					itemDestino.getVinculadoDireitaPaginas(), itemDestino.isVinculadoDireitaPaginaDupla,
 					itemDestino.getMangaPaginaDireita(), itemDestino.getImagemVinculadoDireita(), true,
 					itemDestino.getVinculadoDireitaHash()));
-		else if (origem == Pagina.VINCULADO_DIREITA
+		else if (destino == Pagina.VINCULADO_ESQUERDA
 				&& itemDestino.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
 			naoVinculado.add(new VinculoPagina(itemDestino.getVinculadoEsquerdaNomePagina(),
 					itemDestino.getVinculadoEsquerdaPathPagina(), itemDestino.getVinculadoEsquerdaPagina(),
@@ -680,7 +679,7 @@ public class VincularServices {
 			if (origem == Pagina.NAO_VINCULADO && destino == Pagina.NAO_VINCULADO)
 				return;
 			else if (origem == Pagina.NAO_VINCULADO) {
-				itemDestino.addVinculoDireita(itemOrigem);
+				itemDestino.addVinculoDireitaApartirEsquerda(itemOrigem);
 				naoVinculado.remove(itemOrigem);
 			} else if (destino == Pagina.NAO_VINCULADO)
 				itemOrigem.limparVinculadoDireita();
