@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -335,5 +337,13 @@ public class Util {
 				descricao);
 
 		return itens;
+	}
+
+	public static Timestamp convertToTimeStamp(LocalDateTime ldt) {
+		return Timestamp.valueOf(ldt);
+	}
+
+	public static LocalDateTime convertToDateTime(Timestamp ts) {
+		return ts.toLocalDateTime();
 	}
 }

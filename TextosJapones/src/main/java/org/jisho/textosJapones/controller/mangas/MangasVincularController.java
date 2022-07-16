@@ -205,8 +205,22 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnCarregarLegendas() {
 		EXECUCOES.addExecucao(abort -> {
-			if (carregarLegendas()) {
-				vincularLegenda();
+			if (carregar()) {
+				vincularLegenda(true);
+
+				String texto = ""
+						+ (vinculo.getVolumeOriginal() != null ? "Original: " + vinculo.getVolumeOriginal().getManga()
+								+ " - V: " + vinculo.getVolumeOriginal().getVolume() + " - L: "
+								+ vinculo.getVolumeOriginal().getLingua() + "|" : "")
+						+ (vinculo.getVolumeVinculado() != null
+								? "Vinculado: " + vinculo.getVolumeVinculado().getManga() + " - V:"
+										+ vinculo.getVolumeVinculado().getVolume() + " - L: "
+										+ vinculo.getVolumeOriginal().getLingua()
+								: "");
+
+				Notificacoes.notificacao(Notificacao.SUCESSO, "Manga vinculado carregada com sucesso", texto);
+			} else if (carregarLegendas()) {
+				vincularLegenda(false);
 
 				String texto = ""
 						+ (vinculo.getVolumeOriginal() != null ? "Original: " + vinculo.getVolumeOriginal().getManga()
@@ -234,15 +248,15 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		String pasta = arquivoOriginal != null ? arquivoOriginal.getPath()
 				: (arquivoVinculado != null ? arquivoVinculado.getPath() : null);
-		arquivoOriginal = selecionaArquivo("Selecione o arquivo de origem", pasta);
+		File arquivo = selecionaArquivo("Selecione o arquivo de origem", pasta);
 
-		if (arquivoOriginal == null)
-			limpar();
-		else if (!selecionarArquivo())
-			carregarArquivo(arquivoOriginal, true);
-		else
-			carregaDados(arquivoOriginal, true);
-
+		if (arquivo != null) {
+			arquivoOriginal = arquivo;
+			if (!selecionarArquivo())
+				carregarArquivo(arquivo, true);
+			else
+				carregaDados(arquivo, true);
+		}
 	}
 
 	@FXML
@@ -260,9 +274,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		if (arquivo != null) {
 			arquivoVinculado = arquivo;
 			if (!selecionarArquivo())
-				carregarArquivo(arquivoVinculado, false);
+				carregarArquivo(arquivo, false);
 			else
-				carregaDados(arquivoOriginal, false);
+				carregaDados(arquivo, false);
 		}
 	}
 
@@ -283,6 +297,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 			try {
 				service.delete(cbBase.getSelectionModel().getSelectedItem(), vinculo);
+				limpar();
 				Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Arquivo deletado com sucesso.");
 			} catch (ExcessaoBd e) {
 				e.printStackTrace();
@@ -296,10 +311,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnSalvar() {
 		EXECUCOES.addExecucao(abort -> {
-			if (valida()) {
+			if (valida())
 				salvar();
-				Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.");
-			}
 
 			return false;
 		});
@@ -498,15 +511,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		ckbPaginaDuplaCalculada.selectedProperty().set(true);
 		spnVolume.getValueFactory().setValue(1);
 
-		vinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
-		naoVinculado = FXCollections.observableArrayList(new ArrayList<VinculoPagina>());
-
-		tvPaginasVinculadas.setItems(vinculado);
-		lvPaginasNaoVinculadas.setItems(naoVinculado);
-		tvPaginasVinculadas.refresh();
-		lvPaginasNaoVinculadas.refresh();
-		tvPaginasVinculadas.requestLayout();
-		lvPaginasNaoVinculadas.requestLayout();
+		setLista(new ArrayList<VinculoPagina>(), new ArrayList<VinculoPagina>());
 
 		Util.destroiParse(parseOriginal);
 		Util.destroiParse(parseVinculado);
@@ -515,6 +520,23 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		arquivoVinculado = null;
 		parseOriginal = null;
 		parseVinculado = null;
+	}
+
+	private void setLista(List<VinculoPagina> vinculado, List<VinculoPagina> naoVinculado) {
+		if (this.vinculado != null) {
+			this.vinculado.clear();
+			this.naoVinculado.clear();
+		}
+
+		this.vinculado = FXCollections.observableArrayList(vinculado);
+		this.naoVinculado = FXCollections.observableArrayList(naoVinculado);
+
+		tvPaginasVinculadas.setItems(this.vinculado);
+		lvPaginasNaoVinculadas.setItems(this.naoVinculado);
+		tvPaginasVinculadas.refresh();
+		lvPaginasNaoVinculadas.refresh();
+		tvPaginasVinculadas.requestLayout();
+		lvPaginasNaoVinculadas.requestLayout();
 	}
 
 	private void visualizarLegendas(Integer index) {
@@ -571,9 +593,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		return volumeOriginal != null && volumeVinculado != null;
 	}
 
-	private Integer capas = 0;
+	private Integer itensCapas = 0;
 
-	private void vincularLegenda() {
+	private void vincularLegenda(Boolean isCarregado) {
 		if (vinculo == null || vinculado.isEmpty())
 			return;
 
@@ -595,124 +617,222 @@ public class MangasVincularController implements Initializable, VinculoListener,
 						Max = 1;
 						error = "";
 
-						updateMessage("Vinculando mangas....");
+						if (!isCarregado) {
 
-						if (vinculo.getVolumeOriginal() != null && vinculo.getVolumeVinculado() != null)
-							Max = vinculado.size() * 2 + naoVinculado.size();
-						else if (vinculo.getVolumeOriginal() != null)
-							Max = vinculado.size();
-						else if (vinculo.getVolumeOriginal() != null)
-							Max = vinculado.size() + naoVinculado.size();
+							updateMessage("Vinculando mangas....");
 
-						if (vinculo.getVolumeOriginal() != null) {
-							updateMessage("Vinculando mangas original....");
+							if (vinculo.getVolumeOriginal() != null && vinculo.getVolumeVinculado() != null)
+								Max = vinculado.size() * 2 + naoVinculado.size();
+							else if (vinculo.getVolumeOriginal() != null)
+								Max = vinculado.size();
+							else if (vinculo.getVolumeOriginal() != null)
+								Max = vinculado.size() + naoVinculado.size();
 
-							final List<MangaPagina> encontrados = new ArrayList<MangaPagina>();
-							final List<MangaPagina> paginasOriginal = new ArrayList<MangaPagina>();
-							vinculo.getVolumeOriginal().getCapitulos().stream().forEach(cp -> {
-								cp.getPaginas().stream().forEach(pg -> pg.setCapitulo(cp.getCapitulo()));
-								paginasOriginal.addAll(cp.getPaginas());
-							});
+							if (vinculo.getVolumeOriginal() != null) {
+								updateMessage("Vinculando mangas original....");
 
-							capas = Long.valueOf(vinculado.stream()
-									.filter(it -> it.getOriginalPathPagina().toLowerCase().contains("capa")).count())
-									.intValue();
-
-							vinculado.parallelStream().forEach(vi -> {
-								if (abort)
-									return;
-
-								vi.setMangaPaginaOriginal(service.findPagina(paginasOriginal, encontrados,
-										vi.getOriginalPathPagina(), vi.getOriginalNomePagina(),
-										vi.getOriginalPagina() - capas, vi.getOriginalHash()));
-
-								I++;
-								updateProgress(I, Max);
-								Platform.runLater(() -> {
-									if (TaskbarProgressbar.isSupported())
-										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
-												Type.NORMAL);
+								final List<MangaPagina> encontrados = new ArrayList<MangaPagina>();
+								final List<MangaPagina> paginasOriginal = new ArrayList<MangaPagina>();
+								vinculo.getVolumeOriginal().getCapitulos().stream().forEach(cp -> {
+									cp.getPaginas().stream().forEach(pg -> pg.setCapitulo(cp.getCapitulo()));
+									paginasOriginal.addAll(cp.getPaginas());
 								});
-							});
-						}
 
-						if (abort)
-							return null;
+								itensCapas = Long.valueOf(vinculado.stream()
+										.filter(it -> it.getOriginalPathPagina().toLowerCase().contains("capa"))
+										.count()).intValue();
 
-						if (vinculo.getVolumeVinculado() != null) {
-							updateMessage("Vinculando mangas vinculado....");
+								vinculado.parallelStream().forEach(vi -> {
+									if (abort)
+										return;
 
-							final List<MangaPagina> encontrados = new ArrayList<MangaPagina>();
-							final List<MangaPagina> paginasOriginal = new ArrayList<MangaPagina>();
-							vinculo.getVolumeVinculado().getCapitulos().stream().forEach(cp -> {
-								cp.getPaginas().stream().forEach(pg -> pg.setCapitulo(cp.getCapitulo()));
-								paginasOriginal.addAll(cp.getPaginas());
-							});
+									vi.setMangaPaginaOriginal(service.findPagina(paginasOriginal, encontrados,
+											vi.getOriginalPathPagina(), vi.getOriginalNomePagina(),
+											vi.getOriginalPagina() - itensCapas, vi.getOriginalHash()));
 
-							capas = Long.valueOf(vinculado.stream()
-									.filter(it -> it.getVinculadoEsquerdaPathPagina().toLowerCase().contains("capa")
-											|| it.getVinculadoDireitaPathPagina().toLowerCase().contains("capa"))
-									.count()
-									+ naoVinculado.stream().filter(
-											it -> it.getVinculadoEsquerdaPathPagina().toLowerCase().contains("capa"))
-											.count())
-									.intValue();
-
-							vinculado.parallelStream().forEach(vi -> {
-								if (abort)
-									return;
-
-								if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-									vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaNomePagina(),
-											vi.getVinculadoEsquerdaPagina() - capas, vi.getVinculadoEsquerdaHash()));
-
-								if (vi.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
-									vi.setMangaPaginaDireita(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoDireitaPathPagina(), vi.getVinculadoDireitaNomePagina(),
-											vi.getVinculadoDireitaPagina() - capas, vi.getVinculadoDireitaHash()));
-
-								I++;
-								updateProgress(I, Max);
-								Platform.runLater(() -> {
-									if (TaskbarProgressbar.isSupported())
-										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
-												Type.NORMAL);
+									I++;
+									updateProgress(I, Max);
+									Platform.runLater(() -> {
+										if (TaskbarProgressbar.isSupported())
+											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
+													Type.NORMAL);
+									});
 								});
-							});
+							}
 
 							if (abort)
 								return null;
 
-							naoVinculado.parallelStream().forEach(vi -> {
-								if (abort)
-									return;
+							if (vinculo.getVolumeVinculado() != null) {
+								updateMessage("Vinculando mangas vinculado....");
 
-								if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-									vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
-											vi.getVinculadoEsquerdaPathPagina(), vi.getVinculadoEsquerdaNomePagina(),
-											vi.getVinculadoEsquerdaPagina() - capas, vi.getVinculadoEsquerdaHash()));
+								final List<MangaPagina> encontrados = new ArrayList<MangaPagina>();
+								final List<MangaPagina> paginasOriginal = new ArrayList<MangaPagina>();
+								vinculo.getVolumeVinculado().getCapitulos().stream().forEach(cp -> {
+									cp.getPaginas().stream().forEach(pg -> pg.setCapitulo(cp.getCapitulo()));
+									paginasOriginal.addAll(cp.getPaginas());
+								});
+
+								itensCapas = Long.valueOf(vinculado.stream()
+										.filter(it -> it.getVinculadoEsquerdaPathPagina().toLowerCase().contains("capa")
+												|| it.getVinculadoDireitaPathPagina().toLowerCase().contains("capa"))
+										.count()
+										+ naoVinculado.stream().filter(it -> it.getVinculadoEsquerdaPathPagina()
+												.toLowerCase().contains("capa")).count())
+										.intValue();
+
+								vinculado.parallelStream().forEach(vi -> {
+									if (abort)
+										return;
+
+									if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+										vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
+												vi.getVinculadoEsquerdaPathPagina(),
+												vi.getVinculadoEsquerdaNomePagina(),
+												vi.getVinculadoEsquerdaPagina() - itensCapas,
+												vi.getVinculadoEsquerdaHash()));
+
+									if (vi.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+										vi.setMangaPaginaDireita(service.findPagina(paginasOriginal, encontrados,
+												vi.getVinculadoDireitaPathPagina(), vi.getVinculadoDireitaNomePagina(),
+												vi.getVinculadoDireitaPagina() - itensCapas,
+												vi.getVinculadoDireitaHash()));
+
+									I++;
+									updateProgress(I, Max);
+									Platform.runLater(() -> {
+										if (TaskbarProgressbar.isSupported())
+											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
+													Type.NORMAL);
+									});
+								});
+
+								if (abort)
+									return null;
+
+								naoVinculado.parallelStream().forEach(vi -> {
+									if (abort)
+										return;
+
+									if (vi.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+										vi.setMangaPaginaEsquerda(service.findPagina(paginasOriginal, encontrados,
+												vi.getVinculadoEsquerdaPathPagina(),
+												vi.getVinculadoEsquerdaNomePagina(),
+												vi.getVinculadoEsquerdaPagina() - itensCapas,
+												vi.getVinculadoEsquerdaHash()));
+
+									I++;
+									updateProgress(I, Max);
+									Platform.runLater(() -> {
+										if (TaskbarProgressbar.isSupported())
+											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
+													Type.NORMAL);
+									});
+								});
+
+								if (abort)
+									return null;
+							}
+
+							I++;
+							updateProgress(I, Max);
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max, Type.NORMAL);
+							});
+						} else {
+							Vinculo vinculo = MangasVincularController.this.vinculo;
+
+							ObservableList<VinculoPagina> vinculado = MangasVincularController.this.vinculado;
+							ObservableList<VinculoPagina> naoVinculado = MangasVincularController.this.naoVinculado;
+
+							updateMessage("Carregando vinculo salvo....");
+
+							I = 0;
+							Max = vinculo.getVinculados().size() + vinculo.getNaoVinculados().size();
+							updateProgress(I, Max);
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max, Type.NORMAL);
+							});
+
+							for (VinculoPagina pagina : vinculo.getVinculados()) {
+
+								if (abort)
+									return null;
 
 								I++;
+
+								if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
+											pagina.getVinculadoEsquerdaPagina());
+
+									if (vinculo == null)
+										pagina.limparVinculadoEsquerda(false);
+									else if (paginaCarregada.getVinculadoEsquerdaPagina()
+											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
+										pagina.addVinculoEsquerda(paginaCarregada);
+									else
+										pagina.addVinculoEsquerdaApartirDireita(paginaCarregada);
+
+								}
+
+								if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
+									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
+											pagina.getVinculadoDireitaPagina());
+
+									if (vinculo == null)
+										pagina.limparVinculadoDireita();
+									else if (paginaCarregada.getVinculadoEsquerdaPagina()
+											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
+										pagina.addVinculoDireitaApartirEsquerda(paginaCarregada);
+									else
+										pagina.addVinculoDireita(paginaCarregada);
+								}
+
 								updateProgress(I, Max);
 								Platform.runLater(() -> {
 									if (TaskbarProgressbar.isSupported())
 										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
 												Type.NORMAL);
 								});
-							});
 
-							if (abort)
-								return null;
+							}
+
+							for (VinculoPagina pagina : vinculo.getNaoVinculados()) {
+
+								if (abort)
+									return null;
+
+								I++;
+
+								if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
+											pagina.getVinculadoEsquerdaPagina());
+
+									if (vinculo == null)
+										pagina.limparVinculadoEsquerda(false);
+									else if (paginaCarregada.getVinculadoEsquerdaPagina()
+											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
+										pagina.addVinculoEsquerda(paginaCarregada);
+									else
+										pagina.addVinculoEsquerdaApartirDireita(paginaCarregada);
+								}
+
+								updateProgress(I, Max);
+								Platform.runLater(() -> {
+									if (TaskbarProgressbar.isSupported())
+										TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max,
+												Type.NORMAL);
+								});
+							}
+
+							vinculo.getNaoVinculados()
+									.removeIf(it -> it.getVinculadoEsquerdaPagina() == VinculoPagina.PAGINA_VAZIA);
+
+							Platform.runLater(() -> setLista(vinculo.getVinculados(), vinculo.getNaoVinculados()));
+
 						}
-
-						I++;
-						updateProgress(I, Max);
-						Platform.runLater(() -> {
-							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, Max, Type.NORMAL);
-						});
-
 					} catch (Exception e) {
 						e.printStackTrace();
 						error = e.getMessage();
@@ -774,49 +894,43 @@ public class MangasVincularController implements Initializable, VinculoListener,
 				&& cbLinguagemVinculado.getSelectionModel().getSelectedItem() == null && arquivoVinculado == null)
 			return false;
 
-		try {
-			String arquivoOriginal = this.arquivoOriginal != null ? this.arquivoOriginal.getName() : "";
-			String arquivoVinculado = this.arquivoVinculado != null ? this.arquivoVinculado.getName() : "";
+		if (carregar()) {
+			Vinculo vinculo = this.vinculo;
 
-			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), spnVolume.getValue(),
-					txtMangaOriginal.getText(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(),
-					arquivoOriginal, txtMangaVinculado.getText(),
-					cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
+			txtArquivoOriginal.setText(vinculo.getNomeArquivoOriginal());
+			txtArquivoVinculado.setText(vinculo.getNomeArquivoVinculado());
 
-			if (vinculo != null) {
-				this.vinculo = vinculo;
-
-				txtArquivoOriginal.setText(vinculo.getNomeArquivoOriginal());
-				txtArquivoVinculado.setText(vinculo.getNomeArquivoVinculado());
-
-				if (cbLinguagemOrigem.getSelectionModel().getSelectedItem() == null)
+			if (cbLinguagemOrigem.getSelectionModel().getSelectedItem() == null)
+				cbLinguagemOrigem.getSelectionModel().select(vinculo.getLinguagemOriginal());
+			else if (vinculo.getLinguagemOriginal() != null && cbLinguagemOrigem.getSelectionModel().getSelectedItem()
+					.compareTo(vinculo.getLinguagemOriginal()) != 0) {
+				if (AlertasPopup.ConfirmacaoModal("Aviso",
+						"A linguagem selecionada e o manga original são diferentes.\nDeseja recarregar?")) {
 					cbLinguagemOrigem.getSelectionModel().select(vinculo.getLinguagemOriginal());
-				else if (cbLinguagemOrigem.getSelectionModel().getSelectedItem()
-						.compareTo(vinculo.getLinguagemVinculado()) != 0) {
-					if (AlertasPopup.ConfirmacaoModal("Aviso",
-							"A linguagem selecionada e o manga original são diferentes.\nDeseja recarregar?")) {
-						cbLinguagemOrigem.getSelectionModel().select(vinculo.getLinguagemOriginal());
-						return selecionarArquivo();
-					}
+					return selecionarArquivo();
 				}
-
-				if (cbLinguagemVinculado.getSelectionModel().getSelectedItem() == null)
-					cbLinguagemVinculado.getSelectionModel().select(vinculo.getLinguagemVinculado());
-				else if (cbLinguagemVinculado.getSelectionModel().getSelectedItem()
-						.compareTo(vinculo.getLinguagemVinculado()) != 0) {
-					if (AlertasPopup.ConfirmacaoModal("Aviso",
-							"A linguagem selecionada e o manga vinculado são diferentes.\nDeseja recarregar?")) {
-						cbLinguagemVinculado.getSelectionModel().select(vinculo.getLinguagemVinculado());
-						return selecionarArquivo();
-					}
-				}
-
-				return true;
 			}
-		} catch (ExcessaoBd e) {
-			e.printStackTrace();
-			AlertasPopup.ErroModal("Erro ao abrir o arquivo", e.getMessage());
+
+			if (cbLinguagemVinculado.getSelectionModel().getSelectedItem() == null)
+				cbLinguagemVinculado.getSelectionModel().select(vinculo.getLinguagemVinculado());
+			else if (vinculo.getLinguagemVinculado() != null && cbLinguagemVinculado.getSelectionModel()
+					.getSelectedItem().compareTo(vinculo.getLinguagemVinculado()) != 0) {
+				if (AlertasPopup.ConfirmacaoModal("Aviso",
+						"A linguagem selecionada e o manga vinculado são diferentes.\nDeseja recarregar?")) {
+					cbLinguagemVinculado.getSelectionModel().select(vinculo.getLinguagemVinculado());
+					return selecionarArquivo();
+				}
+			}
+
+			if (vinculo.getVolumeOriginal() != null)
+				txtMangaOriginal.setText(vinculo.getVolumeOriginal().getManga());
+
+			if (vinculo.getVolumeVinculado() != null)
+				txtMangaVinculado.setText(vinculo.getVolumeVinculado().getManga());
+
+			return true;
 		}
+
 		return false;
 	}
 
@@ -834,7 +948,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			if (manga == null && validaLegendaVinculado()) {
 				manga = service.selectVolume(cbBase.getSelectionModel().getSelectedItem(), txtMangaVinculado.getText(),
 						spnVolume.getValue(), cbLinguagemVinculado.getSelectionModel().getSelectedItem());
-				vinculo.setVolumeOriginal(manga);
+				vinculo.setVolumeVinculado(manga);
 			}
 		}
 
@@ -876,7 +990,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 				Task<Void> carregar = new Task<Void>() {
 					String error = "";
-					Integer X = 0;
+					Integer X = 0, SIZE = 0;
 
 					@Override
 					protected Void call() throws Exception {
@@ -885,19 +999,11 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							error = "";
 							updateMessage("Carregando manga....");
 
-							naoVinculado.clear();
-
 							if (isManga) {
-								txtArquivoOriginal.setText(arquivo.getName());
-								Util.destroiParse(parseOriginal);
-								Util.destroiParse(parseVinculado);
-								parseOriginal = parse;
-								parseVinculado = null;
-
-								Util.getCapitulos(parseOriginal, capitulosOriginal, lvCapitulosOriginal);
-								Util.getCapitulos(parseVinculado, capitulosVinculado, lvCapitulosVinculado);
-
-								txtArquivoVinculado.setText("");
+								Platform.runLater(() -> {
+									txtArquivoOriginal.setText(arquivo.getName());
+									txtArquivoVinculado.setText("");
+								});
 								MangaVolume volume = getMangaVolume(true);
 
 								updateMessage("Carregando manga original....");
@@ -908,27 +1014,29 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								if (volume != null)
 									volume.getCapitulos().stream().forEach(it -> paginas.addAll(it.getPaginas()));
 
-								capas = Long.valueOf(parseOriginal.getPastas().keySet().stream()
-										.filter(k -> k.contains("capa")).count()).intValue();
+								itensCapas = Long.valueOf(
+										parse.getPastas().keySet().stream().filter(k -> k.contains("capa")).count())
+										.intValue();
 
 								ArrayList<VinculoPagina> list = new ArrayList<VinculoPagina>();
-								for (int x = 0; x < parseOriginal.getSize(); x++) {
-									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal, x);
+								for (int x = 0; x < parse.getSize(); x++) {
+									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
 									Pair<Boolean, String> detalhe = image.getValue();
-									String path = parseOriginal.getPaginaPasta(x);
+									String path = parse.getPaginaPasta(x);
 
 									list.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
 											parse.getSize(), detalhe.getKey(),
 											service.findPagina(paginas, encontrados, path, Util.getPasta(path),
-													x - capas, detalhe.getValue()),
+													x - itensCapas, detalhe.getValue()),
 											image.getKey(), detalhe.getValue()));
 
 									X = x;
-									updateProgress(x, parseOriginal.getSize());
+									SIZE = parse.getSize();
+									updateProgress(X, SIZE);
 									Platform.runLater(() -> {
 										if (TaskbarProgressbar.isSupported())
-											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X,
-													parseOriginal.getSize(), Type.NORMAL);
+											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X, SIZE,
+													Type.NORMAL);
 									});
 
 									if (abort)
@@ -936,31 +1044,42 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 								}
 
-								vinculado = FXCollections.observableArrayList(list);
-								Platform.runLater(() -> tvPaginasVinculadas.setItems(vinculado));
-							} else {
-								txtArquivoVinculado.setText(arquivo.getName());
-								Util.destroiParse(parseVinculado);
-								parseVinculado = parse;
+								if (!abort) {
+									Util.destroiParse(parseOriginal);
+									Util.destroiParse(parseVinculado);
 
-								Util.getCapitulos(parseVinculado, capitulosVinculado, lvCapitulosVinculado);
+									parseOriginal = parse;
+									parseVinculado = null;
+
+									Util.getCapitulos(parseOriginal, capitulosOriginal, lvCapitulosOriginal);
+									Util.getCapitulos(parseVinculado, capitulosVinculado, lvCapitulosVinculado);
+
+									Platform.runLater(() -> setLista(list, new ArrayList<VinculoPagina>()));
+								} else
+									limpar();
+							} else {
+								Platform.runLater(() -> txtArquivoVinculado.setText(arquivo.getName()));
 
 								updateMessage("Carregando manga vinculado....");
 
-								MangaVolume volume = getMangaVolume(false);
 								final List<MangaPagina> encontrados = new ArrayList<MangaPagina>();
 								final List<MangaPagina> paginas = new ArrayList<MangaPagina>();
 
+								MangaVolume volume = getMangaVolume(false);
 								if (volume != null)
 									volume.getCapitulos().stream().forEach(it -> paginas.addAll(it.getPaginas()));
 
-								capas = Long.valueOf(parseVinculado.getPastas().keySet().stream()
-										.filter(k -> k.contains("capa")).count()).intValue();
+								itensCapas = Long.valueOf(
+										parse.getPastas().keySet().stream().filter(k -> k.contains("capa")).count())
+										.intValue();
 
-								for (int x = 0; x < parseVinculado.getSize(); x++) {
-									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado, x);
+								final List<VinculoPagina> vinculado = new ArrayList<VinculoPagina>(MangasVincularController.this.vinculado);
+								final List<VinculoPagina> naoVinculado = new ArrayList<VinculoPagina>();
+
+								for (int x = 0; x < parse.getSize(); x++) {
+									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
 									Pair<Boolean, String> detalhe = image.getValue();
-									String path = parseVinculado.getPaginaPasta(x);
+									String path = parse.getPaginaPasta(x);
 
 									if (x < vinculado.size()) {
 										VinculoPagina item = vinculado.get(x);
@@ -969,29 +1088,38 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										item.setVinculadoEsquerdaPagina(x);
 										item.setVinculadoEsquerdaNomePagina(Util.getNome(path));
 										item.setVinculadoEsquerdaPathPagina(Util.getPasta(path));
-										item.setVinculadoEsquerdaPaginas(parseVinculado.getSize());
+										item.setVinculadoEsquerdaPaginas(parse.getSize());
 										item.isVinculadoEsquerdaPaginaDupla = detalhe.getKey();
 										item.setImagemVinculadoEsquerda(image.getKey());
 										item.setMangaPaginaEsquerda(service.findPagina(paginas, encontrados, path,
-												Util.getPasta(path), x - capas, detalhe.getValue()));
+												Util.getPasta(path), x - itensCapas, detalhe.getValue()));
 										item.setVinculadoEsquerdaHash(detalhe.getValue());
 									} else
 										naoVinculado.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
-												parseVinculado.getSize(), detalhe.getKey(),
+												parse.getSize(), detalhe.getKey(),
 												service.findPagina(paginas, encontrados, path, Util.getPasta(path),
-														x - capas, detalhe.getValue()),
+														x - itensCapas, detalhe.getValue()),
 												image.getKey(), true, detalhe.getValue()));
 
 									X = x;
-									updateProgress(x, parseOriginal.getSize());
+									SIZE = parse.getSize();
+									updateProgress(X, SIZE);
 									Platform.runLater(() -> {
 										if (TaskbarProgressbar.isSupported())
-											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X,
-													parseOriginal.getSize(), Type.NORMAL);
+											TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X, SIZE,
+													Type.NORMAL);
 									});
 
 									if (abort)
 										break;
+								}
+
+								if (!abort) {
+									Platform.runLater(() -> setLista(vinculado, naoVinculado));
+									Util.destroiParse(parseVinculado);
+									parseVinculado = parse;
+									Platform.runLater(() -> Util.getCapitulos(parseVinculado, capitulosVinculado,
+											lvCapitulosVinculado));
 								}
 							}
 
@@ -1058,52 +1186,151 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	private void carregaDados(File arquivo, Boolean isManga) {
 		EXECUCOES.addExecucao(abort -> {
-			if (isManga) {
-				Util.destroiParse(parseOriginal);
-				parseOriginal = Util.criaParse(arquivo);
-				Util.getCapitulos(parseOriginal, capitulosOriginal, lvCapitulosOriginal);
-			} else {
-				Util.destroiParse(parseVinculado);
-				parseVinculado = Util.criaParse(arquivo);
-				Util.getCapitulos(parseVinculado, capitulosVinculado, lvCapitulosVinculado);
+			desabilita();
+			GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+			progress.getTitulo().setText("Carregando dados.");
+			if (TaskbarProgressbar.isSupported())
+				TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
-			}
+			Task<Void> carregar = new Task<Void>() {
+				Integer X = 0, SIZE = 0;
 
-			for (VinculoPagina pagina : vinculado) {
-				if (isManga) {
-					Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal, pagina.getOriginalPagina());
-					pagina.isOriginalPaginaDupla = image.getValue().getKey();
-					pagina.setImagemOriginal(image.getKey());
-				} else {
-					if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
-						Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
-								pagina.getVinculadoEsquerdaPagina());
-						pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
-						pagina.setImagemVinculadoEsquerda(image.getKey());
+				@Override
+				protected Void call() throws Exception {
+
+					updateMessage("Carregando dados....");
+
+					if (isManga) {
+						Util.destroiParse(parseOriginal);
+						parseOriginal = Util.criaParse(arquivo);
+						Util.getCapitulos(parseOriginal, capitulosOriginal, lvCapitulosOriginal);
+					} else {
+						Util.destroiParse(parseVinculado);
+						parseVinculado = Util.criaParse(arquivo);
+						Util.getCapitulos(parseVinculado, capitulosVinculado, lvCapitulosVinculado);
+
 					}
 
-					if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
-						Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
-								pagina.getVinculadoDireitaPagina());
-						pagina.isVinculadoDireitaPaginaDupla = image.getValue().getKey();
-						pagina.setImagemVinculadoDireita(image.getKey());
+					List<VinculoPagina> original = MangasVincularController.this.vinculado;
+					List<VinculoPagina> vinculado = MangasVincularController.this.vinculo.getVinculados();
+					List<VinculoPagina> naoVinculado = MangasVincularController.this.vinculo.getNaoVinculados();
+
+					SIZE = vinculado.size() + naoVinculado.size();
+
+					for (VinculoPagina pagina : vinculado) {
+						if (isManga) {
+							Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal,
+									pagina.getOriginalPagina());
+							pagina.isOriginalPaginaDupla = image.getValue().getKey();
+							pagina.setImagemOriginal(image.getKey());
+						} else {
+							pagina.addOriginalSemId(original.get(vinculado.indexOf(pagina)));
+
+							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+										pagina.getVinculadoEsquerdaPagina());
+								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+								pagina.setImagemVinculadoEsquerda(image.getKey());
+							}
+
+							if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
+								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+										pagina.getVinculadoDireitaPagina());
+								pagina.isVinculadoDireitaPaginaDupla = image.getValue().getKey();
+								pagina.setImagemVinculadoDireita(image.getKey());
+							}
+						}
+
+						X++;
+						updateProgress(X, SIZE);
+						Platform.runLater(() -> {
+							if (TaskbarProgressbar.isSupported())
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X, SIZE, Type.NORMAL);
+						});
 					}
+
+					if (!isManga) {
+						for (VinculoPagina pagina : naoVinculado) {
+							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
+								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+										pagina.getVinculadoEsquerdaPagina());
+								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+								pagina.setImagemVinculadoEsquerda(image.getKey());
+							}
+
+							X++;
+							updateProgress(X, SIZE);
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), X, SIZE, Type.NORMAL);
+							});
+						}
+					}
+
+					Platform.runLater(() -> setLista(vinculado, naoVinculado));
+					return null;
 				}
-			}
 
-			if (!isManga) {
-				for (VinculoPagina pagina : naoVinculado) {
-					if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
-						Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
-								pagina.getVinculadoEsquerdaPagina());
-						pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
-						pagina.setImagemVinculadoEsquerda(image.getKey());
-					}
+				@Override
+				protected void succeeded() {
+					Platform.runLater(() -> {
+						progress.getBarraProgresso().progressProperty().unbind();
+						progress.getLog().textProperty().unbind();
+
+						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+
+						MenuPrincipalController.getController().getLblLog().setText("");
+						habilita();
+						tvPaginasVinculadas.refresh();
+						tvPaginasVinculadas.requestLayout();
+
+						EXECUCOES.endProcess();
+					});
+
 				}
-			}
 
-			return false;
+				@Override
+				protected void failed() {
+					Platform.runLater(() -> {
+						progress.getBarraProgresso().progressProperty().unbind();
+						progress.getLog().textProperty().unbind();
+
+						MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+						TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+
+						MenuPrincipalController.getController().getLblLog().setText("");
+						habilita();
+						tvPaginasVinculadas.refresh();
+						tvPaginasVinculadas.requestLayout();
+
+						EXECUCOES.endProcess();
+					});
+
+				}
+
+			};
+
+			progress.getLog().textProperty().bind(carregar.messageProperty());
+			progress.getBarraProgresso().progressProperty().bind(carregar.progressProperty());
+			Thread t = new Thread(carregar);
+			t.start();
+
+			return true;
 		});
+	}
+
+	private Vinculo limpaVinculo(Vinculo vinculo) {
+		vinculo.setId(null);
+		vinculo.setVolumeVinculado(null);
+		vinculo.setLinguagemVinculado(null);
+		vinculo.setNomeArquivoVinculado("");
+		vinculo.getVinculados().stream().forEach(it -> {
+			it.setId(null);
+			it.limparVinculado();
+		});
+		vinculo.setNaoVinculados(new ArrayList<VinculoPagina>());
+		return vinculo;
 	}
 
 	private Boolean valida() {
@@ -1128,9 +1355,49 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		return true;
 	}
 
+	private Boolean carregar() {
+		Boolean carregado = false;
+
+		if (cbBase.getSelectionModel().getSelectedItem() != null
+				&& !cbBase.getSelectionModel().getSelectedItem().isEmpty()) {
+			try {
+
+				if (arquivoOriginal != null && arquivoVinculado != null) {
+					String arquivoOriginal = this.arquivoOriginal != null ? this.arquivoOriginal.getName() : "";
+					String arquivoVinculado = this.arquivoVinculado != null ? this.arquivoVinculado.getName() : "";
+					Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), spnVolume.getValue(),
+							txtMangaOriginal.getText(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(),
+							arquivoOriginal, txtMangaVinculado.getText(),
+							cbLinguagemVinculado.getSelectionModel().getSelectedItem(), arquivoVinculado);
+					
+					if (vinculo != null) {
+						carregado = true;
+						this.vinculo = vinculo;
+					} else 
+						this.vinculo = limpaVinculo(this.vinculo);
+					
+				} else if (arquivoOriginal != null) {
+					String arquivoOriginal = this.arquivoOriginal != null ? this.arquivoOriginal.getName() : "";
+					Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), spnVolume.getValue(),
+							txtMangaOriginal.getText(), cbLinguagemOrigem.getSelectionModel().getSelectedItem(),
+							arquivoOriginal, "", null, "");
+					if (vinculo != null) {
+						carregado = true;
+						this.vinculo = limpaVinculo(vinculo);
+					}
+				}
+			} catch (ExcessaoBd e) {
+				e.printStackTrace();
+			}
+		}
+
+		return carregado;
+	}
+
 	private void salvar() {
 		vinculo.setUltimaAlteracao(LocalDateTime.now());
 		vinculo.setBase(cbBase.getSelectionModel().getSelectedItem());
+		vinculo.setVolume(spnVolume.getValue());
 		vinculo.setLinguagemOriginal(cbLinguagemOrigem.getSelectionModel().getSelectedItem());
 		vinculo.setLinguagemVinculado(cbLinguagemVinculado.getSelectionModel().getSelectedItem());
 		vinculo.setNomeArquivoOriginal(txtArquivoOriginal.getText());
@@ -1140,6 +1407,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		try {
 			service.salvar(cbBase.getSelectionModel().getSelectedItem(), vinculo);
+			Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.");
 		} catch (ExcessaoBd e) {
 			e.printStackTrace();
 			AlertasPopup.ErroModal("Erro ao salvar", e.getMessage());

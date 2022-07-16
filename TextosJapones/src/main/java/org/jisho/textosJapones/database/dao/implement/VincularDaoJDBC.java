@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,7 @@ import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
+import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.configuration.Configuracao;
 
 public class VincularDaoJDBC implements VincularDao {
@@ -98,9 +97,10 @@ public class VincularDaoJDBC implements VincularDao {
 	final private static String INSERT_VINCULO = "INSERT INTO %s_vinculo (volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 	final private static String UPDATE_VINCULO = "UPDATE %s_vinculo SET volume = ?, original_arquivo = ?, original_linguagem = ?, id_volume_original = ?, vinculado_arquivo = ?, vinculado_linguagem = ?, id_volume_vinculado = ?, ultima_alteracao = ? WHERE id = ? ;";
 	final private static String DELETE_VINCULO = "DELETE FROM %s_vinculo WHERE id = ? ;";
-	final private static String SELECT_VINCULO_CAMPOS = "SELECT id, volume, original_arquivo, original_linguagem, volume, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo ";
-	final private static String SELECT_VINCULO = SELECT_VINCULO_CAMPOS
-			+ "WHERE volume = ? AND original_arquivo = ? AND original_linguagem = ? AND vinculado_arquivo = ? AND vinculado_linguagem = ? ;";
+
+	final private static String SELECT_ID_VOLUME = "SELECT id FROM %s_volumes WHERE manga = '%s' AND volume = %s AND linguagem = '%s' LIMIT 1";
+	final private static String SELECT_VINCULO_CAMPOS = "SELECT id, volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo ";
+	final private static String SELECT_VINCULO = SELECT_VINCULO_CAMPOS;
 	final private static String SELECT_VINCULO_ARQUIVO = SELECT_VINCULO_CAMPOS
 			+ "WHERE volume = ? AND original_arquivo = ? AND vinculado_arquivo = ? ;";
 	final private static String SELECT_VINCULO_LINGUAGEM = SELECT_VINCULO_CAMPOS
@@ -120,9 +120,9 @@ public class VincularDaoJDBC implements VincularDao {
 			+ "  vinculado_esquerda_nome, vinculado_esquerda_pasta, vinculado_esquerda_pagina, vinculado_esquerda_paginas, vinculado_esquerda_pagina_dupla, id_vinculado_esquerda_paginas,\n"
 			+ "  imagem_dupla FROM %s_vinculo_pagina WHERE id_vinculo = ? ;";
 
-	final private static String INSERT_PAGINA_NAO_VINCULADA = "INSERT IGNORE INTO Vinculo (id_vinculo, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina) VALUES (?, ?, ?, ?, ?, ?, ?);";
+	final private static String INSERT_PAGINA_NAO_VINCULADA = "INSERT IGNORE INTO %s_vinculo_pagina_nao_vinculado (id_vinculo, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina) VALUES (?, ?, ?, ?, ?, ?, ?);";
 	final private static String DELETE_PAGINA_NAO_VINCULADA = "DELETE FROM %s_vinculo_pagina_nao_vinculado WHERE id_vinculo = ? ;";
-	final private static String SELECT_PAGINA_NAO_VINCULADA = "SELECT id, id_vinculo, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina FROM Vinculo WHERE id_vinculo = ? ;";
+	final private static String SELECT_PAGINA_NAO_VINCULADA = "SELECT id, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina FROM %s_vinculo_pagina_nao_vinculado WHERE id_vinculo = ? ;";
 
 	public VincularDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -236,7 +236,8 @@ public class VincularDaoJDBC implements VincularDao {
 	public Long insert(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-
+			conn.setAutoCommit(false);
+			conn.beginRequest();
 			st = conn.prepareStatement(String.format(INSERT_VINCULO, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
@@ -247,8 +248,8 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
 			st.setLong(7, obj.getVolumeOriginal().getId());
-			st.setTimestamp(8, Timestamp.valueOf(obj.getDataCriacao()));
-			st.setTimestamp(9, Timestamp.valueOf(obj.getUltimaAlteracao()));
+			st.setTimestamp(8, Util.convertToTimeStamp(obj.getDataCriacao()));
+			st.setTimestamp(9, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
 
 			int rowsAffected = st.executeUpdate();
 
@@ -259,7 +260,7 @@ public class VincularDaoJDBC implements VincularDao {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
 					obj.setId(rs.getLong(1));
-					
+
 					for (VinculoPagina pagina : obj.getVinculados())
 						insertVinculados(base, obj.getId(), pagina);
 
@@ -269,11 +270,23 @@ public class VincularDaoJDBC implements VincularDao {
 					return obj.getId();
 				}
 			}
+
+			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			System.out.println(st.toString());
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
 		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DB.closeStatement(st);
 		}
 		return null;
@@ -375,13 +388,32 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_VINCULO, BASE_MANGA + base));
+			String sql = String.format(SELECT_VINCULO, BASE_MANGA + base) + " WHERE volume = ? ";
+
+			if (!mangaOriginal.isEmpty() && original != null)
+				sql += " AND id_volume_original = ("
+						+ String.format(SELECT_ID_VOLUME, BASE_MANGA + base, mangaOriginal, volume, original.getSigla())
+						+ ")";
+
+			if (!mangaVinculado.isEmpty() && vinculado != null)
+				sql += " AND id_volume_vinculado = (" + String.format(SELECT_ID_VOLUME, BASE_MANGA + base,
+						mangaVinculado, volume, vinculado.getSigla()) + ")";
+
+			if (original != null)
+				sql += " AND original_linguagem = '" + original.getSigla() + "'";
+
+			if (vinculado != null)
+				sql += " AND vinculado_linguagem = '" + vinculado.getSigla() + "'";
+
+			if (!arquivoOriginal.isEmpty())
+				sql += " AND original_arquivo = '" + arquivoOriginal + "'";
+
+			if (!arquivoVinculado.isEmpty())
+				sql += " AND vinculado_arquivo = '" + arquivoVinculado + "'";
+
+			st = conn.prepareStatement(sql);
 
 			st.setInt(1, volume);
-			st.setString(2, arquivoOriginal);
-			st.setString(3, original.getSigla());
-			st.setString(4, arquivoVinculado);
-			st.setString(5, vinculado.getSigla());
 
 			rs = st.executeQuery();
 
@@ -390,8 +422,8 @@ public class VincularDaoJDBC implements VincularDao {
 				volumeVinculado = selectVolume(base, rs.getLong(8));
 				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
-						LocalDateTime.parse(rs.getString(10)));
+						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
+						Util.convertToDateTime(rs.getTimestamp(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -429,8 +461,8 @@ public class VincularDaoJDBC implements VincularDao {
 				volumeVinculado = selectVolume(base, rs.getLong(8));
 				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
-						LocalDateTime.parse(rs.getString(10)));
+						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
+						Util.convertToDateTime(rs.getTimestamp(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -468,8 +500,8 @@ public class VincularDaoJDBC implements VincularDao {
 				volumeVinculado = selectVolume(base, rs.getLong(8));
 				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-						Language.getEnum(rs.getString(7)), volumeVinculado, LocalDateTime.parse(rs.getString(9)),
-						LocalDateTime.parse(rs.getString(10)));
+						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
+						Util.convertToDateTime(rs.getTimestamp(10)));
 				obj.setVinculados(selectVinculados(base, obj.getId()));
 				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -514,15 +546,8 @@ public class VincularDaoJDBC implements VincularDao {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(String.format(DELETE_PAGINA_NAO_VINCULADA, BASE_MANGA + base));
-
 			st.setLong(1, idVinculo);
-
-			int rowsAffected = st.executeUpdate();
-
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-			}
+			st.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(st.toString());
 			e.printStackTrace();
@@ -536,6 +561,8 @@ public class VincularDaoJDBC implements VincularDao {
 	public void delete(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
+			conn.setAutoCommit(false);
+			conn.beginRequest();
 			deleteVinculado(base, obj.getId());
 			deleteNaoVinculado(base, obj.getId());
 
@@ -549,11 +576,22 @@ public class VincularDaoJDBC implements VincularDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
 			}
+			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			System.out.println(st.toString());
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
 		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DB.closeStatement(st);
 		}
 
@@ -572,7 +610,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setInt(4, pagina.getOriginalPagina());
 			st.setInt(5, pagina.getOriginalPaginas());
 			st.setBoolean(6, pagina.isOriginalPaginaDupla);
-			
+
 			if (pagina.getMangaPaginaOriginal() != null)
 				st.setLong(7, pagina.getMangaPaginaOriginal().getId());
 			else
@@ -631,6 +669,8 @@ public class VincularDaoJDBC implements VincularDao {
 	public void update(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
+			conn.setAutoCommit(false);
+			conn.beginRequest();
 			st = conn.prepareStatement(String.format(UPDATE_VINCULO, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
@@ -641,7 +681,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
 			st.setLong(7, obj.getVolumeOriginal().getId());
-			st.setTimestamp(8, Timestamp.valueOf(obj.getUltimaAlteracao()));
+			st.setTimestamp(8, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
 			st.setLong(9, obj.getId());
 
 			int rowsAffected = st.executeUpdate();
@@ -657,11 +697,24 @@ public class VincularDaoJDBC implements VincularDao {
 				for (VinculoPagina pagina : obj.getNaoVinculados())
 					updateNaoVinculados(base, obj.getId(), pagina);
 			}
+
+			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+
 			System.out.println(st.toString());
 			e.printStackTrace();
 			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
 		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DB.closeStatement(st);
 		}
 

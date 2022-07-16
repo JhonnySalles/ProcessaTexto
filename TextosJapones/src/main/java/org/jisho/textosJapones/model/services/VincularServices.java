@@ -58,7 +58,7 @@ public class VincularServices {
 	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
 			String arquivoOriginal, String mangaVinculado, Language linguagemVinculado, String arquivoVinculado)
 			throws ExcessaoBd {
-		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty())
 			return null;
 
 		if (linguagemOriginal != null && linguagemVinculado != null
@@ -76,7 +76,7 @@ public class VincularServices {
 
 	public Vinculo select(String base, Integer volume, String mangaOriginal, String original, String mangaVinculado,
 			String vinculado) throws ExcessaoBd {
-		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty())
 			return null;
 
 		return dao.select(base, volume, mangaOriginal, original, mangaVinculado, vinculado);
@@ -84,7 +84,7 @@ public class VincularServices {
 
 	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
 			String mangaVinculado, Language linguagemVinculado) throws ExcessaoBd {
-		if (base == null || base.isEmpty() || mangaOriginal.isEmpty() || mangaVinculado.isEmpty())
+		if (base == null || base.isEmpty())
 			return null;
 
 		return dao.select(base, volume, mangaOriginal, linguagemOriginal, mangaVinculado, linguagemVinculado);
@@ -732,6 +732,25 @@ public class VincularServices {
 	}
 
 	// -------------------------------------------------------------------------------------------------
+	public VinculoPagina findPagina(ObservableList<VinculoPagina> vinculado, ObservableList<VinculoPagina> naoVinculado,
+			Integer numeroPagina) {
+		if (numeroPagina == VinculoPagina.PAGINA_VAZIA)
+			return null;
+
+		Optional<VinculoPagina> pagina = vinculado.stream()
+				.filter(it -> it.getVinculadoEsquerdaPagina().compareTo(numeroPagina) == 0
+						|| it.getVinculadoDireitaPagina().compareTo(numeroPagina) == 0)
+				.findFirst();
+
+		if (pagina.isPresent())
+			return pagina.get();
+		else {
+			pagina = naoVinculado.stream().filter(it -> it.getVinculadoEsquerdaPagina().compareTo(numeroPagina) == 0)
+					.findFirst();
+
+			return pagina.get();
+		}
+	}
 
 	public MangaPagina findPagina(List<MangaPagina> paginas, List<MangaPagina> encontrados, String path,
 			String nomePagina, Integer numeroPagina, String hash) {

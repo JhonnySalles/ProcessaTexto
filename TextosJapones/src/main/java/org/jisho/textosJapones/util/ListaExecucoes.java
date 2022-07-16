@@ -90,13 +90,13 @@ public class ListaExecucoes {
 				isProcessed = true;
 				LambdaFunction action = list.remove(0);
 				Boolean isAwait = action.call(abort);
-
+				
 				if (!isAwait)
 					endProcess();
 			} catch (Exception e) {
 				e.printStackTrace();
+				isProcessed = false;
 			}
-
 		} else
 			isProcessed = false;
 	}

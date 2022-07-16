@@ -34,6 +34,13 @@
                <content>
                   <VBox prefWidth="200.0" spacing="15.0">
                      <children>
+                        <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                        <VBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="Volume" textFill="#b5b5b5" />
+                              <Spinner fx:id="spnVolume" editable="true" prefHeight="30.0" prefWidth="500.0" styleClass="split-arrows-horizontal" />
+                           </children>
+                        </VBox>
                         <HBox spacing="5.0">
                            <children>
                               <JFXTextField fx:id="txtArquivoOriginal" editable="false" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Arquivo Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
@@ -46,13 +53,6 @@
             		            <JFXButton fx:id="btnVinculado" buttonType="RAISED" minWidth="70.0" onAction="#onBtnVinculado" prefWidth="150.0" ripplerFill="#0095ff" styleClass="background-White1" text="Vinculado" />
                            </children>
                         </HBox>
-                        <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
-                        <VBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label text="Volume" textFill="#b5b5b5" />
-                              <Spinner fx:id="spnVolume" editable="true" prefHeight="30.0" prefWidth="500.0" styleClass="split-arrows-horizontal" />
-                           </children>
-                        </VBox>
                         <JFXComboBox fx:id="cbLinguagemOrigem" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Linguagem da Origem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
       		            <JFXTextField fx:id="txtMangaOriginal" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Manga Original" styleClass="texto-stilo" unFocusColor="#106ebe" />
                         <JFXComboBox fx:id="cbLinguagemVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Linguagem do Vinculo" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
@@ -162,7 +162,7 @@
                         </JFXTabPane>
                      </children>
                      <padding>
-                        <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+                        <Insets bottom="30.0" left="10.0" right="10.0" top="20.0" />
                      </padding>
                   </VBox>
                </content>
