@@ -129,6 +129,7 @@ public class MangaCapitulo extends Manga {
 	}
 
 	public MangaCapitulo() {
+		super();
 		this.id = 0L;
 		this.manga = "";
 		this.volume = 0;
@@ -143,6 +144,7 @@ public class MangaCapitulo extends Manga {
 
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado) {
+		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -159,6 +161,7 @@ public class MangaCapitulo extends Manga {
 
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado, List<MangaPagina> paginas) {
+		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -175,6 +178,7 @@ public class MangaCapitulo extends Manga {
 
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean processado, Set<MangaVocabulario> vocabularios) {
+		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -190,6 +194,7 @@ public class MangaCapitulo extends Manga {
 	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado, Set<MangaVocabulario> vocabularios,
 			List<MangaPagina> paginas) {
+		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -266,6 +271,12 @@ public class MangaCapitulo extends Manga {
 		} else if (!volume.equals(other.volume))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "MangaCapitulo [id=" + id + ", capitulo=" + capitulo + ", lingua=" + lingua + ", scan=" + scan
+				+ ", paginas=" + paginas + ", extra=" + extra + ", raw=" + raw + "]";
 	}
 
 }

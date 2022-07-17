@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
@@ -16,6 +18,8 @@ import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
+import org.jisho.textosJapones.model.entities.MangaTabela;
+import org.jisho.textosJapones.model.entities.MangaVinculo;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
@@ -39,10 +43,6 @@ public class VincularDaoJDBC implements VincularDao {
 	final private String EXIST_TABELA_VINCULO = "SELECT Table_Name AS Tabela "
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_vinculo%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
-
-	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
-			+ " FROM information_schema.tables WHERE table_schema = '%s' "
-			+ " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ";
 
 	final private String SELECT_MANGAS = "SELECT Manga FROM %s_volumes WHERE linguagem = '%s' GROUP BY manga ORDER BY manga";
 
@@ -99,12 +99,15 @@ public class VincularDaoJDBC implements VincularDao {
 	final private static String DELETE_VINCULO = "DELETE FROM %s_vinculo WHERE id = ? ;";
 
 	final private static String SELECT_ID_VOLUME = "SELECT id FROM %s_volumes WHERE manga = '%s' AND volume = %s AND linguagem = '%s' LIMIT 1";
-	final private static String SELECT_VINCULO_CAMPOS = "SELECT id, volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao FROM %s_vinculo ";
+	final private static String SELECT_VINCULO_CAMPOS = "SELECT vi.id, vi.volume, vi.original_arquivo, vi.original_linguagem, vi.id_volume_original, vi.vinculado_arquivo, vi.vinculado_linguagem, vi.id_volume_vinculado, vi.data_criacao, vi.ultima_alteracao FROM %s_vinculo vi ";
 	final private static String SELECT_VINCULO = SELECT_VINCULO_CAMPOS;
 	final private static String SELECT_VINCULO_ARQUIVO = SELECT_VINCULO_CAMPOS
 			+ "WHERE volume = ? AND original_arquivo = ? AND vinculado_arquivo = ? ;";
 	final private static String SELECT_VINCULO_LINGUAGEM = SELECT_VINCULO_CAMPOS
 			+ "WHERE volume = ? AND original_linguagem = ? AND vinculado_linguagem = ? ;";
+
+	final private static String SELECT_VINCULO_INNER_VOLUME = SELECT_VINCULO_CAMPOS
+			+ "INNER JOIN %s_volumes vo ON vo.id = vi.id_volume_original " + "WHERE 1 > 0 ";
 
 	final private static String INSERT_PAGINA = "INSERT IGNORE INTO %s_vinculo_pagina (id_vinculo, original_nome, original_pasta, original_pagina, original_paginas, original_pagina_dupla, id_original_pagina, "
 			+ "  vinculado_direita_nome, vinculado_direita_pasta, vinculado_direita_pagina, vinculado_direita_paginas, vinculado_direita_pagina_dupla, id_vinculado_direita_pagina, "
@@ -123,6 +126,10 @@ public class VincularDaoJDBC implements VincularDao {
 	final private static String INSERT_PAGINA_NAO_VINCULADA = "INSERT IGNORE INTO %s_vinculo_pagina_nao_vinculado (id_vinculo, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina) VALUES (?, ?, ?, ?, ?, ?, ?);";
 	final private static String DELETE_PAGINA_NAO_VINCULADA = "DELETE FROM %s_vinculo_pagina_nao_vinculado WHERE id_vinculo = ? ;";
 	final private static String SELECT_PAGINA_NAO_VINCULADA = "SELECT id, nome, pasta, pagina, paginas, pagina_dupla, id_vinculado_pagina FROM %s_vinculo_pagina_nao_vinculado WHERE id_vinculo = ? ;";
+
+	final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_vinculo', '') AS Tabela "
+			+ "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
+			+ "AND Table_Name LIKE '%%_vinculo' AND %s GROUP BY Tabela ";
 
 	public VincularDaoJDBC(Connection conn) {
 		this.conn = conn;
@@ -520,6 +527,60 @@ public class VincularDaoJDBC implements VincularDao {
 		return null;
 	}
 
+	public List<Vinculo> select(String base, String manga, Integer volume, Float capitulo, Language linguagem,
+			Boolean isValidaTabela) throws ExcessaoBd {
+		if (isValidaTabela && !existTabelaVinculo(base))
+			return new ArrayList<Vinculo>();
+
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			String sql = String.format(SELECT_VINCULO_INNER_VOLUME, BASE_MANGA + base, BASE_MANGA + base);
+
+			if (manga != null && !manga.trim().isEmpty())
+				sql += " AND vo.manga LIKE '" + manga + "'";
+
+			if (volume != null && volume > 0)
+				sql += " AND vo.volume = " + volume;
+
+			/*
+			 * if (capitulo != null && capitulo > -1) sql +=
+			 * " AND vo.vinculado_linguagem = '" + vinculado.getSigla() + "'";
+			 */
+
+			if (linguagem != null)
+				sql += " AND vo.linguagem = '" + linguagem.getSigla() + "'";
+
+			st = conn.prepareStatement(sql);
+
+			rs = st.executeQuery();
+
+			List<Vinculo> list = new ArrayList<Vinculo>();
+			while (rs.next()) {
+				volumeOriginal = selectVolume(base, rs.getLong(5));
+				volumeVinculado = selectVolume(base, rs.getLong(8));
+				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
+						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
+						Util.convertToDateTime(rs.getTimestamp(10)));
+				obj.setVinculados(selectVinculados(base, obj.getId()));
+				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
+
+				list.add(obj);
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			volumeOriginal = null;
+			volumeVinculado = null;
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
 	private void deleteVinculado(String base, Long idVinculo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
@@ -720,6 +781,23 @@ public class VincularDaoJDBC implements VincularDao {
 
 	}
 
+	private Boolean existTabelaVinculo(String nome) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					String.format(EXIST_TABELA_VINCULO, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), nome));
+			rs = st.executeQuery();
+			return rs.next();
+		} catch (SQLException e) {
+			System.out.println(st.toString());
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
+		} finally {
+			DB.closeStatement(st);
+		}
+	}
+
 	@Override
 	public Boolean createTabelas(String nome) throws ExcessaoBd {
 		PreparedStatement st = null;
@@ -739,20 +817,8 @@ public class VincularDaoJDBC implements VincularDao {
 			DB.closeStatement(st);
 		}
 
-		try {
-			st = conn.prepareStatement(
-					String.format(EXIST_TABELA_VINCULO, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), nome));
-			rs = st.executeQuery();
-
-			if (rs.next())
-				return false;
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
-		} finally {
-			DB.closeStatement(st);
-		}
+		if (existTabelaVinculo(nome))
+			return false;
 
 		st = null;
 		try {
@@ -799,25 +865,7 @@ public class VincularDaoJDBC implements VincularDao {
 
 	@Override
 	public List<String> getTabelas() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1)));
-			rs = st.executeQuery();
-
-			List<String> list = new ArrayList<>();
-
-			while (rs.next())
-				list.add(rs.getString("Tabela"));
-
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
+		return mangaDao.getTabelas();
 	}
 
 	@Override
@@ -832,6 +880,90 @@ public class VincularDaoJDBC implements VincularDao {
 
 			while (rs.next())
 				list.add(rs.getString("Manga"));
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	private Integer sequencia;
+
+	private List<MangaVinculo> selectVinculo(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem, Boolean isValidaTabela) throws ExcessaoBd {
+		final List<Vinculo> vinculos = select(base, manga, volume, capitulo, linguagem, isValidaTabela);
+
+		vinculos.stream().forEach(vol -> {
+			vol.getVolumeOriginal().getCapitulos().parallelStream().forEach(c -> {
+				c.getPaginas().parallelStream().forEach(p -> p.setSequencia(-1));
+			});
+			vol.getVolumeVinculado().getCapitulos().parallelStream().forEach(c -> {
+				c.getPaginas().parallelStream().forEach(p -> p.setSequencia(-1));
+			});
+		});
+
+		vinculos.stream().forEach(vol -> {
+			sequencia = 0;
+			vol.getVinculados().stream().forEach(pg -> {
+				sequencia++;
+				if (pg.getMangaPaginaOriginal() != null)
+					pg.getMangaPaginaOriginal().setSequencia(sequencia);
+
+				if (pg.getMangaPaginaEsquerda() != null)
+					pg.getMangaPaginaEsquerda().setSequencia(sequencia);
+
+				if (pg.getMangaPaginaDireita() != null)
+					pg.getMangaPaginaDireita().setSequencia(sequencia);
+			});
+		});
+
+		final List<MangaVinculo> mangas = new ArrayList<MangaVinculo>();
+		final Set<MangaVolume> volumes = new HashSet<MangaVolume>();
+		vinculos.parallelStream().forEach(it -> volumes.add(it.getVolumeOriginal()));
+
+		volumes.parallelStream().forEach(vol -> {
+			List<MangaVolume> vinculados = vinculos.parallelStream().filter(it -> it.getVolumeOriginal().equals(vol))
+					.map(m -> m.getVolumeVinculado()).toList();
+
+			mangas.add(new MangaVinculo(vol, vinculados));
+		});
+
+		return mangas;
+	}
+
+	@Override
+	public List<MangaVinculo> selectVinculo(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
+		return selectVinculo(base, manga, volume, capitulo, linguagem, true);
+	}
+
+	@Override
+	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			String condicao = "1>0 ";
+
+			if (base != null && !base.trim().isEmpty())
+				condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
+
+			st = conn.prepareStatement(
+					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), condicao));
+			rs = st.executeQuery();
+
+			List<MangaTabela> list = new ArrayList<>();
+
+			while (rs.next()) {
+				List<MangaVinculo> vinculo = selectVinculo(rs.getString("Tabela"), manga, volume, capitulo, linguagem,
+						false);
+				if (vinculo.size() > 0)
+					list.add(new MangaTabela(rs.getString("Tabela"), null, vinculo));
+			}
 
 			return list;
 		} catch (SQLException e) {

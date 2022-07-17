@@ -2,35 +2,50 @@ package org.jisho.textosJapones.controller.mangas;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.components.TableViewNoSelectionModel;
 import org.jisho.textosJapones.components.animation.Animacao;
+import org.jisho.textosJapones.components.listener.VinculoTextoListener;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.enums.Language;
 
+import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.JFXTextField;
 
+import javafx.beans.InvalidationListener;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.robot.Robot;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-public class MangasTextoController implements Initializable {
+public class MangasTextoController implements Initializable, VinculoTextoListener {
 
 	@FXML
 	protected AnchorPane apRoot;
@@ -39,19 +54,22 @@ public class MangasTextoController implements Initializable {
 	private JFXButton btnClose;
 
 	@FXML
+	private JFXButton btnSalvar;
+
+	@FXML
 	private JFXButton btnCarregarLegendas;
 
 	@FXML
-	private JFXButton btnOrderAutomatico;
+	private JFXTextField txtMangaOriginal;
 
 	@FXML
-	private JFXButton btnOrderPaginaDupla;
+	private JFXTextField txtMangaVinculado;
 
 	@FXML
-	private JFXButton btnOrderPaginaUnica;
+	private JFXComboBox<Language> cbLinguagemOrigem;
 
 	@FXML
-	private JFXButton btnOrderSequencia;
+	private JFXComboBox<Language> cbLinguagemVinculado;
 
 	@FXML
 	private TableView<VinculoPagina> tvPaginasVinculadas;
@@ -70,6 +88,15 @@ public class MangasTextoController implements Initializable {
 
 	private ObservableList<VinculoPagina> vinculado;
 
+	@FXML
+	private ListView<String> lvCapitulosOriginal;
+
+	@FXML
+	private ListView<String> lvCapitulosVinculado;
+
+	private JFXAutoCompletePopup<String> autoCompleteMangaOriginal;
+	private JFXAutoCompletePopup<String> autoCompleteMangaVinculado;
+
 	private MangasVincularController controller;
 
 	public void setControllerPai(MangasVincularController controller) {
@@ -79,15 +106,150 @@ public class MangasTextoController implements Initializable {
 	public MangasVincularController getControllerPai() {
 		return controller;
 	}
+	
+	@Override
+	public void refresh() {
+		tvPaginasVinculadas.refresh();
+		tvPaginasVinculadas.requestLayout();
+	}
 
 	@FXML
 	private void onBtnClose() {
+		controller.refreshListener = null;
+		controller.setAutoCompleteListener(false);
+		setAutoCompleteListener(true, controller);
+
+		txtMangaOriginal.textProperty().unbind();
+		txtMangaVinculado.textProperty().unbind();
+		cbLinguagemOrigem.selectionModelProperty().unbind();
+		cbLinguagemVinculado.selectionModelProperty().unbind();
+
 		new Animacao().fecharPane(controller.getControllerPai().getStackPane());
 	}
 
-	public void setDados(ObservableList<VinculoPagina> vinculado) {
+	private InvalidationListener listenerMangaOriginal = observable -> {
+		autoCompleteMangaOriginal
+				.filter(string -> string.toLowerCase().contains(txtMangaOriginal.getText().toLowerCase()));
+		if (autoCompleteMangaOriginal.getFilteredSuggestions().isEmpty() || txtMangaOriginal.getText().isEmpty())
+			autoCompleteMangaOriginal.hide();
+		else
+			autoCompleteMangaOriginal.show(txtMangaOriginal);
+	};
+
+	private InvalidationListener listenerMangaVinculado = observable -> {
+		autoCompleteMangaVinculado
+				.filter(string -> string.toLowerCase().contains(txtMangaVinculado.getText().toLowerCase()));
+		if (autoCompleteMangaVinculado.getFilteredSuggestions().isEmpty() || txtMangaVinculado.getText().isEmpty())
+			autoCompleteMangaVinculado.hide();
+		else
+			autoCompleteMangaVinculado.show(txtMangaVinculado);
+	};
+
+	private ListChangeListener<String> listenerAutoCompleteMangaOriginal;
+	private ListChangeListener<String> listenerAutoCompleteMangaVinculado;
+
+	private void setAutoCompleteListener(Boolean isClear, MangasVincularController controller) {
+		if (isClear) {
+			txtMangaOriginal.textProperty().removeListener(listenerMangaOriginal);
+			txtMangaVinculado.textProperty().removeListener(listenerMangaVinculado);
+
+			autoCompleteMangaOriginal.setSelectionHandler(null);
+			autoCompleteMangaVinculado.setSelectionHandler(null);
+
+			controller.getAutoCompleteMangaOriginal().getSuggestions()
+					.removeListener(listenerAutoCompleteMangaOriginal);
+			controller.getAutoCompleteMangaVinculado().getSuggestions()
+					.removeListener(listenerAutoCompleteMangaVinculado);
+
+			listenerAutoCompleteMangaOriginal = null;
+			listenerAutoCompleteMangaVinculado = null;
+		} else {
+			autoCompleteMangaOriginal = new JFXAutoCompletePopup<String>();
+			autoCompleteMangaOriginal.getSuggestions()
+					.addAll(controller.getAutoCompleteMangaOriginal().getSuggestions());
+
+			autoCompleteMangaOriginal.setSelectionHandler(event -> {
+				txtMangaOriginal.setText(event.getObject());
+			});
+
+			autoCompleteMangaVinculado = new JFXAutoCompletePopup<String>();
+			autoCompleteMangaVinculado.getSuggestions()
+					.addAll(controller.getAutoCompleteMangaVinculado().getSuggestions());
+
+			autoCompleteMangaVinculado.setSelectionHandler(event -> {
+				txtMangaVinculado.setText(event.getObject());
+			});
+
+			listenerAutoCompleteMangaOriginal = new ListChangeListener<String>() {
+				@Override
+				public void onChanged(ListChangeListener.Change<? extends String> change) {
+					while (change.next()) {
+						for (String removed : change.getRemoved())
+							autoCompleteMangaOriginal.getSuggestions().remove(removed);
+
+						for (String added : change.getAddedSubList())
+							autoCompleteMangaOriginal.getSuggestions().add(added);
+					}
+				}
+			};
+
+			listenerAutoCompleteMangaVinculado = new ListChangeListener<String>() {
+				@Override
+				public void onChanged(ListChangeListener.Change<? extends String> change) {
+					while (change.next()) {
+						for (String removed : change.getRemoved())
+							autoCompleteMangaVinculado.getSuggestions().remove(removed);
+
+						for (String added : change.getAddedSubList())
+							autoCompleteMangaVinculado.getSuggestions().add(added);
+					}
+				}
+			};
+
+			controller.getAutoCompleteMangaOriginal().getSuggestions().addListener(listenerAutoCompleteMangaOriginal);
+			controller.getAutoCompleteMangaVinculado().getSuggestions().addListener(listenerAutoCompleteMangaVinculado);
+
+			txtMangaOriginal.textProperty().addListener(listenerMangaOriginal);
+			txtMangaVinculado.textProperty().addListener(listenerMangaVinculado);
+		}
+	}
+
+	private void cloneData(MangasVincularController controller) {
+		btnSalvar.onActionProperty().set(controller.getBtnSalvar().onActionProperty().get());
+		btnCarregarLegendas.onActionProperty().set(controller.getBtnCarregarLegendas().onActionProperty().get());
+
+		txtMangaOriginal.setText(controller.getTxtMangaOriginal().getText());
+		txtMangaVinculado.setText(controller.getTxtMangaVinculado().getText());
+
+		txtMangaOriginal.textProperty().bindBidirectional(controller.getTxtMangaOriginal().textProperty());
+		txtMangaVinculado.textProperty().bindBidirectional(controller.getTxtMangaVinculado().textProperty());
+
+		setAutoCompleteListener(false, controller);
+
+		controller.setAutoCompleteListener(true);
+
+		cbLinguagemOrigem.getItems().addAll(controller.getCbLinguagemOrigem().getItems());
+		cbLinguagemVinculado.getItems().addAll(controller.getCbLinguagemVinculado().getItems());
+
+		cbLinguagemOrigem.getSelectionModel()
+				.select(controller.getCbLinguagemOrigem().getSelectionModel().getSelectedItem());
+		cbLinguagemVinculado.getSelectionModel()
+				.select(controller.getCbLinguagemVinculado().getSelectionModel().getSelectedItem());
+
+		cbLinguagemOrigem.selectionModelProperty()
+				.bindBidirectional(controller.getCbLinguagemOrigem().selectionModelProperty());
+		cbLinguagemVinculado.selectionModelProperty()
+				.bindBidirectional(controller.getCbLinguagemVinculado().selectionModelProperty());
+
+		lvCapitulosOriginal.setItems(controller.getListCapitulosOriginal());
+		lvCapitulosVinculado.setItems(controller.getListCapitulosVinculado());
+	}
+
+	public void setDados(ObservableList<VinculoPagina> vinculado, MangasVincularController controller) {
 		this.vinculado = vinculado;
 		tvPaginasVinculadas.setItems(this.vinculado);
+
+		cloneData(controller);
 	}
 
 	private void preparaCelulas() {
@@ -271,9 +433,94 @@ public class MangasTextoController implements Initializable {
 			tvPaginasVinculadas.scrollTo(index);
 	}
 
+	private void selecionaCapitulo(String capitulo, Boolean isManga) {
+		if (capitulo == null || capitulo.isEmpty())
+			return;
+
+		if (isManga && controller.getCapitulosOriginal().isEmpty()
+				|| !isManga && controller.getCapitulosVinculado().isEmpty())
+			return;
+
+		if (isManga) {
+			Integer numero = controller.getCapitulosOriginal().get(capitulo);
+			Optional<VinculoPagina> pagina = tvPaginasVinculadas.getItems().stream()
+					.filter(pg -> pg.getOriginalPagina().compareTo(numero) == 0).findFirst();
+			if (pagina.isPresent())
+				tvPaginasVinculadas.scrollTo(pagina.get());
+		} else {
+			Integer numero = controller.getCapitulosVinculado().get(capitulo);
+			Optional<VinculoPagina> pagina = tvPaginasVinculadas.getItems().stream()
+					.filter(pg -> pg.getVinculadoEsquerdaPagina().compareTo(numero) == 0
+							|| pg.getVinculadoDireitaPagina().compareTo(numero) == 0)
+					.findFirst();
+			if (pagina.isPresent())
+				tvPaginasVinculadas.scrollTo(pagina.get());
+		}
+	}
+
+	private Robot robot = new Robot();
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		preparaCelulas();
+
+		txtMangaOriginal.focusTraversableProperty().addListener((options, oldValue, newValue) -> {
+			if (oldValue)
+				txtMangaOriginal.setUnFocusColor(Color.web("#106ebe"));
+		});
+
+		txtMangaOriginal.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		txtMangaVinculado.focusTraversableProperty().addListener((options, oldValue, newValue) -> {
+			if (oldValue)
+				txtMangaVinculado.setUnFocusColor(Color.web("#106ebe"));
+		});
+
+		txtMangaVinculado.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		cbLinguagemOrigem.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		cbLinguagemVinculado.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		lvCapitulosOriginal.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() > 1)
+					selecionaCapitulo(lvCapitulosOriginal.getSelectionModel().getSelectedItem(), true);
+			}
+		});
+
+		lvCapitulosVinculado.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() > 1)
+					selecionaCapitulo(lvCapitulosVinculado.getSelectionModel().getSelectedItem(), false);
+			}
+		});
 
 	}
 

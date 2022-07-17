@@ -16,15 +16,18 @@ import org.jisho.textosJapones.database.mysql.ConexaoMysql;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaTabela;
+import org.jisho.textosJapones.model.entities.MangaVinculo;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
+import org.jisho.textosJapones.model.services.VincularServices;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -39,6 +42,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -48,22 +52,26 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 
 public class MangasJsonController implements Initializable {
 
+	final PseudoClass vinculado = PseudoClass.getPseudoClass("vinculado");
+
 	@FXML
 	private AnchorPane apRoot;
 
 	@FXML
-	private JFXTextField txtBase;
+	private JFXComboBox<String> cbBase;
 
 	@FXML
 	private JFXTextField txtManga;
@@ -94,12 +102,18 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private JFXCheckBox ckbInverterOrdemTexto;
-	
+
 	@FXML
 	private JFXCheckBox ckbInserirArquivos;
-	
+
 	@FXML
 	private JFXCheckBox ckbExcluirAoInserirArquivos;
+
+	@FXML
+	private JFXCheckBox ckbCarregaVinculos;
+
+	@FXML
+	private JFXCheckBox ckbApenasVinculos;
 
 	@FXML
 	private JFXCheckBox ckbMarcarTodos;
@@ -125,7 +139,8 @@ public class MangasJsonController implements Initializable {
 	@FXML
 	private TreeTableColumn<Manga, Float> treecCapitulo;
 
-	private MangaServices service = new MangaServices();
+	private MangaServices serviceManga = new MangaServices();
+	private VincularServices serviceVinculo = new VincularServices();
 	private ObservableList<MangaTabela> TABELAS;
 	private Boolean PAUSAR;
 
@@ -150,7 +165,7 @@ public class MangasJsonController implements Initializable {
 			AlertasPopup.AvisoModal("Aviso", "Necessário informar um caminho de destino.");
 			return;
 		}
-		
+
 		if (ckbInserirArquivos.isSelected() && ConexaoMysql.getCaminhoWinrar().isEmpty()) {
 			AlertasPopup.AvisoModal("Aviso", "Necessário informar o caminho do winrar nas configurações.");
 			return;
@@ -202,45 +217,48 @@ public class MangasJsonController implements Initializable {
 		btnCarregar.setDisable(false);
 		TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
 	}
-	
+
 	private String patern = ".*\\.(zip|cbz|rar|cbr|tar)$";
-	private void insereDentroArquivos(String localPasta, String nomeArquivo, String nome, Integer volume, String localJson) {
+
+	private void insereDentroArquivos(String localPasta, String nomeArquivo, String nome, Integer volume,
+			String localJson) {
 		File pasta = new File(localPasta);
 		File arquivo = null;
-		
+
 		if (!nomeArquivo.isEmpty()) {
 			for (File item : pasta.listFiles()) {
 				if (item.getName().toLowerCase().contains(".json"))
 					continue;
-				
+
 				if (!item.getName().toLowerCase().matches(patern))
 					continue;
-				
+
 				if (item.getName().toLowerCase().contains(nomeArquivo)) {
 					arquivo = item;
 					break;
 				}
 			}
 		}
-		
+
 		if (arquivo == null) {
 			for (File item : pasta.listFiles()) {
 				if (item.getName().toLowerCase().contains(".json"))
 					continue;
-				
+
 				if (!item.getName().toLowerCase().matches(patern))
 					continue;
-				
+
 				if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
-					 if (item.getName().toLowerCase().contains(nome) && 
-								(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ") || 
-								item.getName().toLowerCase().contains("volume " + String.format("%03d", volume) + " "))) {
-							arquivo = item;
-							break;
-					 }
-				} else if (item.getName().toLowerCase().contains(nome) && 
-						(item.getName().toLowerCase().contains("volume " + String.format("%02d", volume)) || 
-						item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
+					if (item.getName().toLowerCase().contains(nome)
+							&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ")
+									|| item.getName().toLowerCase()
+											.contains("volume " + String.format("%03d", volume) + " "))) {
+						arquivo = item;
+						break;
+					}
+				} else if (item.getName().toLowerCase().contains(nome)
+						&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume))
+								|| item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
 					arquivo = item;
 					break;
 				}
@@ -250,48 +268,46 @@ public class MangasJsonController implements Initializable {
 		// Necessário adicionar o winrar no path do windows.
 		if (arquivo != null) {
 			File json = new File(localJson);
-			
-		    String comando = "cmd.exe /C cd " + winrar + " \n&&rar a -ep " + '"' + arquivo.getPath() + '"' + " " +
-		    '"' + json.getPath() + '"';
-		    System.out.println("cmd.exe /C cd " + winrar);
-		    System.out.println("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + json.getPath() + '"');
-	        try {
-	        	Runtime rt = Runtime.getRuntime();
-	        	
-	        	Process proc = rt.exec(comando);
-	        	System.out.println("Resultado: " + proc.waitFor());
-	        	
-	        	String resultado = "";
-	        	
-	        	BufferedReader stdInput = new BufferedReader(new 
-	        	     InputStreamReader(proc.getInputStream()));
-	        
-	        	String s = null;
-	        	while ((s = stdInput.readLine()) != null)
-	        		resultado += s + "\n";
-	        	
-	        	if (!resultado.isEmpty())
-	        		System.out.println("Output comand:\n" + resultado);
-	        	
-	        	s = null;
-	        	resultado = "";
-	        	BufferedReader stdError = new BufferedReader(new 
-	        	     InputStreamReader(proc.getErrorStream()));
-	        	
-	        	while ((s = stdError.readLine()) != null)
-	        		resultado += s + "\n";
-	        
-	        	if (!resultado.isEmpty())
-	        		System.out.println("Error comand:\n" + resultado + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
-	        	
-	            
-	    		if(excluirAoInserir)
+
+			String comando = "cmd.exe /C cd " + winrar + " \n&&rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"'
+					+ json.getPath() + '"';
+			System.out.println("cmd.exe /C cd " + winrar);
+			System.out.println("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + json.getPath() + '"');
+			try {
+				Runtime rt = Runtime.getRuntime();
+
+				Process proc = rt.exec(comando);
+				System.out.println("Resultado: " + proc.waitFor());
+
+				String resultado = "";
+
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+				String s = null;
+				while ((s = stdInput.readLine()) != null)
+					resultado += s + "\n";
+
+				if (!resultado.isEmpty())
+					System.out.println("Output comand:\n" + resultado);
+
+				s = null;
+				resultado = "";
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+				while ((s = stdError.readLine()) != null)
+					resultado += s + "\n";
+
+				if (!resultado.isEmpty())
+					System.out.println("Error comand:\n" + resultado
+							+ "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
+
+				if (excluirAoInserir)
 					json.delete();
-	
-	        } catch (Exception e) {
-	            System.out.println(e);
-	            e.printStackTrace();
-	        }
+
+			} catch (Exception e) {
+				System.out.println(e);
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -377,10 +393,10 @@ public class MangasJsonController implements Initializable {
 								for (MangaCapitulo capitulo : volume.getCapitulos()) {
 									if (!capitulo.isProcessar())
 										continue;
-									
-									String arquivo = destino + '/' + volume.getLingua() + " - "
-											+ volume.getManga() + " - Volume " +  String.format("%03d", volume.getVolume())
-											+ " Capitulo " + String.format("%03d", capitulo.getCapitulo()) + ".json";
+
+									String arquivo = destino + '/' + volume.getLingua() + " - " + volume.getManga()
+											+ " - Volume " + String.format("%03d", volume.getVolume()) + " Capitulo "
+											+ String.format("%03d", capitulo.getCapitulo()) + ".json";
 
 									FileWriter file = new FileWriter(arquivo);
 									gson.toJson(capitulo, file);
@@ -388,22 +404,24 @@ public class MangasJsonController implements Initializable {
 									file.close();
 
 									if (inserirArquivos)
-										insereDentroArquivos(destino, volume.getArquivo().toLowerCase(), volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
-									
+										insereDentroArquivos(destino, volume.getArquivo().toLowerCase(),
+												volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
+
 									if (PAUSAR)
 										break;
 								}
 							} else {
-								String arquivo = destino + '/' + volume.getLingua() + " - "
-										+ volume.getManga() + " - Volume " + String.format("%03d", volume.getVolume()) + ".json";
-								
+								String arquivo = destino + '/' + volume.getLingua() + " - " + volume.getManga()
+										+ " - Volume " + String.format("%03d", volume.getVolume()) + ".json";
+
 								FileWriter file = new FileWriter(arquivo);
 								gson.toJson(volume, file);
 								file.flush();
 								file.close();
-								
+
 								if (inserirArquivos)
-									insereDentroArquivos(destino, volume.getArquivo().toLowerCase(), volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
+									insereDentroArquivos(destino, volume.getArquivo().toLowerCase(),
+											volume.getManga().toLowerCase(), volume.getVolume(), arquivo);
 							}
 
 						}
@@ -444,11 +462,12 @@ public class MangasJsonController implements Initializable {
 				});
 
 			}
-			
+
 			@Override
 			protected void failed() {
 				super.failed();
-				System.out.print("Erro na thread gerar json: " + super.getMessage());
+				System.out.println("Erro na thread gerar json: " + super.getMessage());
+				habilitar();
 			}
 		};
 
@@ -475,7 +494,8 @@ public class MangasJsonController implements Initializable {
 		btnCarregar.setDisable(true);
 		btnGerarJson.setDisable(true);
 		treeBases.setDisable(true);
-		BASE = txtBase.getText().trim();
+		BASE = cbBase.getSelectionModel().getSelectedItem() == null ? ""
+				: cbBase.getSelectionModel().getSelectedItem().trim();
 		MANGA = txtManga.getText().trim();
 		VOLUME = spnVolume.getValue();
 		CAPITULO = spnCapitulo.getValue().floatValue();
@@ -487,11 +507,23 @@ public class MangasJsonController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					service = new MangaServices();
-					TABELAS = FXCollections.observableArrayList(service.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO,
-							LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
+					serviceManga = new MangaServices();
+
+					if (ckbCarregaVinculos.isSelected() && ckbApenasVinculos.isSelected()) {
+						TABELAS = FXCollections.observableArrayList(
+								serviceVinculo.selectTabelasJson(BASE, MANGA, VOLUME, CAPITULO, LINGUAGEM));
+					} else {
+						TABELAS = FXCollections.observableArrayList(serviceManga.selectTabelasJson(BASE, MANGA, VOLUME,
+								CAPITULO, LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
+
+						if (ckbCarregaVinculos.isSelected())
+							for (MangaTabela tabela : TABELAS)
+								tabela.setVinculados(serviceVinculo.getMangaVinculo(tabela.getBase(), MANGA, VOLUME,
+										CAPITULO, LINGUAGEM));
+					}
+
 					DADOS = getTreeData();
-				} catch (ExcessaoBd e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				return null;
@@ -513,15 +545,27 @@ public class MangasJsonController implements Initializable {
 				});
 
 			}
-			
+
 			@Override
 			protected void failed() {
 				super.failed();
-				System.out.print("Erro na thread de carregamento de itens: " + super.getMessage());
+				System.out.println("Erro na thread de carregamento de itens: " + super.getMessage());
+				habilitar();
 			}
 		};
 		Thread t = new Thread(carregaItens);
 		t.start();
+	}
+
+	private String getLinguaVinculo(MangaVinculo vinculo) {
+		String lingua = vinculo.getManga().getLingua().getSigla().toUpperCase() + " | ";
+		for (MangaVolume vi : vinculo.getVinculos()) {
+			lingua += vi.getLingua().getSigla().toUpperCase() + " -- ";
+		}
+
+		lingua = lingua.substring(0, lingua.lastIndexOf(" -- "));
+
+		return lingua;
 	}
 
 	private TreeItem<Manga> getTreeData() {
@@ -534,6 +578,7 @@ public class MangasJsonController implements Initializable {
 			String volumeAnterior = "";
 			Language linguagemAnterior = null;
 
+			// ---------------- Mangas ---------------- //
 			for (MangaVolume volume : tabela.getVolumes()) {
 
 				// Implementa um nivel por tipo
@@ -542,7 +587,7 @@ public class MangasJsonController implements Initializable {
 					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
 					itmTabela.getChildren().add(itmManga);
 					itmTabela.setExpanded(true);
-					
+
 					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(),
 							volume.getLingua().getSigla().toUpperCase()));
 					linguagemAnterior = volume.getLingua();
@@ -569,6 +614,54 @@ public class MangasJsonController implements Initializable {
 
 				itmLingua.getChildren().add(itmVolume);
 			}
+
+			String lingua = "";
+			String linguaAnterior = "";
+
+			// ---------------- Vinculados ---------------- //
+			for (MangaVinculo vinculo : tabela.getVinculados()) {
+				linguagemAnterior = null;
+
+				MangaVolume volume = vinculo.getManga();
+				volume.isVinculo = true;
+				lingua = getLinguaVinculo(vinculo);
+
+				// Implementa um nivel por tipo
+				if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
+					volumeAnterior = volume.getManga();
+					itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "...", true));
+					itmTabela.getChildren().add(itmManga);
+					itmTabela.setExpanded(true);
+
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), lingua, true));
+					linguagemAnterior = volume.getLingua();
+					linguaAnterior = getLinguaVinculo(vinculo);
+					itmManga.getChildren().add(itmLingua);
+				}
+
+				if (linguagemAnterior == null || volume.getLingua().compareTo(linguagemAnterior) != 0) {
+					itmLingua = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), lingua, true));
+					linguagemAnterior = volume.getLingua();
+					linguaAnterior = getLinguaVinculo(vinculo);
+					itmManga.getChildren().add(itmLingua);
+				}
+
+				volume.setLinguagem(linguaAnterior);
+				volume.setBase(tabela.getBase());
+				TreeItem<Manga> itmVolume = new TreeItem<Manga>(volume);
+
+				for (MangaCapitulo capitulo : volume.getCapitulos()) {
+					capitulo.setBase(tabela.getBase());
+					capitulo.setNomePagina("...");
+					capitulo.setLinguagem(linguaAnterior);
+					capitulo.isVinculo = true;
+					itmVolume.getChildren().add(new TreeItem<Manga>(capitulo));
+				}
+
+				itmLingua.getChildren().add(itmVolume);
+			}
+
+			// ---------------- Adicionado na tabela ---------------- //
 			itmRoot.getChildren().add(itmTabela);
 			itmRoot.setExpanded(true);
 		}
@@ -624,6 +717,21 @@ public class MangasJsonController implements Initializable {
 			}
 		});
 
+		treeBases.setRowFactory(tv -> {
+			return new TreeTableRow<>() {
+				@Override
+				public void updateItem(Manga item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null) {
+						setStyle("");
+						pseudoClassStateChanged(vinculado, false);
+					} else
+						pseudoClassStateChanged(vinculado, item.isVinculo);
+
+				}
+			};
+		});
+
 	}
 
 	private void linkaCelulas() {
@@ -642,8 +750,48 @@ public class MangasJsonController implements Initializable {
 	private Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		try {
+			cbBase.getItems().setAll(serviceManga.getTabelas());
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
+		}
 
-		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE, Language.PORTUGUESE_GOOGLE);
+		cbBase.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				if (cbBase.getItems().isEmpty())
+					cbBase.setUnFocusColor(Color.RED);
+				else
+					cbBase.setUnFocusColor(Color.web("#106ebe"));
+			}
+		});
+
+		JFXAutoCompletePopup<String> autoCompletePopup = new JFXAutoCompletePopup<>();
+		autoCompletePopup.getSuggestions().addAll(cbBase.getItems());
+
+		autoCompletePopup.setSelectionHandler(event -> {
+			cbBase.setValue(event.getObject());
+		});
+
+		cbBase.getEditor().textProperty().addListener(observable -> {
+			autoCompletePopup.filter(item -> item.toLowerCase().contains(cbBase.getEditor().getText().toLowerCase()));
+			if (autoCompletePopup.getFilteredSuggestions().isEmpty() || cbBase.showingProperty().get()
+					|| cbBase.getEditor().getText().isEmpty())
+				autoCompletePopup.hide();
+			else
+				autoCompletePopup.show(cbBase.getEditor());
+		});
+
+		cbBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER))
+					robot.keyPress(KeyCode.TAB);
+			}
+		});
+
+		cbLinguagem.getItems().addAll(Language.ENGLISH, Language.JAPANESE, Language.PORTUGUESE,
+				Language.PORTUGUESE_GOOGLE);
 
 		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
@@ -651,14 +799,6 @@ public class MangasJsonController implements Initializable {
 				if (ke.getCode().equals(KeyCode.ESCAPE))
 					cbLinguagem.getSelectionModel().clearSelection();
 				else if (ke.getCode().equals(KeyCode.ENTER))
-					robot.keyPress(KeyCode.TAB);
-			}
-		});
-
-		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent ke) {
-				if (ke.getCode().equals(KeyCode.ENTER))
 					robot.keyPress(KeyCode.TAB);
 			}
 		});
@@ -693,6 +833,16 @@ public class MangasJsonController implements Initializable {
 				if (ke.getCode().equals(KeyCode.ENTER))
 					robot.keyPress(KeyCode.TAB);
 			}
+		});
+
+		ckbApenasVinculos.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal)
+				ckbCarregaVinculos.selectedProperty().set(true);
+		});
+
+		ckbCarregaVinculos.selectedProperty().addListener((o, oldVal, newVal) -> {
+			if (!newVal)
+				ckbApenasVinculos.selectedProperty().set(false);
 		});
 
 		spnVolume.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 999, 0));

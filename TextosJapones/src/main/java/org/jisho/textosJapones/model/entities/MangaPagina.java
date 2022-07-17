@@ -22,6 +22,9 @@ public class MangaPagina extends Manga {
 	private Set<MangaVocabulario> vocabularios;
 	private Boolean processado;
 
+	@Expose
+	private Integer sequencia;
+
 	public Long getId() {
 		return id;
 	}
@@ -54,6 +57,14 @@ public class MangaPagina extends Manga {
 		this.hash = hash;
 	}
 
+	public Integer getSequencia() {
+		return sequencia;
+	}
+
+	public void setSequencia(Integer sequencia) {
+		this.sequencia = sequencia;
+	}
+
 	public List<MangaTexto> getTextos() {
 		return textos;
 	}
@@ -66,16 +77,12 @@ public class MangaPagina extends Manga {
 		this.textos.add(texto);
 	}
 
-	public Set<MangaVocabulario> getVocabulario() {
+	public Set<MangaVocabulario> getVocabularios() {
 		return vocabularios;
 	}
 
 	public void setVocabularios(Set<MangaVocabulario> vocabularios) {
 		this.vocabularios = vocabularios;
-	}
-
-	public void addVocabulario(MangaVocabulario vocabulario) {
-		this.vocabularios.add(vocabulario);
 	}
 
 	public Boolean getProcessado() {
@@ -98,12 +105,12 @@ public class MangaPagina extends Manga {
 	}
 
 	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado) {
+		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
 		this.vocabularios = new HashSet<MangaVocabulario>();
-		;
 		this.processado = processado;
 		this.processar = true;
 		this.textos = new ArrayList<MangaTexto>();
@@ -111,6 +118,7 @@ public class MangaPagina extends Manga {
 
 	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
 			List<MangaTexto> textos) {
+		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
@@ -123,6 +131,7 @@ public class MangaPagina extends Manga {
 
 	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
 			List<MangaTexto> textos, Set<MangaVocabulario> vocabularios) {
+		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
@@ -176,4 +185,9 @@ public class MangaPagina extends Manga {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "MangaPagina [id=" + id + ", nomePagina=" + nomePagina + ", numero=" + numero + ", hash=" + hash
+				+ ", textos=" + textos + ", sequencia=" + sequencia + "]";
+	}
 }

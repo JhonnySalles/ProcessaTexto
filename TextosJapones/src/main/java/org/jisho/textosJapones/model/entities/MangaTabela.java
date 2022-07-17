@@ -7,6 +7,7 @@ public class MangaTabela extends Manga {
 
 	private String base;
 	private List<MangaVolume> volumes;
+	private List<MangaVinculo> vinculados;
 	private Integer quantidade;
 
 	public String getBase() {
@@ -25,6 +26,14 @@ public class MangaTabela extends Manga {
 		this.volumes = volumes;
 	}
 
+	public List<MangaVinculo> getVinculados() {
+		return vinculados;
+	}
+
+	public void setVinculados(List<MangaVinculo> vinculados) {
+		this.vinculados = vinculados;
+	}
+
 	public Integer getQuantidade() {
 		return quantidade;
 	}
@@ -38,7 +47,7 @@ public class MangaTabela extends Manga {
 		this.quantidade = 0;
 		this.processar = true;
 		this.volumes = new ArrayList<MangaVolume>();
-
+		this.vinculados = new ArrayList<MangaVinculo>();
 	}
 
 	public MangaTabela(String base, List<MangaVolume> volumes) {
@@ -46,6 +55,7 @@ public class MangaTabela extends Manga {
 		this.quantidade = 0;
 		this.volumes = volumes;
 		this.processar = true;
+		this.vinculados = new ArrayList<MangaVinculo>();
 	}
 
 	public MangaTabela(String base, Integer quantidade, List<MangaVolume> volumes) {
@@ -53,5 +63,19 @@ public class MangaTabela extends Manga {
 		this.quantidade = quantidade;
 		this.volumes = volumes;
 		this.processar = true;
+		this.vinculados = new ArrayList<MangaVinculo>();
 	}
+
+	public MangaTabela(String base, List<MangaVolume> volumes, List<MangaVinculo> vinculados) {
+		this.base = base;
+		this.quantidade = 0;
+		this.processar = true;
+		this.vinculados = vinculados;
+
+		if (volumes == null)
+			this.volumes = new ArrayList<MangaVolume>();
+		else
+			this.volumes = volumes;
+	}
+
 }

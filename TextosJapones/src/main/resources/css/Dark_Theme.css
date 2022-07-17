@@ -429,6 +429,18 @@
 	-fx-background-color: #4052ab;
 }
 
+.tree-table-row-cell:vinculado {
+	-fx-background-color: -fx-table-cell-border-color, #001a00;
+}
+
+.tree-table-row-cell:vinculado:odd {
+	-fx-background-color: -fx-table-cell-border-color, #003300;
+}
+
+.tree-table-row-cell:vinculado:selected {
+	-fx-background-color: #269900;
+}
+
 /*  Cor da flecha de nivel */
 .tree-cell>.tree-disclosure-node>.arrow, .tree-table-row-cell>.tree-disclosure-node>.arrow
 	{

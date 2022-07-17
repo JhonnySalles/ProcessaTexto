@@ -26,7 +26,7 @@
                      <children>
             	          <HBox alignment="TOP_CENTER" spacing="10.0">
             	             <children>
-            	                <JFXTextField fx:id="txtBase" focusColor="#71afe5" labelFloat="true" promptText="Base" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                              <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
             	                <JFXTextField fx:id="txtManga" focusColor="#71afe5" labelFloat="true" promptText="Manga" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                               <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
             	             </children>
@@ -81,6 +81,12 @@
       	                <JFXCheckBox fx:id="ckbSepararPorCapitulos" checkedColor="#71afe5" text="Separar por capitulo?" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXCheckBox fx:id="ckbInserirArquivos" checkedColor="#71afe5" selected="true" text="Salvar em arquivos com mesmo nome?" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXCheckBox fx:id="ckbExcluirAoInserirArquivos" checkedColor="#71afe5" selected="true" text="Ecluir ao embutir no arquivo?" textFill="WHITE" unCheckedColor="#106ebe" />
+                        <HBox spacing="5.0">
+                           <children>
+                              <JFXCheckBox fx:id="ckbCarregaVinculos" checkedColor="#71afe5" text="Carregar vinculos?" textFill="WHITE" unCheckedColor="#106ebe" />
+                              <JFXCheckBox fx:id="ckbApenasVinculos" checkedColor="#71afe5" text="Apenas vinculos?" textFill="WHITE" unCheckedColor="#106ebe" />
+                           </children>
+                        </HBox>
             	          <HBox alignment="CENTER_RIGHT" spacing="10.0" VBox.vgrow="ALWAYS">
             	             <opaqueInsets>
             	                <Insets />

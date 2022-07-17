@@ -75,6 +75,7 @@ public class MangaTexto extends Manga {
 	}
 
 	public MangaTexto() {
+		super();
 		this.id = 0L;
 		this.texto = "";
 		this.sequencia = 0;
@@ -85,6 +86,7 @@ public class MangaTexto extends Manga {
 	}
 
 	public MangaTexto(Long id, String texto, Integer sequencia, Integer x1, Integer y1, Integer x2, Integer y2) {
+		super();
 		this.id = id;
 		this.texto = texto;
 		this.sequencia = sequencia;
@@ -92,6 +94,11 @@ public class MangaTexto extends Manga {
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
+	}
+
+	@Override
+	public String toString() {
+		return "MangaTexto [id=" + id + ", texto=" + texto + ", sequencia=" + sequencia + "]";
 	}
 
 }

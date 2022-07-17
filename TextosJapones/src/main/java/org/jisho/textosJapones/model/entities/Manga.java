@@ -17,6 +17,7 @@ public class Manga {
 	protected Float capituloDestino;
 	protected Boolean alterado;
 	protected Boolean itemExcluido;
+	public Boolean isVinculo = false;
 
 	public String getBase() {
 		return base;
@@ -168,6 +169,7 @@ public class Manga {
 		this.capituloDestino = null;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.isVinculo = false;
 	}
 
 	public Manga(String base, String manga) {
@@ -183,6 +185,7 @@ public class Manga {
 		this.capituloDestino = null;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.isVinculo = false;
 	}
 
 	public Manga(String base, String manga, String linguagem) {
@@ -198,6 +201,23 @@ public class Manga {
 		this.capituloDestino = null;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.isVinculo = false;
+	}
+	
+	public Manga(String base, String manga, String linguagem, Boolean isVinculo) {
+		this.base = base;
+		this.manga = manga;
+		this.volume = null;
+		this.capitulo = null;
+		this.pagina = null;
+		this.nomePagina = null;
+		this.linguagem = linguagem;
+		this.processar = true;
+		this.volumeDestino = null;
+		this.capituloDestino = null;
+		this.alterado = false;
+		this.itemExcluido = false;
+		this.isVinculo = isVinculo;
 	}
 
 	public Manga(String base, String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -212,6 +232,37 @@ public class Manga {
 		this.capituloDestino = capitulo;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.isVinculo = false;
+	}
+	
+	public Manga(String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
+		this.base = null;
+		this.manga = manga;
+		this.volume = volume;
+		this.capitulo = capitulo;
+		this.pagina = pagina;
+		this.nomePagina = nomePagina;
+		this.linguagem = null;
+		this.volumeDestino = volume;
+		this.capituloDestino = capitulo;
+		this.alterado = false;
+		this.itemExcluido = false;
+		this.isVinculo = false;
+	}
+	
+	public Manga(String manga, Integer volume, Float capitulo) {
+		this.base = null;
+		this.manga = manga;
+		this.volume = volume;
+		this.capitulo = null;
+		this.pagina = null;
+		this.nomePagina = null;
+		this.linguagem = null;
+		this.volumeDestino = volume;
+		this.capituloDestino = capitulo;
+		this.alterado = false;
+		this.itemExcluido = false;
+		this.isVinculo = false;
 	}
 
 	@Override

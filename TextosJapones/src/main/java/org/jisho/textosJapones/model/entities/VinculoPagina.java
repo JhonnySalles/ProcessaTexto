@@ -242,10 +242,10 @@ public class VinculoPagina implements Serializable {
 
 		this.vinculadoDireitaHash = outro.vinculadoDireitaHash;
 		this.vinculadoEsquerdaHash = outro.vinculadoEsquerdaHash;
-		
+
 		this.isImagemDupla = outro.isImagemDupla;
 	}
-	
+
 	public void addOriginalSemId(VinculoPagina original) {
 		this.originalNomePagina = original.originalNomePagina;
 		this.originalPathPagina = original.originalPathPagina;

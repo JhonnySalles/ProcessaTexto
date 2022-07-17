@@ -19,7 +19,11 @@ import javafx.collections.ObservableList;
 public class MangaServices {
 
 	private MangaDao mangaDao = DaoFactory.createMangaDao();
-
+	
+	public List<String> getTabelas() throws ExcessaoBd {
+		return mangaDao.getTabelas();
+	}
+	
 	public List<MangaTabela> selectTabelas(Boolean todos) throws ExcessaoBd {
 		return mangaDao.selectTabelas(todos);
 	}
@@ -76,7 +80,7 @@ public class MangaServices {
 	}
 
 	public void updateVocabularioPagina(String base, MangaPagina pagina) throws ExcessaoBd {
-		insertVocabularios(base, null, null, pagina.getId(), pagina.getVocabulario());
+		insertVocabularios(base, null, null, pagina.getId(), pagina.getVocabularios());
 		mangaDao.updateProcessado(base, "paginas", pagina.getId());
 	}
 

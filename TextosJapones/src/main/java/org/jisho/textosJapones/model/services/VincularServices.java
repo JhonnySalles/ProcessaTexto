@@ -10,6 +10,8 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.model.entities.MangaPagina;
+import org.jisho.textosJapones.model.entities.MangaTabela;
+import org.jisho.textosJapones.model.entities.MangaVinculo;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
@@ -118,6 +120,16 @@ public class VincularServices {
 		if (base == null || linguagem == null)
 			return new ArrayList<String>();
 		return dao.getMangas(base, linguagem);
+	}
+
+	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
+		return dao.selectTabelasJson(base, manga, volume, capitulo, linguagem);
+	}
+
+	public List<MangaVinculo> getMangaVinculo(String base, String manga, Integer volume, Float capitulo,
+			Language linguagem) throws ExcessaoBd {
+		return dao.selectVinculo(base, manga, volume, capitulo, linguagem);
 	}
 
 	// ------------------------------------------------------------------------
@@ -653,7 +665,8 @@ public class VincularServices {
 	}
 
 	public void onMovimentaDireita(Pagina origem, VinculoPagina itemOrigem, Pagina destino, VinculoPagina itemDestino) {
-		if (itemOrigem == null || itemDestino == null || (itemOrigem == itemDestino && destino == Pagina.VINCULADO_DIREITA))
+		if (itemOrigem == null || itemDestino == null
+				|| (itemOrigem == itemDestino && destino == Pagina.VINCULADO_DIREITA))
 			return;
 
 		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();

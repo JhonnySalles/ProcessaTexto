@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<HBox fx:id="hbRoot" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasTextoCelulaDuplaController">
+<HBox fx:id="hbRoot" alignment="CENTER" spacing="5.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasTextoCelulaDuplaController">
    <children>
-      <AnchorPane fx:id="esquerdaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0">
+      <AnchorPane fx:id="esquerdaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0" HBox.hgrow="ALWAYS">
          <children>
             <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <center>
@@ -38,7 +38,7 @@
             </VBox>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="direitaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0">
+      <AnchorPane fx:id="direitaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0" HBox.hgrow="ALWAYS">
          <children>
             <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <center>

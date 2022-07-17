@@ -3,6 +3,7 @@ package org.jisho.textosJapones.controller.mangas;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.jisho.textosJapones.components.ImageViewZoom;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
 
 import com.jfoenix.controls.JFXSlider;
@@ -69,46 +70,31 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 						+ vinculo.getMangaPaginaDireita().getNomePagina());
 			else
 				direitaPagina.setText("");
+
+			if (vinculo.getImagemVinculadoEsquerda() != null)
+				ImageViewZoom.configura(vinculo.getImagemVinculadoEsquerda(), esquerdaImagem, esquerdaSlider);
+			else
+				ImageViewZoom.limpa(esquerdaImagem, esquerdaSlider);
+
+			if (vinculo.getImagemVinculadoDireita() != null)
+				ImageViewZoom.configura(vinculo.getImagemVinculadoDireita(), direitaImagem, direitaSlider);
+			else
+				ImageViewZoom.limpa(direitaImagem, direitaSlider);
 		}
 
-	}
-
-	private double esqZoom = 0, dirZoom = 0;
-
-	private void configuraZoom() {
-		esquerdaSlider.setMin(1);
-		esquerdaSlider.setMax(4);
-		esquerdaSlider.setValue(1);
-
-		esquerdaSlider.valueProperty().addListener(e -> {
-			esqZoom = esquerdaSlider.getValue();
-			esquerdaImagem.setScaleX(esqZoom);
-			esquerdaImagem.setScaleY(esqZoom);
-		});
-
-		direitaSlider.setMin(1);
-		direitaSlider.setMax(4);
-		direitaSlider.setValue(1);
-
-		direitaSlider.valueProperty().addListener(e -> {
-			dirZoom = direitaSlider.getValue();
-			direitaImagem.setScaleX(dirZoom);
-			direitaImagem.setScaleY(dirZoom);
-		});
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		esquerdaImagem.fitWidthProperty().bind(esquerdaRoot.widthProperty());
+		esquerdaImagem.fitHeightProperty().bind(esquerdaRoot.heightProperty());
 		esquerdaImagem.setPreserveRatio(true);
 
 		direitaImagem.fitWidthProperty().bind(direitaRoot.widthProperty());
+		direitaImagem.fitHeightProperty().bind(direitaRoot.heightProperty());
 		direitaImagem.setPreserveRatio(true);
 
 		direitaRoot.managedProperty().bind(direitaRoot.visibleProperty());
-
-		configuraZoom();
-
 	}
 
 	public static URL getFxmlLocate() {

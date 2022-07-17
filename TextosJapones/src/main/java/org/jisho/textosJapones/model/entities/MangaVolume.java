@@ -58,7 +58,6 @@ public class MangaVolume extends Manga {
 		this.lingua = lingua;
 	}
 
-	
 	public String getArquivo() {
 		return arquivo;
 	}
@@ -100,6 +99,7 @@ public class MangaVolume extends Manga {
 	}
 
 	public MangaVolume() {
+		super();
 		this.id = 0L;
 		this.manga = "";
 		this.volume = 0;
@@ -110,8 +110,9 @@ public class MangaVolume extends Manga {
 		this.capitulos = new ArrayList<MangaCapitulo>();
 		this.arquivo = "";
 	}
-	
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua,  String arquivo) {
+
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo) {
+		super(manga, volume, null);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -123,19 +124,23 @@ public class MangaVolume extends Manga {
 		this.processar = true;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, List<MangaCapitulo> capitulos) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+			List<MangaCapitulo> capitulos) {
+		super(manga, volume, null);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
 		this.lingua = lingua;
-		this.arquivo =  arquivo == null ? "" : arquivo;
+		this.arquivo = arquivo == null ? "" : arquivo;
 		this.capitulos = capitulos;
 		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.processado = false;
 		this.processar = true;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, Set<MangaVocabulario> vocabularios) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+			Set<MangaVocabulario> vocabularios) {
+		super(manga, volume, null);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -147,8 +152,9 @@ public class MangaVolume extends Manga {
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo, Set<MangaVocabulario> vocabularios,
-			List<MangaCapitulo> capitulos) {
+	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+			Set<MangaVocabulario> vocabularios, List<MangaCapitulo> capitulos) {
+		super(manga, volume, null);
 		this.id = id;
 		this.manga = manga;
 		this.volume = volume;
@@ -200,4 +206,9 @@ public class MangaVolume extends Manga {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "MangaVolume [id=" + id + ", manga=" + manga + ", volume=" + volume + ", lingua=" + lingua
+				+ ", vocabularios=" + vocabularios + ", arquivo=" + arquivo + "]";
+	}
 }

@@ -80,5 +80,6 @@ public interface MangaDao {
 
 	public void createBaseVocabulario(String nome) throws ExcessaoBd;
 
+	List<String> getTabelas() throws ExcessaoBd;
 
 }

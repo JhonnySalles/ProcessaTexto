@@ -101,6 +101,10 @@ public class MangaDaoJDBC implements MangaDao {
 			+ "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
 			+ "AND Table_Name LIKE '%%_volumes' AND %s GROUP BY Tabela ";
 
+	final private String SELECT_LISTA_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
+			+ " FROM information_schema.tables WHERE table_schema = '%s' "
+			+ " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ";
+
 	final private String EXIST_TABELA_VOCABULARIO = "SELECT Table_Name AS Tabela "
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_vocabulario%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
@@ -313,7 +317,7 @@ public class MangaDaoJDBC implements MangaDao {
 			st.setBoolean(4, obj.getProcessado());
 			st.setLong(5, obj.getId());
 
-			insertVocabulario(base, null, null, obj.getId(), obj.getVocabulario());
+			insertVocabulario(base, null, null, obj.getId(), obj.getVocabularios());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -681,7 +685,7 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeResultSet(rs);
 		}
 	}
-	
+
 	@Override
 	public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) throws ExcessaoBd {
 		PreparedStatement st = null;
@@ -1215,7 +1219,7 @@ public class MangaDaoJDBC implements MangaDao {
 				if (rs.next())
 					id = rs.getLong(1);
 
-				insertVocabulario(base, null, null, id, obj.getVocabulario());
+				insertVocabulario(base, null, null, id, obj.getVocabularios());
 				return id;
 			}
 		} catch (SQLException e) {
@@ -1414,6 +1418,30 @@ public class MangaDaoJDBC implements MangaDao {
 				if (volumes.size() > 0)
 					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
 			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public List<String> getTabelas() throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					String.format(SELECT_LISTA_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1)));
+			rs = st.executeQuery();
+
+			List<String> list = new ArrayList<>();
+
+			while (rs.next())
+				list.add(rs.getString("Tabela"));
 
 			return list;
 		} catch (SQLException e) {
