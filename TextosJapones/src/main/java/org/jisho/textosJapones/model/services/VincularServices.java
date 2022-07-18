@@ -143,18 +143,10 @@ public class VincularServices {
 		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
 
 		if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-			naoVinculado.add(
-					new VinculoPagina(pagina.getVinculadoEsquerdaNomePagina(), pagina.getVinculadoEsquerdaPathPagina(),
-							pagina.getVinculadoEsquerdaPagina(), pagina.getVinculadoEsquerdaPaginas(),
-							pagina.isVinculadoEsquerdaPaginaDupla, pagina.getMangaPaginaEsquerda(),
-							pagina.getImagemVinculadoEsquerda(), true, pagina.getVinculadoEsquerdaHash()));
+			naoVinculado.add(new VinculoPagina(pagina, true, true));
 
 		if (pagina.isImagemDupla) {
-			naoVinculado.add(
-					new VinculoPagina(pagina.getVinculadoDireitaNomePagina(), pagina.getVinculadoDireitaPathPagina(),
-							pagina.getVinculadoDireitaPagina(), pagina.getVinculadoDireitaPaginas(),
-							pagina.isVinculadoDireitaPaginaDupla, pagina.getMangaPaginaDireita(),
-							pagina.getImagemVinculadoDireita(), true, pagina.getVinculadoDireitaHash()));
+			naoVinculado.add(new VinculoPagina(pagina, false, true));
 			pagina.limparVinculadoDireita();
 		}
 	}
@@ -479,17 +471,9 @@ public class VincularServices {
 				if (encontrado.isPresent()) {
 					VinculoPagina item = encontrado.get();
 					if (item.getVinculadoEsquerdaPagina() == numeroPagina)
-						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoEsquerdaNomePagina(),
-								item.getVinculadoEsquerdaPathPagina(), item.getVinculadoEsquerdaPagina(),
-								item.getVinculadoEsquerdaPaginas(), item.isVinculadoEsquerdaPaginaDupla,
-								item.getMangaPaginaEsquerda(), item.getImagemVinculadoEsquerda(), true,
-								item.getVinculadoEsquerdaHash()));
+						naoVinculadoTemp.add(new VinculoPagina(item, true, true));
 					else
-						naoVinculadoTemp.add(new VinculoPagina(item.getVinculadoDireitaNomePagina(),
-								item.getVinculadoDireitaPathPagina(), item.getVinculadoDireitaPagina(),
-								item.getVinculadoDireitaPaginas(), item.isVinculadoDireitaPaginaDupla,
-								item.getMangaPaginaDireita(), item.getImagemVinculadoDireita(), true,
-								item.getVinculadoDireitaHash()));
+						naoVinculadoTemp.add(new VinculoPagina(item, false, true));
 				}
 			}
 		}
@@ -513,20 +497,12 @@ public class VincularServices {
 
 		if (origem == Pagina.VINCULADO_DIREITA) {
 			if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
-				naoVinculado.add(new VinculoPagina(pagina.getVinculadoDireitaNomePagina(),
-						pagina.getVinculadoDireitaPathPagina(), pagina.getVinculadoDireitaPagina(),
-						pagina.getVinculadoDireitaPaginas(), pagina.isVinculadoDireitaPaginaDupla,
-						pagina.getMangaPaginaDireita(), pagina.getImagemVinculadoDireita(), true,
-						pagina.getVinculadoDireitaHash()));
+				naoVinculado.add(new VinculoPagina(pagina, false, true));
 
 			pagina.limparVinculadoDireita();
 		} else {
 			if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-				naoVinculado.add(new VinculoPagina(pagina.getVinculadoEsquerdaNomePagina(),
-						pagina.getVinculadoEsquerdaPathPagina(), pagina.getVinculadoEsquerdaPagina(),
-						pagina.getVinculadoEsquerdaPaginas(), pagina.isVinculadoEsquerdaPaginaDupla,
-						pagina.getMangaPaginaEsquerda(), pagina.getImagemVinculadoEsquerda(), true,
-						pagina.getVinculadoEsquerdaHash()));
+				naoVinculado.add(new VinculoPagina(pagina, true, true));
 
 			if (pagina.isImagemDupla)
 				pagina.moverDireitaParaEsquerda();
@@ -672,18 +648,10 @@ public class VincularServices {
 		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
 
 		if (destino != Pagina.VINCULADO_ESQUERDA && itemDestino.isImagemDupla)
-			naoVinculado.add(new VinculoPagina(itemDestino.getVinculadoDireitaNomePagina(),
-					itemDestino.getVinculadoDireitaPathPagina(), itemDestino.getVinculadoDireitaPagina(),
-					itemDestino.getVinculadoDireitaPaginas(), itemDestino.isVinculadoDireitaPaginaDupla,
-					itemDestino.getMangaPaginaDireita(), itemDestino.getImagemVinculadoDireita(), true,
-					itemDestino.getVinculadoDireitaHash()));
+			naoVinculado.add(new VinculoPagina(itemDestino, false, true));
 		else if (destino == Pagina.VINCULADO_ESQUERDA
 				&& itemDestino.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
-			naoVinculado.add(new VinculoPagina(itemDestino.getVinculadoEsquerdaNomePagina(),
-					itemDestino.getVinculadoEsquerdaPathPagina(), itemDestino.getVinculadoEsquerdaPagina(),
-					itemDestino.getVinculadoEsquerdaPaginas(), itemDestino.isVinculadoEsquerdaPaginaDupla,
-					itemDestino.getMangaPaginaEsquerda(), itemDestino.getImagemVinculadoEsquerda(), true,
-					itemDestino.getVinculadoEsquerdaHash()));
+			naoVinculado.add(new VinculoPagina(itemDestino, true, true));
 
 		if (origem == Pagina.VINCULADO_DIREITA && destino == Pagina.VINCULADO_DIREITA) {
 			itemDestino.addVinculoDireita(itemOrigem);

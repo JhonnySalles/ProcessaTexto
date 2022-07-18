@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
@@ -927,7 +928,7 @@ public class VincularDaoJDBC implements VincularDao {
 
 		volumes.parallelStream().forEach(vol -> {
 			List<MangaVolume> vinculados = vinculos.parallelStream().filter(it -> it.getVolumeOriginal().equals(vol))
-					.map(m -> m.getVolumeVinculado()).toList();
+					.map(m -> m.getVolumeVinculado()).collect(Collectors.toList());
 
 			mangas.add(new MangaVinculo(vol, vinculados));
 		});

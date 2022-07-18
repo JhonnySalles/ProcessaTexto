@@ -24,6 +24,7 @@ import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.fileparse.Parse;
+import org.jisho.textosJapones.model.entities.Atributos;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaVolume;
 import org.jisho.textosJapones.model.entities.Vinculo;
@@ -36,6 +37,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.util.ListaExecucoes;
 import org.jisho.textosJapones.util.Util;
+import org.jisho.textosJapones.util.similarity.ImagePHash;
 
 import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
@@ -194,7 +196,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	private Map<String, Integer> capitulosOriginal = new HashMap<String, Integer>();
 	private Map<String, Integer> capitulosVinculado = new HashMap<String, Integer>();
-	
+
 	public VinculoTextoListener refreshListener;
 
 	private MangasController controller;
@@ -519,27 +521,27 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	public ObservableList<VinculoPagina> getNaoVinculados() {
 		return naoVinculado;
 	}
-	
+
 	private void refreshTabelas(Tabela tabela) {
-		switch(tabela) {
-			case VINCULADOS:
-				tvPaginasVinculadas.refresh();
-				tvPaginasVinculadas.requestLayout();
-				if (refreshListener != null)
-					refreshListener.refresh();
-				
-				break;
-			case NAOVINCULADOS:
-				lvPaginasNaoVinculadas.refresh();
-				lvPaginasNaoVinculadas.requestLayout();
-				break;
-			default:
-				tvPaginasVinculadas.refresh();
-				lvPaginasNaoVinculadas.refresh();
-				tvPaginasVinculadas.requestLayout();
-				lvPaginasNaoVinculadas.requestLayout();
-				if (refreshListener != null)
-					refreshListener.refresh();
+		switch (tabela) {
+		case VINCULADOS:
+			tvPaginasVinculadas.refresh();
+			tvPaginasVinculadas.requestLayout();
+			if (refreshListener != null)
+				refreshListener.refresh();
+
+			break;
+		case NAOVINCULADOS:
+			lvPaginasNaoVinculadas.refresh();
+			lvPaginasNaoVinculadas.requestLayout();
+			break;
+		default:
+			tvPaginasVinculadas.refresh();
+			lvPaginasNaoVinculadas.refresh();
+			tvPaginasVinculadas.requestLayout();
+			lvPaginasNaoVinculadas.requestLayout();
+			if (refreshListener != null)
+				refreshListener.refresh();
 		}
 	}
 
@@ -603,7 +605,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			controlador.setControllerPai(this);
 			controlador.scroolTo(index);
 			refreshListener = controlador;
-			
+
 			new Animacao().abrirPane(this.controller.getStackPane(), newRoot);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1013,21 +1015,24 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		return manga;
 	}
 
-	private Pair<Image, Pair<Boolean, String>> carregaImagem(Parse parse, int pagina) {
+	private Pair<Image, Atributos> carregaImagem(Parse parse, int pagina) {
 		Image image = null;
 		InputStream imput = null;
 		Boolean dupla = false;
 		String md5 = "";
+		String pHash = "";
 		try {
 			md5 = Util.MD5(parse.getPagina(pagina));
+			ImagePHash imgPHash = new ImagePHash();
+			pHash = imgPHash.getHash(parse.getPagina(pagina));
 			imput = parse.getPagina(pagina);
 			image = new Image(imput);
 			dupla = (image.getWidth() / image.getHeight()) > 0.9;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return new Pair<Image, Pair<Boolean, String>>(image, new Pair<Boolean, String>(dupla, md5));
+		return new Pair<Image, Atributos>(image, new Atributos(dupla, md5, pHash));
 	}
 
 	private void carregarArquivo(File arquivo, Boolean isManga) {
@@ -1078,15 +1083,15 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 								ArrayList<VinculoPagina> list = new ArrayList<VinculoPagina>();
 								for (int x = 0; x < parse.getSize(); x++) {
-									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
-									Pair<Boolean, String> detalhe = image.getValue();
+									Pair<Image, Atributos> image = carregaImagem(parse, x);
+									Atributos detalhe = image.getValue();
 									String path = parse.getPaginaPasta(x);
 
 									list.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
-											parse.getSize(), detalhe.getKey(),
+											parse.getSize(), detalhe.getDupla(),
 											service.findPagina(paginas, encontrados, path, Util.getPasta(path),
-													x - itensCapas, detalhe.getValue()),
-											image.getKey(), detalhe.getValue()));
+													x - itensCapas, detalhe.getMd5()),
+											image.getKey(), detalhe.getMd5(), detalhe.getPHash()));
 
 									X = x;
 									SIZE = parse.getSize();
@@ -1136,8 +1141,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								final List<VinculoPagina> naoVinculado = new ArrayList<VinculoPagina>();
 
 								for (int x = 0; x < parse.getSize(); x++) {
-									Pair<Image, Pair<Boolean, String>> image = carregaImagem(parse, x);
-									Pair<Boolean, String> detalhe = image.getValue();
+									Pair<Image, Atributos> image = carregaImagem(parse, x);
+									Atributos detalhe = image.getValue();
 									String path = parse.getPaginaPasta(x);
 
 									if (x < vinculado.size()) {
@@ -1148,17 +1153,18 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										item.setVinculadoEsquerdaNomePagina(Util.getNome(path));
 										item.setVinculadoEsquerdaPathPagina(Util.getPasta(path));
 										item.setVinculadoEsquerdaPaginas(parse.getSize());
-										item.isVinculadoEsquerdaPaginaDupla = detalhe.getKey();
+										item.isVinculadoEsquerdaPaginaDupla = detalhe.getDupla();
 										item.setImagemVinculadoEsquerda(image.getKey());
+										item.setVinculadoEsquerdaHash(detalhe.getMd5());
+										item.setVinculadoEsquerdaPHash(detalhe.getPHash());
 										item.setMangaPaginaEsquerda(service.findPagina(paginas, encontrados, path,
-												Util.getPasta(path), x - itensCapas, detalhe.getValue()));
-										item.setVinculadoEsquerdaHash(detalhe.getValue());
+												Util.getPasta(path), x - itensCapas, detalhe.getMd5()));
 									} else
 										naoVinculado.add(new VinculoPagina(Util.getNome(path), Util.getPasta(path), x,
-												parse.getSize(), detalhe.getKey(),
+												parse.getSize(), detalhe.getDupla(),
 												service.findPagina(paginas, encontrados, path, Util.getPasta(path),
-														x - itensCapas, detalhe.getValue()),
-												image.getKey(), true, detalhe.getValue()));
+														x - itensCapas, detalhe.getMd5()),
+												image.getKey(), true, detalhe.getMd5(), detalhe.getPHash()));
 
 									X = x;
 									SIZE = parse.getSize();
@@ -1276,25 +1282,31 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 					for (VinculoPagina pagina : vinculado) {
 						if (isManga) {
-							Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseOriginal,
-									pagina.getOriginalPagina());
-							pagina.isOriginalPaginaDupla = image.getValue().getKey();
+							Pair<Image, Atributos> image = carregaImagem(parseOriginal, pagina.getOriginalPagina());
+							pagina.isOriginalPaginaDupla = image.getValue().getDupla();
 							pagina.setImagemOriginal(image.getKey());
+							pagina.setOriginalHash(image.getValue().getMd5());
+							pagina.setOriginalPHash(image.getValue().getPHash());
+
 						} else {
 							pagina.addOriginalSemId(original.get(vinculado.indexOf(pagina)));
 
 							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
-								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+								Pair<Image, Atributos> image = carregaImagem(parseVinculado,
 										pagina.getVinculadoEsquerdaPagina());
-								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoEsquerda(image.getKey());
+								pagina.setVinculadoEsquerdaHash(image.getValue().getMd5());
+								pagina.setVinculadoEsquerdaPHash(image.getValue().getPHash());
 							}
 
 							if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
-								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+								Pair<Image, Atributos> image = carregaImagem(parseVinculado,
 										pagina.getVinculadoDireitaPagina());
-								pagina.isVinculadoDireitaPaginaDupla = image.getValue().getKey();
+								pagina.isVinculadoDireitaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoDireita(image.getKey());
+								pagina.setVinculadoDireitaHash(image.getValue().getMd5());
+								pagina.setVinculadoDireitaPHash(image.getValue().getPHash());
 							}
 						}
 
@@ -1309,10 +1321,12 @@ public class MangasVincularController implements Initializable, VinculoListener,
 					if (!isManga) {
 						for (VinculoPagina pagina : naoVinculado) {
 							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
-								Pair<Image, Pair<Boolean, String>> image = carregaImagem(parseVinculado,
+								Pair<Image, Atributos> image = carregaImagem(parseVinculado,
 										pagina.getVinculadoEsquerdaPagina());
-								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getKey();
+								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoEsquerda(image.getKey());
+								pagina.setVinculadoEsquerdaHash(image.getValue().getMd5());
+								pagina.setVinculadoEsquerdaPHash(image.getValue().getPHash());
 							}
 
 							X++;
