@@ -8,10 +8,12 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-/**
- * @desc 相似图片识别（直方图）
- */
 public class ImageHistogram {
+
+	final static public double SIMILAR = 1; // Images close to 1 are very similar
+	final static public double NOT_SIMILAR = 0; // Images close to 0 are not similar
+	// Expected threshold for the image to be similar, where above it will be equal
+	final static public double LIMIAR = 0.7;
 
 	private int redBins;
 	private int greenBins;
@@ -52,7 +54,6 @@ public class ImageHistogram {
 			}
 		}
 
-		// start to normalize the histogram data
 		for (int i = 0; i < histogramData.length; i++) {
 			histogramData[i] = histogramData[i] / total;
 		}
@@ -74,23 +75,12 @@ public class ImageHistogram {
 		return image.getRGB(x, y, width, height, pixels, 0, width);
 	}
 
-	/**
-	 * Bhattacharyya Coefficient
-	 * http://www.cse.yorku.ca/~kosta/CompVis_Notes/bhattacharyya.pdf
-	 * 
-	 * @return 返回值大于等于0.8可以简单判断这两张图片内容一致
-	 * @throws IOException
-	 */
 	public double match(File srcFile, File canFile) throws IOException {
 		float[] sourceData = this.filter(ImageIO.read(srcFile));
 		float[] candidateData = this.filter(ImageIO.read(canFile));
 		return calcSimilarity(sourceData, candidateData);
 	}
 
-	/**
-	 * @return 返回值大于等于0.8可以简单判断这两张图片内容一致
-	 * @throws IOException
-	 */
 	public double match(URL srcUrl, URL canUrl) throws IOException {
 		float[] sourceData = this.filter(ImageIO.read(srcUrl));
 		float[] candidateData = this.filter(ImageIO.read(canUrl));
@@ -113,4 +103,24 @@ public class ImageHistogram {
 		return similarity;
 	}
 
+	public boolean match(float[] sourceData, float[] candidateData) {
+		if (sourceData == null || candidateData == null)
+			return false;
+
+		return calcSimilarity(sourceData, candidateData) >= LIMIAR;
+	}
+
+	public boolean match(float[] sourceData, float[] candidateData, double limiar) {
+		if (sourceData == null || candidateData == null)
+			return false;
+
+		return calcSimilarity(sourceData, candidateData) >= limiar;
+	}
+
+	public double matchLimiar(float[] sourceData, float[] candidateData, double limiar) {
+		if (sourceData == null || candidateData == null)
+			return 0;
+
+		return calcSimilarity(sourceData, candidateData);
+	}
 }

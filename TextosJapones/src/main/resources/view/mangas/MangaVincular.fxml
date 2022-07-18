@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSlider?>
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
@@ -22,8 +23,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasVincularController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasVincularController">
    <children>
       <HBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -58,9 +60,9 @@
                         <JFXComboBox fx:id="cbLinguagemVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Linguagem do Vinculo" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
                         <JFXTextField fx:id="txtMangaVinculado" focusColor="#71afe5" labelFloat="true" prefWidth="500.0" promptText="Manga Vinculado" styleClass="texto-stilo" unFocusColor="#106ebe" />
                         <JFXButton fx:id="btnCarregarLegendas" buttonType="RAISED" minWidth="100.0" onAction="#onBtnCarregarLegendas" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Carregar legendas" />
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <JFXButton fx:id="btnVisualizarLegendas" buttonType="RAISED" minWidth="100.0" onAction="#onBtnVisualizarLegendas" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Visualizar Legendas" />
+                        <HBox spacing="5.0">
                            <children>
-                              <JFXButton fx:id="btnVisualizarLegendas" buttonType="RAISED" minWidth="100.0" onAction="#onBtnVisualizarLegendas" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Visualizar Legendas" />
                               <JFXButton fx:id="btnRecarregar" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnRecarregar" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Recarregar">
                                  <tooltip>
                                     <Tooltip text="Recarregar" />
@@ -69,22 +71,6 @@
                                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@../../images/file_link/icoRecarregar.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </JFXButton>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="5.0">
-                           <children>
-                              <JFXButton fx:id="btnOrderAutomatico" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderAutomatico" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção automática">
-                                 <tooltip>
-                                    <Tooltip text="Ordenanção automática" />
-                                 </tooltip>
-                                 <graphic>
-                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../images/file_link/icoOrdenarAutomatica.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -127,6 +113,52 @@
                               </JFXButton>
                            </children>
                         </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                           <children>
+                              <JFXButton fx:id="btnOrderAutomatico" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderAutomatico" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção automática">
+                                 <tooltip>
+                                    <Tooltip text="Ordenanção automática" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/file_link/icoOrdenarAutomatica.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="btnOrderPHash" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderPHash" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção PHash">
+                                 <tooltip>
+                                    <Tooltip text="Ordenanção PHash" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/file_link/icoOrdenarPHash.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="btnOrderHistogram" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderHistogram" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção Histogram">
+                                 <tooltip>
+                                    <Tooltip text="Ordenanção Histogram" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/file_link/icoOrdenarHistogram.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                        <VBox>
+                           <children>
+                              <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Precisão" />
+                              <JFXSlider fx:id="sldPrecisao" value="80.0" />
+                           </children>
+                        </VBox>
                         <JFXCheckBox fx:id="ckbPaginaDuplaCalculada" checkedColor="#71afe5" selected="true" text="Página dupla calculada?" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXButton fx:id="btnLimpar" buttonType="RAISED" minWidth="100.0" onAction="#onBtnLimpar" prefWidth="250.0" ripplerFill="#0095ff" styleClass="background-White1" text="Limpar">
                            <VBox.margin>

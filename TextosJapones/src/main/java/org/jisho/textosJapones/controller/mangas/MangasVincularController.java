@@ -37,12 +37,12 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.util.ListaExecucoes;
 import org.jisho.textosJapones.util.Util;
-import org.jisho.textosJapones.util.similarity.ImagePHash;
 
 import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
@@ -153,6 +153,15 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	@FXML
 	private JFXButton btnOrderSequencia;
+
+	@FXML
+	private JFXButton btnOrderPHash;
+	
+	@FXML
+	private JFXButton btnOrderHistogram;
+	
+	@FXML
+	private JFXSlider sldPrecisao;
 
 	@FXML
 	private JFXCheckBox ckbPaginaDuplaCalculada;
@@ -416,6 +425,22 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação pela sequencia.");
 	}
 
+	@FXML
+	private void onBtnOrderPHash() {
+		service.autoReordenarPHash(sldPrecisao.getValue());
+		refreshTabelas(Tabela.ALL);
+
+		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação PHash.");
+	}
+	
+	@FXML
+	private void onBtnOrderHistogram() {
+		service.autoReordenarHistogram(sldPrecisao.getValue());
+		refreshTabelas(Tabela.ALL);
+
+		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação Histogram.");
+	}
+
 	private Long lastTime = System.currentTimeMillis();
 	private final static Integer FAST = 200;
 	private final static Integer SLOW = 500;
@@ -550,6 +575,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		btnOrderPaginaDupla.setDisable(true);
 		btnOrderSequencia.setDisable(true);
 		btnOrderAutomatico.setDisable(true);
+		btnRecarregar.setDisable(true);
+		btnOrderPHash.setDisable(true);
+		btnOrderHistogram.setDisable(true);
 	}
 
 	private void habilita() {
@@ -557,6 +585,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		btnOrderPaginaDupla.setDisable(false);
 		btnOrderSequencia.setDisable(false);
 		btnOrderAutomatico.setDisable(false);
+		btnRecarregar.setDisable(false);
+		btnOrderPHash.setDisable(false);
+		btnOrderHistogram.setDisable(false);
 	}
 
 	private void limpar() {
@@ -1020,11 +1051,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		InputStream imput = null;
 		Boolean dupla = false;
 		String md5 = "";
-		String pHash = "";
 		try {
 			md5 = Util.MD5(parse.getPagina(pagina));
-			ImagePHash imgPHash = new ImagePHash();
-			pHash = imgPHash.getHash(parse.getPagina(pagina));
 			imput = parse.getPagina(pagina);
 			image = new Image(imput);
 			dupla = (image.getWidth() / image.getHeight()) > 0.9;
@@ -1032,7 +1060,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			e.printStackTrace();
 		}
 
-		return new Pair<Image, Atributos>(image, new Atributos(dupla, md5, pHash));
+		return new Pair<Image, Atributos>(image, new Atributos(dupla, md5, ""));
 	}
 
 	private void carregarArquivo(File arquivo, Boolean isManga) {
@@ -1091,7 +1119,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 											parse.getSize(), detalhe.getDupla(),
 											service.findPagina(paginas, encontrados, path, Util.getPasta(path),
 													x - itensCapas, detalhe.getMd5()),
-											image.getKey(), detalhe.getMd5(), detalhe.getPHash()));
+											image.getKey(), detalhe.getMd5(), "", null));
 
 									X = x;
 									SIZE = parse.getSize();
@@ -1156,7 +1184,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										item.isVinculadoEsquerdaPaginaDupla = detalhe.getDupla();
 										item.setImagemVinculadoEsquerda(image.getKey());
 										item.setVinculadoEsquerdaHash(detalhe.getMd5());
-										item.setVinculadoEsquerdaPHash(detalhe.getPHash());
 										item.setMangaPaginaEsquerda(service.findPagina(paginas, encontrados, path,
 												Util.getPasta(path), x - itensCapas, detalhe.getMd5()));
 									} else
@@ -1164,7 +1191,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 												parse.getSize(), detalhe.getDupla(),
 												service.findPagina(paginas, encontrados, path, Util.getPasta(path),
 														x - itensCapas, detalhe.getMd5()),
-												image.getKey(), true, detalhe.getMd5(), detalhe.getPHash()));
+												image.getKey(), true, detalhe.getMd5(), "", null));
 
 									X = x;
 									SIZE = parse.getSize();
@@ -1198,6 +1225,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 					@Override
 					protected void succeeded() {
 						Platform.runLater(() -> {
+							service.gerarAtributos(parse, isManga);
+
 							progress.getBarraProgresso().progressProperty().unbind();
 							progress.getLog().textProperty().unbind();
 
@@ -1286,8 +1315,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							pagina.isOriginalPaginaDupla = image.getValue().getDupla();
 							pagina.setImagemOriginal(image.getKey());
 							pagina.setOriginalHash(image.getValue().getMd5());
-							pagina.setOriginalPHash(image.getValue().getPHash());
-
 						} else {
 							pagina.addOriginalSemId(original.get(vinculado.indexOf(pagina)));
 
@@ -1297,7 +1324,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoEsquerda(image.getKey());
 								pagina.setVinculadoEsquerdaHash(image.getValue().getMd5());
-								pagina.setVinculadoEsquerdaPHash(image.getValue().getPHash());
 							}
 
 							if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA) {
@@ -1306,7 +1332,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								pagina.isVinculadoDireitaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoDireita(image.getKey());
 								pagina.setVinculadoDireitaHash(image.getValue().getMd5());
-								pagina.setVinculadoDireitaPHash(image.getValue().getPHash());
 							}
 						}
 
@@ -1326,7 +1351,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 								pagina.isVinculadoEsquerdaPaginaDupla = image.getValue().getDupla();
 								pagina.setImagemVinculadoEsquerda(image.getKey());
 								pagina.setVinculadoEsquerdaHash(image.getValue().getMd5());
-								pagina.setVinculadoEsquerdaPHash(image.getValue().getPHash());
 							}
 
 							X++;

@@ -6,9 +6,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.components.listener.VinculoServiceListener;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
+import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaVinculo;
@@ -19,8 +22,11 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Pagina;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.util.Util;
+import org.jisho.textosJapones.util.similarity.ImageHistogram;
+import org.jisho.textosJapones.util.similarity.ImagePHash;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.util.Pair;
 
 public class VincularServices {
@@ -132,7 +138,86 @@ public class VincularServices {
 		return dao.selectVinculo(base, manga, volume, capitulo, linguagem);
 	}
 
-	// ------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
+	public void gerarAtributos(Parse parse, Boolean isManga) {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+		progress.getTitulo()
+				.setText("Processando atributos da imagem do arquivo " + (isManga ? "original" : "vinculado"));
+
+		Task<Void> processar = new Task<Void>() {
+			Integer I, Max;
+
+			@Override
+			protected Void call() throws Exception {
+				try {
+					List<VinculoPagina> lista = listener.getVinculados().parallelStream().collect(Collectors.toList());
+					if (!isManga)
+						lista.addAll(listener.getNaoVinculados());
+
+					I = 0;
+					Max = lista.size() * 2;
+
+					ImagePHash imgPHash = new ImagePHash();
+					ImageHistogram imgHistogram = new ImageHistogram();
+
+					updateMessage("Gerando pHash....");
+					for (VinculoPagina pagina : lista) {
+						if (isManga)
+							pagina.setOriginalPHash(imgPHash.getHash(parse.getPagina(pagina.getOriginalPagina())));
+						else {
+							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+								pagina.setVinculadoEsquerdaPHash(
+										imgPHash.getHash(parse.getPagina(pagina.getVinculadoEsquerdaPagina())));
+
+							if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+								pagina.setVinculadoDireitaPHash(
+										imgPHash.getHash(parse.getPagina(pagina.getVinculadoDireitaPagina())));
+						}
+
+						I++;
+						updateProgress(I, Max);
+					}
+
+					updateMessage("Gerando Histogram....");
+					for (VinculoPagina pagina : lista) {
+						if (isManga)
+							pagina.setOriginalHistogram(
+									imgHistogram.generate(parse.getPagina(pagina.getOriginalPagina())));
+						else {
+							if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+								pagina.setVinculadoEsquerdaHistogram(
+										imgHistogram.generate(parse.getPagina(pagina.getVinculadoEsquerdaPagina())));
+
+							if (pagina.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+								pagina.setVinculadoDireitaHistogram(
+										imgHistogram.generate(parse.getPagina(pagina.getVinculadoDireitaPagina())));
+						}
+
+						I++;
+						updateProgress(I, Max);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void succeeded() {
+				progress.getBarraProgresso().progressProperty().unbind();
+				progress.getLog().textProperty().unbind();
+				MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+			}
+		};
+
+		progress.getLog().textProperty().bind(processar.messageProperty());
+		progress.getBarraProgresso().progressProperty().bind(processar.progressProperty());
+		Thread t = new Thread(processar);
+		t.start();
+	}
+
+	// -------------------------------------------------------------------------------------------------
 	private VinculoServiceListener listener;
 
 	public void setListener(VinculoServiceListener listener) {
@@ -401,6 +486,141 @@ public class VincularServices {
 		}
 	}
 
+	public void autoReordenarPHash(double precisao) {
+		ObservableList<VinculoPagina> vinculado = listener.getVinculados();
+
+		if (vinculado == null || vinculado.isEmpty())
+			return;
+
+		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
+
+		Boolean temImagemDupla = vinculado.stream().anyMatch((it) -> it.isImagemDupla);
+
+		if (temImagemDupla)
+			ordenarPaginaSimples();
+
+		List<VinculoPagina> processar = vinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, false)).collect(Collectors.toList());
+		processar.addAll(
+				vinculado.parallelStream().filter(vp -> vp.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.map(vp -> new VinculoPagina(vp, false, false)).collect(Collectors.toList()));
+
+		processar.addAll(naoVinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, false)).collect(Collectors.toList()));
+
+		List<VinculoPagina> vinculadoTemp = vinculado.parallelStream().map(vp -> new VinculoPagina(vp))
+				.collect(Collectors.toList());
+
+		ImagePHash pHash = new ImagePHash();
+		double limiar = precisao / 10;
+
+		for (VinculoPagina pagina : vinculadoTemp) {
+			if (!pagina.getOriginalPHash().isEmpty()) {
+				// Filtra apenas paginas que não foram encontradas, então pega os itens que são
+				// parecidos e realizam uma validação do mais parecido dentre eles para retornar
+				// o que mais se encaixa
+				Optional<Pair<Integer, VinculoPagina>> vinculo = processar.parallelStream()
+						.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.filter(vp -> pHash.match(pagina.getOriginalPHash(), vp.getVinculadoEsquerdaPHash(), limiar))
+						.map(vp -> new Pair<Integer, VinculoPagina>(
+								pHash.matchLimiar(pagina.getOriginalPHash(), vp.getVinculadoEsquerdaPHash(), limiar),
+								vp))
+						.filter(vp -> vp.getKey() <= ImagePHash.SIMILAR) // Somente imagens semelhantes
+						.sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).findFirst();
+
+				if (vinculo.isPresent()) {
+					pagina.addVinculoEsquerda(vinculo.get().getValue());
+					vinculo.get().getValue().limparVinculadoEsquerda();
+				}
+			}
+		}
+
+		List<VinculoPagina> naoLocalizado = processar.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, true)).collect(Collectors.toList());
+		processar.addAll(
+				vinculado.parallelStream().filter(vp -> vp.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.map(vp -> new VinculoPagina(vp, false, true)).collect(Collectors.toList()));
+
+		processar.addAll(naoVinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, true)).collect(Collectors.toList()));
+
+		vinculado.clear();
+		naoVinculado.clear();
+		vinculado.addAll(vinculadoTemp);
+		naoVinculado.addAll(naoLocalizado);
+	}
+
+	public void autoReordenarHistogram(double precisao) {
+		ObservableList<VinculoPagina> vinculado = listener.getVinculados();
+
+		if (vinculado == null || vinculado.isEmpty())
+			return;
+
+		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
+
+		Boolean temImagemDupla = vinculado.stream().anyMatch((it) -> it.isImagemDupla);
+
+		if (temImagemDupla)
+			ordenarPaginaSimples();
+
+		List<VinculoPagina> processar = vinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, false)).collect(Collectors.toList());
+		processar.addAll(
+				vinculado.parallelStream().filter(vp -> vp.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.map(vp -> new VinculoPagina(vp, false, false)).collect(Collectors.toList()));
+
+		processar.addAll(naoVinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, false)).collect(Collectors.toList()));
+
+		List<VinculoPagina> vinculadoTemp = vinculado.parallelStream().map(vp -> new VinculoPagina(vp))
+				.collect(Collectors.toList());
+
+		ImageHistogram histogram = new ImageHistogram();
+		double limiar = precisao / 100;
+
+		for (VinculoPagina pagina : vinculadoTemp) {
+			if (!pagina.getOriginalPHash().isEmpty()) {
+				// Filtra apenas paginas que não foram encontradas, então pega os itens que são
+				// parecidos e realizam uma validação do mais parecido dentre eles para retornar
+				// o que mais se encaixa
+				Optional<Pair<Double, VinculoPagina>> vinculo = processar.parallelStream()
+						.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.filter(vp -> histogram.match(pagina.getOriginalHistogram(), vp.getVinculadoEsquerdaHistogram(),
+								limiar))
+						.map(vp -> new Pair<Double, VinculoPagina>(histogram.matchLimiar(pagina.getOriginalHistogram(),
+								vp.getVinculadoEsquerdaHistogram(), limiar), vp))
+						.sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).findFirst();
+
+				if (vinculo.isPresent()) {
+					pagina.addVinculoEsquerda(vinculo.get().getValue());
+					vinculo.get().getValue().limparVinculadoEsquerda();
+				}
+			}
+		}
+
+		List<VinculoPagina> naoLocalizado = processar.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, true)).collect(Collectors.toList());
+		processar.addAll(
+				vinculado.parallelStream().filter(vp -> vp.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
+						.map(vp -> new VinculoPagina(vp, false, true)).collect(Collectors.toList()));
+
+		processar.addAll(naoVinculado.parallelStream()
+				.filter(vp -> vp.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA)
+				.map(vp -> new VinculoPagina(vp, true, true)).collect(Collectors.toList()));
+
+		vinculado.clear();
+		naoVinculado.clear();
+		vinculado.addAll(vinculadoTemp);
+		naoVinculado.addAll(naoLocalizado);
+	}
+
 	private Integer numeroPagina;
 
 	public void reordenarPeloNumeroPagina() {
@@ -490,7 +710,7 @@ public class VincularServices {
 
 	}
 
-	// ------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
 	public void addNaoVInculado(VinculoPagina pagina, Pagina origem) {
 		ObservableList<VinculoPagina> naoVinculado = listener.getNaoVinculados();
