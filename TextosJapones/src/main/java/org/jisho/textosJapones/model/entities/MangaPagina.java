@@ -93,6 +93,10 @@ public class MangaPagina extends Manga {
 		this.processado = processado;
 	}
 
+	public String getDescricao() {
+		return prefixo + " || " + String.format("%03d", capitulo) + " - (" + String.format("%03d", numero) + ") " + nomePagina;
+	}
+
 	public MangaPagina() {
 		this.id = 0L;
 		this.nomePagina = "";

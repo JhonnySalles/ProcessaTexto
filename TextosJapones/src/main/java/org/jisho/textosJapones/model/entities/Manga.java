@@ -17,6 +17,8 @@ public class Manga {
 	protected Float capituloDestino;
 	protected Boolean alterado;
 	protected Boolean itemExcluido;
+	protected String prefixo;
+	protected String origem;
 	public Boolean isVinculo = false;
 
 	public String getBase() {
@@ -123,6 +125,28 @@ public class Manga {
 		this.itemExcluido = itemExcluido;
 	}
 
+	public String getPrefixo() {
+		return prefixo;
+	}
+
+	public void setPrefixo(String prefixo) {
+		this.prefixo = prefixo;
+	}
+
+	public String getOrigem() {
+		return origem;
+	}
+
+	public void setOrigem(String origem) {
+		this.origem = origem;
+	}
+
+	public void addOutrasInformacoes(String origem, String prefixo, Float capitulo) {
+		this.prefixo = prefixo;
+		this.origem = origem;
+		this.capitulo = capitulo;
+	}
+	
 	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua) {
 		this.base = base;
 		this.manga = manga;
@@ -137,6 +161,8 @@ public class Manga {
 		this.volumeDestino = volume;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 
 	public void addOutrasInformacoes(String base, String manga, Integer volume, Float capitulo, Language lingua,
@@ -154,6 +180,8 @@ public class Manga {
 		this.volumeDestino = volume;
 		this.alterado = false;
 		this.itemExcluido = false;
+		this.prefixo = null;
+		this.origem =  null;
 	}
 
 	public Manga() {
@@ -170,6 +198,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 
 	public Manga(String base, String manga) {
@@ -186,6 +216,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 
 	public Manga(String base, String manga, String linguagem) {
@@ -218,6 +250,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = isVinculo;
+		this.prefixo = null;
+		this.origem = null;
 	}
 
 	public Manga(String base, String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -233,6 +267,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 	
 	public Manga(String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -248,6 +284,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 	
 	public Manga(String manga, Integer volume, Float capitulo) {
@@ -263,6 +301,8 @@ public class Manga {
 		this.alterado = false;
 		this.itemExcluido = false;
 		this.isVinculo = false;
+		this.prefixo = null;
+		this.origem = null;
 	}
 
 	@Override

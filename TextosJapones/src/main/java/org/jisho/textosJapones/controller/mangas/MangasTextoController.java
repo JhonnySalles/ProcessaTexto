@@ -2,6 +2,8 @@ package org.jisho.textosJapones.controller.mangas;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -17,17 +19,18 @@ import org.jisho.textosJapones.model.enums.Language;
 import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 
 import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -89,13 +92,18 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 	private ObservableList<VinculoPagina> vinculado;
 
 	@FXML
-	private ListView<String> lvCapitulosOriginal;
+	private JFXListView<String> lvCapitulosOriginal;
 
 	@FXML
-	private ListView<String> lvCapitulosVinculado;
+	private JFXListView<String> lvCapitulosVinculado;
+
+	@FXML
+	private JFXListView<String> lvTextoNaoLocalizado;
 
 	private JFXAutoCompletePopup<String> autoCompleteMangaOriginal;
 	private JFXAutoCompletePopup<String> autoCompleteMangaVinculado;
+
+	private Map<String, MangaPagina> naoLocalizado;
 
 	private MangasVincularController controller;
 
@@ -106,7 +114,7 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 	public MangasVincularController getControllerPai() {
 		return controller;
 	}
-	
+
 	@Override
 	public void refresh() {
 		tvPaginasVinculadas.refresh();
@@ -243,6 +251,40 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 
 		lvCapitulosOriginal.setItems(controller.getListCapitulosOriginal());
 		lvCapitulosVinculado.setItems(controller.getListCapitulosVinculado());
+
+		naoLocalizado = new HashMap<String, MangaPagina>();
+		if (controller.getVinculo().getVolumeOriginal() != null) {
+			controller.getVinculo().getVolumeOriginal().getCapitulos().parallelStream()
+					.forEach(c -> c.getPaginas().parallelStream()
+							.forEach(p -> p.addOutrasInformacoes(controller.getVinculo().getNomeArquivoOriginal(),
+									"Original", c.getCapitulo())));
+
+			naoLocalizado.putAll(controller.getVinculo().getVolumeOriginal().getCapitulos().parallelStream()
+					.flatMap(cap -> cap.getPaginas().stream()) // Transforma as sublistas de paginas em uma lista
+					.filter(pag -> !vinculado.parallelStream() // Filtra apenas as paginas que não estão vinculada
+							.anyMatch(vin -> vin.getMangaPaginaOriginal() != null
+									&& vin.getMangaPaginaOriginal().equals(pag)))
+					.collect(Collectors.toMap(MangaPagina::getDescricao, p -> p))); // Transforma em um map
+		}
+
+		if (controller.getVinculo().getVolumeVinculado() != null) {
+			controller.getVinculo().getVolumeVinculado().getCapitulos().parallelStream()
+					.forEach(c -> c.getPaginas().parallelStream()
+							.forEach(p -> p.addOutrasInformacoes(controller.getVinculo().getNomeArquivoVinculado(),
+									"Vinculado", c.getCapitulo())));
+
+			naoLocalizado.putAll(controller.getVinculo().getVolumeVinculado().getCapitulos().parallelStream()
+					.flatMap(cap -> cap.getPaginas().stream()) // Transforma as sublistas de paginas em uma lista
+					.filter(pag -> !vinculado.parallelStream() // Filtra apenas as paginas que não estão vinculada
+							.anyMatch(vin -> (vin.getMangaPaginaEsquerda() != null
+									&& vin.getMangaPaginaEsquerda().equals(pag))
+									|| (vin.getMangaPaginaDireita() != null
+											&& vin.getMangaPaginaDireita().equals(pag))))
+					.collect(Collectors.toMap(MangaPagina::getDescricao, p -> p))); // Transforma em um map
+		}
+
+		lvTextoNaoLocalizado.setItems(FXCollections.observableArrayList(
+				naoLocalizado.keySet().parallelStream().sorted((a, b) -> a.compareToIgnoreCase(b)).toList()));
 	}
 
 	public void setDados(ObservableList<VinculoPagina> vinculado, MangasVincularController controller) {

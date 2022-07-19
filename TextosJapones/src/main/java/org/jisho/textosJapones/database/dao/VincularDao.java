@@ -12,6 +12,8 @@ public interface VincularDao {
 
 	void update(String base, Vinculo obj) throws ExcessaoBd;
 
+	Vinculo select(String base, Long id) throws ExcessaoBd;
+	
 	Vinculo select(String base, Integer volume, String mangaOriginal, Language original, String arquivoOriginal,
 			String mangaVinculado, Language vinculado, String arquivoVinculado) throws ExcessaoBd;
 

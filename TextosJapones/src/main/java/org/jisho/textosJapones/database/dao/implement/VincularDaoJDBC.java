@@ -255,7 +255,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setLong(4, obj.getVolumeOriginal().getId());
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
-			st.setLong(7, obj.getVolumeOriginal().getId());
+			st.setLong(7, obj.getVolumeVinculado().getId());
 			st.setTimestamp(8, Util.convertToTimeStamp(obj.getDataCriacao()));
 			st.setTimestamp(9, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
 
@@ -388,6 +388,42 @@ public class VincularDaoJDBC implements VincularDao {
 			return null;
 
 		return mangaDao.selectVolume(base, id);
+	}
+
+	@Override
+	public Vinculo select(String base, Long id) throws ExcessaoBd {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+
+			st = conn.prepareStatement(String.format(SELECT_VINCULO, BASE_MANGA + base) + " WHERE id = ? ");
+			st.setLong(1, id);
+
+			rs = st.executeQuery();
+
+			if (rs.next()) {
+				volumeOriginal = selectVolume(base, rs.getLong(5));
+				volumeVinculado = selectVolume(base, rs.getLong(8));
+				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
+						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
+						Util.convertToDateTime(rs.getTimestamp(10)));
+				obj.setVinculados(selectVinculados(base, obj.getId()));
+				obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
+
+				return obj;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+		} finally {
+			volumeOriginal = null;
+			volumeVinculado = null;
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		return null;
 	}
 
 	@Override
@@ -742,7 +778,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setLong(4, obj.getVolumeOriginal().getId());
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
-			st.setLong(7, obj.getVolumeOriginal().getId());
+			st.setLong(7, obj.getVolumeVinculado().getId());
 			st.setTimestamp(8, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
 			st.setLong(9, obj.getId());
 

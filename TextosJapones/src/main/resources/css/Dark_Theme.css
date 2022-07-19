@@ -635,8 +635,7 @@
     -fx-background-color: #4052ab;
 }
 
-.table-black .column-header, .table-view .column-header-background .filler
-	{
+.table-black .column-header, .table-view .column-header-background .filler	{
 	-fx-background-color: #004578;
 	-fx-border-color: #000000;
 	-fx-border-width: 0 1 0 0;

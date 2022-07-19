@@ -62,6 +62,13 @@ public class VincularServices {
 			return null;
 		}
 	}
+	
+	public Vinculo select(String base, Long id) throws ExcessaoBd {
+		if (base == null || base.isEmpty())
+			return null;
+		
+		return dao.select(base, id);
+	}
 
 	public Vinculo select(String base, Integer volume, String mangaOriginal, Language linguagemOriginal,
 			String arquivoOriginal, String mangaVinculado, Language linguagemVinculado, String arquivoVinculado)

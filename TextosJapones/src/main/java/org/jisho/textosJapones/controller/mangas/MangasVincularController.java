@@ -156,13 +156,13 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	@FXML
 	private JFXButton btnOrderPHash;
-	
+
 	@FXML
 	private JFXButton btnOrderHistogram;
-	
+
 	@FXML
 	private JFXButton btnOrderInteligente;
-	
+
 	@FXML
 	private JFXSlider sldPrecisao;
 
@@ -195,6 +195,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	private JFXAutoCompletePopup<String> autoCompleteMangaOriginal;
 	private JFXAutoCompletePopup<String> autoCompleteMangaVinculado;
+	private boolean automatico = false;
 
 	private File arquivoOriginal;
 	private File arquivoVinculado;
@@ -219,6 +220,10 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 	public MangasController getControllerPai() {
 		return controller;
+	}
+
+	public Vinculo getVinculo() {
+		return vinculo;
 	}
 
 	public JFXTextField getTxtMangaOriginal() {
@@ -388,10 +393,12 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	@FXML
 	private void onBtnRecarregar() {
 		EXECUCOES.addExecucao(abort -> {
-			refreshTabelas(Tabela.ALL);
-
-			Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Recarregar.");
-
+			if (recarregar()) {
+				vincularLegenda(true);
+				refreshTabelas(Tabela.ALL);
+				Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Recarregar.");
+			} else
+				Notificacoes.notificacao(Notificacao.ALERTA, "Erro", "Não foi possivel recarregar.");
 			return false;
 		});
 	}
@@ -435,7 +442,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação PHash.");
 	}
-	
+
 	@FXML
 	private void onBtnOrderHistogram() {
 		service.autoReordenarHistogram(sldPrecisao.getValue());
@@ -443,7 +450,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação Histogram.");
 	}
-	
+
 	@FXML
 	private void onBtnOrderInteligente() {
 		service.autoReordenarInteligente(sldPrecisao.getValue());
@@ -608,12 +615,18 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		cbLinguagemVinculado.getSelectionModel().select(Language.PORTUGUESE);
 		cbLinguagemOrigem.getSelectionModel().select(Language.JAPANESE);
-		txtMangaOriginal.setText("");
-		txtMangaVinculado.setText("");
 		txtArquivoOriginal.setText("");
 		txtArquivoVinculado.setText("");
 		ckbPaginaDuplaCalculada.selectedProperty().set(true);
 		spnVolume.getValueFactory().setValue(1);
+
+		try {
+			automatico = true;
+			txtMangaOriginal.setText("");
+			txtMangaVinculado.setText("");
+		} finally {
+			automatico = false;
+		}
 
 		setLista(new ArrayList<VinculoPagina>(), new ArrayList<VinculoPagina>());
 
@@ -865,11 +878,13 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 								I++;
 
+								pagina.addOriginal(vinculado.get(vinculo.getVinculados().indexOf(pagina)));
+
 								if (pagina.getVinculadoEsquerdaPagina() != VinculoPagina.PAGINA_VAZIA) {
 									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
 											pagina.getVinculadoEsquerdaPagina());
 
-									if (vinculo == null)
+									if (paginaCarregada == null)
 										pagina.limparVinculadoEsquerda(false);
 									else if (paginaCarregada.getVinculadoEsquerdaPagina()
 											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
@@ -883,7 +898,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
 											pagina.getVinculadoDireitaPagina());
 
-									if (vinculo == null)
+									if (paginaCarregada == null)
 										pagina.limparVinculadoDireita();
 									else if (paginaCarregada.getVinculadoEsquerdaPagina()
 											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
@@ -912,7 +927,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 									VinculoPagina paginaCarregada = service.findPagina(vinculado, naoVinculado,
 											pagina.getVinculadoEsquerdaPagina());
 
-									if (vinculo == null)
+									if (paginaCarregada == null)
 										pagina.limparVinculadoEsquerda(false);
 									else if (paginaCarregada.getVinculadoEsquerdaPagina()
 											.compareTo(pagina.getVinculadoEsquerdaPagina()) == 0)
@@ -1026,11 +1041,16 @@ public class MangasVincularController implements Initializable, VinculoListener,
 				}
 			}
 
-			if (vinculo.getVolumeOriginal() != null)
-				txtMangaOriginal.setText(vinculo.getVolumeOriginal().getManga());
+			try {
+				automatico = true;
+				if (vinculo.getVolumeOriginal() != null)
+					txtMangaOriginal.setText(vinculo.getVolumeOriginal().getManga());
 
-			if (vinculo.getVolumeVinculado() != null)
-				txtMangaVinculado.setText(vinculo.getVolumeVinculado().getManga());
+				if (vinculo.getVolumeVinculado() != null)
+					txtMangaVinculado.setText(vinculo.getVolumeVinculado().getManga());
+			} finally {
+				automatico = false;
+			}
 
 			return true;
 		}
@@ -1461,6 +1481,20 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		return true;
 	}
 
+	private Boolean recarregar() {
+		try {
+			Vinculo vinculo = service.select(cbBase.getSelectionModel().getSelectedItem(), this.vinculo.getId());
+			if (vinculo != null) {
+				this.vinculo = vinculo;
+				return true;
+			}
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
 	private Boolean carregar() {
 		Boolean carregado = false;
 
@@ -1540,7 +1574,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		autoCompleteMangaOriginal
 				.filter(string -> string.toLowerCase().contains(txtMangaOriginal.getText().toLowerCase()));
-		if (autoCompleteMangaOriginal.getFilteredSuggestions().isEmpty() || txtMangaOriginal.getText().isEmpty())
+		if (autoCompleteMangaOriginal.getFilteredSuggestions().isEmpty() || txtMangaOriginal.getText().isEmpty()
+				|| automatico)
 			autoCompleteMangaOriginal.hide();
 		else
 			autoCompleteMangaOriginal.show(txtMangaOriginal);
@@ -1552,7 +1587,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		autoCompleteMangaVinculado
 				.filter(string -> string.toLowerCase().contains(txtMangaVinculado.getText().toLowerCase()));
-		if (autoCompleteMangaVinculado.getFilteredSuggestions().isEmpty() || txtMangaVinculado.getText().isEmpty())
+		if (autoCompleteMangaVinculado.getFilteredSuggestions().isEmpty() || txtMangaVinculado.getText().isEmpty()
+				|| automatico)
 			autoCompleteMangaVinculado.hide();
 		else
 			autoCompleteMangaVinculado.show(txtMangaVinculado);
