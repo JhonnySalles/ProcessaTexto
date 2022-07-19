@@ -203,7 +203,7 @@ public class ImagePHash {
 	
 	public int matchLimiar(String imgStr, String canStr, double limiar) {
 		if (imgStr.isEmpty() || canStr.isEmpty())
-			return 20;
+			return (int) (limiar + 1);
 
 		return this.distance(imgStr, canStr);
 	}

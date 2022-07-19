@@ -161,6 +161,9 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private JFXButton btnOrderHistogram;
 	
 	@FXML
+	private JFXButton btnOrderInteligente;
+	
+	@FXML
 	private JFXSlider sldPrecisao;
 
 	@FXML
@@ -440,6 +443,14 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação Histogram.");
 	}
+	
+	@FXML
+	private void onBtnOrderInteligente() {
+		service.autoReordenarInteligente(sldPrecisao.getValue());
+		refreshTabelas(Tabela.ALL);
+
+		Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Ordenação Inteligente.");
+	}
 
 	private Long lastTime = System.currentTimeMillis();
 	private final static Integer FAST = 200;
@@ -578,6 +589,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		btnRecarregar.setDisable(true);
 		btnOrderPHash.setDisable(true);
 		btnOrderHistogram.setDisable(true);
+		btnOrderInteligente.setDisable(true);
 	}
 
 	private void habilita() {
@@ -588,6 +600,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		btnRecarregar.setDisable(false);
 		btnOrderPHash.setDisable(false);
 		btnOrderHistogram.setDisable(false);
+		btnOrderInteligente.setDisable(false);
 	}
 
 	private void limpar() {

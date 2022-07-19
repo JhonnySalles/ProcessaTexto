@@ -151,6 +151,18 @@
                                     </ImageView>
                                  </graphic>
                               </JFXButton>
+                              <JFXButton fx:id="btnOrderInteligente" alignment="CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnOrderInteligente" prefWidth="50.0" ripplerFill="#0095ff" styleClass="background-White1" text="Ordenanção Inteligente">
+                                 <tooltip>
+                                    <Tooltip text="Ordenanção Inteligente" />
+                                 </tooltip>
+                                 <graphic>
+                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/file_link/icoOrdenarInteligente.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
                            </children>
                         </HBox>
                         <VBox>
