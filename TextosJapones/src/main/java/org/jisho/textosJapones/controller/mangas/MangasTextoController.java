@@ -284,7 +284,8 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 		}
 
 		lvTextoNaoLocalizado.setItems(FXCollections.observableArrayList(
-				naoLocalizado.keySet().parallelStream().sorted((a, b) -> a.compareToIgnoreCase(b)).toList()));
+				naoLocalizado.keySet().parallelStream().sorted((a, b) -> a.compareToIgnoreCase(b))
+						.collect(Collectors.toList())));
 	}
 
 	public void setDados(ObservableList<VinculoPagina> vinculado, MangasVincularController controller) {
