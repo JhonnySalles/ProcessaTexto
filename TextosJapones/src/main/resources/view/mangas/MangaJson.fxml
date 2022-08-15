@@ -80,7 +80,7 @@
                         <JFXCheckBox fx:id="ckbInverterOrdemTexto" checkedColor="#71afe5" selected="true" text="Inverter ordem do texto na consulta?" textFill="WHITE" unCheckedColor="#106ebe" />
       	                <JFXCheckBox fx:id="ckbSepararPorCapitulos" checkedColor="#71afe5" text="Separar por capitulo?" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXCheckBox fx:id="ckbInserirArquivos" checkedColor="#71afe5" selected="true" text="Salvar em arquivos com mesmo nome?" textFill="WHITE" unCheckedColor="#106ebe" />
-                        <JFXCheckBox fx:id="ckbExcluirAoInserirArquivos" checkedColor="#71afe5" selected="true" text="Ecluir ao embutir no arquivo?" textFill="WHITE" unCheckedColor="#106ebe" />
+                        <JFXCheckBox fx:id="ckbExcluirAoInserirArquivos" checkedColor="#71afe5" selected="true" text="Excluir ao embutir no arquivo?" textFill="WHITE" unCheckedColor="#106ebe" />
                         <HBox spacing="5.0">
                            <children>
                               <JFXCheckBox fx:id="ckbCarregaVinculos" checkedColor="#71afe5" text="Carregar vinculos?" textFill="WHITE" unCheckedColor="#106ebe" />
