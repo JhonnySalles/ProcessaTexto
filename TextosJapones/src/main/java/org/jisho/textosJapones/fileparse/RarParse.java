@@ -49,9 +49,13 @@ public class RarParse implements Parse {
 
 		Collections.sort(mCabecalhos, new Comparator<FileHeader>() {
 			public int compare(FileHeader a, FileHeader b) {
-				return getName(a).compareTo(getName(b));
+				return Util.getCaminho(getName(a)).compareTo(Util.getCaminho(getName(b)));
 			}
-		});
+		}.thenComparing(new Comparator<FileHeader>() {
+			public int compare(FileHeader a, FileHeader b) {
+				return Util.getNomeNormalizadoOrdenacao(getName(a)).compareTo(Util.getNomeNormalizadoOrdenacao(getName(b)));
+			}
+		}));
 	}
 
 	@Override

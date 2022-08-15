@@ -55,7 +55,12 @@ public class SevenZipParse implements Parse {
 				public String stringValue(SevenZEntry o) {
 					return o.entry.getName();
 				}
-			});
+			}.thenComparing(new NaturalOrderComparator<SevenZEntry>() {
+				@Override
+				public String stringValue(SevenZEntry o) {
+					return o.entry.getName();
+				}
+			}));
 		} finally {
 			sevenZFile.close();
 		}

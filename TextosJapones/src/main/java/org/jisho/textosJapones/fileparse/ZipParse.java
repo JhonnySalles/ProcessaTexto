@@ -38,9 +38,13 @@ public class ZipParse implements Parse {
 
 		Collections.sort(mEntrada, new Comparator<ZipEntry>() {
 			public int compare(ZipEntry a, ZipEntry b) {
-				return a.getName().compareTo(b.getName());
+				return Util.getCaminho(a.getName()).compareTo(Util.getCaminho(b.getName()));
 			}
-		});
+		}.thenComparing(new Comparator<ZipEntry>() {
+			public int compare(ZipEntry a, ZipEntry b) {
+				return Util.getNomeNormalizadoOrdenacao(a.getName()).compareTo(Util.getNomeNormalizadoOrdenacao(b.getName()));
+			}
+		}));
 	}
 
 	@Override

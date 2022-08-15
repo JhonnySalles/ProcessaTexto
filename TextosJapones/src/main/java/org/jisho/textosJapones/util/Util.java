@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
@@ -232,30 +234,49 @@ public class Util {
 	public static String getPasta(String path) {
 		// Two validations are needed, because the rar file only has the base values,
 		// with the beginning already in the folder when it exists
-		String folder = path;
+		String pasta = path;
 
-		if (folder.contains("/"))
-			folder = folder.substring(0, folder.lastIndexOf("/"));
-		else if (folder.contains("\\"))
-			folder = folder.substring(0, folder.lastIndexOf("\\"));
+		if (pasta.contains("/"))
+			pasta = pasta.substring(0, pasta.lastIndexOf("/"));
+		else if (pasta.contains("\\"))
+			pasta = pasta.substring(0, pasta.lastIndexOf("\\"));
 
-		if (folder.contains("/"))
-			folder = folder.substring(folder.lastIndexOf("/") + 1, folder.length());
-		else if (folder.contains("\\"))
-			folder = folder.substring(folder.lastIndexOf("\\") + 1, folder.length());
+		if (pasta.contains("/"))
+			pasta = pasta.substring(pasta.lastIndexOf("/") + 1, pasta.length());
+		else if (pasta.contains("\\"))
+			pasta = pasta.substring(pasta.lastIndexOf("\\") + 1, pasta.length());
 
-		return folder;
+		return pasta;
 	}
 
 	public static String getCaminho(String path) {
-		String folder = path;
+		String pasta = path;
 
-		if (folder.contains("/"))
-			folder = folder.substring(0, folder.lastIndexOf("/"));
-		else if (folder.contains("\\"))
-			folder = folder.substring(0, folder.lastIndexOf("\\"));
+		if (pasta.contains("/"))
+			pasta = pasta.substring(0, pasta.lastIndexOf("/"));
+		else if (pasta.contains("\\"))
+			pasta = pasta.substring(0, pasta.lastIndexOf("\\"));
 
-		return folder;
+		return pasta;
+	}
+
+	public static String getNumerosFinais(String str) {
+		String numeros = "";
+		Matcher m = Pattern.compile("\\d+$").matcher(str);
+		while (m.find())
+			numeros = m.group();
+		
+		return numeros;
+	}
+
+	public static String getNomeNormalizadoOrdenacao(String path) {
+		String nome = getNomeSemExtenssao(path);
+		String ultimos = getNumerosFinais(nome);
+		if (ultimos.isEmpty())
+			return getNome(path);
+		
+		return nome.substring(0, nome.lastIndexOf(ultimos)) + String.format("%10s", ultimos).replace(' ', '0')
+				+ getExtenssao(path);
 	}
 
 	public static WritableImage criaSnapshot(Node node) {

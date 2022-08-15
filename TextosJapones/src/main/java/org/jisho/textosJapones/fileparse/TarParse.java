@@ -56,7 +56,12 @@ public class TarParse implements Parse {
 			public String stringValue(TarEntry o) {
 				return o.entry.getName();
 			}
-		});
+		}.thenComparing(new NaturalOrderComparator<TarEntry>() {
+			@Override
+			public String stringValue(TarEntry o) {
+				return o.entry.getName();
+			}
+		}));
 	}
 
 	@Override
