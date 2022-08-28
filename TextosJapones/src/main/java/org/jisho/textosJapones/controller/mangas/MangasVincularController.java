@@ -705,7 +705,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		else if (volumeVinculado == null)
 			AlertasPopup.AvisoModal("Aviso", "Manga vinculado não encontrado.");
 
-		return volumeOriginal != null && volumeVinculado != null;
+		return volumeOriginal != null || volumeVinculado != null;
 	}
 
 	private Integer itensCapas = 0;
