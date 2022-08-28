@@ -94,7 +94,7 @@ public class MangaPagina extends Manga {
 	}
 
 	public String getDescricao() {
-		return prefixo + " || " + String.format("%03d", capitulo) + " - (" + String.format("%03d", numero) + ") " + nomePagina;
+		return prefixo + " || " + String.format("%03f", capitulo) + " - (" + String.format("%03d", numero) + ") " + nomePagina;
 	}
 
 	public MangaPagina() {

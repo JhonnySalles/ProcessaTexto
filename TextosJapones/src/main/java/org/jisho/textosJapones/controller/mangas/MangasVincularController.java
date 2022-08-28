@@ -682,7 +682,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	}
 
 	private Boolean carregarLegendas() {
-		if (!validaLegendaOriginal() || !validaLegendaVinculado()) {
+		if (!validaLegendaOriginal() && !validaLegendaVinculado()) {
 			AlertasPopup.AvisoModal("Aviso", "Necessário selecionar a base e o manga.");
 			return false;
 		}
