@@ -30,11 +30,10 @@ public class MenuConfiguracaoController implements Initializable {
 	public JFXTextField txtPorta;
 
 	@FXML
-	public JFXTextField txtDataBase;
+	public JFXTextField txtDataBaseJapones;
 
 	@FXML
 	public JFXTextField txtCaminhoMysql;
-	
 
 	@FXML
 	public JFXTextField txtCaminhoWinrar;
@@ -47,6 +46,9 @@ public class MenuConfiguracaoController implements Initializable {
 
 	@FXML
 	public JFXTextField txtDataBaseManga;
+	
+	@FXML
+	public JFXTextField txtDataBaseIngles;
 
 	private MenuPrincipalController controller;
 
@@ -64,9 +66,9 @@ public class MenuConfiguracaoController implements Initializable {
 	}
 
 	public void salvar() {
-		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtDataBase.getText(),
-				txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText(), txtDataBaseManga.getText(),
-				txtCaminhoWinrar.getText());
+		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtUsuario.getText(), pswSenha.getText(), 
+				txtCaminhoMysql.getText(), txtCaminhoWinrar.getText(),	txtDataBaseManga.getText(), 
+				txtDataBaseJapones.getText(), txtDataBaseIngles.getText());
 		controller.verificaConexao();
 	}
 
@@ -74,8 +76,9 @@ public class MenuConfiguracaoController implements Initializable {
 		ConexaoMysql.getDadosConexao();
 		txtServer.setText(ConexaoMysql.getServer());
 		txtPorta.setText(ConexaoMysql.getPort());
-		txtDataBase.setText(ConexaoMysql.getDataBase());
+		txtDataBaseJapones.setText(ConexaoMysql.getDataBaseJapones());
 		txtDataBaseManga.setText(ConexaoMysql.getDataBaseManga());
+		txtDataBaseIngles.setText(ConexaoMysql.getDataBaseIngles());
 		txtUsuario.setText(ConexaoMysql.getUser());
 		pswSenha.setText(ConexaoMysql.getPassword());
 		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
@@ -108,9 +111,10 @@ public class MenuConfiguracaoController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		Validadores.setTextFieldNotEmpty(txtServer);
 		Validadores.setTextFieldNotEmpty(txtPorta);
-		Validadores.setTextFieldNotEmpty(txtDataBase);
+		Validadores.setTextFieldNotEmpty(txtDataBaseJapones);
 		Validadores.setTextFieldNotEmpty(txtUsuario);
 		Validadores.setTextFieldNotEmpty(pswSenha);
 		Validadores.setTextFieldNotEmpty(txtDataBaseManga);
+		Validadores.setTextFieldNotEmpty(txtDataBaseIngles);
 	}
 }

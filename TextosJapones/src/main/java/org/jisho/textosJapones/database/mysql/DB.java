@@ -22,7 +22,7 @@ public class DB {
 				props.setProperty("characterEncoding", "UTF-8");
 				props.setProperty("useUnicode", "true");
 				String url = "jdbc:mysql://" + props.getProperty("server") + ":" + props.getProperty("port") + "/"
-						+ props.getProperty("dataBase")
+						+ props.getProperty("base_japones")
 						+ "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 				conn = DriverManager.getConnection(url, props);
 			} catch (SQLException e) {

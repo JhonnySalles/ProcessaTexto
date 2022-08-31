@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 
 public class KuromojiTokenizer {
 
-	private VocabularioServices vocabServ;
+	private VocabularioJaponesServices vocabServ;
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class KuromojiTokenizer {
 	private int i;
 
 	public void processaTexto(FrasesAnkiController cnt) {
-		setVocabularioServices(new VocabularioServices());
+		setVocabularioServices(new VocabularioJaponesServices());
 
 		String[] texto = cnt.getTextoOrigem().split("\n");
 		String processado = "";
@@ -165,7 +165,7 @@ public class KuromojiTokenizer {
 		cnt.setTextoDestino(processado);
 	}
 
-	private void setVocabularioServices(VocabularioServices vocabServ) {
+	private void setVocabularioServices(VocabularioJaponesServices vocabServ) {
 		this.vocabServ = vocabServ;
 	}
 

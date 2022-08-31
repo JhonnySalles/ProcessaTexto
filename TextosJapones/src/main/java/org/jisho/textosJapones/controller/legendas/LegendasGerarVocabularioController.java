@@ -18,7 +18,7 @@ import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.ProcessarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 
 import com.jfoenix.controls.JFXButton;
@@ -91,7 +91,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 	private TableColumn<Processar, String> tcVocabulario;
 
 	private ProcessarServices service = new ProcessarServices();
-	private VocabularioServices vocabularioService = new VocabularioServices();
+	private VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
 	private ProcessarLegendas processar = new ProcessarLegendas(null);
 
 	private LegendasController controller;

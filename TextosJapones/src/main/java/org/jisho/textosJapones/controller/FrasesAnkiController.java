@@ -15,7 +15,7 @@ import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.kanjiStatics.ImportaEstatistica;
 import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 import org.jisho.textosJapones.util.Util;
@@ -103,7 +103,7 @@ public class FrasesAnkiController implements Initializable {
 	@FXML
 	private TableColumn<Vocabulario, String> tcTraducao;
 
-	private VocabularioServices vocabServ = new VocabularioServices();
+	private VocabularioJaponesServices vocabServ = new VocabularioJaponesServices();
 	private RevisarServices revisaServ = new RevisarServices();
 	private Vocabulario vocabulario;
 	private Set<String> excluido;

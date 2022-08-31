@@ -26,7 +26,7 @@ import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.JapanDict;
 import org.jisho.textosJapones.processar.Jisho;
 import org.jisho.textosJapones.processar.TanoshiJapanese;
@@ -47,7 +47,7 @@ public class SudachiTokenizer {
 
 	private Api google = Api.API_GOOGLE;
 	private FrasesAnkiController controller;
-	private VocabularioServices vocabServ;
+	private VocabularioJaponesServices vocabServ;
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
@@ -395,7 +395,7 @@ public class SudachiTokenizer {
 	}
 
 	private void configura() {
-		setVocabularioServices(new VocabularioServices());
+		setVocabularioServices(new VocabularioJaponesServices());
 	}
 
 	public void processa(FrasesAnkiController cnt) throws ExcessaoBd {
@@ -417,13 +417,13 @@ public class SudachiTokenizer {
 		}
 	}
 
-	private void setVocabularioServices(VocabularioServices vocabServ) {
+	private void setVocabularioServices(VocabularioJaponesServices vocabServ) {
 		this.vocabServ = vocabServ;
 	}
 
 	public void corrigirLancados(FrasesAnkiController cnt) {
 		controller = cnt;
-		vocabServ = new VocabularioServices();
+		vocabServ = new VocabularioJaponesServices();
 
 		List<Vocabulario> lista;
 		try {

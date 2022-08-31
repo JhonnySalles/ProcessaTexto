@@ -5,13 +5,18 @@ import org.jisho.textosJapones.database.dao.implement.MangaDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.ProcessarDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.RevisarDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.VincularDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.VocabularioDaoJDBC;
+import org.jisho.textosJapones.database.dao.implement.VocabularioInglesDaoJDBC;
+import org.jisho.textosJapones.database.dao.implement.VocabularioJaponesDaoJDBC;
 import org.jisho.textosJapones.database.mysql.DB;
 
 public class DaoFactory {
 
-	public static VocabularioDao createVocabularioDao() {
-		return new VocabularioDaoJDBC(DB.getConnection());
+	public static VocabularioDao createVocabularioJaponesDao() {
+		return new VocabularioJaponesDaoJDBC(DB.getConnection());
+	}
+	
+	public static VocabularioDao createVocabularioInglesDao() {
+		return new VocabularioInglesDaoJDBC(DB.getConnection());
 	}
 
 	public static EstatisticaDao createEstatisticaDao() {

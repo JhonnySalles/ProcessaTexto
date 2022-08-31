@@ -14,7 +14,7 @@ import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.JapanDict;
 import org.jisho.textosJapones.processar.Jisho;
 import org.jisho.textosJapones.processar.Kanshudo;
@@ -118,7 +118,7 @@ public class RevisarController implements Initializable {
 	private JFXTextArea txtAreaPortugues;
 
 	private RevisarServices service = new RevisarServices();
-	private VocabularioServices vocabulario = new VocabularioServices();
+	private VocabularioJaponesServices vocabulario = new VocabularioJaponesServices();
 	private List<Revisar> similar;
 	private Revisar revisando;
 	private Vocabulario corrigindo;

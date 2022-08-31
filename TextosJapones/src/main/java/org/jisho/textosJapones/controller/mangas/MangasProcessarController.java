@@ -14,12 +14,14 @@ import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.processar.ProcessarMangas;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
@@ -107,6 +109,9 @@ public class MangasProcessarController implements Initializable {
 	private JFXCheckBox ckbCriarBase;
 
 	@FXML
+	private JFXComboBox<Language> cbLinguagem;
+
+	@FXML
 	private ProgressBar barraProgressoVolumes;
 
 	@FXML
@@ -145,7 +150,16 @@ public class MangasProcessarController implements Initializable {
 
 		treeBases.setDisable(true);
 		MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento dos mangas...");
-		mangas.processarTabelas(TABELAS);
+
+		switch (cbLinguagem.getSelectionModel().getSelectedItem()) {
+			case ENGLISH:
+				mangas.processarTabelasIngles(TABELAS);
+				break;
+			case JAPANESE:
+				mangas.processarTabelasJapones(TABELAS);
+				break;
+			default:
+		}
 	}
 
 	@FXML
@@ -280,6 +294,7 @@ public class MangasProcessarController implements Initializable {
 	private Boolean PROCESSADOS;
 	private String BASE;
 	private String MANGA;
+	private Language LINGUAGEM;
 	private TreeItem<Manga> DADOS;
 
 	private void carregar() {
@@ -291,6 +306,7 @@ public class MangasProcessarController implements Initializable {
 		PROCESSADOS = ckbProcessados.isSelected();
 		BASE = txtBase.getText().trim();
 		MANGA = txtManga.getText().trim();
+		LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
 
 		getBarraProgressoCapitulos().setProgress(-1);
 		getBarraProgressoVolumes().setProgress(-1);
@@ -305,7 +321,7 @@ public class MangasProcessarController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					service = new MangaServices();
-					TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, BASE, MANGA));
+					TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, BASE, LINGUAGEM, MANGA));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();
@@ -440,6 +456,9 @@ public class MangasProcessarController implements Initializable {
 	private Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		cbLinguagem.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
+		cbLinguagem.getSelectionModel().selectFirst();
+
 		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent ke) {

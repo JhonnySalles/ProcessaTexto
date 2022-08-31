@@ -12,6 +12,7 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
+import org.jisho.textosJapones.database.dao.implement.VocabularioInglesDaoJDBC;
 import org.jisho.textosJapones.model.entities.MangaCapitulo;
 import org.jisho.textosJapones.model.entities.MangaPagina;
 import org.jisho.textosJapones.model.entities.MangaTabela;
@@ -26,7 +27,8 @@ import org.jisho.textosJapones.model.enums.Site;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioInglesServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 import org.jisho.textosJapones.util.Util;
@@ -46,7 +48,8 @@ import javafx.concurrent.Task;
 
 public class ProcessarMangas {
 
-	private VocabularioServices vocabularioService = new VocabularioServices();
+	private VocabularioJaponesServices vocabularioJaponesService = new VocabularioJaponesServices();
+	private VocabularioInglesServices vocabularioInglesService = new VocabularioInglesServices();
 	private MangasProcessarController controller;
 	private RevisarServices serviceRevisar = new RevisarServices();
 	private MangaServices serviceManga = new MangaServices();
@@ -77,7 +80,7 @@ public class ProcessarMangas {
 
 	private Boolean error;
 
-	public void processarTabelas(List<MangaTabela> tabelas) {
+	public void processarTabelasJapones(List<MangaTabela> tabelas) {
 		error = false;
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 		progress.getTitulo().setText("Mangas - Processar vocabulário");
@@ -122,9 +125,14 @@ public class ProcessarMangas {
 							for (MangaVolume volume : tabela.getVolumes()) {
 								V++;
 
-								if (!volume.isProcessar()) {
+								if (!volume.isProcessar() || !volume.getLingua().equals(Language.JAPANESE)) {
 									propVolume.set((double) V / tabela.getVolumes().size());
-									updateMessage("IGNORADO - Manga: " + volume.getManga());
+									
+									if (!volume.isProcessar())
+										updateMessage("IGNORADO - Manga: " + volume.getManga());
+									else
+										updateMessage("IGNORADO - Linguagem: " + volume.getLingua());
+									
 									continue;
 								}
 
@@ -331,7 +339,7 @@ public class ProcessarMangas {
 				}
 
 				if (!vocabValida.contains(m.dictionaryForm())) {
-					Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
+					Vocabulario palavra = vocabularioJaponesService.select(m.surface(), m.dictionaryForm());
 
 					if (palavra != null) {
 						MangaVocabulario vocabulario = null;
@@ -346,7 +354,7 @@ public class ProcessarMangas {
 						if (palavra.getFormaBasica().isEmpty()) {
 							palavra.setFormaBasica(m.dictionaryForm());
 							palavra.setLeitura(m.readingForm());
-							vocabularioService.update(palavra);
+							vocabularioJaponesService.update(palavra);
 						}
 
 						validaHistorico.add(m.dictionaryForm());
@@ -421,6 +429,10 @@ public class ProcessarMangas {
 			if (TaskbarProgressbar.isSupported())
 				TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
 		});
+	}
+	
+	public void processarTabelasIngles(List<MangaTabela> tabelas) {
+		
 	}
 
 }

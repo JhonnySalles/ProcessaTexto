@@ -135,7 +135,7 @@ public class VincularDaoJDBC implements VincularDao {
 	public VincularDaoJDBC(Connection conn) {
 		this.conn = conn;
 		Properties props = Configuracao.loadProperties();
-		BASE_MANGA = props.getProperty("dataBase_manga") + ".";
+		BASE_MANGA = props.getProperty("base_manga") + ".";
 	}
 
 	private void insertVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {

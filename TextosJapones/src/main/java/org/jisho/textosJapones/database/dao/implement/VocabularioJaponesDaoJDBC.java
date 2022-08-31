@@ -16,7 +16,7 @@ import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 
-public class VocabularioDaoJDBC implements VocabularioDao {
+public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
 	private Connection conn;
 
@@ -31,7 +31,7 @@ public class VocabularioDaoJDBC implements VocabularioDao {
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
 	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
 
-	public VocabularioDaoJDBC(Connection conn) {
+	public VocabularioJaponesDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
 

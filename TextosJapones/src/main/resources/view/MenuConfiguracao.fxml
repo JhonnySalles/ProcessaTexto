@@ -18,7 +18,7 @@
             <JFXPasswordField fx:id="pswSenha" focusColor="#71afe5" labelFloat="true" promptText="Senha" styleClass="texto-stilo" unFocusColor="#106ebe" />
             <JFXTextField fx:id="txtServer" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Server" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
             <JFXTextField fx:id="txtPorta" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="70.0" promptText="Porta" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
-            <JFXTextField fx:id="txtDataBase" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
+            <JFXTextField fx:id="txtDataBaseJapones" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base Japonês" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
             <HBox>
                <children>
                   <JFXTextField fx:id="txtCaminhoMysql" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho Mysql" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
@@ -33,7 +33,6 @@
                   </JFXButton>
                </children>
             </HBox>
-            <JFXTextField fx:id="txtDataBaseManga" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base Manga" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
             <HBox>
                <children>
                   <JFXTextField fx:id="txtCaminhoWinrar" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho Winrar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
@@ -48,6 +47,8 @@
                   </JFXButton>
                </children>
             </HBox>
+            <JFXTextField fx:id="txtDataBaseManga" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base Manga" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
+            <JFXTextField fx:id="txtDataBaseIngles" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Data base Ingles" styleClass="texto-stilo" unFocusColor="#106ebe" />
          </children>
       </VBox>
    </children>

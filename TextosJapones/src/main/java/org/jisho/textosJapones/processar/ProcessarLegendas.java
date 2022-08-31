@@ -16,7 +16,7 @@ import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarServices;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 
 import com.worksap.nlp.sudachi.Dictionary;
@@ -29,7 +29,7 @@ import javafx.concurrent.Task;
 
 public class ProcessarLegendas {
 
-	private VocabularioServices vocabularioService = new VocabularioServices();
+	private VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
 	private RevisarServices service = new RevisarServices();
 	private LegendasImportarController controller;
 

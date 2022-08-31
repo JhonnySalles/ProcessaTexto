@@ -28,7 +28,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 	private Connection conn;
 	private String BASE_MANGA;
-
+	
 	final private String CREATE_VOLUMES = "CREATE TABLE %s_volumes (id int(11) NOT NULL AUTO_INCREMENT, manga varchar(250) DEFAULT NULL, "
 			+ "  volume int(4) DEFAULT NULL, linguagem varchar(4) DEFAULT NULL, arquivo varchar(250) DEFAULT NULL, vocabulario longtext, "
 			+ "  is_processado tinyint(1) DEFAULT '0', PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
@@ -118,7 +118,14 @@ public class MangaDaoJDBC implements MangaDao {
 	public MangaDaoJDBC(Connection conn) {
 		this.conn = conn;
 		Properties props = Configuracao.loadProperties();
-		BASE_MANGA = props.getProperty("dataBase_manga") + ".";
+		BASE_MANGA = props.getProperty("base_manga") + ".";
+	}
+	
+	private List<Language> getLinguagem(Language... linguagem) {
+		List<Language> list = new ArrayList<Language>();
+		for (Language lang : linguagem)
+			list.add(lang);
+		return list;
 	}
 
 	@Override
@@ -430,9 +437,9 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeResultSet(rs);
 		}
 	}
-
+	
 	public List<MangaVolume> selectVolumes(String base, Boolean todos, String manga, Integer volume, Float capitulo,
-			Language linguagem, Boolean inverterTexto) throws ExcessaoBd {
+			List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -441,9 +448,14 @@ public class MangaDaoJDBC implements MangaDao {
 				inner = String.format(INNER_VOLUMES, BASE_MANGA + base, BASE_MANGA + base);
 
 			String condicao = " 1>0 ";
-
-			if (linguagem != null)
-				condicao += " AND VOL.linguagem = '" + linguagem.getSigla() + "' ";
+			
+			if (linguagem != null && !linguagem.isEmpty()) {
+				String lang = "";
+				for (Language lg: linguagem)
+					lang += " VOL.linguagem = '" + lg.getSigla() + "' OR ";
+				
+				condicao += " AND (" + lang.substring(0, lang.lastIndexOf(" OR ")) + ")";
+			}
 
 			if (manga != null && !manga.trim().isEmpty())
 				condicao += " AND VOL.manga LIKE " + '"' + manga.trim() + '"';
@@ -532,9 +544,10 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeResultSet(rs);
 		}
 	}
+	
 
 	public List<MangaCapitulo> selectCapitulos(String base, Boolean todos, Long idVolume, Float capitulo,
-			Language linguagem, Boolean inverterTexto) throws ExcessaoBd {
+			List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -544,8 +557,13 @@ public class MangaDaoJDBC implements MangaDao {
 
 			String condicao = " 1>0 ";
 
-			if (linguagem != null)
-				condicao += " AND CAP.linguagem = '" + linguagem.getSigla() + "' ";
+			if (linguagem != null && !linguagem.isEmpty()) {
+				String lang = "";
+				for (Language lg: linguagem)
+					lang += " CAP.linguagem = '" + lg.getSigla() + "' OR ";
+				
+				condicao += " AND (" + lang.substring(0, lang.lastIndexOf(" OR ")) + ")";
+			}
 
 			if (capitulo != null && capitulo > 0)
 				condicao += " AND CAP.capitulo = " + String.valueOf(capitulo);
@@ -810,7 +828,7 @@ public class MangaDaoJDBC implements MangaDao {
 
 			while (rs.next()) {
 				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), true, manga, volume, capitulo,
-						linguagem, false);
+						getLinguagem(linguagem), false);
 				if (volumes.size() > 0)
 					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
 			}
@@ -853,17 +871,17 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga) throws ExcessaoBd {
-		return selectTabelas(todos, base, manga, 0, 0F);
+	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga) throws ExcessaoBd {
+		return selectTabelas(todos, base, linguagem, manga, 0, 0F);
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume) throws ExcessaoBd {
-		return selectTabelas(todos, base, manga, volume, 0F);
+	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd {
+		return selectTabelas(todos, base, linguagem, manga, volume, 0F);
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, String manga, Integer volume, Float capitulo)
+	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -882,7 +900,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next()) {
 				createBaseVocabulario(rs.getString("Tabela"));
 				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), todos, manga, volume, capitulo,
-						Language.JAPANESE, false);
+						getLinguagem(linguagem), false);
 				if (volumes.size() > 0)
 					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
 			}
@@ -1414,7 +1432,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next()) {
 				createBaseVocabulario(rs.getString("Tabela"));
 				List<MangaVolume> volumes = selectVolumes(rs.getString("Tabela"), true, manga, volume, capitulo,
-						linguagem, inverterTexto);
+						getLinguagem(linguagem), inverterTexto);
 				if (volumes.size() > 0)
 					list.add(new MangaTabela(rs.getString("Tabela"), volumes));
 			}

@@ -23,7 +23,7 @@ public class Backup {
 
 	private static void carregaCampos() throws Exception {
 		ConexaoMysql.getDadosConexao();
-		if (ConexaoMysql.getDataBase().isEmpty())
+		if (ConexaoMysql.getDataBaseManga().isEmpty())
 			throw new Exception("Erro, não existe nenhuma base nos arquivos de configuração.");
 
 		if (ConexaoMysql.getCaminhoMysql().isEmpty())
@@ -42,15 +42,15 @@ public class Backup {
 		long time1, time2, time;
 		time1 = System.currentTimeMillis();
 		ProcessBuilder pb = new ProcessBuilder(commando, "--user=" + ConexaoMysql.getUser(),
-				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBase(),
-				"--result-file=" + caminho.getPath() + SEPARATOR + ConexaoMysql.getDataBase() + ".sql");
+				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBaseManga(),
+				"--result-file=" + caminho.getPath() + SEPARATOR + ConexaoMysql.getDataBaseManga() + ".sql");
 
 		pb.start();
 		time2 = System.currentTimeMillis();
 		time = (time2 - time1) / 1000;
 
 		return "Backup realizado com sucesso. Tempo decorrido " + time + "s.\n" + caminho.getPath() + SEPARATOR
-				+ "Backup" + SEPARATOR + ConexaoMysql.getDataBase() + ".sql";
+				+ "Backup" + SEPARATOR + ConexaoMysql.getDataBaseManga() + ".sql";
 	}
 
 	private static String processaImportacao(File arquivo) throws IOException {
@@ -59,7 +59,7 @@ public class Backup {
 		time1 = System.currentTimeMillis();
 
 		ProcessBuilder pb = new ProcessBuilder(commando, "--user=" + ConexaoMysql.getUser(),
-				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBase(), "-e",
+				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBaseManga(), "-e",
 				" source " + arquivo.getAbsolutePath());
 
 		pb.start();

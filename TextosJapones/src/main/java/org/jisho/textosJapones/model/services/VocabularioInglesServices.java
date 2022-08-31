@@ -8,15 +8,11 @@ import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
-public class VocabularioServices {
+public class VocabularioInglesServices {
 
-	private VocabularioDao vocabularioDao = DaoFactory.createVocabularioDao();
+	private VocabularioDao vocabularioDao = DaoFactory.createVocabularioInglesDao();
 
-	public List<Vocabulario> selectAll() throws ExcessaoBd {
-		return vocabularioDao.selectAll();
-	}
-
-	public VocabularioServices insertOrUpdate(List<Vocabulario> lista) throws ExcessaoBd {
+	public VocabularioInglesServices insertOrUpdate(List<Vocabulario> lista) throws ExcessaoBd {
 		for (Vocabulario obj : lista) {
 			if (vocabularioDao.exist(obj.getVocabulario()))
 				vocabularioDao.update(obj);
@@ -27,7 +23,7 @@ public class VocabularioServices {
 		return this;
 	}
 
-	public VocabularioServices insertOrUpdate(Vocabulario obj) throws ExcessaoBd {
+	public VocabularioInglesServices insertOrUpdate(Vocabulario obj) throws ExcessaoBd {
 		if (vocabularioDao.exist(obj.getVocabulario()))
 			vocabularioDao.update(obj);
 		else
@@ -36,14 +32,14 @@ public class VocabularioServices {
 		return this;
 	}
 
-	public VocabularioServices insert(Vocabulario obj) throws ExcessaoBd {
+	public VocabularioInglesServices insert(Vocabulario obj) throws ExcessaoBd {
 		if (!obj.getTraducao().isEmpty())
 			vocabularioDao.insert(obj);
 
 		return this;
 	}
 
-	public VocabularioServices insert(List<Vocabulario> lista) throws ExcessaoBd {
+	public VocabularioInglesServices insert(List<Vocabulario> lista) throws ExcessaoBd {
 		for (Vocabulario obj : lista)
 			insert(obj);
 
@@ -55,7 +51,7 @@ public class VocabularioServices {
 			insertExclusao(exclusao);
 	}
 
-	public VocabularioServices insertExclusao(String palavra) throws ExcessaoBd {
+	public VocabularioInglesServices insertExclusao(String palavra) throws ExcessaoBd {
 		vocabularioDao.insertExclusao(palavra.trim());
 		return this;
 	}
@@ -78,10 +74,6 @@ public class VocabularioServices {
 
 	public void delete(Vocabulario obj) throws ExcessaoBd {
 		vocabularioDao.delete(obj);
-	}
-
-	public Vocabulario select(String vocabulario, String base) throws ExcessaoBd {
-		return vocabularioDao.select(vocabulario, base);
 	}
 
 	public Vocabulario select(String vocabulario) throws ExcessaoBd {

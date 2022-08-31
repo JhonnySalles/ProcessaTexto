@@ -11,7 +11,7 @@ import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.VocabularioServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
@@ -52,7 +52,7 @@ public class CorrecaoController implements Initializable {
 
 	private static JFXDialog dialog;
 
-	private VocabularioServices vocabServ;
+	private VocabularioJaponesServices vocabServ;
 	private Vocabulario vocabulario;
 	private Robot robot = new Robot();
 
@@ -65,7 +65,7 @@ public class CorrecaoController implements Initializable {
 	}
 
 	private CorrecaoController servico() {
-		vocabServ = new VocabularioServices();
+		vocabServ = new VocabularioJaponesServices();
 		return this;
 	}
 
