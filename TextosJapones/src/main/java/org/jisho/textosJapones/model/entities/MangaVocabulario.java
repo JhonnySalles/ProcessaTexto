@@ -62,6 +62,14 @@ public class MangaVocabulario {
 		this.revisado = true;
 	}
 	
+	public MangaVocabulario(String palavra, String significado) {
+		this.id = 0L;
+		this.palavra = palavra;
+		this.significado = significado;
+		this.leitura = "";
+		this.revisado = true;
+	}
+	
 	public MangaVocabulario(String palavra, String significado, String leitura) {
 		this.id = 0L;
 		this.palavra = palavra;

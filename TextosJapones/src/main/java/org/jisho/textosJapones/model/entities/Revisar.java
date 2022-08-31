@@ -109,6 +109,18 @@ public class Revisar {
 		this.manga = false;
 		this.revisado.setSelected(false);
 	}
+	
+	public Revisar(String vocabulario, Boolean revisado, Boolean isAnime,
+			Boolean isManga) {
+		this.vocabulario = vocabulario;
+		this.leitura = "";
+		this.formaBasica = "";
+		this.traducao = "";
+		this.ingles = "";
+		this.anime = isAnime;
+		this.manga = isManga;
+		this.revisado.setSelected(revisado);
+	}
 
 	public Revisar(String vocabulario, String formaBasica, String leitura, Boolean revisado, Boolean isAnime,
 			Boolean isManga) {

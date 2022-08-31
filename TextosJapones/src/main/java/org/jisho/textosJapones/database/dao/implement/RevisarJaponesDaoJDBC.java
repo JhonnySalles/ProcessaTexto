@@ -14,7 +14,7 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 
-public class RevisarDaoJDBC implements RevisarDao {
+public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 	private Connection conn;
 
@@ -34,7 +34,7 @@ public class RevisarDaoJDBC implements RevisarDao {
 	final private String INCREMENTA_VEZES_APARECE = "UPDATE revisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
 	final private String SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;";
 
-	public RevisarDaoJDBC(Connection conn) {
+	public RevisarJaponesDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
 

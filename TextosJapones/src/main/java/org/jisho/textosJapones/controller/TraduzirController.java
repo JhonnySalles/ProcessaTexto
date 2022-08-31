@@ -13,7 +13,7 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.processar.JapanDict;
 import org.jisho.textosJapones.processar.Jisho;
 import org.jisho.textosJapones.processar.Kanshudo;
@@ -97,7 +97,7 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private TableColumn<Revisar, CheckBox> tcRevisado;
 
-	private RevisarServices service = new RevisarServices();
+	private RevisarJaponesServices service = new RevisarJaponesServices();
 	private ProcessarPalavra processar = new ProcessarPalavra();
 
 	@FXML

@@ -25,7 +25,7 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Tipo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.JapanDict;
 import org.jisho.textosJapones.processar.Jisho;
@@ -468,7 +468,7 @@ public class SudachiTokenizer {
 					if (DESATIVAR)
 						return null;
 
-					RevisarServices service = new RevisarServices();
+					RevisarJaponesServices service = new RevisarJaponesServices();
 
 					i = 0;
 					max = vocabNovo.size();

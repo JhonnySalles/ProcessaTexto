@@ -7,9 +7,9 @@ import org.jisho.textosJapones.database.dao.RevisarDao;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
-public class RevisarServices {
+public class RevisarInglesServices {
 
-	private RevisarDao revisarDao = DaoFactory.createRevisarDao();
+	private RevisarDao revisarDao = DaoFactory.createRevisarInglesDao();
 
 	public List<Revisar> selectAll() throws ExcessaoBd {
 		return revisarDao.selectAll();
@@ -19,7 +19,7 @@ public class RevisarServices {
 		return revisarDao.selectTraduzir(quantidadeRegistros);
 	}
 
-	public RevisarServices insertOrUpdate(List<Revisar> lista) throws ExcessaoBd {
+	public RevisarInglesServices insertOrUpdate(List<Revisar> lista) throws ExcessaoBd {
 		for (Revisar obj : lista) {
 			if (revisarDao.exist(obj.getVocabulario()))
 				revisarDao.update(obj);
@@ -30,7 +30,7 @@ public class RevisarServices {
 		return this;
 	}
 
-	public RevisarServices insertOrUpdate(Revisar obj) throws ExcessaoBd {
+	public RevisarInglesServices insertOrUpdate(Revisar obj) throws ExcessaoBd {
 		if (revisarDao.exist(obj.getVocabulario()))
 			revisarDao.update(obj);
 		else
@@ -39,12 +39,12 @@ public class RevisarServices {
 		return this;
 	}
 
-	public RevisarServices insert(Revisar obj) throws ExcessaoBd {
+	public RevisarInglesServices insert(Revisar obj) throws ExcessaoBd {
 		revisarDao.insert(obj);
 		return this;
 	}
 
-	public RevisarServices insert(List<Revisar> lista) throws ExcessaoBd {
+	public RevisarInglesServices insert(List<Revisar> lista) throws ExcessaoBd {
 		for (Revisar obj : lista)
 			revisarDao.insert(obj);
 
@@ -68,10 +68,6 @@ public class RevisarServices {
 			delete(obj);
 	}
 
-	public Revisar select(String vocabulario, String base) throws ExcessaoBd {
-		return revisarDao.select(vocabulario, base);
-	}
-
 	public Revisar select(String vocabulario) throws ExcessaoBd {
 		return revisarDao.select(vocabulario);
 	}
@@ -90,10 +86,6 @@ public class RevisarServices {
 
 	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
 		return revisarDao.selectRevisar(pesquisar, isAnime, isManga);
-	}
-
-	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
-		return revisarDao.selectSimilar(vocabulario, ingles);
 	}
 
 	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {

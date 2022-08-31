@@ -3,7 +3,8 @@ package org.jisho.textosJapones.database.dao;
 import org.jisho.textosJapones.database.dao.implement.EstatisticaDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.MangaDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.ProcessarDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.RevisarDaoJDBC;
+import org.jisho.textosJapones.database.dao.implement.RevisarInglesDaoJDBC;
+import org.jisho.textosJapones.database.dao.implement.RevisarJaponesDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.VincularDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.VocabularioInglesDaoJDBC;
 import org.jisho.textosJapones.database.dao.implement.VocabularioJaponesDaoJDBC;
@@ -23,8 +24,12 @@ public class DaoFactory {
 		return new EstatisticaDaoJDBC(DB.getConnection());
 	}
 
-	public static RevisarDao createRevisarDao() {
-		return new RevisarDaoJDBC(DB.getConnection());
+	public static RevisarDao createRevisarJaponesDao() {
+		return new RevisarJaponesDaoJDBC(DB.getConnection());
+	}
+	
+	public static RevisarDao createRevisarInglesDao() {
+		return new RevisarInglesDaoJDBC(DB.getConnection());
 	}
 
 	public static ProcessarDao createProcessarDao() {

@@ -21,14 +21,14 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 	private Connection conn;
 	private String BASE_INGLES;
 
-	final private String INSERT = "INSERT IGNORE INTO %s.vocabulario (vocabulario, leitura, traducao) VALUES (?,?,?,?);";
-	final private String UPDATE = "UPDATE %s.vocabulario SET leitura = ?, traducao = ? WHERE vocabulario = ?;";
-	final private String DELETE = "DELETE FROM %s.vocabulario WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, leitura, traducao FROM %s.vocabulario WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM %s.vocabulario WHERE vocabulario = ?;";
+	final private String INSERT = "INSERT IGNORE INTO %svocabulario (vocabulario, leitura, traducao) VALUES (?,?,?,?);";
+	final private String UPDATE = "UPDATE %svocabulario SET leitura = ?, traducao = ? WHERE vocabulario = ?;";
+	final private String DELETE = "DELETE FROM %svocabulario WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT vocabulario, leitura, traducao FROM %svocabulario WHERE vocabulario = ?;";
+	final private String EXIST = "SELECT vocabulario FROM %svocabulario WHERE vocabulario = ?;";
 	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO %s.exclusao (palavra) VALUES (?)";
-	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM %s.exclusao";
-	final private String SELECT_EXCLUSAO = "SELECT palavra FROM %s.exclusao WHERE palavra = ? ";
+	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM %sexclusao";
+	final private String SELECT_EXCLUSAO = "SELECT palavra FROM %sexclusao WHERE palavra = ? ";
 
 	public VocabularioInglesDaoJDBC(Connection conn) {
 		this.conn = conn;

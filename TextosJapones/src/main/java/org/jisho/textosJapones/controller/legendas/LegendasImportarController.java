@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarServices;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 
 import com.jfoenix.controls.JFXButton;
@@ -41,7 +41,7 @@ public class LegendasImportarController implements Initializable {
 	@FXML
 	private TableColumn<String, String> tcFrase;
 
-	private RevisarServices service = new RevisarServices();
+	private RevisarJaponesServices service = new RevisarJaponesServices();
 	private ProcessarLegendas legendas;
 	private ObservableList<String> frases;
 
