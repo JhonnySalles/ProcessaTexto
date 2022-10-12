@@ -33,13 +33,13 @@ public class MangaServices {
 		return mangaDao.selectAll(base, manga, volume, capitulo, linguagem);
 	}
 
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga) throws ExcessaoBd {
-		return mangaDao.selectTabelas(todos, base, linguagem, manga);
+	public List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga) throws ExcessaoBd {
+		return mangaDao.selectTabelas(todos, isLike, base, linguagem, manga);
 	}
 
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume, Float capitulo)
+	public List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd {
-		return mangaDao.selectTabelas(todos, base, linguagem, manga, volume, capitulo);
+		return mangaDao.selectTabelas(todos, isLike, base, linguagem, manga, volume, capitulo);
 	}
 
 	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,

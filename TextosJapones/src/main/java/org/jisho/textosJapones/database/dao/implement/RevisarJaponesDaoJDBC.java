@@ -254,6 +254,12 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 		}
 		return false;
 	}
+	
+	@Override
+	public String isValido(String vocabulario) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public List<String> selectFrases(String select) throws ExcessaoBd {

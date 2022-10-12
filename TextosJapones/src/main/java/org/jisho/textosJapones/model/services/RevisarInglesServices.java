@@ -75,6 +75,10 @@ public class RevisarInglesServices {
 	public boolean existe(String palavra) throws ExcessaoBd {
 		return revisarDao.exist(palavra);
 	}
+	
+	public String isValido(String palavra) throws ExcessaoBd {
+		return revisarDao.isValido(palavra);
+	}
 
 	public List<String> selectFrases(String select) throws ExcessaoBd {
 		return revisarDao.selectFrases(select);

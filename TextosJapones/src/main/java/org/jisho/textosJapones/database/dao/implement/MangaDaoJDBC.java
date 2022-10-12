@@ -888,25 +888,29 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga) throws ExcessaoBd {
-		return selectTabelas(todos, base, linguagem, manga, 0, 0F);
+	public List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga) throws ExcessaoBd {
+		return selectTabelas(todos, isLike, base, linguagem, manga, 0, 0F);
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd {
-		return selectTabelas(todos, base, linguagem, manga, volume, 0F);
+	public List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd {
+		return selectTabelas(todos, isLike, base, linguagem, manga, volume, 0F);
 	}
 
 	@Override
-	public List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume, Float capitulo)
+	public List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 			String condicao = "1>0 ";
 
-			if (base != null && !base.trim().isEmpty())
-				condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
+			if (base != null && !base.trim().isEmpty()) {
+				if (isLike)
+					condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
+				else
+					condicao += " AND Table_Name LIKE '" + base.trim() + "'";
+			}
 
 			st = conn.prepareStatement(
 					String.format(SELECT_TABELAS, BASE_MANGA.substring(0, BASE_MANGA.length() - 1), condicao));

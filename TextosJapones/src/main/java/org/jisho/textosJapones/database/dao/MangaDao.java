@@ -39,11 +39,11 @@ public interface MangaDao {
 
 	List<MangaTabela> selectTabelas(Boolean todos) throws ExcessaoBd;
 
-	List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga) throws ExcessaoBd;
+	List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga) throws ExcessaoBd;
 
-	List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd;
+	List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd;
 
-	List<MangaTabela> selectTabelas(Boolean todos, String base, Language linguagem, String manga, Integer volume, Float capitulo)
+	List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume, Float capitulo)
 			throws ExcessaoBd;
 
 	List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto)

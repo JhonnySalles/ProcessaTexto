@@ -225,9 +225,13 @@ public class RevisarController implements Initializable {
 		}
 		corrigindo = null;
 		revisando = null;
+		limpaTextos();
+		txtPesquisar.setText("");
+	}
+	
+	private void limpaTextos() {
 		txtVocabulario.setText("");
 		txtSimilar.setText("");
-		txtPesquisar.setText("");
 		txtAreaIngles.setText("");
 		txtAreaPortugues.setText("");
 	}
@@ -235,7 +239,7 @@ public class RevisarController implements Initializable {
 	private Boolean pesquisaCorrecao(String pesquisar) throws ExcessaoBd {
 		corrigindo = vocabulario.select(pesquisar);
 		if (corrigindo != null && !corrigindo.getTraducao().isEmpty()) {
-			txtSimilar.setText("");
+			limpaTextos();
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
 				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
@@ -249,6 +253,7 @@ public class RevisarController implements Initializable {
 	private Boolean pesquisaRevisao(String pesquisar) throws ExcessaoBd {
 		revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected());
 		if (revisando != null) {
+			limpaTextos();
 			if (cbSimilar.isSelected())
 				similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
 			else

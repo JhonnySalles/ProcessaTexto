@@ -321,7 +321,7 @@ public class MangasProcessarController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					service = new MangaServices();
-					TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, BASE, LINGUAGEM, MANGA));
+					TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, false, BASE, LINGUAGEM, MANGA));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
 					e.printStackTrace();

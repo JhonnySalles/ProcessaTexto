@@ -433,6 +433,8 @@ public class ProcessarMangas {
 				TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
 		});
 	}
+	
+	private Set<String> palavraValida = new HashSet<>();
 
 	public void processarTabelasIngles(List<MangaTabela> tabelas) {
 		error = false;
@@ -553,6 +555,17 @@ public class ProcessarMangas {
 														vocabCapitulo.add(vocabulario);
 														vocabVolume.add(vocabulario);
 													} else {
+														
+														if (!palavraValida.contains(palavra.toLowerCase())) {
+															String valido = serviceInglesRevisar.isValido(palavra);
+															
+															if (valido == null)
+																continue;
+															
+															palavraValida.add(valido);
+														}
+														
+														
 														Revisar revisar = serviceInglesRevisar.select(palavra);
 														if (revisar == null) {
 															revisar = new Revisar(palavra, false, false, true);

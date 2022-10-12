@@ -16,6 +16,8 @@ public interface RevisarDao {
 	void delete(String vocabulario) throws ExcessaoBd;
 
 	boolean exist(String vocabulario);
+	
+	String isValido(String vocabulario);
 
 	Revisar select(String vocabulario, String base) throws ExcessaoBd;
 
