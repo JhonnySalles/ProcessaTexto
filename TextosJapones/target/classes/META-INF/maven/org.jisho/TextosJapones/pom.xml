@@ -3,7 +3,7 @@
 
 	<groupId>org.jisho</groupId>
 	<artifactId>TextosJapones</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.10-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>TextosJapones</name>
@@ -54,7 +54,7 @@
 						<option>--add-opens</option>
 						<option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
 						<option>--add-opens</option>
-						<option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
+						<option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>						
 						<option>--add-exports</option>
 						<option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
 						<option>--add-exports</option>

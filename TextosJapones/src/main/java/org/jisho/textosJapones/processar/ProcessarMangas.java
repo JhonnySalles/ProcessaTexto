@@ -470,6 +470,8 @@ public class ProcessarMangas {
 					for (MangaTabela tabela : tabelas) {
 						if (!tabela.isProcessar())
 							continue;
+						
+						palavraValida.clear();
 
 						V = 0;
 						for (MangaVolume volume : tabela.getVolumes()) {
@@ -516,7 +518,7 @@ public class ProcessarMangas {
 
 									vocabPagina.clear();
 									vocabValida.clear();
-									for (MangaTexto texto : pagina.getTextos())
+									for (MangaTexto texto : pagina.getTextos()) {
 										if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
 											Set<String> palavras = Stream.of(texto.getTexto().split(" "))
 													.map(txt -> txt.replaceAll("\\W", ""))
@@ -630,6 +632,14 @@ public class ProcessarMangas {
 											}
 
 										}
+										
+										Progress++;
+										propTabela.set((double) Progress / Size);
+										Platform.runLater(() -> {
+											if (TaskbarProgressbar.isSupported())
+												TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
+										});
+								}
 
 									pagina.setVocabularios(vocabPagina);
 									pagina.setProcessado(true);

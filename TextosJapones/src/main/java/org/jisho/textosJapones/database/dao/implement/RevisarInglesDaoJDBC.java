@@ -25,8 +25,8 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	final private String DELETE = "DELETE FROM %srevisar WHERE vocabulario = ?;";
 	final private String SELECT = "SELECT vocabulario, leitura, traducao, revisado, isAnime, isManga FROM %srevisar ";
 	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
-	final private String IS_VALIDO = "SELECT palavra FROM valido WHERE palavra LIKE ?;";
+	final private String EXIST = "SELECT vocabulario FROM %srevisar WHERE vocabulario = ?;";
+	final private String IS_VALIDO = "SELECT palavra FROM %svalido WHERE palavra LIKE ?;";
 	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
 	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
 	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM %srevisar";
