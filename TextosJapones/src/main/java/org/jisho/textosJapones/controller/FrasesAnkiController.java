@@ -21,6 +21,7 @@ import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 import org.jisho.textosJapones.util.Util;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
@@ -75,6 +76,9 @@ public class FrasesAnkiController implements Initializable {
 
 	@FXML
 	private JFXButton btnImportar;
+	
+	@FXML
+	private JFXCheckBox ckListaExcel;
 
 	@FXML
 	private JFXComboBox<Tipo> cbTipo;
@@ -231,6 +235,10 @@ public class FrasesAnkiController implements Initializable {
 
 	public void setAviso(String aviso) {
 		Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", aviso);
+	}
+	
+	public Boolean isListaExcel() {
+		return ckListaExcel.isSelected();
 	}
 
 	public void setVocabulario(List<Vocabulario> lista) {

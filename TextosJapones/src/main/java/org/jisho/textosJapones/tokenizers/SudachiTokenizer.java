@@ -252,10 +252,12 @@ public class SudachiTokenizer {
 		MenuPrincipalController.getController().setAviso("Sudachi - Processar vocabulário");
 		Task<Void> processar = new Task<Void>() {
 			String[] palavras = { "" };
+			String linha = "";
 			String vocabulario = "";
 			Dicionario dictionario = Dicionario.FULL;
 			SplitMode mode = SplitMode.C;
 			boolean erro = false;
+			boolean isExcel = false;
 
 			@Override
 			public Void call() throws IOException, InterruptedException {
@@ -269,6 +271,7 @@ public class SudachiTokenizer {
 					dictionario = MenuPrincipalController.getController().getDicionario();
 					mode = getModo(MenuPrincipalController.getController().getModo());
 					google = MenuPrincipalController.getController().getContaGoogle();
+					isExcel = controller.isListaExcel();
 					controller.limpaVocabulario();
 					controller.desabilitaBotoes();
 				});
@@ -281,12 +284,17 @@ public class SudachiTokenizer {
 					max = palavras.length;
 
 					for (String txt : palavras) {
+						Platform.runLater(() -> {
+							MenuPrincipalController.getController().getLblLog().setText("Processando vocabulário " + txt + " - " + i + " de " + max);
+						});
+					
 						updateProgress(i, max);
 						atualizaBarraWindows.run();
 
 						i++;
 						repetido.clear();
 						if (!txt.trim().isEmpty()) {
+							linha = "";
 							significado = "";
 							links = "";
 							frase = TanoshiJapanese.getFrase(txt.trim());
@@ -295,18 +303,34 @@ public class SudachiTokenizer {
 									String processado = processaTokenizer(mode, frase[i][0], false);
 									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), frase[i][1], google);
-
-									vocabulario += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
-									significado += processado + "\n\n" + traduzido + "\n\n";
-									links += (!frase[i][2].isEmpty() ? frase[i][2] + "\n" : "");
+									
+									if (isExcel) {
+										linha += (i == 0 ? txt + ";" : "") + frase[i][0] + "<br><br>";
+										significado += processado + "<br><br>" + traduzido + "<br><br>";
+										links += (!frase[i][2].isEmpty() ? frase[i][2] + "<br>" : "");
+									} else {
+										linha += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
+										significado += processado + "\n\n" + traduzido + "\n\n";
+										links += (!frase[i][2].isEmpty() ? frase[i][2] + "\n" : "");
+									}
 								} else {
-									if (i == 0)
-										vocabulario += txt + "\n\n" + "***" + "\n\n";
+									if (i == 0) {
+										if (isExcel) 
+											linha = txt + ";" + "***";
+										else
+											linha = txt + "\n\n" + "***" + "\n\n";
+									}
 								}
 								if (DESATIVAR)
 									return null;
 							}
-							vocabulario += significado + links + "\n" + "-".repeat(10) + "\n";
+							
+							if (isExcel)
+								linha += ";" + significado + ";" + links + "\n";
+							else
+								linha += significado + links + "\n" + "-".repeat(10) + "\n";
+							
+							vocabulario += linha;
 						}
 					}
 				} catch (IOException e) {
@@ -334,6 +358,8 @@ public class SudachiTokenizer {
 						controller.setVocabulario(vocabNovo);
 						controller.setTextoDestino(vocabulario);
 						controller.habilitaBotoes();
+						
+						MenuPrincipalController.getController().getLblLog().setText("");
 					});
 
 					if (erro)
