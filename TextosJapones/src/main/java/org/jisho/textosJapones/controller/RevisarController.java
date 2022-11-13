@@ -3,7 +3,6 @@ package org.jisho.textosJapones.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -196,24 +195,10 @@ public class RevisarController implements Initializable {
 		if (txtAreaPortugues.getText().isEmpty())
 			return;
 
-		if (cbDuplicados.isSelected()) {
-			String separador = null;
-
-			if (txtAreaPortugues.getText().contains(";"))
-				separador = "\\;";
-			else if (txtAreaPortugues.getText().contains(","))
-				separador = "\\,";
-
-			if (separador != null) {
-				String[] split = txtAreaPortugues.getText().toLowerCase().split(separador);
-				split[split.length - 1] = split[split.length - 1].replace(".", "");
-				split = Arrays.stream(split).map(String::trim).toArray(String[]::new);
-				String limpo = Arrays.stream(split).distinct().collect(Collectors.joining(", "));
-				txtAreaPortugues.setText(limpo + ".");
-			}
-		}
-
-		txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));
+		if (cbDuplicados.isSelected())
+			txtAreaPortugues.setText(Util.removeDuplicate(txtAreaPortugues.getText()));
+		else
+			txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));
 	}
 
 	private void limpaCampos() {
@@ -228,7 +213,7 @@ public class RevisarController implements Initializable {
 		limpaTextos();
 		txtPesquisar.setText("");
 	}
-	
+
 	private void limpaTextos() {
 		txtVocabulario.setText("");
 		txtSimilar.setText("");

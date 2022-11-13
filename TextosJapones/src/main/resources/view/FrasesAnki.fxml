@@ -47,7 +47,7 @@
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
                                        <children>
                                           <JFXButton fx:id="btnProcessar" focusTraversable="false" onAction="#onBtnProcessar" prefHeight="25.0" prefWidth="103.0" styleClass="background-White1" text="Processar lista" />
-                                          <JFXCheckBox fx:id="ckListaExcel" checkedColor="#71afe5" text="Lista em excel" textFill="WHITE" unCheckedColor="#106ebe" />
+                                          <JFXButton fx:id="btnFormatarTabela" focusTraversable="false" onAction="#onBtnFormatarLista" prefHeight="25.0" prefWidth="110.0" styleClass="background-White1" text="Formatar tabela" />
                                           <JFXButton fx:id="btnSalvar" focusTraversable="false" onAction="#onBtnSalvar" prefHeight="25.0" prefWidth="144.0" styleClass="background-White1" text="Salvar tabela">
                                              <graphic>
                                                 <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
@@ -57,6 +57,7 @@
                                                 </ImageView>
                                              </graphic>
                                           </JFXButton>
+                                          <JFXCheckBox fx:id="ckListaExcel" checkedColor="#71afe5" text="Lista em excel" textFill="WHITE" unCheckedColor="#106ebe" />
                                        </children>
                                     </HBox>
                                     <HBox spacing="10.0">
@@ -69,11 +70,20 @@
                                           <JFXTextField fx:id="txtExclusoes" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="230.0" promptText="Exclusões" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                                        </children>
                                     </HBox>
-                                    <Label fx:id="lblExclusoes" textFill="#71afe5">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <Label fx:id="lblExclusoes" textFill="#71afe5">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <Label fx:id="lblRegistros" alignment="CENTER_RIGHT" minWidth="70.0" text="Vocab.: 0" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
                                  </children>
                               </VBox>
                            </children>
@@ -99,7 +109,8 @@
                                     <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="131.0" prefWidth="479.0">
                                        <columns>
                                           <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
-                                          <TableColumn fx:id="tcTraducao" prefWidth="260.0" text="Tradução" />
+                                          <TableColumn fx:id="tcTraducao" prefWidth="300.0" text="Tradução" />
+                                          <TableColumn fx:id="tcIngles" prefWidth="150.0" text="Inglês" />
                                        </columns>
                                        <styleClass>
                                           <String fx:value="accelerator-text" />

@@ -10,12 +10,14 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
@@ -38,6 +40,26 @@ public class Util {
 
 	final public static DataFormat VINCULO_ITEM_FORMAT = new DataFormat("custom.item.vinculo");
 	final public static DataFormat NUMERO_PAGINA_ITEM_FORMAT = new DataFormat("custom.item.numero.pagina");
+	
+	public static String removeDuplicate(String texto) {
+		String formatado = texto;
+		String separador = null;
+
+		if (formatado.contains(";"))
+			separador = "\\;";
+		else if (formatado.contains(","))
+			separador = "\\,";
+
+		if (separador != null) {
+			String[] split = formatado.toLowerCase().split(separador);
+			split[split.length - 1] = split[split.length - 1].replace(".", "");
+			split = Arrays.stream(split).map(String::trim).toArray(String[]::new);
+			String limpo = Arrays.stream(split).distinct().collect(Collectors.joining(", "));
+			formatado = limpo + ".";
+		}
+		
+		return normalize(formatado);
+	}
 
 	public static String normalize(String texto) {
 		if (texto == null || texto.isEmpty())

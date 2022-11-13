@@ -69,6 +69,9 @@ public class FrasesAnkiController implements Initializable {
 	private JFXButton btnProcessar;
 
 	@FXML
+	private JFXButton btnFormatarTabela;
+
+	@FXML
 	private JFXButton btnEstatistica;
 
 	@FXML
@@ -76,7 +79,7 @@ public class FrasesAnkiController implements Initializable {
 
 	@FXML
 	private JFXButton btnImportar;
-	
+
 	@FXML
 	private JFXCheckBox ckListaExcel;
 
@@ -99,6 +102,9 @@ public class FrasesAnkiController implements Initializable {
 	private Label lblExclusoes;
 
 	@FXML
+	private Label lblRegistros;
+
+	@FXML
 	private TableView<Vocabulario> tbVocabulario;
 
 	@FXML
@@ -106,7 +112,10 @@ public class FrasesAnkiController implements Initializable {
 
 	@FXML
 	private TableColumn<Vocabulario, String> tcTraducao;
-
+	
+	@FXML
+	private TableColumn<Vocabulario, String> tcIngles;
+	
 	private VocabularioJaponesServices vocabServ = new VocabularioJaponesServices();
 	private RevisarJaponesServices revisaServ = new RevisarJaponesServices();
 	private Vocabulario vocabulario;
@@ -163,6 +172,20 @@ public class FrasesAnkiController implements Initializable {
 			SudachiTokenizer.DESATIVAR = true;
 	}
 
+	@FXML
+	private void onBtnFormatarLista() {
+		try {
+			tbVocabulario.setDisable(true);
+			for (Vocabulario vocabulario : tbVocabulario.getItems()) {
+				if (!vocabulario.getTraducao().trim().isEmpty())
+					vocabulario.setTraducao(Util.removeDuplicate(vocabulario.getTraducao()));
+			}
+		} finally {
+			tbVocabulario.refresh();
+			tbVocabulario.setDisable(false);
+		}
+	}
+
 	public void setPalavra(String palavra) {
 		try {
 			this.vocabulario = vocabServ.select(palavra);
@@ -193,6 +216,7 @@ public class FrasesAnkiController implements Initializable {
 		btnImportar.setDisable(true);
 		btnSalvar.setDisable(true);
 		tbVocabulario.setDisable(true);
+		btnFormatarTabela.setDisable(true);
 
 		btnProcessar.setAccessibleText("PAUSAR");
 		btnProcessar.setText("Pausar");
@@ -205,9 +229,10 @@ public class FrasesAnkiController implements Initializable {
 		btnImportar.setDisable(false);
 		btnSalvar.setDisable(false);
 		tbVocabulario.setDisable(false);
+		btnFormatarTabela.setDisable(false);
 
 		btnProcessar.setAccessibleText("PROCESSAR");
-		btnProcessar.setText("Processar");
+		btnProcessar.setText("Processar lista");
 	}
 
 	public void limpaVocabulario() {
@@ -236,7 +261,7 @@ public class FrasesAnkiController implements Initializable {
 	public void setAviso(String aviso) {
 		Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", aviso);
 	}
-	
+
 	public Boolean isListaExcel() {
 		return ckListaExcel.isSelected();
 	}
@@ -247,6 +272,8 @@ public class FrasesAnkiController implements Initializable {
 
 		if (tbVocabulario.getItems().isEmpty())
 			tbVocabulario.getItems().add(new Vocabulario());
+
+		lblRegistros.setText("Vocab.: " + lista.size());
 
 		tbVocabulario.refresh();
 	}
@@ -388,7 +415,8 @@ public class FrasesAnkiController implements Initializable {
 	private void editaColunas() {
 		tcVocabulario.setCellValueFactory(new PropertyValueFactory<>("vocabulario"));
 		tcTraducao.setCellValueFactory(new PropertyValueFactory<>("traducao"));
-
+		tcIngles.setCellValueFactory(new PropertyValueFactory<>("ingles"));
+		
 		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
 		tcVocabulario.setOnEditCommit(e -> {
 			e.getTableView().getItems().get(e.getTablePosition().getRow()).setVocabulario(e.getNewValue().trim());
@@ -415,6 +443,8 @@ public class FrasesAnkiController implements Initializable {
 			});
 			return row;
 		});
+		
+		tcIngles.setCellFactory(TextFieldTableCell.forTableColumn());
 	}
 
 	private void linkaCelulas() {
@@ -480,7 +510,7 @@ public class FrasesAnkiController implements Initializable {
 		Notificacoes.setRootAnchorPane(apRoot);
 
 		btnProcessar.setAccessibleText("PROCESSAR");
-		btnProcessar.setText("Processar");
+		btnProcessar.setText("Processar lista");
 		try {
 			atualizaExclusao();
 		} catch (ExcessaoBd e) {

@@ -252,7 +252,6 @@ public class SudachiTokenizer {
 		MenuPrincipalController.getController().setAviso("Sudachi - Processar vocabulário");
 		Task<Void> processar = new Task<Void>() {
 			String[] palavras = { "" };
-			String linha = "";
 			String vocabulario = "";
 			Dicionario dictionario = Dicionario.FULL;
 			SplitMode mode = SplitMode.C;
@@ -262,7 +261,7 @@ public class SudachiTokenizer {
 			@Override
 			public Void call() throws IOException, InterruptedException {
 				DESATIVAR = false;
-				String significado, links;
+				String significado, links, linha;
 				String[][] frase;
 
 				vocabNovo.clear();
@@ -285,9 +284,10 @@ public class SudachiTokenizer {
 
 					for (String txt : palavras) {
 						Platform.runLater(() -> {
-							MenuPrincipalController.getController().getLblLog().setText("Processando vocabulário " + txt + " - " + i + " de " + max);
+							MenuPrincipalController.getController().getLblLog()
+									.setText("Processando vocabulário " + txt + " - " + i + " de " + max);
 						});
-					
+
 						updateProgress(i, max);
 						atualizaBarraWindows.run();
 
@@ -303,11 +303,28 @@ public class SudachiTokenizer {
 									String processado = processaTokenizer(mode, frase[i][0], false);
 									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), frase[i][1], google);
-									
+
 									if (isExcel) {
-										linha += (i == 0 ? txt + ";" : "") + frase[i][0] + "<br><br>";
-										significado += processado + "<br><br>" + traduzido + "<br><br>";
-										links += (!frase[i][2].isEmpty() ? frase[i][2] + "<br>" : "");
+										linha += (i == 0 ? txt + ";" : "");
+										
+										if (frase[i][0].contains("&quot;"))
+											linha += frase[i][0].replace("&quot;", "'") + "<br><br>";
+										else if (frase[i][0].contains(";"))
+											linha += frase[i][0].replace(";", ",") + "<br><br>";
+										else
+											linha += frase[i][0] + "<br><br>";
+										
+										if (processado.contains(";"))
+											processado = processado.replace(";", ",");
+										
+										if (traduzido.contains("&quot;"))
+											traduzido = traduzido.replace("&quot;", "'");
+										
+										if (traduzido.contains(";"))
+											traduzido = traduzido.replace(";", ",");
+			
+										significado += processado + "<br><br>" + traduzido + "<br><br>";										
+										links += (!frase[i][2].isEmpty() ? frase[i][2] : "");
 									} else {
 										linha += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
 										significado += processado + "\n\n" + traduzido + "\n\n";
@@ -315,7 +332,7 @@ public class SudachiTokenizer {
 									}
 								} else {
 									if (i == 0) {
-										if (isExcel) 
+										if (isExcel)
 											linha = txt + ";" + "***";
 										else
 											linha = txt + "\n\n" + "***" + "\n\n";
@@ -324,12 +341,12 @@ public class SudachiTokenizer {
 								if (DESATIVAR)
 									return null;
 							}
-							
+
 							if (isExcel)
 								linha += ";" + significado + ";" + links + "\n";
 							else
 								linha += significado + links + "\n" + "-".repeat(10) + "\n";
-							
+
 							vocabulario += linha;
 						}
 					}
@@ -358,7 +375,7 @@ public class SudachiTokenizer {
 						controller.setVocabulario(vocabNovo);
 						controller.setTextoDestino(vocabulario);
 						controller.habilitaBotoes();
-						
+
 						MenuPrincipalController.getController().getLblLog().setText("");
 					});
 
@@ -500,6 +517,11 @@ public class SudachiTokenizer {
 					max = vocabNovo.size();
 					for (Vocabulario item : vocabNovo) {
 
+						Platform.runLater(() -> {
+							MenuPrincipalController.getController().getLblLog().setText(
+									"Processando vocabulário novo " + item.getVocabulario() + " - " + i + " de " + max);
+						});
+
 						updateProgress(i, max);
 						atualizaBarraWindows.run();
 
@@ -508,7 +530,9 @@ public class SudachiTokenizer {
 
 							try {
 								if (service.existe(item.getVocabulario())) {
-									item.setTraducao(service.select(item.getVocabulario()).getTraducao());
+									Revisar revisar = service.select(item.getVocabulario());
+									item.setIngles(revisar.getIngles());
+									item.setTraducao(revisar.getTraducao());
 									continue;
 								}
 							} catch (ExcessaoBd e) {
@@ -528,6 +552,7 @@ public class SudachiTokenizer {
 
 							if (!signficado.isEmpty()) {
 								try {
+									item.setIngles(signficado);
 									item.setTraducao(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), signficado, google));
 

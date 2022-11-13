@@ -5,6 +5,7 @@ public class Vocabulario {
 	private String vocabulario;
 	private String formaBasica;
 	private String leitura;
+	private String ingles;
 	private String traducao;
 
 	public String getVocabulario() {
@@ -30,6 +31,14 @@ public class Vocabulario {
 	public void setLeitura(String leitura) {
 		this.leitura = leitura;
 	}
+	
+	public String getIngles() {
+		return ingles;
+	}
+
+	public void setIngles(String ingles) {
+		this.ingles = ingles;
+	}
 
 	public String getTraducao() {
 		return traducao;
@@ -44,6 +53,7 @@ public class Vocabulario {
 		this.formaBasica = "";
 		this.leitura = "";
 		this.traducao = "";
+		this.ingles = "";
 	}
 
 	public Vocabulario(String vocabulario) {
@@ -51,6 +61,7 @@ public class Vocabulario {
 		this.formaBasica = "";
 		this.leitura = "";
 		this.traducao = "";
+		this.ingles = "";
 	}
 
 	public Vocabulario(String vocabulario, String traducao) {
@@ -58,6 +69,7 @@ public class Vocabulario {
 		this.traducao = traducao;
 		this.leitura = "";
 		this.formaBasica = "";
+		this.ingles = "";
 	}
 
 	public Vocabulario(String vocabulario, String formaBasica, String leitura, String traducao) {
@@ -65,6 +77,7 @@ public class Vocabulario {
 		this.formaBasica = formaBasica;
 		this.leitura = leitura;
 		this.traducao = traducao;
+		this.ingles = "";
 	}
 
 	@Override
