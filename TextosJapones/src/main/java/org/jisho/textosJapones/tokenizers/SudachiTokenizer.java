@@ -249,7 +249,7 @@ public class SudachiTokenizer {
 	}
 
 	private void processaVocabulario() throws ExcessaoBd {
-		MenuPrincipalController.getController().setAviso("Sudachi - Processar vocabulário");
+		MenuPrincipalController.getController().setAviso("SUDACHI - Processar vocabulário obtendo frase do site Tanoshi Japanese.");
 		Task<Void> processar = new Task<Void>() {
 			String[] palavras = { "" };
 			String vocabulario = "";
@@ -324,7 +324,7 @@ public class SudachiTokenizer {
 											traduzido = traduzido.replace(";", ",");
 			
 										significado += processado + "<br><br>" + traduzido + "<br><br>";										
-										links += (!frase[i][2].isEmpty() ? frase[i][2] : "");
+										links += (!frase[i][2].isEmpty() ? frase[i][2] + ";" : "");
 									} else {
 										linha += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
 										significado += processado + "\n\n" + traduzido + "\n\n";
