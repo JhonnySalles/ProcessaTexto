@@ -141,7 +141,7 @@ public class MangasJsonController implements Initializable {
 
 	private MangaServices serviceManga = new MangaServices();
 	private VincularServices serviceVinculo = new VincularServices();
-	private ObservableList<MangaTabela> TABELAS;
+	private ObservableList<MangaTabela> TABELAS = FXCollections.observableArrayList();
 	private Boolean PAUSAR;
 
 	private MangasController controller;
@@ -269,13 +269,12 @@ public class MangasJsonController implements Initializable {
 		if (arquivo != null) {
 			File json = new File(localJson);
 
-			String comando = "cmd.exe /C cd " + winrar + " \n&&rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"'
+			String comando = "cmd.exe /C cd \"" + winrar + "\" &&rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"'
 					+ json.getPath() + '"';
-			System.out.println("cmd.exe /C cd " + winrar);
+			System.out.println("cmd.exe /C cd \"" + winrar + "\"");
 			System.out.println("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + json.getPath() + '"');
 			try {
 				Runtime rt = Runtime.getRuntime();
-
 				Process proc = rt.exec(comando);
 				System.out.println("Resultado: " + proc.waitFor());
 
@@ -297,10 +296,10 @@ public class MangasJsonController implements Initializable {
 				while ((s = stdError.readLine()) != null)
 					resultado += s + "\n";
 
-				if (!resultado.isEmpty())
+				if (!resultado.isEmpty()) {					
 					System.out.println("Error comand:\n" + resultado
 							+ "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
-				else if (excluirAoInserir)
+				} else if (excluirAoInserir)
 					json.delete();
 
 			} catch (Exception e) {
