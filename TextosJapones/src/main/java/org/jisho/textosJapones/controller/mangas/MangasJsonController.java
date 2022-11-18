@@ -300,8 +300,7 @@ public class MangasJsonController implements Initializable {
 				if (!resultado.isEmpty())
 					System.out.println("Error comand:\n" + resultado
 							+ "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
-
-				if (excluirAoInserir)
+				else if (excluirAoInserir)
 					json.delete();
 
 			} catch (Exception e) {
