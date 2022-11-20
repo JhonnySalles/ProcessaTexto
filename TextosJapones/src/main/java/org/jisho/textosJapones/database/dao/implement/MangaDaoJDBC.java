@@ -124,7 +124,9 @@ public class MangaDaoJDBC implements MangaDao {
 	private List<Language> getLinguagem(Language... linguagem) {
 		List<Language> list = new ArrayList<Language>();
 		for (Language lang : linguagem)
-			list.add(lang);
+			if (lang != null)
+				list.add(lang);
+		
 		return list;
 	}
 
