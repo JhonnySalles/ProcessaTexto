@@ -743,7 +743,7 @@ public class VincularServices {
 				continue;
 
 			if (pagina.getOriginalPagina() > maxNumPag)
-				break;
+				vinculadoTemp.add(new VinculoPagina(pagina));
 			else {
 				VinculoPagina novo = new VinculoPagina(pagina);
 				vinculadoTemp.add(novo);
