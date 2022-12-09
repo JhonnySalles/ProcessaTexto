@@ -37,7 +37,7 @@ public class VocabularioJaponesServices {
 	}
 
 	public VocabularioJaponesServices insert(Vocabulario obj) throws ExcessaoBd {
-		if (!obj.getTraducao().isEmpty())
+		if (!obj.getPortugues().isEmpty())
 			vocabularioDao.insert(obj);
 
 		return this;

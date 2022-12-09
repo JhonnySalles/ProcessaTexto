@@ -102,7 +102,7 @@ public class CorrecaoController implements Initializable {
 				atualiza();
 				vocabServ.insertOrUpdate(vocabulario);
 				Notificacoes.notificacao(Notificacao.SUCESSO, "Vocabulário salvo com sucesso.",
-						vocabulario.getTraducao());
+						vocabulario.getPortugues());
 				limpar();
 				txtVocabulario.requestFocus();
 			} catch (ExcessaoBd e) {
@@ -117,12 +117,12 @@ public class CorrecaoController implements Initializable {
 
 	private CorrecaoController carregar() {
 		txtVocabulario.setText(vocabulario.getVocabulario());
-		txtTraducao.setText(vocabulario.getTraducao());
+		txtTraducao.setText(vocabulario.getPortugues());
 		return this;
 	}
 
 	private CorrecaoController atualiza() {
-		vocabulario.setTraducao(txtTraducao.getText().trim());
+		vocabulario.setPortugues(txtTraducao.getText().trim());
 		return this;
 	}
 

@@ -109,7 +109,7 @@
                                     <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="131.0" prefWidth="479.0">
                                        <columns>
                                           <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
-                                          <TableColumn fx:id="tcTraducao" prefWidth="300.0" text="Tradução" />
+                                          <TableColumn fx:id="tcPortugues" prefWidth="300.0" text="Tradução" />
                                           <TableColumn fx:id="tcIngles" prefWidth="150.0" text="Inglês" />
                                        </columns>
                                        <styleClass>

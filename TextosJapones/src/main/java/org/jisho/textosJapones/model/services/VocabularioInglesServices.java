@@ -33,7 +33,7 @@ public class VocabularioInglesServices {
 	}
 
 	public VocabularioInglesServices insert(Vocabulario obj) throws ExcessaoBd {
-		if (!obj.getTraducao().isEmpty())
+		if (!obj.getPortugues().isEmpty())
 			vocabularioDao.insert(obj);
 
 		return this;

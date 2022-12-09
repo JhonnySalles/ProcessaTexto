@@ -92,7 +92,7 @@ public class TraduzirController implements Initializable {
 	private TableColumn<Revisar, String> tcIngles;
 
 	@FXML
-	private TableColumn<Revisar, String> tcTraducao;
+	private TableColumn<Revisar, String> tcPortugues;
 
 	@FXML
 	private TableColumn<Revisar, CheckBox> tcRevisado;
@@ -311,9 +311,9 @@ public class TraduzirController implements Initializable {
 									item.setIngles(getSignificado(getDesmembrado(item.getVocabulario())));
 							}
 
-							if (item.getTraducao().isEmpty() && !item.getIngles().isEmpty()) {
+							if (item.getPortugues().isEmpty() && !item.getIngles().isEmpty()) {
 								try {
-									item.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+									item.setPortugues(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 											Language.PORTUGUESE.getSigla(), item.getIngles(),
 											MenuPrincipalController.getController().getContaGoogle())));
 								} catch (IOException e) {
@@ -378,7 +378,7 @@ public class TraduzirController implements Initializable {
 			return;
 
 		try {
-			tbVocabulario.getSelectionModel().getSelectedItem().setTraducao(
+			tbVocabulario.getSelectionModel().getSelectedItem().setPortugues(
 					Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
 							tbVocabulario.getSelectionModel().getSelectedItem().getIngles(),
 							MenuPrincipalController.getController().getContaGoogle())));
@@ -474,7 +474,7 @@ public class TraduzirController implements Initializable {
 	private void editaColunas() {
 		tcVocabulario.setCellValueFactory(new PropertyValueFactory<>("vocabulario"));
 		tcIngles.setCellValueFactory(new PropertyValueFactory<>("ingles"));
-		tcTraducao.setCellValueFactory(new PropertyValueFactory<>("traducao"));
+		tcPortugues.setCellValueFactory(new PropertyValueFactory<>("portugues"));
 
 		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
 
@@ -484,10 +484,10 @@ public class TraduzirController implements Initializable {
 			if (!e.getNewValue().trim().isEmpty()) {
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
 
-				if (e.getTableView().getItems().get(e.getTablePosition().getRow()).getTraducao().isEmpty()) {
+				if (e.getTableView().getItems().get(e.getTablePosition().getRow()).getPortugues().isEmpty()) {
 					try {
 						e.getTableView().getItems().get(e.getTablePosition().getRow())
-								.setTraducao(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+								.setPortugues(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 										Language.PORTUGUESE.getSigla(), e.getNewValue().trim(),
 										MenuPrincipalController.getController().getContaGoogle())));
 
@@ -500,9 +500,9 @@ public class TraduzirController implements Initializable {
 			tbVocabulario.requestFocus();
 		});
 
-		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
-		tcTraducao.setOnEditCommit(e -> {
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(e.getNewValue().trim());
+		tcPortugues.setCellFactory(TextFieldTableCell.forTableColumn());
+		tcPortugues.setOnEditCommit(e -> {
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setPortugues(e.getNewValue().trim());
 			if (!e.getNewValue().trim().isEmpty()) {
 				e.getTableView().getItems().get(e.getTablePosition().getRow()).getRevisado().setSelected(true);
 			}

@@ -74,7 +74,7 @@ public class KuromojiTokenizer {
 												tokens.get(i).getBaseForm() + tokens.get(i + 1).getBaseForm());
 										if (palavra != null) {
 											processado += tokens.get(i).getBaseForm() + tokens.get(i + 1).getSurface()
-													+ " " + palavra.getTraducao() + " ";
+													+ " " + palavra.getPortugues() + " ";
 
 											if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
 												palavra.setFormaBasica(
@@ -94,7 +94,7 @@ public class KuromojiTokenizer {
 
 												if (palavra != null) {
 													processado += tokens.get(i + x).getBaseForm() + " "
-															+ palavra.getTraducao() + " ";
+															+ palavra.getPortugues() + " ";
 
 													if (palavra.getFormaBasica().isEmpty()
 															|| palavra.getLeitura().isEmpty()) {
@@ -114,7 +114,7 @@ public class KuromojiTokenizer {
 
 														vocabNovo.add(new Vocabulario(tokens.get(i + x).getSurface(),
 																tokens.get(i + x).getBaseForm(),
-																tokens.get(i + x).getReading(), ""));
+																tokens.get(i + x).getReading()));
 													}
 												}
 												repetido.add(tokens.get(i + x).getBaseForm());
@@ -128,7 +128,7 @@ public class KuromojiTokenizer {
 											tokens.get(i).getBaseForm());
 
 									if (palavra != null) {
-										processado += tokens.get(i).getBaseForm() + " " + palavra.getTraducao() + " ";
+										processado += tokens.get(i).getBaseForm() + " " + palavra.getPortugues() + " ";
 
 										if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
 											palavra.setFormaBasica(tokens.get(i).getBaseForm());
@@ -145,7 +145,7 @@ public class KuromojiTokenizer {
 											// naoEncontrado += tokens.get(i).getSurface() + " \n";
 
 											vocabNovo.add(new Vocabulario(tokens.get(i).getSurface(),
-													tokens.get(i).getBaseForm(), tokens.get(i).getReading(), ""));
+													tokens.get(i).getBaseForm(), tokens.get(i).getReading()));
 										}
 									}
 									repetido.add(tokens.get(i).getBaseForm());

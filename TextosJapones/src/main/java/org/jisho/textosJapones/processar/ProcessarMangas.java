@@ -346,11 +346,11 @@ public class ProcessarMangas {
 
 					if (palavra != null) {
 						MangaVocabulario vocabulario = null;
-						if (palavra.getTraducao().substring(0, 2).matches(japanese))
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(),
+						if (palavra.getPortugues().substring(0, 2).matches(japanese))
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
 									m.readingForm());
 						else
-							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getTraducao(),
+							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
 									m.readingForm());
 
 						// Usado apenas para correção em formas em branco.
@@ -393,7 +393,7 @@ public class ProcessarMangas {
 
 									Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
 											.setText(m.surface() + " : Obtendo tradução."));
-									revisar.setTraducao(
+									revisar.setPortugues(
 											Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
 													Language.PORTUGUESE.getSigla(), revisar.getIngles(),
 													MenuPrincipalController.getController().getContaGoogle())));
@@ -412,7 +412,7 @@ public class ProcessarMangas {
 							serviceJaponesRevisar.incrementaVezesAparece(revisar.getVocabulario());
 						}
 
-						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getTraducao(),
+						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getPortugues(),
 								m.readingForm(), false);
 
 						validaHistorico.add(m.dictionaryForm());
@@ -547,7 +547,7 @@ public class ProcessarMangas {
 
 													if (salvo != null) {
 														MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-																salvo.getTraducao());
+																salvo.getPortugues());
 
 														validaHistorico.add(palavra);
 														vocabHistorico.add(vocabulario);
@@ -591,7 +591,7 @@ public class ProcessarMangas {
 																	Platform.runLater(() -> MenuPrincipalController
 																			.getController().getLblLog()
 																			.setText(palavra + " : Obtendo tradução."));
-																	revisar.setTraducao(Util.normalize(ScriptGoogle
+																	revisar.setPortugues(Util.normalize(ScriptGoogle
 																			.translate(Language.ENGLISH.getSigla(),
 																					Language.PORTUGUESE.getSigla(),
 																					revisar.getVocabulario(),
@@ -617,7 +617,7 @@ public class ProcessarMangas {
 														}
 
 														MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-																revisar.getTraducao(), "", false);
+																revisar.getPortugues(), "", false);
 
 														validaHistorico.add(palavra);
 														vocabHistorico.add(vocabulario);

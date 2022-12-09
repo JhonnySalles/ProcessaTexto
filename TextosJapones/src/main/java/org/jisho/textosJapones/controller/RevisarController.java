@@ -130,12 +130,13 @@ public class RevisarController implements Initializable {
 
 		Boolean error = false;
 		if (revisando != null) {
-			revisando.setTraducao(txtAreaPortugues.getText());
+			revisando.setPortugues(txtAreaPortugues.getText());
+			revisando.setIngles(Util.removeDuplicate(revisando.getIngles()));
 
 			Vocabulario palavra = Revisar.toVocabulario(revisando);
 
 			for (Revisar obj : similar)
-				obj.setTraducao(revisando.getTraducao());
+				obj.setPortugues(revisando.getPortugues());
 
 			List<Vocabulario> lista = Revisar.toVocabulario(similar);
 
@@ -151,7 +152,7 @@ public class RevisarController implements Initializable {
 			}
 
 		} else if (corrigindo != null) {
-			corrigindo.setTraducao(txtAreaPortugues.getText());
+			corrigindo.setPortugues(txtAreaPortugues.getText());
 
 			try {
 				vocabulario.insertOrUpdate(corrigindo);
@@ -223,11 +224,11 @@ public class RevisarController implements Initializable {
 
 	private Boolean pesquisaCorrecao(String pesquisar) throws ExcessaoBd {
 		corrigindo = vocabulario.select(pesquisar);
-		if (corrigindo != null && !corrigindo.getTraducao().isEmpty()) {
+		if (corrigindo != null && !corrigindo.getPortugues().isEmpty()) {
 			limpaTextos();
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
-				txtAreaPortugues.setText(Util.normalize(corrigindo.getTraducao()));
+				txtAreaPortugues.setText(Util.normalize(corrigindo.getPortugues()));
 			}
 
 			return true;
@@ -246,7 +247,7 @@ public class RevisarController implements Initializable {
 
 			txtVocabulario.setText(revisando.getVocabulario());
 			txtAreaIngles.setText(revisando.getIngles());
-			txtAreaPortugues.setText(Util.normalize(revisando.getTraducao()));
+			txtAreaPortugues.setText(Util.normalize(revisando.getPortugues()));
 
 			if (similar.size() > 0)
 				txtSimilar.setText(similar.stream().map(Revisar::getVocabulario).collect(Collectors.joining(", ")));

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.TraduzirController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.TraduzirController">
    <children>
       <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -53,7 +53,7 @@
          <columns>
             <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
             <TableColumn fx:id="tcIngles" prefWidth="260.0" text="Ingles" />
-            <TableColumn fx:id="tcTraducao" prefWidth="298.5" text="Tradução" />
+            <TableColumn fx:id="tcPortugues" prefWidth="298.5" text="Tradução" />
             <TableColumn fx:id="tcRevisado" prefWidth="30.0" resizable="false">
 	            <cellValueFactory>
 	      		</cellValueFactory>

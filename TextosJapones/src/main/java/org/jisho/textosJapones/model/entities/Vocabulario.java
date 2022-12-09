@@ -6,7 +6,7 @@ public class Vocabulario {
 	private String formaBasica;
 	private String leitura;
 	private String ingles;
-	private String traducao;
+	private String portugues;
 
 	public String getVocabulario() {
 		return vocabulario;
@@ -40,19 +40,19 @@ public class Vocabulario {
 		this.ingles = ingles;
 	}
 
-	public String getTraducao() {
-		return traducao;
+	public String getPortugues() {
+		return portugues;
 	}
 
-	public void setTraducao(String traducao) {
-		this.traducao = traducao;
+	public void setPortugues(String portugues) {
+		this.portugues = portugues;
 	}
 
 	public Vocabulario() {
 		this.vocabulario = "";
 		this.formaBasica = "";
 		this.leitura = "";
-		this.traducao = "";
+		this.portugues = "";
 		this.ingles = "";
 	}
 
@@ -60,24 +60,32 @@ public class Vocabulario {
 		this.vocabulario = vocabulario;
 		this.formaBasica = "";
 		this.leitura = "";
-		this.traducao = "";
+		this.portugues = "";
 		this.ingles = "";
 	}
 
-	public Vocabulario(String vocabulario, String traducao) {
+	public Vocabulario(String vocabulario, String portugues) {
 		this.vocabulario = vocabulario;
-		this.traducao = traducao;
+		this.portugues = portugues;
 		this.leitura = "";
 		this.formaBasica = "";
 		this.ingles = "";
 	}
-
-	public Vocabulario(String vocabulario, String formaBasica, String leitura, String traducao) {
+	
+	public Vocabulario(String vocabulario, String formaBasica, String leitura) {
 		this.vocabulario = vocabulario;
 		this.formaBasica = formaBasica;
 		this.leitura = leitura;
-		this.traducao = traducao;
+		this.portugues = "";
 		this.ingles = "";
+	}
+
+	public Vocabulario(String vocabulario, String formaBasica, String leitura, String ingles, String portugues) {
+		this.vocabulario = vocabulario;
+		this.formaBasica = formaBasica;
+		this.leitura = leitura;
+		this.portugues = portugues;
+		this.ingles = ingles;
 	}
 
 	@Override

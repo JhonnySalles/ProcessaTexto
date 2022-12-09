@@ -111,7 +111,7 @@ public class FrasesAnkiController implements Initializable {
 	private TableColumn<Vocabulario, String> tcVocabulario;
 
 	@FXML
-	private TableColumn<Vocabulario, String> tcTraducao;
+	private TableColumn<Vocabulario, String> tcPortugues;
 	
 	@FXML
 	private TableColumn<Vocabulario, String> tcIngles;
@@ -177,8 +177,11 @@ public class FrasesAnkiController implements Initializable {
 		try {
 			tbVocabulario.setDisable(true);
 			for (Vocabulario vocabulario : tbVocabulario.getItems()) {
-				if (!vocabulario.getTraducao().trim().isEmpty())
-					vocabulario.setTraducao(Util.removeDuplicate(vocabulario.getTraducao()));
+				if (!vocabulario.getPortugues().trim().isEmpty())
+					vocabulario.setPortugues(Util.removeDuplicate(vocabulario.getPortugues()));
+				
+				if (!vocabulario.getIngles().trim().isEmpty())
+					vocabulario.setIngles(Util.removeDuplicate(vocabulario.getIngles()));
 			}
 		} finally {
 			tbVocabulario.refresh();
@@ -189,7 +192,7 @@ public class FrasesAnkiController implements Initializable {
 	public void setPalavra(String palavra) {
 		try {
 			this.vocabulario = vocabServ.select(palavra);
-			if (vocabulario.getTraducao().isEmpty()) {
+			if (vocabulario.getPortugues().isEmpty()) {
 				if (!txtAreaOrigem.getText().isEmpty())
 					txtVocabulario.setUnFocusColor(Color.RED);
 				else
@@ -198,7 +201,7 @@ public class FrasesAnkiController implements Initializable {
 				txtVocabulario.setText("");
 				txtVocabulario.setEditable(true);
 			} else {
-				txtVocabulario.setText(vocabulario.getTraducao());
+				txtVocabulario.setText(vocabulario.getPortugues());
 				txtVocabulario.setEditable(false);
 				txtVocabulario.setUnFocusColor(Color.web("#106ebe"));
 			}
@@ -281,7 +284,7 @@ public class FrasesAnkiController implements Initializable {
 	private void salvaVocabulario() {
 		if (txtVocabulario.isEditable())
 			if (!txtVocabulario.getText().trim().isEmpty()) {
-				vocabulario.setTraducao(txtVocabulario.getText().trim());
+				vocabulario.setPortugues(txtVocabulario.getText().trim());
 				try {
 					vocabServ.insertOrUpdate(vocabulario);
 					Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento vocabulário concluído.",
@@ -346,7 +349,7 @@ public class FrasesAnkiController implements Initializable {
 		if (tbVocabulario.getItems().size() > 0) {
 			try {
 
-				List<Vocabulario> salvar = tbVocabulario.getItems().stream().filter(e -> !e.getTraducao().isEmpty())
+				List<Vocabulario> salvar = tbVocabulario.getItems().stream().filter(e -> !e.getPortugues().isEmpty())
 						.collect(Collectors.toList());
 
 				vocabServ.insert(salvar);
@@ -354,7 +357,7 @@ public class FrasesAnkiController implements Initializable {
 				String itensSalvo = "";
 				for (Vocabulario item : salvar) {
 					txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*",
-							item.getFormaBasica() + " " + item.getTraducao()));
+							item.getFormaBasica() + " " + item.getPortugues()));
 					itensSalvo += item.toString();
 
 					revisaServ.delete(item.getVocabulario());
@@ -414,7 +417,7 @@ public class FrasesAnkiController implements Initializable {
 
 	private void editaColunas() {
 		tcVocabulario.setCellValueFactory(new PropertyValueFactory<>("vocabulario"));
-		tcTraducao.setCellValueFactory(new PropertyValueFactory<>("traducao"));
+		tcPortugues.setCellValueFactory(new PropertyValueFactory<>("portugues"));
 		tcIngles.setCellValueFactory(new PropertyValueFactory<>("ingles"));
 		
 		tcVocabulario.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -423,14 +426,14 @@ public class FrasesAnkiController implements Initializable {
 			tbVocabulario.requestFocus();
 		});
 
-		tcTraducao.setCellFactory(TextFieldTableCell.forTableColumn());
-		tcTraducao.setOnEditCommit(e -> {
+		tcPortugues.setCellFactory(TextFieldTableCell.forTableColumn());
+		tcPortugues.setOnEditCommit(e -> {
 			String frase = "";
 
 			if (!e.getNewValue().trim().isEmpty())
 				frase = Util.normalize(e.getNewValue().trim());
 
-			e.getTableView().getItems().get(e.getTablePosition().getRow()).setTraducao(frase);
+			e.getTableView().getItems().get(e.getTablePosition().getRow()).setPortugues(frase);
 			tbVocabulario.refresh();
 			tbVocabulario.requestFocus();
 		});

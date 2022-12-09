@@ -166,14 +166,14 @@ public class ProcessarLegendas {
 								.findFirst().orElse(null);
 
 					if (palavra != null)
-						vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+						vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
 					else {
 						palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 						if (palavra != null) {
-							if (palavra.getTraducao().substring(0, 2).matches(japanese))
-								vocabularios += palavra.getTraducao() + " ";
+							if (palavra.getPortugues().substring(0, 2).matches(japanese))
+								vocabularios += palavra.getPortugues() + " ";
 							else
-								vocabularios += m.dictionaryForm() + " - " + palavra.getTraducao() + " ";
+								vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
 
 							// Usado apenas para correção em formas em branco.
 							if (palavra.getFormaBasica().isEmpty()) {
@@ -190,14 +190,14 @@ public class ProcessarLegendas {
 							Revisar revisar = service.select(m.surface(), m.dictionaryForm());
 							if (revisar != null) {
 
-								if (!revisar.getTraducao().isEmpty()
-										&& revisar.getTraducao().substring(0, 2).matches(japanese))
-									vocabularios += revisar.getTraducao() + "¹ ";
+								if (!revisar.getPortugues().isEmpty()
+										&& revisar.getPortugues().substring(0, 2).matches(japanese))
+									vocabularios += revisar.getPortugues() + "¹ ";
 								else {
-									vocabularios += m.dictionaryForm() + " - " + revisar.getTraducao() + "¹ ";
+									vocabularios += m.dictionaryForm() + " - " + revisar.getPortugues() + "¹ ";
 									validaHistorico.add(m.dictionaryForm());
 									vocabHistorico
-											.add(new Vocabulario(m.dictionaryForm(), revisar.getTraducao() + "¹"));
+											.add(new Vocabulario(m.dictionaryForm(), revisar.getPortugues() + "¹"));
 								}
 
 								vocabulario.add(m.dictionaryForm());

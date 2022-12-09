@@ -21,10 +21,10 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 	private Connection conn;
 	private String BASE_INGLES;
 
-	final private String INSERT = "INSERT IGNORE INTO %svocabulario (vocabulario, leitura, traducao) VALUES (?,?,?,?);";
-	final private String UPDATE = "UPDATE %svocabulario SET leitura = ?, traducao = ? WHERE vocabulario = ?;";
+	final private String INSERT = "INSERT IGNORE INTO %svocabulario (vocabulario, leitura, portugues) VALUES (?,?,?,?);";
+	final private String UPDATE = "UPDATE %svocabulario SET leitura = ?, portugues = ? WHERE vocabulario = ?;";
 	final private String DELETE = "DELETE FROM %svocabulario WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, leitura, traducao FROM %svocabulario WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT vocabulario, leitura, portugues FROM %svocabulario WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM %svocabulario WHERE vocabulario = ?;";
 	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO %s.exclusao (palavra) VALUES (?)";
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM %sexclusao";
@@ -43,7 +43,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
 			st.setString(1, obj.getVocabulario());
 			st.setString(2, obj.getLeitura());
-			st.setString(3, obj.getTraducao());
+			st.setString(3, obj.getPortugues());
 
 			st.executeUpdate();
 		} catch (SQLException e) {
@@ -62,7 +62,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 			st = conn.prepareStatement(String.format(UPDATE, BASE_INGLES), Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getLeitura());
-			st.setString(2, obj.getTraducao());
+			st.setString(2, obj.getPortugues());
 			st.setString(3, obj.getVocabulario());
 
 			int rowsAffected = st.executeUpdate();
@@ -120,7 +120,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
 			if (rs.next()) {
 				return new Vocabulario(rs.getString("vocabulario"), "",
-						rs.getString("leitura"), rs.getString("traducao"));
+						rs.getString("leitura"), "", rs.getString("portugues"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

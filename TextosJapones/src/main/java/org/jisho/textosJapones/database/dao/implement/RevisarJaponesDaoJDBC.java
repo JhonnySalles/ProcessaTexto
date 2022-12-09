@@ -18,10 +18,10 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 	private Connection conn;
 
-	final private String INSERT = "INSERT IGNORE INTO revisar (vocabulario, formaBasica, leitura, traducao, ingles, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?,?);";
-	final private String UPDATE = "UPDATE revisar SET formaBasica = ?, leitura = ?, traducao = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
+	final private String INSERT = "INSERT IGNORE INTO revisar (vocabulario, formaBasica, leitura, portugues, ingles, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?,?);";
+	final private String UPDATE = "UPDATE revisar SET formaBasica = ?, leitura = ?, portugues = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
 	final private String DELETE = "DELETE FROM revisar WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, formaBasica, leitura, traducao, ingles, revisado, isAnime, isManga FROM revisar ";
+	final private String SELECT = "SELECT vocabulario, formaBasica, leitura, portugues, ingles, revisado, isAnime, isManga FROM revisar ";
 	final private String SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR formaBasica = ?;";
 	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
@@ -47,7 +47,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 			st.setString(1, obj.getVocabulario());
 			st.setString(2, obj.getFormaBasica());
 			st.setString(3, obj.getLeitura());
-			st.setString(4, obj.getTraducao());
+			st.setString(4, obj.getPortugues());
 			st.setString(5, obj.getIngles());
 			st.setBoolean(6, obj.getRevisado().isSelected());
 			st.setBoolean(7, obj.isAnime());
@@ -71,7 +71,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			st.setString(1, obj.getFormaBasica());
 			st.setString(2, obj.getLeitura());
-			st.setString(3, obj.getTraducao());
+			st.setString(3, obj.getPortugues());
 			st.setString(4, obj.getIngles());
 			st.setBoolean(5, obj.getRevisado().isSelected());
 			st.setBoolean(6, obj.isAnime());
@@ -146,7 +146,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			if (rs.next()) {
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 			}
 		} catch (SQLException e) {
@@ -170,7 +170,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			if (rs.next()) {
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 			}
 		} catch (SQLException e) {
@@ -196,7 +196,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			while (rs.next()) {
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 			}
 			return list;
@@ -222,7 +222,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			while (rs.next())
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
 			return list;
@@ -334,7 +334,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			if (rs.next())
 				return new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -361,7 +361,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
 			while (rs.next())
 				list.add(new Revisar(rs.getString("vocabulario"), rs.getString("formaBasica"), rs.getString("leitura"),
-						rs.getString("traducao"), rs.getString("ingles"), rs.getBoolean("revisado"),
+						rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
 						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
 			return list;
