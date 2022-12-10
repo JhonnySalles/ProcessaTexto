@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
@@ -360,6 +363,9 @@ public class MangasJsonController implements Initializable {
 					};
 
 					Gson gson = null;
+					
+					DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+					formatter.applyPattern("000.###");
 
 					if (isSepararCapitulo)
 						gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -391,10 +397,10 @@ public class MangasJsonController implements Initializable {
 								for (MangaCapitulo capitulo : volume.getCapitulos()) {
 									if (!capitulo.isProcessar())
 										continue;
-
+								
 									String arquivo = destino + '/' + volume.getLingua() + " - " + volume.getManga()
 											+ " - Volume " + String.format("%03d", volume.getVolume()) + " Capitulo "
-											+ String.format("%03d", capitulo.getCapitulo()) + ".json";
+											+ formatter.format(capitulo.getCapitulo()) + ".json";
 
 									FileWriter file = new FileWriter(arquivo);
 									gson.toJson(capitulo, file);

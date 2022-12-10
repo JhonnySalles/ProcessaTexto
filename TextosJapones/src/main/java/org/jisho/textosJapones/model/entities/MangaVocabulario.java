@@ -8,7 +8,9 @@ public class MangaVocabulario {
 	@Expose
 	String palavra;
 	@Expose
-	String significado;
+	String portugues;
+	@Expose
+	String ingles;
 	@Expose
 	String leitura;
 	@Expose
@@ -30,14 +32,22 @@ public class MangaVocabulario {
 		this.palavra = palavra;
 	}
 
-	public String getSignificado() {
-		return significado;
+	public String getPortugues() {
+		return portugues;
 	}
 
-	public void setSignificado(String significado) {
-		this.significado = significado;
+	public void setPortugues(String portugues) {
+		this.portugues = portugues;
 	}
 	
+	public String getIngles() {
+		return ingles;
+	}
+
+	public void setIngles(String ingles) {
+		this.ingles = ingles;
+	}
+
 	public String getLeitura() {
 		return leitura;
 	}
@@ -57,39 +67,44 @@ public class MangaVocabulario {
 	public MangaVocabulario() {
 		this.id = 0L;
 		this.palavra = "";
-		this.significado = "";
+		this.portugues = "";
+		this.ingles = "";
 		this.leitura = "";
 		this.revisado = true;
 	}
 	
-	public MangaVocabulario(String palavra, String significado) {
+	public MangaVocabulario(String palavra, String portugues) {
 		this.id = 0L;
 		this.palavra = palavra;
-		this.significado = significado;
+		this.portugues = portugues;
+		this.ingles = "";
 		this.leitura = "";
 		this.revisado = true;
 	}
 	
-	public MangaVocabulario(String palavra, String significado, String leitura) {
+	public MangaVocabulario(String palavra, String portugues, String ingles, String leitura) {
 		this.id = 0L;
 		this.palavra = palavra;
-		this.significado = significado;
+		this.portugues = portugues;
+		this.ingles = ingles;
 		this.leitura = leitura;
 		this.revisado = true;
 	}
 	
-	public MangaVocabulario(String palavra, String significado,  String leitura, Boolean revisado) {
+	public MangaVocabulario(String palavra, String portugues, String ingles, String leitura, Boolean revisado) {
 		this.id = 0L;
 		this.palavra = palavra;
-		this.significado = significado;
+		this.portugues = portugues;
+		this.ingles = ingles;
 		this.leitura = leitura;
 		this.revisado = revisado;
 	}
 
-	public MangaVocabulario(Long id, String palavra, String significado, String leitura, Boolean revisado) {
+	public MangaVocabulario(Long id, String palavra, String portugues, String ingles, String leitura, Boolean revisado) {
 		this.id = id;
 		this.palavra = palavra;
-		this.significado = significado;
+		this.portugues = portugues;
+		this.ingles = ingles;
 		this.leitura = leitura;
 		this.revisado = revisado;
 	}
@@ -98,8 +113,9 @@ public class MangaVocabulario {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((ingles == null) ? 0 : ingles.hashCode());
 		result = prime * result + ((palavra == null) ? 0 : palavra.hashCode());
-		result = prime * result + ((significado == null) ? 0 : significado.hashCode());
+		result = prime * result + ((portugues == null) ? 0 : portugues.hashCode());
 		return result;
 	}
 
@@ -112,15 +128,20 @@ public class MangaVocabulario {
 		if (getClass() != obj.getClass())
 			return false;
 		MangaVocabulario other = (MangaVocabulario) obj;
+		if (ingles == null) {
+			if (other.ingles != null)
+				return false;
+		} else if (!ingles.equals(other.ingles))
+			return false;
 		if (palavra == null) {
 			if (other.palavra != null)
 				return false;
 		} else if (!palavra.equals(other.palavra))
 			return false;
-		if (significado == null) {
-			if (other.significado != null)
+		if (portugues == null) {
+			if (other.portugues != null)
 				return false;
-		} else if (!significado.equals(other.significado))
+		} else if (!portugues.equals(other.portugues))
 			return false;
 		return true;
 	}

@@ -348,10 +348,10 @@ public class ProcessarMangas {
 						MangaVocabulario vocabulario = null;
 						if (palavra.getPortugues().substring(0, 2).matches(japanese))
 							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-									m.readingForm());
+									palavra.getIngles(), m.readingForm());
 						else
 							vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-									m.readingForm());
+									palavra.getIngles(), m.readingForm());
 
 						// Usado apenas para correção em formas em branco.
 						if (palavra.getFormaBasica().isEmpty()) {
@@ -413,7 +413,7 @@ public class ProcessarMangas {
 						}
 
 						MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getPortugues(),
-								m.readingForm(), false);
+								revisar.getIngles(), m.readingForm(), false);
 
 						validaHistorico.add(m.dictionaryForm());
 						vocabHistorico.add(vocabulario);
@@ -617,7 +617,7 @@ public class ProcessarMangas {
 														}
 
 														MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-																revisar.getPortugues(), "", false);
+																revisar.getPortugues(), "", "", false);
 
 														validaHistorico.add(palavra);
 														vocabHistorico.add(vocabulario);

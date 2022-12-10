@@ -54,9 +54,9 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String CREATE_VOCABULARIO = "CREATE TABLE %s_vocabulario (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
 			+ "  id_volume INT(11) DEFAULT NULL," + "  id_capitulo INT(11) DEFAULT NULL,"
 			+ "  id_pagina INT(11) DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
-			+ "  significado LONGTEXT COLLATE utf8mb4_unicode_ci," + "  leitura LONGTEXT COLLATE utf8mb4_unicode_ci,"
-			+ "  revisado tinyint(1) DEFAULT 1," + "  PRIMARY KEY (id)," + "  KEY %s_vocab_volume_fk (id_volume),"
-			+ "  KEY %s_vocab_capitulo_fk (id_capitulo)," + "  KEY %s_vocab_pagina_fk (id_pagina),"
+			+ "  portugues LONGTEXT COLLATE utf8mb4_unicode_ci," + "  ingles LONGTEXT COLLATE utf8mb4_unicode_ci,"
+			+ "  leitura LONGTEXT COLLATE utf8mb4_unicode_ci," + "  revisado tinyint(1) DEFAULT 1," + "  PRIMARY KEY (id)," 
+			+ "  KEY %s_vocab_volume_fk (id_volume)," + "  KEY %s_vocab_capitulo_fk (id_capitulo)," + "  KEY %s_vocab_pagina_fk (id_pagina),"
 			+ "  CONSTRAINT %s_vocab_capitulo_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id),"
 			+ "  CONSTRAINT %s_vocab_pagina_fk FOREIGN KEY (id_pagina) REFERENCES %s_paginas (id),"
 			+ "  CONSTRAINT %s_vocab_volume_fk FOREIGN KEY (id_volume) REFERENCES %s_volumes (id)"
@@ -110,9 +110,9 @@ public class MangaDaoJDBC implements MangaDao {
 			+ " AND Table_Name LIKE '%%_vocabulario%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
 
 	final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabulario WHERE %s;";
-	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabulario (%s, palavra, significado, leitura, revisado) "
-			+ " VALUES (?,?,?,?,?);";
-	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, significado, leitura, revisado FROM %s_vocabulario WHERE %s ";
+	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabulario (%s, palavra, portugues, ingles, leitura, revisado) "
+			+ " VALUES (?,?,?,?,?,?);";
+	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, portugues, ingles, leitura, revisado FROM %s_vocabulario WHERE %s ";
 	final private String UPDATE_PROCESSADO = "UPDATE %s_%s SET is_processado = 1 WHERE id = ?";
 
 	public MangaDaoJDBC(Connection conn) {
@@ -251,9 +251,10 @@ public class MangaDaoJDBC implements MangaDao {
 
 				st.setLong(1, id);
 				st.setString(2, vocab.getPalavra());
-				st.setString(3, vocab.getSignificado());
-				st.setString(4, vocab.getLeitura());
-				st.setBoolean(5, vocab.getRevisado());
+				st.setString(3, vocab.getPortugues());
+				st.setString(4, vocab.getIngles());
+				st.setString(5, vocab.getLeitura());
+				st.setBoolean(6, vocab.getRevisado());
 
 				st.executeUpdate();
 			}
@@ -300,8 +301,8 @@ public class MangaDaoJDBC implements MangaDao {
 				// Ignora os kanji solto.
 				if (rs.getString("palavra").length() <= 1)
 					continue;
-				list.add(new MangaVocabulario(rs.getLong("id"), rs.getString("palavra"), rs.getString("significado"),
-						rs.getString("leitura"), rs.getBoolean("revisado")));
+				list.add(new MangaVocabulario(rs.getLong("id"), rs.getString("palavra"), rs.getString("portugues"),
+						rs.getString("ingles"), rs.getString("leitura"), rs.getBoolean("revisado")));
 			}
 			return list;
 		} catch (SQLException e) {
