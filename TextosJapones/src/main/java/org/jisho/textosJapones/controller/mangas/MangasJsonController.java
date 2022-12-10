@@ -222,51 +222,76 @@ public class MangasJsonController implements Initializable {
 	}
 
 	private String patern = ".*\\.(zip|cbz|rar|cbr|tar)$";
+	
+	private File procuraArquivo(String caminho, String arquivo) {
+		if (arquivo == null || arquivo.isEmpty())
+			return null;
+		
+		File encontrado = null;
+		File pasta = new File(caminho);
+		for (File item : pasta.listFiles()) {
+			if (item.isDirectory())
+				encontrado = procuraArquivo(item.getAbsolutePath(), arquivo);
+			
+			if (encontrado != null)
+				return encontrado;
+			
+			if (item.getName().toLowerCase().contains(".json"))
+				continue;
 
-	private void insereDentroArquivos(String localPasta, String nomeArquivo, String nome, Integer volume,
-			String localJson) {
-		File pasta = new File(localPasta);
-		File arquivo = null;
+			if (!item.getName().toLowerCase().matches(patern))
+				continue;
+			
+			if (item.getName().toLowerCase().contains(arquivo))
+				return item;
+		}
+		
+		return encontrado;
+	}
+	
+	private File procuraArquivo(String caminho, String nome, Integer volume) {
+		if (nome == null || volume == null)
+			return null;
+		
+		File encontrado = null;
+		File pasta = new File(caminho);
+		for (File item : pasta.listFiles()) {
+			if (item.isDirectory())
+				encontrado = procuraArquivo(item.getAbsolutePath(), nome, volume);
+			
+			if (encontrado != null)
+				return encontrado;
+			
+			if (item.getName().toLowerCase().contains(".json"))
+				continue;
 
-		if (!nomeArquivo.isEmpty()) {
-			for (File item : pasta.listFiles()) {
-				if (item.getName().toLowerCase().contains(".json"))
-					continue;
+			if (!item.getName().toLowerCase().matches(patern))
+				continue;
 
-				if (!item.getName().toLowerCase().matches(patern))
-					continue;
-
-				if (item.getName().toLowerCase().contains(nomeArquivo)) {
-					arquivo = item;
+			if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
+				if (item.getName().toLowerCase().contains(nome)
+						&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ")
+								|| item.getName().toLowerCase()
+										.contains("volume " + String.format("%03d", volume) + " "))) {
+					encontrado = item;
 					break;
 				}
+			} else if (item.getName().toLowerCase().contains(nome)
+					&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume))
+							|| item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
+				encontrado = item;
+				break;
 			}
 		}
+		
+		return encontrado;
+	}
 
-		if (arquivo == null) {
-			for (File item : pasta.listFiles()) {
-				if (item.getName().toLowerCase().contains(".json"))
-					continue;
-
-				if (!item.getName().toLowerCase().matches(patern))
-					continue;
-
-				if (item.getName().toLowerCase().contains("(jap)") || item.getName().toLowerCase().contains("(jpn)")) {
-					if (item.getName().toLowerCase().contains(nome)
-							&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume) + " ")
-									|| item.getName().toLowerCase()
-											.contains("volume " + String.format("%03d", volume) + " "))) {
-						arquivo = item;
-						break;
-					}
-				} else if (item.getName().toLowerCase().contains(nome)
-						&& (item.getName().toLowerCase().contains("volume " + String.format("%02d", volume))
-								|| item.getName().toLowerCase().contains("volume " + String.format("%03d", volume)))) {
-					arquivo = item;
-					break;
-				}
-			}
-		}
+	private void insereDentroArquivos(String localPasta, String nomeArquivo, String nome, Integer volume, String localJson) {
+		File arquivo = procuraArquivo(localPasta, nomeArquivo);
+		
+		if (arquivo == null)
+			arquivo = procuraArquivo(localPasta, nome, volume);
 
 		// Necessário adicionar o winrar no path do windows.
 		if (arquivo != null) {
