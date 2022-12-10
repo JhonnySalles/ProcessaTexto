@@ -912,7 +912,7 @@ public class MangaDaoJDBC implements MangaDao {
 				if (isLike)
 					condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
 				else
-					condicao += " AND Table_Name LIKE '" + base.trim() + "'";
+					condicao += " AND Table_Name LIKE '" + base.trim() + "_volumes'";
 			}
 
 			st = conn.prepareStatement(

@@ -19,6 +19,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.processar.ProcessarMangas;
 
+import com.jfoenix.controls.JFXAutoCompletePopup;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -61,7 +62,7 @@ public class MangasProcessarController implements Initializable {
 	private JFXButton btnProcessar;
 
 	@FXML
-	private JFXTextField txtBase;
+	private JFXComboBox<String> cbBase;
 
 	@FXML
 	private JFXTextField txtManga;
@@ -304,7 +305,7 @@ public class MangasProcessarController implements Initializable {
 		treeBases.setDisable(true);
 
 		PROCESSADOS = ckbProcessados.isSelected();
-		BASE = txtBase.getText().trim();
+		BASE = cbBase.getValue().trim();
 		MANGA = txtManga.getText().trim();
 		LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
 
@@ -458,8 +459,31 @@ public class MangasProcessarController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		cbLinguagem.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
 		cbLinguagem.getSelectionModel().selectFirst();
+		
+		try {
+			cbBase.getItems().setAll(service.getTabelas());
+		} catch (ExcessaoBd e) {
+			e.printStackTrace();
+			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
+		}
+		
+		JFXAutoCompletePopup<String> autoCompletePopup = new JFXAutoCompletePopup<>();
+		autoCompletePopup.getSuggestions().addAll(cbBase.getItems());
 
-		txtBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		autoCompletePopup.setSelectionHandler(event -> {
+			cbBase.setValue(event.getObject());
+		});
+
+		cbBase.getEditor().textProperty().addListener(observable -> {
+			autoCompletePopup.filter(item -> item.toLowerCase().contains(cbBase.getEditor().getText().toLowerCase()));
+			if (autoCompletePopup.getFilteredSuggestions().isEmpty() || cbBase.showingProperty().get()
+					|| cbBase.getEditor().getText().isEmpty())
+				autoCompletePopup.hide();
+			else
+				autoCompletePopup.show(cbBase.getEditor());
+		});
+
+		cbBase.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER))
