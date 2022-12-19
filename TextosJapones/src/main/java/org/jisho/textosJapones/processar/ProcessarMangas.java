@@ -100,6 +100,7 @@ public class ProcessarMangas {
 						mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
 						siteDicionario = MenuPrincipalController.getController().getSite();
 
+						validaHistorico.clear();
 						propTabela.set(.0);
 						propVolume.set(.0);
 						propCapitulo.set(.0);
@@ -433,7 +434,7 @@ public class ProcessarMangas {
 				TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
 		});
 	}
-	
+
 	private Set<String> palavraValida = new HashSet<>();
 
 	public void processarTabelasIngles(List<MangaTabela> tabelas) {
@@ -450,6 +451,7 @@ public class ProcessarMangas {
 					propTabela.set(.0);
 					propVolume.set(.0);
 					propCapitulo.set(.0);
+					validaHistorico.clear();
 
 					updateMessage("Calculando tempo necessário...");
 					Progress = 0;
@@ -470,7 +472,7 @@ public class ProcessarMangas {
 					for (MangaTabela tabela : tabelas) {
 						if (!tabela.isProcessar())
 							continue;
-						
+
 						palavraValida.clear();
 
 						V = 0;
@@ -557,17 +559,16 @@ public class ProcessarMangas {
 														vocabCapitulo.add(vocabulario);
 														vocabVolume.add(vocabulario);
 													} else {
-														
+
 														if (!palavraValida.contains(palavra.toLowerCase())) {
 															String valido = serviceInglesRevisar.isValido(palavra);
-															
+
 															if (valido == null)
 																continue;
-															
+
 															palavraValida.add(valido);
 														}
-														
-														
+
 														Revisar revisar = serviceInglesRevisar.select(palavra);
 														if (revisar == null) {
 															revisar = new Revisar(palavra, false, false, true);
@@ -632,14 +633,15 @@ public class ProcessarMangas {
 											}
 
 										}
-										
+
 										Progress++;
 										propTabela.set((double) Progress / Size);
 										Platform.runLater(() -> {
 											if (TaskbarProgressbar.isSupported())
-												TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
+												TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress,
+														Size, Type.NORMAL);
 										});
-								}
+									}
 
 									pagina.setVocabularios(vocabPagina);
 									pagina.setProcessado(true);

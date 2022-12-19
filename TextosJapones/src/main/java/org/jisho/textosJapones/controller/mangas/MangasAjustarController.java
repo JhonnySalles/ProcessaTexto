@@ -173,7 +173,7 @@ public class MangasAjustarController implements Initializable {
 		btnCarregar.setDisable(true);
 		btnSalvar.setDisable(true);
 		treeBases.setDisable(true);
-		BASE = cbBase.getValue().trim();
+		BASE = cbBase.getValue() != null ? cbBase.getValue().trim() : "";
 		MANGA = txtManga.getText().trim();
 		VOLUME = spnVolume.getValue();
 		CAPITULO = spnCapitulo.getValue().floatValue();

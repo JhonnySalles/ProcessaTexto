@@ -305,7 +305,7 @@ public class MangasProcessarController implements Initializable {
 		treeBases.setDisable(true);
 
 		PROCESSADOS = ckbProcessados.isSelected();
-		BASE = cbBase.getValue().trim();
+		BASE = cbBase.getValue() != null ? cbBase.getValue().trim() : "";
 		MANGA = txtManga.getText().trim();
 		LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
 
