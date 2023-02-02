@@ -15,7 +15,10 @@ Class-Path: FXTaskbarProgressBar-v11.2.7.jar javafx-media-11-linux.jar j
  istenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar jsr305-3.
  0.2.jar checker-qual-3.12.0.jar error_prone_annotations-2.11.0.jar j2ob
  jc-annotations-1.3.jar json-20220320.jar gson-2.9.0.jar junrar-7.5.2.ja
- r slf4j-api-1.7.36.jar commons-compress-1.21.jar
+ r slf4j-api-1.7.36.jar commons-compress-1.21.jar jaxb-api-2.3.1.jar jav
+ ax.activation-api-1.2.0.jar jaxb-runtime-2.3.1.jar txw2-2.3.1.jar istac
+ k-commons-runtime-3.0.7.jar stax-ex-1.8.jar FastInfoset-1.2.15.jar mal4
+ j-3.0.1.jar
 Main-Class: org.jisho.textosJapones.App
 Created-By: Maven Integration for Eclipse
 

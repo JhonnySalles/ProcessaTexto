@@ -98,7 +98,7 @@ public class RarParse implements Parse {
 	}
 
 	@Override
-	public void destroi() throws IOException {
+	public void destroir() throws IOException {
 		if (mPastaCache != null) {
 			for (File f : mPastaCache.listFiles()) {
 				f.delete();

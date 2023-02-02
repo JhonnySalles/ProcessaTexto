@@ -9,7 +9,7 @@ import java.util.Map;
 public interface Parse {
 	void parse(File arquivo) throws IOException;
 
-	void destroi() throws IOException;
+	void destroir() throws IOException;
 
 	String getTipo();
 

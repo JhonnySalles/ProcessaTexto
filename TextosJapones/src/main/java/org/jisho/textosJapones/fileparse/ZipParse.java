@@ -63,7 +63,7 @@ public class ZipParse implements Parse {
 	}
 
 	@Override
-	public void destroi() throws IOException {
+	public void destroir() throws IOException {
 		mArquivoZip.close();
 	}
 

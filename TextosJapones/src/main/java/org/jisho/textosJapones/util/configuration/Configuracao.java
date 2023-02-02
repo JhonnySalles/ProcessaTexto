@@ -47,5 +47,32 @@ public class Configuracao {
 		}
 		return null;
 	}
+	
+	
+	public static Properties loadSecrets() {
+		File f = new File("secrets.properties");
+		
+		if (!f.exists()) {
+			try (OutputStream os = new FileOutputStream("db.properties")) {
+				Properties props = new Properties();
+
+				props.setProperty("my_anime_list_client_id", "");
+				props.store(os, "");
+			} catch (IOException e) {
+				Alertas.Tela_Alerta("Erro ao salvar o secrets", e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		try (FileInputStream fs = new FileInputStream("secrets.properties")) {
+			Properties props = new Properties();
+			props.load(fs);
+			return props;
+		} catch (IOException e) {
+			Alertas.Tela_Alerta("Erro ao carregar o secrets", e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

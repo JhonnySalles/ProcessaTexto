@@ -80,7 +80,7 @@ public class TarParse implements Parse {
 	}
 
 	@Override
-	public void destroi() throws IOException {
+	public void destroir() throws IOException {
 
 	}
 

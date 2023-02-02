@@ -114,7 +114,7 @@ public class Util {
 
 		if (parse instanceof RarParse)
 			try {
-				((RarParse) parse).destroi();
+				((RarParse) parse).destroir();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

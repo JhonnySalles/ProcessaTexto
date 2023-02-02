@@ -16,6 +16,8 @@ module TextosJapones {
     exports org.jisho.textosJapones.model.entities;
     exports org.jisho.textosJapones.components.listener;
     exports org.jisho.textosJapones.fileparse;
+    exports org.jisho.textosJapones.model.enums.comicinfo;
+    exports org.jisho.textosJapones.model.entities.comicinfo;
 
     requires transitive java.sql;
     requires transitive com.jfoenix;
@@ -38,7 +40,11 @@ module TextosJapones {
     requires java.base;
     requires junrar;
     requires org.apache.commons.compress;
+	requires java.xml.bind;
+	requires Mal4J;
 
+	opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
+	opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;

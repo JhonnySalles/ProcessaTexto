@@ -82,7 +82,7 @@ public class SevenZipParse implements Parse {
 	}
 
 	@Override
-	public void destroi() throws IOException {
+	public void destroir() throws IOException {
 
 	}
 
