@@ -96,25 +96,33 @@ public class ProcessaComicInfo {
 		return arquivo;
 	}
 
+	private static String TITLE_PATERN = "[^\\w\\s]";
 	private static dev.katsute.mal4j.manga.Manga MANGA = null;
 	private static void processaMal(String nome, ComicInfo info) {
 		try {
-			if (MANGA == null || !nome.equalsIgnoreCase(MANGA.getTitle())) {
+			String title = nome.replaceAll(TITLE_PATERN, "").trim();
+			
+			if (MANGA == null || !title.equalsIgnoreCase(MANGA.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
 				MANGA = null;
 				List<dev.katsute.mal4j.manga.Manga> search;
+				
+				int max = 5;
 				int page = 0;
 				do {  
-					search = MAL.getManga().withQuery(nome).withLimit(250).withOffset(page).search();
+					System.out.println("Realizando a consulta " + page);
+					search = MAL.getManga().withQuery(nome).withLimit(50).withOffset(page).search();
 					if (search != null && !search.isEmpty())
 						for (dev.katsute.mal4j.manga.Manga item : search) {
-							if (item.getType() == dev.katsute.mal4j.manga.property.MangaType.Manga && nome.equalsIgnoreCase(item.getTitle())) {
+							System.out.println(item.getTitle());
+							if (item.getType() == dev.katsute.mal4j.manga.property.MangaType.Manga && title.equalsIgnoreCase(item.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
+								System.out.println("Encontrado o manga " + item.getTitle());
 								MANGA = item;
 								break;
 							}
 						}
 					page++;
 					
-					if (page > 1)
+					if (page > max)
 						break;
 				} while (MANGA == null && search != null && !search.isEmpty());  
 			}
@@ -161,7 +169,7 @@ public class ProcessaComicInfo {
 				}
 	
 				if (info.getAlternateSeries() == null || info.getAlternateSeries().isEmpty()) {
-					String title = "";
+					title = "";
 	
 					if (MANGA.getAlternativeTitles().getJapanese() != null
 							|| MANGA.getAlternativeTitles().getJapanese().isEmpty())
@@ -182,7 +190,6 @@ public class ProcessaComicInfo {
 	
 					info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
 				}
-	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -208,11 +215,12 @@ public class ProcessaComicInfo {
 				}
 				
 				String nome = getNome(arquivo.getName());
+				System.out.println("Processando o manga " + nome);
 	
 				comic.setManga(org.jisho.textosJapones.model.enums.comicinfo.Manga.Yes);
 				comic.setLanguageISO(linguagem.getSigla());
 	
-				if (comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
+				if (comic.getTitle() == null || comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
 					comic.setTitle(comic.getSeries());
 	
 				processaMal(nome, comic);
