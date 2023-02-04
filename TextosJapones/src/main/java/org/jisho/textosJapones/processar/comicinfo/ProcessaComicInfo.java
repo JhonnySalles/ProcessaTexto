@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -190,6 +192,11 @@ public class ProcessaComicInfo {
 	
 					info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
 				}
+				
+				String notes = info.getNotes() != null ? info.getNotes() + "; " : "";
+				SimpleDateFormat date = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+				notes = "Tagged with MyAnimeList on " + date.format(LocalDate.now()) + ". [Issue ID " + MANGA.getID() + "]";
+				info.setNotes(notes);		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
