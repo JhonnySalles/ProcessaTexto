@@ -3,6 +3,7 @@ package org.jisho.textosJapones.processar.comicinfo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -35,6 +36,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import dev.katsute.mal4j.MyAnimeList;
+import javafx.scene.image.Image;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -357,9 +359,20 @@ public class ProcessaComicInfo {
 									if (!capitulo.isEmpty())
 										page.setBookmark(capitulo);
 								}
-	
-								if (page.getImageWidth() > page.getImageHeight())
-									page.setDoublePage(true);
+								
+								if (page.getImageWidth() == null || page.getImageHeight() == null) {
+									try {
+										Image image = new Image(parse.getPagina(i));
+										page.setImageWidth(Double.valueOf(image.getWidth()).intValue());
+										page.setImageHeight(Double.valueOf(image.getHeight()).intValue());
+									} catch (IOException e) {
+										e.printStackTrace();
+									}	
+								}
+								
+								if (page.getImageWidth() != null || page.getImageHeight() != null)
+									if ((page.getImageWidth() / page.getImageHeight()) > 0.9)
+										page.setDoublePage(true);
 							}
 							index++;
 						}
