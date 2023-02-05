@@ -209,7 +209,7 @@ public class ProcessaComicInfo {
 				}
 				
 				String notes = info.getNotes() != null ? (info.getNotes().contains("; ") ? info.getNotes().substring(0, info.getNotes().indexOf("; "))  :  info.getNotes()  ) + "; " : "";
-				notes = notes.substring(0, 23).equals("Tagged with MyAnimeList") ? "" : notes;
+				notes = notes.contains("Tagged with MyAnimeList") ? "" : notes;
 				DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss");
 				notes += "Tagged with MyAnimeList on " + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]";
 				info.setNotes(notes);
