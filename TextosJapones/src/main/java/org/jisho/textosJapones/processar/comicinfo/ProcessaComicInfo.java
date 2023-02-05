@@ -4,8 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,8 +29,14 @@ import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.configuration.Configuracao;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import dev.katsute.mal4j.MyAnimeList;
 import javafx.util.Callback;
+import javafx.util.Pair;
 
 public class ProcessaComicInfo {
 
@@ -98,8 +108,10 @@ public class ProcessaComicInfo {
 		return arquivo;
 	}
 
+	private static String API_JIKAN_CHARACTER = "https://api.jikan.moe/v4/manga/%s/characters";
 	private static String TITLE_PATERN = "[^\\w\\s]";
 	private static dev.katsute.mal4j.manga.Manga MANGA = null;
+	private static Pair<Long, String> MANGA_CHARACTER;
 	private static void processaMal(String nome, ComicInfo info) {
 		try {
 			String title = nome.replaceAll(TITLE_PATERN, "").trim();
@@ -190,13 +202,62 @@ public class ProcessaComicInfo {
 					for (dev.katsute.mal4j.manga.property.Publisher pub : MANGA.getSerialization())
 						publisher += pub.getName() + "; ";
 	
-					info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
+					if (!publisher.isEmpty())
+						info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
 				}
 				
-				String notes = info.getNotes() != null ? info.getNotes() + "; " : "";
-				SimpleDateFormat date = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
-				notes = "Tagged with MyAnimeList on " + date.format(LocalDate.now()) + ". [Issue ID " + MANGA.getID() + "]";
-				info.setNotes(notes);		
+				String notes = info.getNotes() != null ? (info.getNotes().contains("; ") ? info.getNotes().substring(0, info.getNotes().indexOf("; "))  :  info.getNotes()  ) + "; " : "";
+				notes = notes.substring(0, 23).equals("Tagged with MyAnimeList") ? "" : notes;
+				DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss");
+				notes += "Tagged with MyAnimeList on " + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]";
+				info.setNotes(notes);
+				
+				
+				if (MANGA_CHARACTER != null && MANGA_CHARACTER.getKey().compareTo(MANGA.getID()) == 0)
+					info.setCharacters(MANGA_CHARACTER.getValue());
+				else {
+					MANGA_CHARACTER = null;
+					try {
+						HttpRequest.Builder reqBuilder = HttpRequest.newBuilder();
+					    HttpRequest request = reqBuilder
+					            .uri(new URI(String.format(API_JIKAN_CHARACTER, MANGA.getID())))
+					            .GET()
+					            .build();
+	
+					    HttpResponse<String> response = HttpClient.newBuilder()
+					            .build()
+					            .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+					    String responseBody = response.body();
+					    
+					    if (responseBody.contains("character")) {
+						    Gson gson = new Gson();
+					        JsonElement element = gson.fromJson(responseBody, JsonElement.class);
+					        JsonObject jsonObject = element.getAsJsonObject();
+					        JsonArray list = jsonObject.getAsJsonArray("data");
+					        String characters = "";
+					        
+					        for (JsonElement item : list) {
+					        	JsonObject obj = item.getAsJsonObject();
+					        	String character = obj.getAsJsonObject("character").get("name").getAsString();
+					        	
+					        	if (character.contains(", "))
+					        		character = character.replace(",","");
+					        	else if (character.contains(","))
+					        		character = character.replace(","," ");
+					        	
+					        	characters += character + (obj.get("role").getAsString().toLowerCase().equals("main") ? " (" + obj.get("role").getAsString() + "), " : ", ");
+					        }
+					        
+					        if (!characters.isEmpty()) {
+					        	info.setCharacters(characters.substring(0, characters.lastIndexOf(", ")) + ".");
+					        	MANGA_CHARACTER = new Pair<Long, String>(MANGA.getID(), info.getCharacters());
+					        }
+					    }
+					}  catch (Exception e) {
+						e.printStackTrace();
+						System.out.println(MANGA.getID());
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -209,7 +270,7 @@ public class ProcessaComicInfo {
 			try {
 				info = extraiInfo(arquivo);
 			
-				if (info == null)
+				if (info == null || !info.exists())
 					return;
 
 				ComicInfo comic;

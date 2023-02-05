@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
@@ -12,20 +11,15 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="200.0" prefWidth="500.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
+<AnchorPane fx:id="apRoot" prefHeight="200.0" prefWidth="500.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
    <children>          
 	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
-            <VBox>
+            <VBox spacing="10.0">
                <children>
       	          <HBox spacing="10.0">
       	             <children>
                         <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
-                        <HBox alignment="CENTER_LEFT" spacing="5.0">
-                           <children>
-                              <JFXCheckBox fx:id="ckbSubstituir" checkedColor="#71afe5" text="Substituir?" textFill="WHITE" unCheckedColor="#106ebe" />
-                           </children>
-                        </HBox>
       	             </children>
       	             <padding>
       	                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -34,7 +28,7 @@
       	                <Insets />
       	             </opaqueInsets>
       	          </HBox>
-                  <HBox maxWidth="400.0" prefWidth="400.0" spacing="10.0">
+                  <HBox maxWidth="600.0" prefWidth="600.0" spacing="10.0">
                      <children>
                         <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Caminho salvar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminho" prefWidth="35.0">
@@ -42,6 +36,15 @@
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../images/icoPasta_48.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                        <JFXButton fx:id="btnArquivo" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarArquivo" prefWidth="35.0">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../images/icoArquivo_48.png" />
                                  </image>
                               </ImageView>
                            </graphic>

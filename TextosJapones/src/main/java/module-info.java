@@ -42,6 +42,7 @@ module TextosJapones {
     requires org.apache.commons.compress;
 	requires java.xml.bind;
 	requires Mal4J;
+	requires java.net.http;
 
 	opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
 	opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;

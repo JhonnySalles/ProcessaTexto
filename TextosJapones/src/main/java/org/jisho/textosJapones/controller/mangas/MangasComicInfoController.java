@@ -12,7 +12,6 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.processar.comicinfo.ProcessaComicInfo;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
@@ -29,6 +28,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 
 public class MangasComicInfoController implements Initializable {
@@ -46,12 +46,12 @@ public class MangasComicInfoController implements Initializable {
 	
 	@FXML
 	private JFXButton btnCaminho;
+	
+	@FXML
+	private JFXButton btnArquivo;
 
 	@FXML
 	private JFXButton btnProcessar;
-
-	@FXML
-	private JFXCheckBox ckbSubstituir;
 
 	private MangasController controller;
 
@@ -70,21 +70,52 @@ public class MangasComicInfoController implements Initializable {
 
 	@FXML
 	private void onBtnCarregarCaminho() {
-		txtCaminho.setText(selecionaPasta(txtCaminho.getText()));
+		txtCaminho.setText(selecionaPasta(txtCaminho.getText(), false));
+	}
+	
+	@FXML
+	private void onBtnCarregarArquivo() {
+		txtCaminho.setText(selecionaPasta(txtCaminho.getText(), true));
 	}
 
-	private String selecionaPasta(String pasta) {
-		DirectoryChooser fileChooser = new DirectoryChooser();
-		fileChooser.setTitle("Selecione a pasta de destino");
+	private String selecionaPasta(String local, Boolean isArquivo) {
+		String pasta = "";
+		File caminho = null;
+		
+		if (local != null && !local.isEmpty()) {
+			caminho = new File(local);
+			
+			if (caminho.isFile()) {
+				String file = caminho.getAbsolutePath();
+				file = file.substring(0, file.indexOf(caminho.getName()));
+				caminho = new File(file);
+			}
+		}
+		  
+		if (isArquivo) {
+			FileChooser fileChooser = new FileChooser();
 
-		if (pasta != null && !pasta.isEmpty())
-			fileChooser.setInitialDirectory(new File(pasta));
-		File caminho = fileChooser.showDialog(null);
+			if (caminho != null)
+				fileChooser.setInitialDirectory(caminho);
 
-		if (caminho == null)
-			return "";
-		else
-			return caminho.getAbsolutePath();
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos", "*.cbr", "*.cbz", "*.rar", "*.zip");
+			fileChooser.getExtensionFilters().add(extFilter);
+			fileChooser.setTitle("Selecione o arquivo de destino");
+			
+			File file = fileChooser.showOpenDialog(null);
+			pasta = file == null ? "" : file.getAbsolutePath();
+		} else {
+			DirectoryChooser fileChooser = new DirectoryChooser();
+			fileChooser.setTitle("Selecione a pasta de destino");
+		
+			if (caminho != null)
+				fileChooser.setInitialDirectory(caminho);
+
+			File file = fileChooser.showDialog(null);
+			pasta = file == null ? "" : file.getAbsolutePath();
+		}
+		
+		return pasta;
 	}
 
 
