@@ -114,7 +114,7 @@ public class ProcessaComicInfo {
 	private static String TITLE_PATERN = "[^\\w\\s]";
 	private static dev.katsute.mal4j.manga.Manga MANGA = null;
 	private static Pair<Long, String> MANGA_CHARACTER;
-	private static void processaMal(String nome, ComicInfo info) {
+	private static void processaMal(String nome, ComicInfo info, Language linguagem) {
 		try {
 			String title = nome.replaceAll(TITLE_PATERN, "").trim();
 			
@@ -143,7 +143,7 @@ public class ProcessaComicInfo {
 				} while (MANGA == null && search != null && !search.isEmpty());  
 			}
 	
-			if (MANGA != null) {
+			if (MANGA != null) {				
 				for (dev.katsute.mal4j.manga.property.Author author : MANGA.getAuthors()) {
 					if (author.getRole().toLowerCase().equals("art")) {
 						if (info.getPenciller() == null || info.getPenciller().isEmpty())
@@ -186,10 +186,14 @@ public class ProcessaComicInfo {
 	
 				if (info.getAlternateSeries() == null || info.getAlternateSeries().isEmpty()) {
 					title = "";
-	
+					
 					if (MANGA.getAlternativeTitles().getJapanese() != null
-							|| MANGA.getAlternativeTitles().getJapanese().isEmpty())
+							|| MANGA.getAlternativeTitles().getJapanese().isEmpty()) {
+						if (linguagem.equals(Language.JAPANESE))
+							info.setTitle(MANGA.getAlternativeTitles().getJapanese());
+						
 						title += MANGA.getAlternativeTitles().getJapanese() + "; ";
+					}
 	
 					if (MANGA.getAlternativeTitles().getSynonyms() != null)
 						for (String synonym : MANGA.getAlternativeTitles().getSynonyms())
@@ -293,7 +297,7 @@ public class ProcessaComicInfo {
 				if (comic.getTitle() == null || comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
 					comic.setTitle(comic.getSeries());
 	
-				processaMal(nome, comic);
+				processaMal(nome, comic, linguagem);
 	
 				Parse parse = null;
 				try {
