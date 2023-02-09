@@ -296,6 +296,8 @@ public class ProcessaComicInfo {
 	
 				if (comic.getTitle() == null || comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
 					comic.setTitle(comic.getSeries());
+				else if (comic.getTitle() != null && !comic.getTitle().equalsIgnoreCase(comic.getSeries()))
+					comic.setStoryArc(comic.getTitle());
 	
 				processaMal(nome, comic, linguagem);
 	
