@@ -13,14 +13,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.jisho.textosJapones.controller.mangas.MangasComicInfoController;
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
 import org.jisho.textosJapones.model.entities.comicinfo.ComicInfo;
@@ -36,6 +37,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import dev.katsute.mal4j.MyAnimeList;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 import javafx.util.Pair;
@@ -46,9 +48,20 @@ public class ProcessaComicInfo {
 	private static String PATTERN = ".*\\.(zip|cbz|rar|cbr|tar)$";
 	private static String COMICINFO = "ComicInfo.xml";
 	private static JAXBContext JAXBC = null;
+	private static Boolean CANCELAR = false;
+	private static MangasComicInfoController CONTROLLER;
+	
+	public static void setPai(MangasComicInfoController controller) {
+		CONTROLLER = controller;
+	}
+	
+	public static void cancelar() {
+		CANCELAR = true;
+	}
 
 	public static void processa(String winrar, Language linguagem, String path, Callback<Integer[], Boolean> callback) {
 		WINRAR = winrar;
+		CANCELAR = false;
 		
 		Properties secret = Configuracao.loadSecrets();
 		String clientId = secret.getProperty("my_anime_list_client_id");
@@ -66,16 +79,19 @@ public class ProcessaComicInfo {
 				callback.call(size);
 				
 				for (File arquivo : arquivos.listFiles()) {
-					processa(linguagem, arquivo);
+					processa(linguagem, arquivo, null);
 					size[0]++;
 					callback.call(size);
+					
+					if (CANCELAR)
+						break;
 				}
 			} else if (arquivos.isFile()) {
 				size[0] = 0;
 				size[1] = 1;
 				callback.call(size);
 				
-				processa(linguagem, arquivos);
+				processa(linguagem, arquivos, null);
 				
 				size[0]++;
 				callback.call(size);
@@ -87,7 +103,38 @@ public class ProcessaComicInfo {
 		} finally {
 			if (JAXBC != null)
 				JAXBC = null;
-		}		
+		}
+	}
+	
+	public static Boolean processa(String winrar, Language linguagem, String arquivo, Long idMal) {
+		WINRAR = winrar;
+		CANCELAR = false;
+		
+		Properties secret = Configuracao.loadSecrets();
+		String clientId = secret.getProperty("my_anime_list_client_id");
+		MAL = MyAnimeList.withClientID(clientId);
+
+		File arquivos = new File(arquivo);
+		
+		if (!arquivos.exists())
+			return false;
+
+		try {
+			if (JAXBC == null)
+				JAXBC = JAXBContext.newInstance(ComicInfo.class);
+			
+			processa(linguagem, arquivos, idMal);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (JAXBC != null)
+				JAXBC = null;
+		}
+		return true;
 	}
 
 	private static MyAnimeList MAL;
@@ -112,35 +159,65 @@ public class ProcessaComicInfo {
 
 	private static String API_JIKAN_CHARACTER = "https://api.jikan.moe/v4/manga/%s/characters";
 	private static String TITLE_PATERN = "[^\\w\\s]";
+	private static String DESCRIPTION_MAL = "Tagged with MyAnimeList on ";
 	private static dev.katsute.mal4j.manga.Manga MANGA = null;
 	private static Pair<Long, String> MANGA_CHARACTER;
-	private static void processaMal(String nome, ComicInfo info, Language linguagem) {
+	private static void processaMal(String arquivo, String nome, ComicInfo info, Language linguagem, Long idMal) {
 		try {
+			Long id = idMal;
+			
+			if (id == null) {
+				if (info.getNotes() != null) {
+					if (info.getNotes().contains(";")) {
+						for (String note : info.getNotes().split(";")) 
+							if (note.toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
+								id = Long.valueOf(note.substring(note.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
+					} else if (info.getNotes().toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
+						id = Long.valueOf(info.getNotes().substring(info.getNotes().indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
+				}
+			}
+			
 			String title = nome.replaceAll(TITLE_PATERN, "").trim();
 			
 			if (MANGA == null || !title.equalsIgnoreCase(MANGA.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
 				MANGA = null;
-				List<dev.katsute.mal4j.manga.Manga> search;
-				
-				int max = 5;
-				int page = 0;
-				do {  
-					System.out.println("Realizando a consulta " + page);
-					search = MAL.getManga().withQuery(nome).withLimit(50).withOffset(page).search();
-					if (search != null && !search.isEmpty())
-						for (dev.katsute.mal4j.manga.Manga item : search) {
-							System.out.println(item.getTitle());
-							if (item.getType() == dev.katsute.mal4j.manga.property.MangaType.Manga && title.equalsIgnoreCase(item.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
-								System.out.println("Encontrado o manga " + item.getTitle());
-								MANGA = item;
-								break;
+				if (id != null)
+					MANGA = MAL.getManga(id);
+				else {
+					List<dev.katsute.mal4j.manga.Manga> search;
+					int max = 5;
+					int page = 0;
+					do {  
+						System.out.println("Realizando a consulta " + page);
+						search = MAL.getManga().withQuery(nome).withLimit(50).withOffset(page).search();
+						if (search != null && !search.isEmpty())
+							for (dev.katsute.mal4j.manga.Manga item : search) {
+								System.out.println(item.getTitle());
+								if (item.getType() == dev.katsute.mal4j.manga.property.MangaType.Manga && title.equalsIgnoreCase(item.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
+									System.out.println("Encontrado o manga " + item.getTitle());
+									MANGA = item;
+									break;
+								}
+							}
+												
+						if (page == 0 && MANGA == null) {
+							if (search != null && !search.isEmpty()) {
+								org.jisho.textosJapones.model.entities.comicinfo.MAL mal = new org.jisho.textosJapones.model.entities.comicinfo.MAL(arquivo, nome);
+								for (dev.katsute.mal4j.manga.Manga item : search) 
+									mal.addRegistro(item.getTitle(), item.getID(), false);
+									
+								mal.getMyanimelist().get(0).setProcessar(true);
+								Platform.runLater(() -> {
+									CONTROLLER.addItem(mal);
+								});
 							}
 						}
-					page++;
-					
-					if (page > max)
-						break;
-				} while (MANGA == null && search != null && !search.isEmpty());  
+							
+						page++;
+						if (page > max)
+							break;
+					} while (MANGA == null && search != null && !search.isEmpty());  
+				}
 			}
 	
 			if (MANGA != null) {				
@@ -212,13 +289,22 @@ public class ProcessaComicInfo {
 						info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
 				}
 				
-				String notes = info.getNotes() != null ? (info.getNotes().contains("; ") ? info.getNotes().substring(0, info.getNotes().indexOf("; "))  :  info.getNotes()  ) + "; " : "";
-				notes = notes.contains("Tagged with MyAnimeList") ? "" : notes;
 				DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss");
-				notes += "Tagged with MyAnimeList on " + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]";
-				info.setNotes(notes);
+				String notes = "";
+				if (info.getNotes() != null) {
+					if (info.getNotes().contains(";")) {
+						for (String note : info.getNotes().split(";")) 
+							if (note.toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
+								notes += DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]; ";
+							else
+								notes += note.trim() + "; ";
+					} else
+						notes += info.getNotes() + "; " + DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]; ";
+				} else
+					notes += DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]; ";
 				
-				
+				info.setNotes(notes.substring(0, notes.lastIndexOf("; ")));
+								
 				if (MANGA_CHARACTER != null && MANGA_CHARACTER.getKey().compareTo(MANGA.getID()) == 0)
 					info.setCharacters(MANGA_CHARACTER.getValue());
 				else {
@@ -270,7 +356,7 @@ public class ProcessaComicInfo {
 		}
 	}
 
-	private static void processa(Language linguagem, File arquivo) {
+	private static void processa(Language linguagem, File arquivo, Long idMal) {
 		if (arquivo.getName().toLowerCase().matches(PATTERN)) {
 			File info = null;
 			try {
@@ -299,7 +385,7 @@ public class ProcessaComicInfo {
 				else if (comic.getTitle() != null && !comic.getTitle().equalsIgnoreCase(comic.getSeries()))
 					comic.setStoryArc(comic.getTitle());
 	
-				processaMal(nome, comic, linguagem);
+				processaMal(arquivo.getAbsolutePath(), nome, comic, linguagem, idMal);
 	
 				Parse parse = null;
 				try {

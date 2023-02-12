@@ -5,15 +5,17 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="200.0" prefWidth="500.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
    <children>          
-	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
+	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
             <VBox spacing="10.0">
                <children>
@@ -59,11 +61,30 @@
       	                <Insets />
       	             </opaqueInsets>
       	             <children>
-      	                <JFXButton fx:id="btnProcessar" accessibleText="GERAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar" HBox.hgrow="ALWAYS" />
+      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar" HBox.hgrow="ALWAYS" />
       	             </children>
       	          </HBox>
                </children>
             </VBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <children>
+                  <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="140.0" styleClass="background-White1" text="Processar Marcados" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="140.0" styleClass="background-White1" text="Limpar lista" />
+               </children>
+            </HBox>
+            <TreeTableView fx:id="treeTabela" editable="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+              <columns>
+                <TreeTableColumn fx:id="treecFlag" prefWidth="75.0" />
+                <TreeTableColumn fx:id="treecMacado" prefWidth="27.5" />
+                  <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
+                  <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
+                  <TreeTableColumn fx:id="treecMalID" editable="false" minWidth="0.0" prefWidth="64.5" text="ID" />
+                  <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" text="Processar" />
+              </columns>
+            </TreeTableView>
 	       </children>
 	    </VBox>                      
    </children>

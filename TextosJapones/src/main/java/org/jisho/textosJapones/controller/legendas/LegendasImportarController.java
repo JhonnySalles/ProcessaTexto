@@ -59,7 +59,7 @@ public class LegendasImportarController implements Initializable {
 	private void onBtnProcessar() {
 		onBtnPesquisar();
 
-		if (!frases.isEmpty()) {
+		if (frases != null && !frases.isEmpty()) {
 			if (legendas == null)
 				legendas = new ProcessarLegendas(this);
 
