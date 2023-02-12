@@ -25,6 +25,7 @@ import org.jisho.textosJapones.controller.mangas.MangasComicInfoController;
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
 import org.jisho.textosJapones.model.entities.comicinfo.ComicInfo;
+import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
 import org.jisho.textosJapones.model.entities.comicinfo.Pages;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
@@ -39,6 +40,7 @@ import com.google.gson.JsonObject;
 import dev.katsute.mal4j.MyAnimeList;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -203,10 +205,12 @@ public class ProcessaComicInfo {
 						if (page == 0 && MANGA == null) {
 							if (search != null && !search.isEmpty()) {
 								org.jisho.textosJapones.model.entities.comicinfo.MAL mal = new org.jisho.textosJapones.model.entities.comicinfo.MAL(arquivo, nome);
-								for (dev.katsute.mal4j.manga.Manga item : search) 
-									mal.addRegistro(item.getTitle(), item.getID(), false);
+								for (dev.katsute.mal4j.manga.Manga item : search) {
+									Registro registro = mal.addRegistro(item.getTitle(), item.getID(), false);
+									registro.setImagem(new ImageView(item.getMainPicture().getMediumURL()));
+								}
 									
-								mal.getMyanimelist().get(0).setProcessar(true);
+								mal.getMyanimelist().get(0).setSelecionado(true);
 								Platform.runLater(() -> {
 									CONTROLLER.addItem(mal);
 								});

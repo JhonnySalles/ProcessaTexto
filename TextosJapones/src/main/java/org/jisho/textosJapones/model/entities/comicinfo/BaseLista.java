@@ -2,13 +2,18 @@ package org.jisho.textosJapones.model.entities.comicinfo;
 
 import com.jfoenix.controls.JFXButton;
 
+import javafx.scene.image.ImageView;
+
 public class BaseLista {
 
 	private String descricao;
 	private String nome;
 	private Long id;
-	private Boolean processar;
-	private JFXButton button;
+	private Boolean selecionado;
+	private JFXButton processar;
+	private JFXButton site;
+	private ImageView imagem;
+	
 
 	public String getDescricao() {
 		return descricao;
@@ -34,26 +39,39 @@ public class BaseLista {
 		this.id = id;
 	}
 
-	public Boolean isProcessar() {
+	public Boolean isSelecionado() {
+		return selecionado;
+	}
+	
+	public void setSelecionado(Boolean selecionado) {
+		this.selecionado = selecionado;
+	}
+	
+	public JFXButton getProcessar() {
 		return processar;
 	}
 	
-	public void setProcessar(Boolean processar) {
-		this.processar = processar;
+	public JFXButton getSite() {
+		return site;
 	}
 	
-	public JFXButton getButton() {
-		return button;
+	public ImageView getImagem() {
+		return imagem;
 	}
 
-	public void setButton(JFXButton button) {
-		this.button = button;
+	public void setImagem(ImageView imagem) {
+		this.imagem = imagem;
 	}
 
+	public void setButton(JFXButton processar, JFXButton site) {
+		this.processar = processar;
+		this.site = site;
+	}
+	
 	public BaseLista(String descricao, String nome, Long id, Boolean processar) {
 		this.descricao = descricao;
 		this.nome = nome;
 		this.id = id;
-		this.processar = processar;
+		this.selecionado = processar;
 	}
 }

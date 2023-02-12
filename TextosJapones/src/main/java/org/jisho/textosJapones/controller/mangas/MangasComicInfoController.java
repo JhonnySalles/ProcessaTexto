@@ -1,6 +1,10 @@
 package org.jisho.textosJapones.controller.mangas;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -39,6 +43,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -92,6 +97,12 @@ public class MangasComicInfoController implements Initializable {
 
 	@FXML
 	private TreeTableColumn<BaseLista, String> treecProcessar;
+	
+	@FXML
+	private TreeTableColumn<BaseLista, String> treecSite;
+	
+	@FXML
+	private TreeTableColumn<BaseLista, ImageView> treecImagem;
 	
 	private ObservableList<MAL> REGISTROS = FXCollections.observableArrayList();
 	private MangasController controller;
@@ -299,7 +310,7 @@ public class MangasComicInfoController implements Initializable {
 										Type.NORMAL);
 						});
 						
-						Optional<Registro> registro = item.getMyanimelist().stream().filter(it -> it.isProcessar()).findFirst();
+						Optional<Registro> registro = item.getMyanimelist().stream().filter(it -> it.isSelecionado()).findFirst();
 						
 						if (registro.isPresent()) {
 							if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), 
@@ -354,6 +365,16 @@ public class MangasComicInfoController implements Initializable {
 		bloqueiaCampos(false);
 	}
 	
+	private void openSiteMal(Long id) {
+		try {
+			Desktop.getDesktop().browse(new URI("https://myanimelist.net/manga/" + id));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public void addItem(MAL item) {
 		REGISTROS.add(item);
@@ -368,9 +389,9 @@ public class MangasComicInfoController implements Initializable {
 			// ---------------- Mal ---------------- //
 			for (Registro registro : item.getMyanimelist())  {
 				TreeItem<BaseLista> reg = new TreeItem<BaseLista>(registro);
-				JFXButton button = new JFXButton("Processar");
-				button.getStyleClass().add("background-White1");
-		        button.setOnAction(event -> {
+				JFXButton processar = new JFXButton("Processar");
+				processar.getStyleClass().add("background-White1");
+		        processar.setOnAction(event -> {
                 	String arquivo = registro.getParent().getArquivo();
                 	if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo, registro.getId())) {
                 		REGISTROS.remove(item);
@@ -378,7 +399,10 @@ public class MangasComicInfoController implements Initializable {
                 		treeTabela.refresh();
                 	}
                 });
-		        reg.getValue().setButton(button);
+		        JFXButton site = new JFXButton("Site");
+		        site.getStyleClass().add("background-White1");
+		        site.setOnAction(event -> openSiteMal(registro.getId()));
+		        reg.getValue().setButton(processar, site);
 				itmManga.getChildren().add(reg);
 			}
 			
@@ -408,19 +432,19 @@ public class MangasComicInfoController implements Initializable {
 						TreeItem<BaseLista> treeItem = param.getValue();
 						if (treeItem.getValue() instanceof Registro) {
 							Registro item = (Registro) treeItem.getValue();
-							SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isProcessar());
+							SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isSelecionado());
 	
 							booleanProp.addListener(new ChangeListener<Boolean>() {
 								@Override
 								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
 										Boolean newValue) {
-									item.setProcessar(newValue);
+									item.setSelecionado(newValue);
 									if (newValue) {
 										MAL parent = item.getParent();
 										
 										for (Registro aux : parent.getMyanimelist()) {
 											if (!aux.getId().equals(item.getId()))
-												aux.setProcessar(false);
+												aux.setSelecionado(false);
 										}
 									}
 	
@@ -446,11 +470,13 @@ public class MangasComicInfoController implements Initializable {
 	}
 
 	private void linkaCelulas() {
-		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<BaseLista, Boolean>("processar"));
+		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<BaseLista, Boolean>("selecionado"));
 		treecManga.setCellValueFactory(new TreeItemPropertyValueFactory<>("descricao"));
 		treecNome.setCellValueFactory(new TreeItemPropertyValueFactory<>("nome"));
 		treecMalID.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
-		treecProcessar.setCellValueFactory(new TreeItemPropertyValueFactory<>("button"));
+		treecProcessar.setCellValueFactory(new TreeItemPropertyValueFactory<>("processar"));
+		treecSite.setCellValueFactory(new TreeItemPropertyValueFactory<>("site"));
+		treecImagem.setCellValueFactory(new TreeItemPropertyValueFactory<>("imagem"));
 		treeTabela.setShowRoot(false);
 
 		editaColunas();

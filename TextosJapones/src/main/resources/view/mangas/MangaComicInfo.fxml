@@ -82,7 +82,9 @@
                   <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
                   <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
                   <TreeTableColumn fx:id="treecMalID" editable="false" minWidth="0.0" prefWidth="64.5" text="ID" />
+                  <TreeTableColumn fx:id="treecSite" editable="false" prefWidth="76.5" text="Site" />
                   <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" text="Processar" />
+                  <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" text="Imagem" />
               </columns>
             </TreeTableView>
 	       </children>

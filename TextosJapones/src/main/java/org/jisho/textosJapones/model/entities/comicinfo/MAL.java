@@ -57,8 +57,10 @@ public class MAL extends BaseLista {
 		this.myanimelist = myanimelist;
 	}
 	
-	public void addRegistro(String nome, Long id, Boolean processar) {
-		myanimelist.add(new Registro(this, nome, id, processar));
+	public Registro addRegistro(String nome, Long id, Boolean processar) {
+		Registro item = new Registro(this, nome, id, processar);
+		myanimelist.add(item);
+		return item;
 	}
 
 	public MAL(String arquivo, String nome, List<Registro> myanimelist) {
