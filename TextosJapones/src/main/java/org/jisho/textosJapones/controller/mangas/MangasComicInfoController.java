@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -38,14 +39,20 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
@@ -64,22 +71,22 @@ public class MangasComicInfoController implements Initializable {
 
 	@FXML
 	private JFXTextField txtCaminho;
-	
+
 	@FXML
 	private JFXButton btnCaminho;
-	
+
 	@FXML
 	private JFXButton btnArquivo;
 
 	@FXML
 	private JFXButton btnProcessar;
-	
+
 	@FXML
 	private JFXButton btnProcessarMarcados;
-	
+
 	@FXML
 	private JFXButton btnLimparLista;
-	
+
 	@FXML
 	private TreeTableView<BaseLista> treeTabela;
 
@@ -93,17 +100,17 @@ public class MangasComicInfoController implements Initializable {
 	private TreeTableColumn<BaseLista, String> treecNome;
 
 	@FXML
-	private TreeTableColumn<BaseLista, Long> treecMalID;
+	private TreeTableColumn<BaseLista, String> treecMalID;
 
 	@FXML
 	private TreeTableColumn<BaseLista, String> treecProcessar;
-	
+
 	@FXML
 	private TreeTableColumn<BaseLista, String> treecSite;
-	
+
 	@FXML
 	private TreeTableColumn<BaseLista, ImageView> treecImagem;
-	
+
 	private ObservableList<MAL> REGISTROS = FXCollections.observableArrayList();
 	private MangasController controller;
 
@@ -122,11 +129,11 @@ public class MangasComicInfoController implements Initializable {
 		else
 			cancelar();
 	}
-	
+
 	@FXML
 	private void onBtnProcessarMarcados() {
 		if (btnProcessarMarcados.accessibleTextProperty().getValue().equals("PROCESSAR"))
-			processarLista();
+			processarLista(false);
 		else
 			PARAR = true;
 	}
@@ -135,25 +142,25 @@ public class MangasComicInfoController implements Initializable {
 	private void onBtnCarregarCaminho() {
 		txtCaminho.setText(selecionaPasta(txtCaminho.getText(), false));
 	}
-	
+
 	@FXML
 	private void onBtnCarregarArquivo() {
 		txtCaminho.setText(selecionaPasta(txtCaminho.getText(), true));
 	}
-	
+
 	@FXML
 	private void onBtnLimparLista() {
 		REGISTROS.clear();
 		configuraTabela();
 	}
-	
+
 	private void ativaCampos() {
 		treeTabela.setDisable(false);
 		btnProcessarMarcados.setDisable(false);
 		btnProcessar.setDisable(false);
 		btnLimparLista.setDisable(false);
 	}
-	
+
 	private void bloqueiaCampos(Boolean isProcessar) {
 		btnLimparLista.setDisable(true);
 		treeTabela.setDisable(true);
@@ -166,48 +173,48 @@ public class MangasComicInfoController implements Initializable {
 	private String selecionaPasta(String local, Boolean isArquivo) {
 		String pasta = "";
 		File caminho = null;
-		
+
 		if (local != null && !local.isEmpty()) {
 			caminho = new File(local);
-			
+
 			if (caminho.isFile()) {
 				String file = caminho.getAbsolutePath();
 				file = file.substring(0, file.indexOf(caminho.getName()));
 				caminho = new File(file);
 			}
 		}
-		  
+
 		if (isArquivo) {
 			FileChooser fileChooser = new FileChooser();
 
 			if (caminho != null)
 				fileChooser.setInitialDirectory(caminho);
 
-			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos", "*.cbr", "*.cbz", "*.rar", "*.zip");
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos", "*.cbr", "*.cbz",
+					"*.rar", "*.zip");
 			fileChooser.getExtensionFilters().add(extFilter);
 			fileChooser.setTitle("Selecione o arquivo de destino");
-			
+
 			File file = fileChooser.showOpenDialog(null);
 			pasta = file == null ? "" : file.getAbsolutePath();
 		} else {
 			DirectoryChooser fileChooser = new DirectoryChooser();
 			fileChooser.setTitle("Selecione a pasta de destino");
-		
+
 			if (caminho != null)
 				fileChooser.setInitialDirectory(caminho);
 
 			File file = fileChooser.showDialog(null);
 			pasta = file == null ? "" : file.getAbsolutePath();
 		}
-		
+
 		return pasta;
 	}
-
 
 	private void cancelar() {
 		ProcessaComicInfo.cancelar();
 	}
-	
+
 	private void processar() {
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 
@@ -221,7 +228,7 @@ public class MangasComicInfoController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					updateMessage("Processando itens....");
-					
+
 					Callback<Integer[], Boolean> callback = new Callback<Integer[], Boolean>() {
 						@Override
 						public Boolean call(Integer[] param) {
@@ -235,12 +242,10 @@ public class MangasComicInfoController implements Initializable {
 							return null;
 						}
 					};
-					
-					ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), 
-							cbLinguagem.getValue(), 
-							txtCaminho.getText(), 
-							callback);
-					
+
+					ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(),
+							txtCaminho.getText(), callback);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -281,10 +286,11 @@ public class MangasComicInfoController implements Initializable {
 		btnProcessar.setAccessibleText("PROCESSANDO");
 		bloqueiaCampos(true);
 	}
-	
+
 	private Integer I = 0;
 	private Boolean PARAR = false;
-	private void processarLista() {
+
+	private void processarLista(Boolean isSelecionado) {
 		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
 
 		if (TaskbarProgressbar.isSupported())
@@ -299,26 +305,31 @@ public class MangasComicInfoController implements Initializable {
 					updateMessage("Processando itens....");
 					PARAR = false;
 					I = 0;
-					for (MAL item : REGISTROS) {
+					
+					List<MAL> lista = isSelecionado ? REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().parallelStream().anyMatch(re -> re.isSelecionado())).toList() 
+							: REGISTROS.parallelStream().toList();
+					
+					for (MAL item : lista) {
 						I++;
-						
+
 						Platform.runLater(() -> {
-							updateMessage("Processando itens...." + I + '/' + REGISTROS.size());
-							updateProgress(I, REGISTROS.size());
+							updateMessage("Processando itens...." + I + '/' + lista.size());
+							updateProgress(I, lista.size());
 							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, REGISTROS.size(),
+								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
 										Type.NORMAL);
 						});
-						
-						Optional<Registro> registro = item.getMyanimelist().stream().filter(it -> it.isSelecionado()).findFirst();
-						
+
+						Optional<Registro> registro = item.getMyanimelist().stream().filter(it -> it.isMarcado())
+								.findFirst();
+
 						if (registro.isPresent()) {
-							if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), 
-									cbLinguagem.getValue(), txtCaminho.getText(), registro.get().getId()))
-		                		REGISTROS.remove(item);
-		                	
+							if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(),
+									registro.get().getParent().getArquivo(), registro.get().getId()))
+								REGISTROS.remove(item);
+
 						}
-						
+
 						if (PARAR)
 							break;
 					}
@@ -364,7 +375,7 @@ public class MangasComicInfoController implements Initializable {
 		btnProcessarMarcados.setAccessibleText("PROCESSANDO");
 		bloqueiaCampos(false);
 	}
-	
+
 	private void openSiteMal(Long id) {
 		try {
 			Desktop.getDesktop().browse(new URI("https://myanimelist.net/manga/" + id));
@@ -374,45 +385,45 @@ public class MangasComicInfoController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	public void addItem(MAL item) {
 		REGISTROS.add(item);
 		configuraTabela();
 	}
-	
+
 	private TreeItem<BaseLista> getTreeData() {
 		TreeItem<BaseLista> itmRoot = new TreeItem<BaseLista>(new BaseLista("...", "", null, false));
 		for (MAL item : REGISTROS) {
 			TreeItem<BaseLista> itmManga = new TreeItem<BaseLista>(item);
 
 			// ---------------- Mal ---------------- //
-			for (Registro registro : item.getMyanimelist())  {
+			for (Registro registro : item.getMyanimelist()) {
 				TreeItem<BaseLista> reg = new TreeItem<BaseLista>(registro);
 				JFXButton processar = new JFXButton("Processar");
 				processar.getStyleClass().add("background-White1");
-		        processar.setOnAction(event -> {
-                	String arquivo = registro.getParent().getArquivo();
-                	if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo, registro.getId())) {
-                		REGISTROS.remove(item);
-                		itmRoot.getChildren().remove(itmManga);
-                		treeTabela.refresh();
-                	}
-                });
-		        JFXButton site = new JFXButton("Site");
-		        site.getStyleClass().add("background-White1");
-		        site.setOnAction(event -> openSiteMal(registro.getId()));
-		        reg.getValue().setButton(processar, site);
+				processar.setOnAction(event -> {
+					String arquivo = registro.getParent().getArquivo();
+					if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo,
+							registro.getId())) {
+						REGISTROS.remove(item);
+						itmRoot.getChildren().remove(itmManga);
+						treeTabela.refresh();
+					}
+				});
+				JFXButton site = new JFXButton("Site");
+				site.getStyleClass().add("background-White1");
+				site.setOnAction(event -> openSiteMal(registro.getId()));
+				reg.getValue().setButton(processar, site);
 				itmManga.getChildren().add(reg);
 			}
-			
+
 			// ---------------- Adicionado na tabela ---------------- //
 			itmRoot.getChildren().add(itmManga);
 			itmRoot.setExpanded(true);
 		}
 		return itmRoot;
 	}
-	
+
 	private TreeItem<BaseLista> DADOS;
 	private void configuraTabela() {
 		try {
@@ -423,6 +434,52 @@ public class MangasComicInfoController implements Initializable {
 		treeTabela.setRoot(DADOS);
 	}
 	
+	private void onBtnTrocaId() {
+		if (!REGISTROS.parallelStream().anyMatch(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
+				&& treeTabela.selectionModelProperty().getValue() != null)
+			treeTabela.selectionModelProperty().getValue().getSelectedItem().getValue().setSelecionado(true);
+		
+		Callback<Registro, Boolean> callback = new Callback<Registro, Boolean>() {
+			@Override
+			public Boolean call(Registro param) {
+				
+				REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado())).forEach(it -> {
+					if (it.isSelecionado()) {
+						it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
+						Registro reg = it.getMyanimelist().get(0);
+						reg.setMarcado(true);
+						reg.setId(param.getId());
+						reg.setNome(param.getNome());
+						reg.setImagem(param.getImagem());
+					} else {
+						it.getMyanimelist().forEach(re -> re.setMarcado(false));
+						Optional<Registro> reg = it.getMyanimelist().parallelStream().filter(re -> re.isSelecionado()).findFirst();
+						if (reg.isPresent()) {
+							reg.get().setMarcado(true);
+							reg.get().setId(param.getId());
+							reg.get().setNome(param.getNome());
+							reg.get().setImagem(param.getImagem());
+						} else {
+							Registro aux = it.getMyanimelist().get(0);
+							aux.setMarcado(true);
+							aux.setId(param.getId());
+							aux.setNome(param.getNome());
+							aux.setImagem(param.getImagem());
+						}
+					}
+					
+					it.setSelecionado(false);
+					it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
+				});
+			
+				treeTabela.refresh();
+				return null;
+			}
+		};
+		
+		MangasComicInfoMalId.abreTelaCorrecao(controller.getStackPane(), controller.getRoot(), callback);
+	}
+
 	private void editaColunas() {
 		// ==== (CHECK-BOX) ===
 		treecMacado.setCellValueFactory(
@@ -432,26 +489,26 @@ public class MangasComicInfoController implements Initializable {
 						TreeItem<BaseLista> treeItem = param.getValue();
 						if (treeItem.getValue() instanceof Registro) {
 							Registro item = (Registro) treeItem.getValue();
-							SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isSelecionado());
-	
+							SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isMarcado());
+
 							booleanProp.addListener(new ChangeListener<Boolean>() {
 								@Override
 								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
 										Boolean newValue) {
-									item.setSelecionado(newValue);
+									item.setMarcado(newValue);
 									if (newValue) {
 										MAL parent = item.getParent();
-										
+
 										for (Registro aux : parent.getMyanimelist()) {
 											if (!aux.getId().equals(item.getId()))
-												aux.setSelecionado(false);
+												aux.setMarcado(false);
 										}
 									}
-	
+
 									treeTabela.refresh();
 								}
 							});
-	
+
 							return booleanProp;
 						}
 						return null;
@@ -459,27 +516,106 @@ public class MangasComicInfoController implements Initializable {
 				});
 
 		treecMacado.setCellFactory(new Callback<TreeTableColumn<BaseLista, Boolean>, TreeTableCell<BaseLista, Boolean>>() {
+					@Override
+					public TreeTableCell<BaseLista, Boolean> call(TreeTableColumn<BaseLista, Boolean> p) {
+						CheckBoxTreeTableCellCustom<BaseLista, Boolean> cell = new CheckBoxTreeTableCellCustom<BaseLista, Boolean>();
+						cell.setAlignment(Pos.CENTER);
+						return cell;
+					}
+				});
+	}
+	
+	private void selecionaRegistros() {
+		treeTabela.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public TreeTableCell<BaseLista, Boolean> call(TreeTableColumn<BaseLista, Boolean> p) {
-				CheckBoxTreeTableCellCustom<BaseLista, Boolean> cell = new CheckBoxTreeTableCellCustom<BaseLista, Boolean>();
-				cell.setAlignment(Pos.CENTER);
-				return cell;
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() > 1) {
+					if (click.getButton() == MouseButton.SECONDARY)
+						REGISTROS.stream().filter(it -> it.isMarcado()).forEach(it -> it.setSelecionado(false));
+					else {
+						BaseLista item = treeTabela.getSelectionModel().getSelectedItem().getValue();
+						if (item != null)
+							item.setSelecionado(!item.isSelecionado());
+					}
+					treeTabela.refresh();
+				}
 			}
 		});
 
+		PseudoClass selected = PseudoClass.getPseudoClass("selected");
+		
+		treeTabela.setRowFactory(tv -> {                        
+            ContextMenu menu = new ContextMenu();
+
+            MenuItem alterarId = new MenuItem("Alterar id");
+            alterarId.setOnAction(e -> onBtnTrocaId());
+            
+            MenuItem processar = new MenuItem("Processar selecionado(s)");
+            processar.setOnAction(e -> {
+            	if (btnProcessarMarcados.accessibleTextProperty().getValue().equals("PROCESSAR"))
+        			processarLista(true);
+            });
+
+            menu.getItems().add(alterarId);
+            menu.getItems().add(processar);
+            
+            TreeTableRow<BaseLista> row = new TreeTableRow<>() {
+				@Override
+				public void updateItem(BaseLista item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null) {
+						setStyle("");
+						pseudoClassStateChanged(selected, false);
+					} else {
+			            setContextMenu(menu);
+						if (item.isSelecionado())
+							pseudoClassStateChanged(selected, true);
+						else
+							pseudoClassStateChanged(selected, false);
+					}
+				}
+			};
+             
+            return row ;
+        });
 	}
 
 	private void linkaCelulas() {
-		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<BaseLista, Boolean>("selecionado"));
+		treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<BaseLista, Boolean>("marcado"));
 		treecManga.setCellValueFactory(new TreeItemPropertyValueFactory<>("descricao"));
 		treecNome.setCellValueFactory(new TreeItemPropertyValueFactory<>("nome"));
-		treecMalID.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
+		treecMalID.setCellValueFactory(new TreeItemPropertyValueFactory<>("idVisual"));
 		treecProcessar.setCellValueFactory(new TreeItemPropertyValueFactory<>("processar"));
 		treecSite.setCellValueFactory(new TreeItemPropertyValueFactory<>("site"));
 		treecImagem.setCellValueFactory(new TreeItemPropertyValueFactory<>("imagem"));
 		treeTabela.setShowRoot(false);
 
+		treecMalID.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+		treecMalID.setOnEditCommit(e -> {
+			if (e.getNewValue() != null && !e.getNewValue().isEmpty()) {
+				try {
+					String number = e.getNewValue().replaceAll("/[^0-9]+/g", "");
+					if (!number.isEmpty() && e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow())
+							.getValue() instanceof Registro) {
+						if (!ProcessaComicInfo.getById(Long.valueOf(number),(Registro) e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()) && 
+								e.getOldValue() != null && !e.getOldValue().isEmpty())
+							e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
+									.setId(Long.valueOf(e.getOldValue()));
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					if (e.getOldValue() != null && !e.getOldValue().isEmpty())
+						e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
+							.setId(Long.valueOf(e.getOldValue()));
+				}
+			} else if (e.getOldValue() != null && !e.getOldValue().isEmpty())
+				e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue().setId(Long.valueOf(e.getOldValue()));
+			treeTabela.requestFocus();
+			treeTabela.refresh();
+		});
+
 		editaColunas();
+		selecionaRegistros();
 	}
 
 	private Robot robot = new Robot();
@@ -498,7 +634,7 @@ public class MangasComicInfoController implements Initializable {
 					robot.keyPress(KeyCode.TAB);
 			}
 		});
-		
+
 		linkaCelulas();
 	}
 

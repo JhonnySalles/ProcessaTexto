@@ -3,6 +3,8 @@ package org.jisho.textosJapones.model.entities.comicinfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
+
 public class MAL extends BaseLista {
 
 	private String arquivo;
@@ -17,6 +19,7 @@ public class MAL extends BaseLista {
 		public String getNome() {
 			return nome;
 		}
+	
 		public void setNome(String nome) {
 			this.nome = nome;
 		}
@@ -27,6 +30,7 @@ public class MAL extends BaseLista {
 		
 		public void setId(Long id) {
 			this.id = id;
+			this.idVisual = id != null ? id.toString() : "";
 		}
 		
 		public MAL getParent() {
@@ -74,5 +78,4 @@ public class MAL extends BaseLista {
 		this.arquivo = arquivo;
 		this.myanimelist = new ArrayList<Registro>();
 	}
-	
 }

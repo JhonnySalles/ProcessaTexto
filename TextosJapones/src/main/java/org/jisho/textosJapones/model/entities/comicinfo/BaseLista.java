@@ -6,13 +6,15 @@ import javafx.scene.image.ImageView;
 
 public class BaseLista {
 
-	private String descricao;
-	private String nome;
-	private Long id;
-	private Boolean selecionado;
-	private JFXButton processar;
-	private JFXButton site;
-	private ImageView imagem;
+	protected String descricao;
+	protected String nome;
+	protected Long id;
+	protected String idVisual;
+	protected JFXButton processar;
+	protected JFXButton site;
+	protected ImageView imagem;
+	protected Boolean selecionado = false;
+	protected Boolean marcado = false;
 	
 
 	public String getDescricao() {
@@ -38,6 +40,10 @@ public class BaseLista {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public String getIdVisual() {
+		return idVisual;
+	}
 
 	public Boolean isSelecionado() {
 		return selecionado;
@@ -45,6 +51,14 @@ public class BaseLista {
 	
 	public void setSelecionado(Boolean selecionado) {
 		this.selecionado = selecionado;
+	}
+	
+	public Boolean isMarcado() {
+		return marcado;
+	}
+	
+	public void setMarcado(Boolean marcado) {
+		this.marcado = marcado;
 	}
 	
 	public JFXButton getProcessar() {
@@ -72,6 +86,7 @@ public class BaseLista {
 		this.descricao = descricao;
 		this.nome = nome;
 		this.id = id;
-		this.selecionado = processar;
+		this.idVisual = id != null ? id.toString() : "";
+		this.marcado = processar;
 	}
 }

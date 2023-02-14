@@ -25,7 +25,6 @@ import org.jisho.textosJapones.controller.mangas.MangasComicInfoController;
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
 import org.jisho.textosJapones.model.entities.comicinfo.ComicInfo;
-import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
 import org.jisho.textosJapones.model.entities.comicinfo.Pages;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
@@ -158,6 +157,24 @@ public class ProcessaComicInfo {
 
 		return arquivo;
 	}
+	
+	public static boolean getById(Long idMal, org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro registro) {
+		if (MAL == null) {
+			Properties secret = Configuracao.loadSecrets();
+			String clientId = secret.getProperty("my_anime_list_client_id");
+			MAL = MyAnimeList.withClientID(clientId);
+		}
+		
+		dev.katsute.mal4j.manga.Manga manga = MAL.getManga(idMal);
+		
+		if (manga != null) {
+			registro.setNome(manga.getTitle());
+			registro.setId(manga.getID());
+			registro.setImagem(new ImageView(manga.getMainPicture().getMediumURL()));	
+			return true;
+		} else 
+			return false;
+	}
 
 	private static String API_JIKAN_CHARACTER = "https://api.jikan.moe/v4/manga/%s/characters";
 	private static String TITLE_PATERN = "[^\\w\\s]";
@@ -206,11 +223,11 @@ public class ProcessaComicInfo {
 							if (search != null && !search.isEmpty()) {
 								org.jisho.textosJapones.model.entities.comicinfo.MAL mal = new org.jisho.textosJapones.model.entities.comicinfo.MAL(arquivo, nome);
 								for (dev.katsute.mal4j.manga.Manga item : search) {
-									Registro registro = mal.addRegistro(item.getTitle(), item.getID(), false);
+									org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro registro = mal.addRegistro(item.getTitle(), item.getID(), false);
 									registro.setImagem(new ImageView(item.getMainPicture().getMediumURL()));
 								}
 									
-								mal.getMyanimelist().get(0).setSelecionado(true);
+								mal.getMyanimelist().get(0).setMarcado(true);
 								Platform.runLater(() -> {
 									CONTROLLER.addItem(mal);
 								});

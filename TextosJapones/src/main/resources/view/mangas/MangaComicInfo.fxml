@@ -32,7 +32,7 @@
       	          </HBox>
                   <HBox maxWidth="600.0" prefWidth="600.0" spacing="10.0">
                      <children>
-                        <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Caminho salvar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                        <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Pasta a processar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminho" prefWidth="35.0">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -81,7 +81,7 @@
                 <TreeTableColumn fx:id="treecMacado" prefWidth="27.5" />
                   <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
                   <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
-                  <TreeTableColumn fx:id="treecMalID" editable="false" minWidth="0.0" prefWidth="64.5" text="ID" />
+                  <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
                   <TreeTableColumn fx:id="treecSite" editable="false" prefWidth="76.5" text="Site" />
                   <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" text="Processar" />
                   <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" text="Imagem" />
