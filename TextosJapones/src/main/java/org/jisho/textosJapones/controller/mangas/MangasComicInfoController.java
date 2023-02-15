@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.database.mysql.ConexaoMysql;
@@ -51,7 +52,6 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
@@ -305,15 +305,20 @@ public class MangasComicInfoController implements Initializable {
 					updateMessage("Processando itens....");
 					PARAR = false;
 					I = 0;
-					
-					List<MAL> lista = isSelecionado ? REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().parallelStream().anyMatch(re -> re.isSelecionado())).toList() 
+
+					List<MAL> lista = isSelecionado
+							? REGISTROS.parallelStream()
+									.filter(it -> it.isSelecionado()
+											|| it.getMyanimelist().parallelStream().anyMatch(re -> re.isSelecionado()))
+									.toList()
 							: REGISTROS.parallelStream().toList();
-					
+
 					for (MAL item : lista) {
 						I++;
 
 						Platform.runLater(() -> {
-							updateMessage("Processando itens...." + I + '/' + lista.size());
+							updateMessage(
+									"Processando itens...." + I + '/' + lista.size() + " - Manga: " + item.getNome());
 							updateProgress(I, lista.size());
 							if (TaskbarProgressbar.isSupported())
 								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
@@ -425,6 +430,7 @@ public class MangasComicInfoController implements Initializable {
 	}
 
 	private TreeItem<BaseLista> DADOS;
+
 	private void configuraTabela() {
 		try {
 			DADOS = getTreeData();
@@ -433,50 +439,54 @@ public class MangasComicInfoController implements Initializable {
 		}
 		treeTabela.setRoot(DADOS);
 	}
-	
+
 	private void onBtnTrocaId() {
-		if (!REGISTROS.parallelStream().anyMatch(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
+		if (!REGISTROS.parallelStream()
+				.anyMatch(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
 				&& treeTabela.selectionModelProperty().getValue() != null)
 			treeTabela.selectionModelProperty().getValue().getSelectedItem().getValue().setSelecionado(true);
-		
+
 		Callback<Registro, Boolean> callback = new Callback<Registro, Boolean>() {
 			@Override
 			public Boolean call(Registro param) {
-				
-				REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado())).forEach(it -> {
-					if (it.isSelecionado()) {
-						it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
-						Registro reg = it.getMyanimelist().get(0);
-						reg.setMarcado(true);
-						reg.setId(param.getId());
-						reg.setNome(param.getNome());
-						reg.setImagem(param.getImagem());
-					} else {
-						it.getMyanimelist().forEach(re -> re.setMarcado(false));
-						Optional<Registro> reg = it.getMyanimelist().parallelStream().filter(re -> re.isSelecionado()).findFirst();
-						if (reg.isPresent()) {
-							reg.get().setMarcado(true);
-							reg.get().setId(param.getId());
-							reg.get().setNome(param.getNome());
-							reg.get().setImagem(param.getImagem());
-						} else {
-							Registro aux = it.getMyanimelist().get(0);
-							aux.setMarcado(true);
-							aux.setId(param.getId());
-							aux.setNome(param.getNome());
-							aux.setImagem(param.getImagem());
-						}
-					}
-					
-					it.setSelecionado(false);
-					it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
-				});
-			
+
+				REGISTROS.parallelStream().filter(
+						it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
+						.forEach(it -> {
+							if (it.isSelecionado()) {
+								it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
+								Registro reg = it.getMyanimelist().get(0);
+								reg.setMarcado(true);
+								reg.setId(param.getId());
+								reg.setNome(param.getNome());
+								reg.setImagem(param.getImagem());
+							} else {
+								it.getMyanimelist().forEach(re -> re.setMarcado(false));
+								Optional<Registro> reg = it.getMyanimelist().parallelStream()
+										.filter(re -> re.isSelecionado()).findFirst();
+								if (reg.isPresent()) {
+									reg.get().setMarcado(true);
+									reg.get().setId(param.getId());
+									reg.get().setNome(param.getNome());
+									reg.get().setImagem(param.getImagem());
+								} else {
+									Registro aux = it.getMyanimelist().get(0);
+									aux.setMarcado(true);
+									aux.setId(param.getId());
+									aux.setNome(param.getNome());
+									aux.setImagem(param.getImagem());
+								}
+							}
+
+							it.setSelecionado(false);
+							it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
+						});
+
 				treeTabela.refresh();
 				return null;
 			}
 		};
-		
+
 		MangasComicInfoMalId.abreTelaCorrecao(controller.getStackPane(), controller.getRoot(), callback);
 	}
 
@@ -515,7 +525,8 @@ public class MangasComicInfoController implements Initializable {
 					}
 				});
 
-		treecMacado.setCellFactory(new Callback<TreeTableColumn<BaseLista, Boolean>, TreeTableCell<BaseLista, Boolean>>() {
+		treecMacado
+				.setCellFactory(new Callback<TreeTableColumn<BaseLista, Boolean>, TreeTableCell<BaseLista, Boolean>>() {
 					@Override
 					public TreeTableCell<BaseLista, Boolean> call(TreeTableColumn<BaseLista, Boolean> p) {
 						CheckBoxTreeTableCellCustom<BaseLista, Boolean> cell = new CheckBoxTreeTableCellCustom<BaseLista, Boolean>();
@@ -524,42 +535,107 @@ public class MangasComicInfoController implements Initializable {
 					}
 				});
 	}
-	
+
+	private void limparSelecao() {
+		anteriorSelecionado = null;
+		REGISTROS.parallelStream()
+				.filter(it -> it.isSelecionado() || it.getMyanimelist().stream().allMatch(re -> re.isSelecionado()))
+				.forEach(it -> {
+					it.setSelecionado(false);
+					it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
+				});
+		treeTabela.refresh();
+	}
+
+	private void remover() {
+		if (treeTabela.getSelectionModel().getSelectedItem() != null)
+			if (AlertasPopup.ConfirmacaoModal("Aviso","Deseja remover o registro?")) {
+				BaseLista parent = treeTabela.getSelectionModel().getSelectedItem()
+						.getValue() instanceof MAL
+								? treeTabela.getSelectionModel().getSelectedItem().getValue()
+								: treeTabela.getSelectionModel().getSelectedItem().getParent().getValue();
+				REGISTROS.remove(parent);
+				treeTabela.refresh();
+			}
+	}
+
+	private TreeItem<BaseLista> anteriorSelecionado = null;
+
 	private void selecionaRegistros() {
 		treeTabela.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent click) {
 				if (click.getClickCount() > 1) {
-					if (click.getButton() == MouseButton.SECONDARY)
-						REGISTROS.stream().filter(it -> it.isMarcado()).forEach(it -> it.setSelecionado(false));
-					else {
+					if (click.isControlDown()) {
+						limparSelecao();
+						return;
+					} else if (click.isShiftDown()) {
+						if (anteriorSelecionado != null
+								&& anteriorSelecionado != treeTabela.getSelectionModel().getSelectedItem()) {
+							BaseLista parentAnterio = anteriorSelecionado.getValue() instanceof MAL
+									? anteriorSelecionado.getValue()
+									: anteriorSelecionado.getParent().getValue();
+							BaseLista parentAtual = treeTabela.getSelectionModel().getSelectedItem()
+									.getValue() instanceof MAL
+											? treeTabela.getSelectionModel().getSelectedItem().getValue()
+											: treeTabela.getSelectionModel().getSelectedItem().getParent().getValue();
+
+							int index = 0;
+							int size = 0;
+							if (REGISTROS.indexOf(parentAnterio) > REGISTROS.indexOf(parentAtual)) {
+								index = REGISTROS.indexOf(parentAtual);
+								size = REGISTROS.indexOf(parentAnterio) - 1;
+							} else {
+								index = REGISTROS.indexOf(parentAnterio) + 1;
+								size = REGISTROS.indexOf(parentAtual);
+							}
+
+							if (index < 0)
+								index = 0;
+
+							if (size > REGISTROS.size())
+								size = REGISTROS.size();
+
+							for (int i = index; i <= size; i++)
+								REGISTROS.get(i).setSelecionado(!REGISTROS.get(i).isSelecionado());
+						}
+					} else {
 						BaseLista item = treeTabela.getSelectionModel().getSelectedItem().getValue();
 						if (item != null)
 							item.setSelecionado(!item.isSelecionado());
 					}
 					treeTabela.refresh();
+					anteriorSelecionado = treeTabela.getSelectionModel().getSelectedItem();
 				}
 			}
 		});
 
 		PseudoClass selected = PseudoClass.getPseudoClass("selected");
-		
-		treeTabela.setRowFactory(tv -> {                        
-            ContextMenu menu = new ContextMenu();
 
-            MenuItem alterarId = new MenuItem("Alterar id");
-            alterarId.setOnAction(e -> onBtnTrocaId());
-            
-            MenuItem processar = new MenuItem("Processar selecionado(s)");
-            processar.setOnAction(e -> {
-            	if (btnProcessarMarcados.accessibleTextProperty().getValue().equals("PROCESSAR"))
-        			processarLista(true);
-            });
+		treeTabela.setRowFactory(tv -> {
+			ContextMenu menu = new ContextMenu();
 
-            menu.getItems().add(alterarId);
-            menu.getItems().add(processar);
-            
-            TreeTableRow<BaseLista> row = new TreeTableRow<>() {
+			MenuItem alterarId = new MenuItem("Alterar id");
+			alterarId.setOnAction(e -> onBtnTrocaId());
+
+			MenuItem processar = new MenuItem("Processar selecionado(s)");
+			processar.setOnAction(e -> {
+				if (btnProcessarMarcados.accessibleTextProperty().getValue().equals("PROCESSAR"))
+					processarLista(true);
+			});
+
+			MenuItem limparSelecao = new MenuItem("Limpar seleção");
+			limparSelecao.setOnAction(e -> limparSelecao());
+
+			MenuItem remover = new MenuItem("Remover registro");
+			remover.setOnAction(e -> remover());
+
+			menu.getItems().add(alterarId);
+			menu.getItems().add(processar);
+			menu.getItems().add(limparSelecao);
+			menu.getItems().add(remover);
+
+			TreeTableRow<BaseLista> row = new TreeTableRow<>() {
 				@Override
 				public void updateItem(BaseLista item, boolean empty) {
 					super.updateItem(item, empty);
@@ -567,7 +643,7 @@ public class MangasComicInfoController implements Initializable {
 						setStyle("");
 						pseudoClassStateChanged(selected, false);
 					} else {
-			            setContextMenu(menu);
+						setContextMenu(menu);
 						if (item.isSelecionado())
 							pseudoClassStateChanged(selected, true);
 						else
@@ -575,9 +651,38 @@ public class MangasComicInfoController implements Initializable {
 					}
 				}
 			};
-             
-            return row ;
-        });
+
+			return row;
+		});
+
+		/*
+		 * MAL mal = new MAL("teste 1", ""); mal.addRegistro("reg1", 1L, true);
+		 * mal.addRegistro("reg2", 2L, false); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 2", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 3", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 4", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 5", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 6", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
+		 * mal.addRegistro("reg4", 4L, false); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 7", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		 * 
+		 * mal = new MAL("teste 8", ""); mal.addRegistro("reg1", 1L, false);
+		 * mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
+		 * mal.addRegistro("reg4", 4L, false); addItem(mal);
+		 */
+
 	}
 
 	private void linkaCelulas() {
@@ -597,8 +702,9 @@ public class MangasComicInfoController implements Initializable {
 					String number = e.getNewValue().replaceAll("/[^0-9]+/g", "");
 					if (!number.isEmpty() && e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow())
 							.getValue() instanceof Registro) {
-						if (!ProcessaComicInfo.getById(Long.valueOf(number),(Registro) e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()) && 
-								e.getOldValue() != null && !e.getOldValue().isEmpty())
+						if (!ProcessaComicInfo.getById(Long.valueOf(number), (Registro) e.getTreeTableView()
+								.getTreeItem(e.getTreeTablePosition().getRow()).getValue()) && e.getOldValue() != null
+								&& !e.getOldValue().isEmpty())
 							e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
 									.setId(Long.valueOf(e.getOldValue()));
 					}
@@ -606,10 +712,11 @@ public class MangasComicInfoController implements Initializable {
 					ex.printStackTrace();
 					if (e.getOldValue() != null && !e.getOldValue().isEmpty())
 						e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
-							.setId(Long.valueOf(e.getOldValue()));
+								.setId(Long.valueOf(e.getOldValue()));
 				}
 			} else if (e.getOldValue() != null && !e.getOldValue().isEmpty())
-				e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue().setId(Long.valueOf(e.getOldValue()));
+				e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
+						.setId(Long.valueOf(e.getOldValue()));
 			treeTabela.requestFocus();
 			treeTabela.refresh();
 		});

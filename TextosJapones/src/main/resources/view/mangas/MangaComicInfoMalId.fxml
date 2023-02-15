@@ -16,7 +16,7 @@
                   <JFXTextField fx:id="txtNome" editable="false" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Nome" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER" prefHeight="100.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
                   <ImageView fx:id="imagem" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS" />
                </children>
