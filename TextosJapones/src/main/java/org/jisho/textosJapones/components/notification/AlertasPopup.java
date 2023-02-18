@@ -17,7 +17,6 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.events.JFXDialogEvent;
 
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BoxBlur;
@@ -41,6 +40,7 @@ public class AlertasPopup {
 			new Image(AlertasPopup.class.getResourceAsStream("/images/alert/icoConfirma_48.png")));
 
 	public final static String CSS = AlertasPopup.class.getResource("/css/Dark_Alerts.css").toExternalForm();
+	public final static String CSS_THEME = AlertasPopup.class.getResource("/css/Dark_Theme.css").toExternalForm();
 
 	private static StackPane ROOT_STACK_PANE;
 	private static Node NODE_BLUR;
@@ -193,12 +193,17 @@ public class AlertasPopup {
 		alert.setOverlayClose(false);
 
 		JFXDialogLayout layout = new JFXDialogLayout();
-		layout.setHeading(new Label(titulo));
+		Label title = new Label(titulo);
+		title.getStyleClass().add("texto-stilo-fundo-azul");
+		layout.setHeading(title);
 		JFXTextArea content = new JFXTextArea(texto);
 		content.setEditable(false);
 		content.setPrefHeight(100);
+		content.getStyleClass().add("texto-stilo-fundo-azul");
+
 		layout.setBody(new HBox(CONFIRMA, content));
 		layout.getStylesheets().add(CSS);
+		layout.getStylesheets().add(CSS_THEME);
 
 		JFXButton confirmButton = new JFXButton("Confirmar");
 		confirmButton.setDefaultButton(true);
@@ -260,38 +265,6 @@ public class AlertasPopup {
 		dialogLayout.setHeading(new Label(titulo));
 
 		dialogLayout.setBody(new HBox(imagem, new Label(texto)));
-		dialogLayout.setActions(botoes);
-		dialog.setOnDialogClosed((JFXDialogEvent event1) -> {
-			nodeBlur.setEffect(null);
-		});
-		nodeBlur.setEffect(blur);
-		dialog.show();
-	}
-
-	public static void dialogLogin(StackPane rootStackPane, Node nodeBlur, String titulo, String texto) {
-		BoxBlur blur = new BoxBlur(3, 3, 3);
-
-		List<JFXButton> botoes = new ArrayList<JFXButton>();
-		botoes.add(new JFXButton("Ok"));
-
-		JFXDialogLayout dialogLayout = new JFXDialogLayout();
-		JFXDialog dialog = new JFXDialog(rootStackPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
-
-		dialog.setPadding(new Insets(0, 20, 0, 70));
-
-		dialog.getStylesheets().add(AlertasPopup.class
-				.getResource("/org/jisho/textosJapones/resources/css/Dark_Alerts.css").toExternalForm());
-
-		botoes.forEach(controlButton -> {
-			controlButton.getStyleClass().add("btnAlerta");
-			controlButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
-				dialog.close();
-			});
-		});
-
-		dialogLayout.setHeading(new Label(titulo));
-
-		dialogLayout.setBody(new HBox(AVISO, new Label(texto)));
 		dialogLayout.setActions(botoes);
 		dialog.setOnDialogClosed((JFXDialogEvent event1) -> {
 			nodeBlur.setEffect(null);

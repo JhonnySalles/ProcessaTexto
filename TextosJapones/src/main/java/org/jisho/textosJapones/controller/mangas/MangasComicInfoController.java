@@ -550,11 +550,12 @@ public class MangasComicInfoController implements Initializable {
 	private void remover() {
 		if (treeTabela.getSelectionModel().getSelectedItem() != null)
 			if (AlertasPopup.ConfirmacaoModal("Aviso","Deseja remover o registro?")) {
-				BaseLista parent = treeTabela.getSelectionModel().getSelectedItem()
+				TreeItem<BaseLista> parent = treeTabela.getSelectionModel().getSelectedItem()
 						.getValue() instanceof MAL
-								? treeTabela.getSelectionModel().getSelectedItem().getValue()
-								: treeTabela.getSelectionModel().getSelectedItem().getParent().getValue();
-				REGISTROS.remove(parent);
+								? treeTabela.getSelectionModel().getSelectedItem()
+								: treeTabela.getSelectionModel().getSelectedItem().getParent();
+				REGISTROS.remove(parent.getValue());
+				parent.getParent().getChildren().remove(parent);
 				treeTabela.refresh();
 			}
 	}
@@ -655,33 +656,33 @@ public class MangasComicInfoController implements Initializable {
 			return row;
 		});
 
-		/*
-		 * MAL mal = new MAL("teste 1", ""); mal.addRegistro("reg1", 1L, true);
-		 * mal.addRegistro("reg2", 2L, false); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 2", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 3", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 4", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 5", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 6", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
-		 * mal.addRegistro("reg4", 4L, false); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 7", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		 * 
-		 * mal = new MAL("teste 8", ""); mal.addRegistro("reg1", 1L, false);
-		 * mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
-		 * mal.addRegistro("reg4", 4L, false); addItem(mal);
-		 */
+		
+		  /*MAL mal = new MAL("teste 1", ""); mal.addRegistro("reg1", 1L, true);
+		  mal.addRegistro("reg2", 2L, false); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 2", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 3", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 4", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 5", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 6", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
+		  mal.addRegistro("reg4", 4L, false); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 7", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
+		  
+		  mal = new MAL("teste 8", ""); mal.addRegistro("reg1", 1L, false);
+		  mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
+		  mal.addRegistro("reg4", 4L, false); addItem(mal);*/
+		 
 
 	}
 

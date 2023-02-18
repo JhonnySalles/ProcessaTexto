@@ -447,11 +447,11 @@ public class ProcessaComicInfo {
 								page.setBookmark("Back");
 								page.setType(ComicPageType.BackCover);
 							} else if (imagem.contains("tudo")) {
-								page.setBookmark("al cover");
+								page.setBookmark("All cover");
 								page.setDoublePage(true);
 								page.setType(ComicPageType.Other);
 							} else if (imagem.contains("zsumário") || imagem.contains("zsumario")) {
-								page.setBookmark("sumary");
+								page.setBookmark("Sumary");
 								page.setType(ComicPageType.InnerCover);
 							} else {
 								if (pastas.containsValue(i)) {
