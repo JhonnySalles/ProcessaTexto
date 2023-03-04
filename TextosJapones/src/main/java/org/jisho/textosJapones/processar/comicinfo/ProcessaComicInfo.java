@@ -11,9 +11,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -51,6 +53,10 @@ public class ProcessaComicInfo {
 	private static JAXBContext JAXBC = null;
 	private static Boolean CANCELAR = false;
 	private static MangasComicInfoController CONTROLLER;
+	private static String MARCACAPITULO;
+	
+	private static Boolean CONSULTA_MAL = true;
+	private static Boolean CONSULTA_JIKAN = true;
 	
 	public static void setPai(MangasComicInfoController controller) {
 		CONTROLLER = controller;
@@ -60,9 +66,10 @@ public class ProcessaComicInfo {
 		CANCELAR = true;
 	}
 
-	public static void processa(String winrar, Language linguagem, String path, Callback<Integer[], Boolean> callback) {
+	public static void processa(String winrar, Language linguagem, String path, String marcaCapitulo, Callback<Integer[], Boolean> callback) {
 		WINRAR = winrar;
 		CANCELAR = false;
+		MARCACAPITULO = marcaCapitulo == null ? "" : marcaCapitulo;
 		
 		Properties secret = Configuracao.loadSecrets();
 		String clientId = secret.getProperty("my_anime_list_client_id");
@@ -325,50 +332,52 @@ public class ProcessaComicInfo {
 					notes += DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA.getID() + "]; ";
 				
 				info.setNotes(notes.substring(0, notes.lastIndexOf("; ")));
-								
-				if (MANGA_CHARACTER != null && MANGA_CHARACTER.getKey().compareTo(MANGA.getID()) == 0)
-					info.setCharacters(MANGA_CHARACTER.getValue());
-				else {
-					MANGA_CHARACTER = null;
-					try {
-						HttpRequest.Builder reqBuilder = HttpRequest.newBuilder();
-					    HttpRequest request = reqBuilder
-					            .uri(new URI(String.format(API_JIKAN_CHARACTER, MANGA.getID())))
-					            .GET()
-					            .build();
-	
-					    HttpResponse<String> response = HttpClient.newBuilder()
-					            .build()
-					            .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-					    String responseBody = response.body();
-					    
-					    if (responseBody.contains("character")) {
-						    Gson gson = new Gson();
-					        JsonElement element = gson.fromJson(responseBody, JsonElement.class);
-					        JsonObject jsonObject = element.getAsJsonObject();
-					        JsonArray list = jsonObject.getAsJsonArray("data");
-					        String characters = "";
-					        
-					        for (JsonElement item : list) {
-					        	JsonObject obj = item.getAsJsonObject();
-					        	String character = obj.getAsJsonObject("character").get("name").getAsString();
-					        	
-					        	if (character.contains(", "))
-					        		character = character.replace(",","");
-					        	else if (character.contains(","))
-					        		character = character.replace(","," ");
-					        	
-					        	characters += character + (obj.get("role").getAsString().toLowerCase().equals("main") ? " (" + obj.get("role").getAsString() + "), " : ", ");
-					        }
-					        
-					        if (!characters.isEmpty()) {
-					        	info.setCharacters(characters.substring(0, characters.lastIndexOf(", ")) + ".");
-					        	MANGA_CHARACTER = new Pair<Long, String>(MANGA.getID(), info.getCharacters());
-					        }
-					    }
-					}  catch (Exception e) {
-						e.printStackTrace();
-						System.out.println(MANGA.getID());
+						
+				if (CONSULTA_JIKAN) {
+					if (MANGA_CHARACTER != null && MANGA_CHARACTER.getKey().compareTo(MANGA.getID()) == 0)
+						info.setCharacters(MANGA_CHARACTER.getValue());
+					else {
+						MANGA_CHARACTER = null;
+						try {
+							HttpRequest.Builder reqBuilder = HttpRequest.newBuilder();
+						    HttpRequest request = reqBuilder
+						            .uri(new URI(String.format(API_JIKAN_CHARACTER, MANGA.getID())))
+						            .GET()
+						            .build();
+		
+						    HttpResponse<String> response = HttpClient.newBuilder()
+						            .build()
+						            .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+						    String responseBody = response.body();
+						    
+						    if (responseBody.contains("character")) {
+							    Gson gson = new Gson();
+						        JsonElement element = gson.fromJson(responseBody, JsonElement.class);
+						        JsonObject jsonObject = element.getAsJsonObject();
+						        JsonArray list = jsonObject.getAsJsonArray("data");
+						        String characters = "";
+						        
+						        for (JsonElement item : list) {
+						        	JsonObject obj = item.getAsJsonObject();
+						        	String character = obj.getAsJsonObject("character").get("name").getAsString();
+						        	
+						        	if (character.contains(", "))
+						        		character = character.replace(",","");
+						        	else if (character.contains(","))
+						        		character = character.replace(","," ");
+						        	
+						        	characters += character + (obj.get("role").getAsString().toLowerCase().equals("main") ? " (" + obj.get("role").getAsString() + "), " : ", ");
+						        }
+						        
+						        if (!characters.isEmpty()) {
+						        	info.setCharacters(characters.substring(0, characters.lastIndexOf(", ")) + ".");
+						        	MANGA_CHARACTER = new Pair<Long, String>(MANGA.getID(), info.getCharacters());
+						        }
+						    }
+						}  catch (Exception e) {
+							e.printStackTrace();
+							System.out.println(MANGA.getID());
+						}
 					}
 				}
 			}
@@ -406,7 +415,46 @@ public class ProcessaComicInfo {
 				else if (comic.getTitle() != null && !comic.getTitle().equalsIgnoreCase(comic.getSeries()))
 					comic.setStoryArc(comic.getTitle());
 	
-				processaMal(arquivo.getAbsolutePath(), nome, comic, linguagem, idMal);
+				if (CONSULTA_MAL)
+					processaMal(arquivo.getAbsolutePath(), nome, comic, linguagem, idMal);
+				
+				List<Pair<Float, String>> titulosCapitulo = new ArrayList<>();
+				if (comic.getSummary() != null && !comic.getSummary().isEmpty()) {
+					String sumary = comic.getSummary().toLowerCase();
+					if (sumary.contains("chapter titles") || sumary.contains("chapter list") || sumary.contains("contents")) {
+						String[] linhas = comic.getSummary().split("\n");
+						for (String linha : linhas) {
+							Float number = 0f;
+							String chapter = "";
+							if (linha.matches("([\\w. ]+[\\d][:|.][\\w\\W]++)|([\\d][:|.][\\w\\W]++)")) {
+								String[] aux = null;
+								if (linha.contains(":"))
+									aux = linha.split(":");
+								else if (linha.contains(". ")) {
+									aux = linha.replace(". ", ":").split(":");
+								}
+															
+								if (aux != null) {
+									try {
+										if (aux[0].matches("[a-zA-Z ]+[.][\\d]")) // Ex: Act.1: Spring of the Dead
+											number = Float.valueOf(aux[0].replaceAll("[^\\d]", ""));
+										else if (aux[0].toLowerCase().contains("extra") || aux[0].toLowerCase().contains("special"))
+											number = -1f;
+										else
+											number = Float.valueOf(aux[0].replaceAll("[^\\d.]", ""));
+										
+										chapter = aux[1].trim();
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}	
+							}
+							
+							if (number.compareTo(0f) > 0)
+								titulosCapitulo.add(new Pair<>(number, chapter));
+						}
+					}
+				}
 	
 				Parse parse = null;
 				try {
@@ -434,7 +482,7 @@ public class ProcessaComicInfo {
 					int index = 0;
 					for (int i = 0; i < parse.getSize(); i++) {
 						if (index >= comic.getPages().size())
-							continue;
+							continue; 
 							
 						if (Util.isImage(parse.getPaginaPasta(i))) {
 							String imagem = parse.getPaginaPasta(i).toLowerCase();
@@ -465,12 +513,37 @@ public class ProcessaComicInfo {
 												capitulo = entry.getKey()
 														.substring(entry.getKey().toLowerCase().indexOf("capítulo"));
 											
-											if (!capitulo.isEmpty())
+											if (!capitulo.isEmpty()) {
+												if (!MARCACAPITULO.isEmpty()) {
+													if (capitulo.toLowerCase().contains("capítulo"))
+														capitulo = capitulo.substring(capitulo.toLowerCase().indexOf("capítulo") + 8);
+													else
+														capitulo = capitulo.substring(capitulo.toLowerCase().indexOf("capitulo") + 8);
+													
+													if (MARCACAPITULO.toLowerCase().contains("%s")) // Japanese
+														capitulo = MARCACAPITULO.toLowerCase().replace("%s", capitulo.trim());
+													else
+														capitulo = MARCACAPITULO + capitulo;
+												}
 												break;
+											}
 										}
 									}
-									if (!capitulo.isEmpty())
+									if (!capitulo.isEmpty()) {
+										if (!titulosCapitulo.isEmpty()) {
+											try {
+												Float number = Float.valueOf(capitulo.replaceAll("[^\\d.]", ""));
+												Optional<Pair<Float, String>> titulo = titulosCapitulo.stream().filter(it -> it.getKey().compareTo(number) == 0).findFirst();
+												if (titulo.isPresent()) {
+													capitulo += " - " + titulo.get().getValue();
+													titulosCapitulo.remove(titulo.get());
+												}
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
 										page.setBookmark(capitulo);
+									}
 								}
 								
 								if (page.getImageWidth() == null || page.getImageHeight() == null) {

@@ -71,6 +71,9 @@ public class MangasComicInfoController implements Initializable {
 
 	@FXML
 	private JFXTextField txtCaminho;
+	
+	@FXML
+	private JFXTextField txtDescricaoCapitulo;
 
 	@FXML
 	private JFXButton btnCaminho;
@@ -244,7 +247,7 @@ public class MangasComicInfoController implements Initializable {
 					};
 
 					ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(),
-							txtCaminho.getText(), callback);
+							txtCaminho.getText(), txtDescricaoCapitulo.getText(), callback);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -732,6 +735,17 @@ public class MangasComicInfoController implements Initializable {
 		ProcessaComicInfo.setPai(this);
 		cbLinguagem.getItems().addAll(Language.PORTUGUESE, Language.ENGLISH, Language.JAPANESE);
 		cbLinguagem.getSelectionModel().selectFirst();
+		
+		cbLinguagem.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+			if (newValue != null) {
+				switch(newValue) {
+					case PORTUGUESE -> txtDescricaoCapitulo.setText("Capítulo");
+					case ENGLISH -> txtDescricaoCapitulo.setText("Chapter");
+					case JAPANESE -> txtDescricaoCapitulo.setText("第%s話");
+					default -> {}
+				}
+			}			
+		}); 
 
 		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override

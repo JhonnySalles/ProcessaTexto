@@ -19,9 +19,10 @@
 	       <children>
             <VBox spacing="10.0">
                <children>
-      	          <HBox spacing="10.0">
+      	          <HBox maxWidth="600.0" spacing="10.0">
       	             <children>
                         <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                        <JFXTextField fx:id="txtDescricaoCapitulo" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="400.0" promptText="Descrição da marcação do capítulo" styleClass="texto-stilo" unFocusColor="#106ebe" />
       	             </children>
       	             <padding>
       	                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
