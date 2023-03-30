@@ -469,13 +469,16 @@ public class ProcessaComicInfo {
 								item = pasta.substring(0, pasta.indexOf("]")).replace("[", "");
 	
 							if (!item.isEmpty() && !tradutor.contains(pasta))
-								tradutor += "; " + item;
+								tradutor += item + "; ";
 						}
 	
 						if (!tradutor.isEmpty()) {
 							comic.setTranslator(tradutor.substring(0, tradutor.length() - 2));
 							comic.setScanInformation(tradutor.substring(0, tradutor.length() - 2));
 						}
+					} else if (linguagem.equals(Language.JAPANESE)) {
+						comic.setTranslator("");
+						comic.setScanInformation("");
 					}
 	
 					Map<String, Integer> pastas = parse.getPastas();

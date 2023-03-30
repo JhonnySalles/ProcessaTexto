@@ -32,6 +32,7 @@ public class RarParse implements Parse {
 		try {
 			mArquivo = new Archive(file);
 		} catch (RarException e) {
+			e.printStackTrace();
 			throw new IOException("unable to open archive");
 		}
 
