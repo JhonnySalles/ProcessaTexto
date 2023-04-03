@@ -288,22 +288,35 @@ public class ProcessaComicInfo {
 	
 					info.setGenre(genero.substring(0, genero.lastIndexOf("; ")));
 				}
+				
+				if (linguagem.equals(Language.PORTUGUESE)) {
+					if (MANGA.getAlternativeTitles().getEnglish() != null && !MANGA.getAlternativeTitles().getEnglish().isEmpty()) {
+						info.setTitle(info.getSeries());
+						info.setSeries(MANGA.getAlternativeTitles().getEnglish());
+					}		
+				} else if (linguagem.equals(Language.JAPANESE)) {
+					if (MANGA.getAlternativeTitles().getJapanese() != null
+							&& !MANGA.getAlternativeTitles().getJapanese().isEmpty())
+						info.setTitle(MANGA.getAlternativeTitles().getJapanese());
+				}
 	
 				if (info.getAlternateSeries() == null || info.getAlternateSeries().isEmpty()) {
 					title = "";
 					
 					if (MANGA.getAlternativeTitles().getJapanese() != null
-							|| MANGA.getAlternativeTitles().getJapanese().isEmpty()) {
-						if (linguagem.equals(Language.JAPANESE))
-							info.setTitle(MANGA.getAlternativeTitles().getJapanese());
-						
+							&& !MANGA.getAlternativeTitles().getJapanese().isEmpty()) {						
 						title += MANGA.getAlternativeTitles().getJapanese() + "; ";
 					}
-	
+					
+					if (MANGA.getAlternativeTitles().getEnglish() != null
+							&& !MANGA.getAlternativeTitles().getEnglish().isEmpty()) {						
+						title += MANGA.getAlternativeTitles().getEnglish() + "; ";
+					}
+					
 					if (MANGA.getAlternativeTitles().getSynonyms() != null)
 						for (String synonym : MANGA.getAlternativeTitles().getSynonyms())
 							title += synonym + "; ";
-	
+
 					if (!title.isEmpty())
 						info.setAlternateSeries(title.substring(0, title.lastIndexOf("; ")));
 				}
