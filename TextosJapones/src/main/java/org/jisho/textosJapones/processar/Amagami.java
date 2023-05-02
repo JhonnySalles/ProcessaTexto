@@ -3,6 +3,7 @@ package org.jisho.textosJapones.processar;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.exceptions.FullTranslateUsage;
 import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -37,14 +38,18 @@ public class Amagami {
 	public static void processa() {
 		File pasta = new File(PASTA_ORIGEM);
 		
-		for (File item : pasta.listFiles()) {
-			System.out.println("Processando item: " + item.getName());
-			if (processa(item) && EXCLUIR)
-					item.delete();
+		try {
+			for (File item : pasta.listFiles()) {
+				System.out.println("Processando item: " + item.getName());
+				if (processa(item) && EXCLUIR)
+						item.delete();
+			}
+		} catch(FullTranslateUsage e) {
+			System.out.println(e.getMessage());
 		}
 	}
 
-	private static Boolean processa(File file) {
+	private static Boolean processa(File file) throws FullTranslateUsage {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		ArrayList<Pair<Node, Node>> list = new ArrayList<>();
@@ -118,7 +123,7 @@ public class Amagami {
 		transformer.transform(source, result);
 	}
 
-	private static void traduzir(ArrayList<Pair<Node, Node>> list) throws IOException {
+	private static void traduzir(ArrayList<Pair<Node, Node>> list) throws IOException, FullTranslateUsage {
 		System.out.println("Iniciando a tradução da lista.");
 		
 		for(Pair<Node, Node> item : list)
@@ -152,7 +157,7 @@ public class Amagami {
 		System.out.println("-".repeat(100));
 	}
 	
-	private static String traduzir(String text) throws IOException {
+	private static String traduzir(String text) throws IOException, FullTranslateUsage {
 		try {
 			if (TRANSLATED > 3000) {
 				switch (CONTA) {
@@ -172,14 +177,13 @@ public class Amagami {
 					CONTA = Api.CONTA_MIGRACAO_4;
 					break;
 				case CONTA_MIGRACAO_4:
-					CONTA = Api.CONTA_PRINCIPAL;
-					break;
+					throw new FullTranslateUsage("Tradução final no dia, recursos de tradução finalizada.");
 				}
 				TRANSLATED = 0;
 			} else if (TRANSLATED % 50 == 0) {
 				try {
-					System.out.println("Espera 1s.");
 					//Pausa a cada 50
+					System.out.println("Espera 1s.");
 					TimeUnit.SECONDS.sleep(1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
