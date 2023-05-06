@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,7 +45,7 @@ public class Amagami {
 	final private static String PASTA_ORIGEM = "D:\\Arquivos\\Amagami\\Programa extração\\MTL_Amagami_share2\\machineTranslatedXmlUTF8\\";
 	final private static String PASTA_DESTINO = "D:\\Arquivos\\Amagami\\Programa extração\\MTL_Amagami_share2\\machineTranslatedXmlUTF8-pt";
 
-	private static List<Conta> CONTAS = new ArrayList<Conta>(Arrays.asList(new Conta(Api.API_GOOGLE, 500),
+	private static List<Conta> CONTAS = new ArrayList<Conta>(Arrays.asList(new Conta(Api.API_GOOGLE, 0),
 			new Conta(Api.CONTA_SECUNDARIA, 0), new Conta(Api.CONTA_MIGRACAO_1, 0), new Conta(Api.CONTA_MIGRACAO_2, 0),
 			new Conta(Api.CONTA_MIGRACAO_3, 0), new Conta(Api.CONTA_MIGRACAO_4, 0)));
 	private static Conta CONTA = CONTAS.get(0);
@@ -194,7 +196,7 @@ public class Amagami {
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
 		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.INDENT, "no");
 		transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
 
 		DOMSource source = new DOMSource(doc);
@@ -205,53 +207,69 @@ public class Amagami {
 		transformer.transform(source, consoleResult);
 	}
 
+	
+	private static Map<String, String> TRADUZIDO = new HashMap<String, String>();
 	private static void traduzir(ArrayList<Pair<Node, Node>> list) throws IOException, FullTranslateUsage {
 		LAST_OPERATION = new Date();
-		for (Pair<Node, Node> item : list)
-			item.getValue().setTextContent(traduzir(item.getKey().getTextContent()));
-
-		// String frases = "";
-		/*
-		 * for (Pair<Node, Node> item : list) frases += item.getKey().getTextContent() +
-		 * "|";
-		 * 
-		 * frases = traduzir(frases);
-		 * 
-		 * int count = 0; for(int i = 0; i < frases.length(); i++) { if(frases.charAt(i)
-		 * == '|') count++; }
-		 * 
-		 * if (count != list.size()) {
-		 * System.out.println("Divergência de frases na tradução."); for (Pair<Node,
-		 * Node> item : list)
-		 * item.getValue().setTextContent(traduzir(item.getKey().getTextContent())); }
-		 * else { String[] processados = frases.split("|"); for(int i = 0; i <
-		 * processados.length; i++)
-		 * list.get(i).getValue().setTextContent(processados[i]); }
-		 */
+		for (Pair<Node, Node> item : list) {
+			if (TRADUZIDO.containsKey(item.getKey().getTextContent())) 
+					item.getValue().setTextContent(TRADUZIDO.get(item.getKey().getTextContent()));
+			else {
+				String frase = traduzir(item.getKey().getTextContent());
+				item.getValue().setTextContent(frase);
+				TRADUZIDO.put(item.getKey().getTextContent(), frase);
+			}
+		}
 
 		list.clear();
 		System.out.println("Concluído.");
 		System.out.println("-".repeat(100));
 	}
+	
+	private static Conta proximaConta() throws FullTranslateUsage {
+		Conta novo = null;
+		
+		int inicio = CONTAS.indexOf(CONTA);
+		for (int i = inicio; i < CONTAS.size(); i++) {
+			Conta item = CONTAS.get(i);
+			if (!item.getKey().equals(CONTA.getKey()) && item.getValue() < 3000) {
+				novo = item;
+				break;
+			}
+		}
+
+		if (novo == null)
+			for (int i = 0; i < inicio; i++) {
+				Conta item = CONTAS.get(i);
+				if (!item.getKey().equals(CONTA.getKey()) && item.getValue() < 3000) {
+					novo = item;
+					break;
+				}
+			}
+		
+		if (novo == null)
+			for (int i = 0; i < CONTAS.size(); i++) {
+				Conta item = CONTAS.get(i);
+				if (item.getValue() < 3000) {
+					novo = item;
+					break;
+				}
+			}
+		
+		if (novo == null)
+			throw new FullTranslateUsage("Tradução final no dia, recursos de tradução finalizada.");
+		
+		CONTA = novo;
+		System.out.println("Nova conta selecionada: " + CONTA.getKey().toString() + " - Consultas: "
+				+ CONTA.getValue());
+		
+		return novo;
+	}
 
 	private static String traduzir(String text) throws IOException, FullTranslateUsage {
 		try {
 			if (CONTA.getValue() > 3000) {
-				Conta novo = null;
-
-				for (Conta item : CONTAS)
-					if (item.getValue() < 3000) {
-						novo = item;
-						break;
-					}
-
-				if (novo == null) {
-					throw new FullTranslateUsage("Tradução final no dia, recursos de tradução finalizada.");
-				}
-
-				CONTA = novo;
-				System.out.println(
-						"Nova conta selecionada: " + CONTA.getKey().toString() + " - Consultas: " + CONTA.getValue());
+				proximaConta();
 			} else if (CONTA.getValue() > 0 && CONTA.getValue() % 50 == 0) {
 				try {
 					// Pausa a cada 50
@@ -265,42 +283,24 @@ public class Amagami {
 
 			CONTA.setValue(CONTA.getValue() + 1);
 			System.out.println("Traduzindo: " + text);
-			return ScriptGoogle.translate(Language.JAPANESE.getSigla(), Language.PORTUGUESE.getSigla(), text,
+			String traducao =  ScriptGoogle.translate(Language.JAPANESE.getSigla(), Language.PORTUGUESE.getSigla(), text,
 					CONTA.getKey());
+			
+			if (traducao.toLowerCase().contains("exception: serviço chamado muitas vezes no mesmo dia: translate.")) {
+				System.out.println("Identificado limite máximo excedido no dia de hoje. Ignorando a api.");
+				CONTA.setValue(5000);
+				return traduzir(text);
+			} else
+				return traducao;
 		} catch (IOException ex) {
 			if (ex.getMessage().contains("Server returned HTTP response code: 500 for")) {
 				try {
 					System.out.println("Resposta 500. " + ex.getMessage());
 					TimeUnit.SECONDS.sleep(1);
-
-					Boolean achou = false;
-					int inicio = CONTAS.indexOf(CONTA);
-					for (int i = inicio; i < CONTAS.size(); i++) {
-						Conta item = CONTAS.get(i);
-						if (!item.getKey().equals(CONTA.getKey()) && item.getValue() < 3000) {
-							achou = true;
-							CONTA = item;
-							System.out.println("Nova conta selecionada: " + CONTA.getKey().toString() + " - Consultas: "
-									+ CONTA.getValue());
-							break;
-						}
-					}
-
-					if (!achou)
-						for (int i = 0; i < inicio; i++) {
-							Conta item = CONTAS.get(i);
-							if (!item.getKey().equals(CONTA.getKey()) && item.getValue() < 3000) {
-								achou = true;
-								CONTA = item;
-								System.out.println("Nova conta selecionada: " + CONTA.getKey().toString()
-										+ " - Consultas: " + CONTA.getValue());
-								break;
-							}
-						}
-
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				proximaConta();
 				return traduzir(text);
 			} else
 				throw ex;
