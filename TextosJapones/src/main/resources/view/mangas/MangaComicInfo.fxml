@@ -63,6 +63,7 @@
       	             </opaqueInsets>
       	             <children>
       	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar" HBox.hgrow="ALWAYS" />
+                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="140.0" styleClass="background-White1" text="Validar comic info" />
       	             </children>
       	          </HBox>
                </children>

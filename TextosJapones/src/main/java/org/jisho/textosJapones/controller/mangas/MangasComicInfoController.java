@@ -83,6 +83,9 @@ public class MangasComicInfoController implements Initializable {
 
 	@FXML
 	private JFXButton btnProcessar;
+	
+	@FXML
+	private JFXButton btnValidar;
 
 	@FXML
 	private JFXButton btnProcessarMarcados;
@@ -132,6 +135,14 @@ public class MangasComicInfoController implements Initializable {
 		else
 			cancelar();
 	}
+	
+	@FXML
+	private void onBtnValidar() {
+		if (btnValidar.accessibleTextProperty().getValue().equals("VALIDAR"))
+			validar();
+		else
+			cancelar();
+	}
 
 	@FXML
 	private void onBtnProcessarMarcados() {
@@ -161,16 +172,24 @@ public class MangasComicInfoController implements Initializable {
 		treeTabela.setDisable(false);
 		btnProcessarMarcados.setDisable(false);
 		btnProcessar.setDisable(false);
+		btnValidar.setDisable(false);
 		btnLimparLista.setDisable(false);
 	}
 
-	private void bloqueiaCampos(Boolean isProcessar) {
+	private void bloqueiaCampos(String origem) {
 		btnLimparLista.setDisable(true);
 		treeTabela.setDisable(true);
-		if (isProcessar)
+		
+		if (origem == "PROCESSAR") {
 			btnProcessarMarcados.setDisable(true);
-		else
+			btnValidar.setDisable(true);
+		} else if (origem == "VALIDAR") {
+			btnProcessarMarcados.setDisable(true);
 			btnProcessar.setDisable(true);
+		} else if (origem == "MARCADOS") {
+			btnProcessar.setDisable(true);
+			btnValidar.setDisable(true);
+		}
 	}
 
 	private String selecionaPasta(String local, Boolean isArquivo) {
@@ -287,7 +306,7 @@ public class MangasComicInfoController implements Initializable {
 		t.start();
 		btnProcessar.setText("Cancelar");
 		btnProcessar.setAccessibleText("PROCESSANDO");
-		bloqueiaCampos(true);
+		bloqueiaCampos("PROCESSAR");
 	}
 
 	private Integer I = 0;
@@ -381,7 +400,78 @@ public class MangasComicInfoController implements Initializable {
 		t.start();
 		btnProcessarMarcados.setText("Cancelar");
 		btnProcessarMarcados.setAccessibleText("PROCESSANDO");
-		bloqueiaCampos(false);
+		bloqueiaCampos("MARCADOS");
+	}
+	
+	private void validar() {
+		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+
+		if (TaskbarProgressbar.isSupported())
+			TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
+
+		progress.getTitulo().setText("ComicInfo");
+		Task<Void> gerarJson = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				try {
+					updateMessage("Validando itens....");
+
+					Callback<Integer[], Boolean> callback = new Callback<Integer[], Boolean>() {
+						@Override
+						public Boolean call(Integer[] param) {
+							Platform.runLater(() -> {
+								updateMessage("Validando itens...." + param[0] + '/' + param[1]);
+								updateProgress(param[0], param[1]);
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1],
+											Type.NORMAL);
+							});
+							return null;
+						}
+					};
+
+					ProcessaComicInfo.validar(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), callback);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			@Override
+			protected void succeeded() {
+				super.failed();
+				Platform.runLater(() -> {
+					ativaCampos();
+					btnValidar.setAccessibleText("VALIDAR");
+					btnValidar.setText("Validar");
+					progress.getBarraProgresso().progressProperty().unbind();
+					progress.getLog().textProperty().unbind();
+					TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+					MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+				});
+
+			}
+
+			@Override
+			protected void failed() {
+				super.failed();
+				ativaCampos();
+				btnValidar.setAccessibleText("VALIDAR");
+				btnValidar.setText("Validar");
+				System.out.println("Erro na thread ComicInfo: " + super.getMessage());
+			}
+		};
+
+		progress.getBarraProgresso().progressProperty().bind(gerarJson.progressProperty());
+		progress.getLog().textProperty().bind(gerarJson.messageProperty());
+
+		Thread t = new Thread(gerarJson);
+		t.start();
+		btnValidar.setAccessibleText("VALIDANDO");
+		btnValidar.setText("Cancelar");
+		bloqueiaCampos("VALIDAR");
 	}
 
 	private void openSiteMal(Long id) {
@@ -734,8 +824,6 @@ public class MangasComicInfoController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		ProcessaComicInfo.setPai(this);
 		cbLinguagem.getItems().addAll(Language.PORTUGUESE, Language.ENGLISH, Language.JAPANESE);
-		cbLinguagem.getSelectionModel().selectFirst();
-		
 		cbLinguagem.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
 			if (newValue != null) {
 				switch(newValue) {
@@ -746,6 +834,8 @@ public class MangasComicInfoController implements Initializable {
 				}
 			}			
 		}); 
+		
+		cbLinguagem.getSelectionModel().selectFirst();
 
 		cbLinguagem.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override

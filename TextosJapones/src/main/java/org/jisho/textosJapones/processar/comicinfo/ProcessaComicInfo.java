@@ -3,12 +3,14 @@ package org.jisho.textosJapones.processar.comicinfo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -51,7 +53,8 @@ public class ProcessaComicInfo {
 	private static String PATTERN = ".*\\.(zip|cbz|rar|cbr|tar)$";
 	private static String COMICINFO = "ComicInfo.xml";
 	private static JAXBContext JAXBC = null;
-	private static Boolean CANCELAR = false;
+	private static Boolean CANCELAR_PROCESSAMENTO = false;
+	private static Boolean CANCELAR_VALIDACAO = false;
 	private static MangasComicInfoController CONTROLLER;
 	private static String MARCACAPITULO;
 	
@@ -63,12 +66,87 @@ public class ProcessaComicInfo {
 	}
 	
 	public static void cancelar() {
-		CANCELAR = true;
+		CANCELAR_PROCESSAMENTO = true;
+		CANCELAR_VALIDACAO = true;
+	}
+	
+	public static void validar(String winrar, Language linguagem, String path, Callback<Integer[], Boolean> callback) {
+		WINRAR = winrar;
+		CANCELAR_VALIDACAO = false;
+		
+		File arquivos = new File(path);
+		Integer[] size = new Integer[2];
+		
+		try {
+			JAXBC = JAXBContext.newInstance(ComicInfo.class);
+			
+			if (arquivos.isDirectory()) {
+				size[0] = 0;
+				size[1] = arquivos.listFiles().length;
+				callback.call(size);
+				
+				for (File arquivo : arquivos.listFiles()) {
+					String nome = arquivo.getName();
+					System.out.print("Validando o manga " + nome);
+					String valido = valida(linguagem, arquivo);
+					
+					if (valido.isEmpty()) {
+						System.out.println(" - OK. ");
+						gravalog(path, "Validando o manga " + nome + " - OK.\n");
+					} else {
+						System.out.println(" - Arquivo possui pendências: ");
+						System.out.println(valido);
+						gravalog(path, "Validando o manga " + nome + " - Arquivo possui pendências: \n");
+						gravalog(path, valido + "\n");
+					}
+					
+					System.out.println("-".repeat(100));
+					gravalog(path, "-".repeat(100) + "\n");
+					
+					size[0]++;
+					callback.call(size);
+					
+					if (CANCELAR_VALIDACAO)
+						break;
+				}
+			} else if (arquivos.isFile()) {
+				size[0] = 0;
+				size[1] = 1;
+				callback.call(size);
+				
+				String nome = arquivos.getName();
+				System.out.print("Validando o manga " + nome);
+				String valido = valida(linguagem, arquivos);
+				
+				if (valido.isEmpty()) {
+					System.out.println(" - OK. ");
+					gravalog(path, "Validando o manga " + nome + " - OK.\n");
+				} else {
+					System.out.println(" - Arquivo possui pendências: ");
+					System.out.println(valido);
+					gravalog(path, "Validando o manga " + nome + " - Arquivo possui pendências: \n");
+					gravalog(path, valido + "\n");
+				}
+				
+				System.out.println("-".repeat(100));
+				gravalog(path, "-".repeat(100) + "\n");
+				
+				size[0]++;
+				callback.call(size);
+			}
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (JAXBC != null)
+				JAXBC = null;
+		}
 	}
 
 	public static void processa(String winrar, Language linguagem, String path, String marcaCapitulo, Callback<Integer[], Boolean> callback) {
 		WINRAR = winrar;
-		CANCELAR = false;
+		CANCELAR_PROCESSAMENTO = false;
 		MARCACAPITULO = marcaCapitulo == null ? "" : marcaCapitulo;
 		
 		Properties secret = Configuracao.loadSecrets();
@@ -91,7 +169,7 @@ public class ProcessaComicInfo {
 					size[0]++;
 					callback.call(size);
 					
-					if (CANCELAR)
+					if (CANCELAR_PROCESSAMENTO)
 						break;
 				}
 			} else if (arquivos.isFile()) {
@@ -116,7 +194,7 @@ public class ProcessaComicInfo {
 	
 	public static Boolean processa(String winrar, Language linguagem, String arquivo, Long idMal) {
 		WINRAR = winrar;
-		CANCELAR = false;
+		CANCELAR_PROCESSAMENTO = false;
 		
 		Properties secret = Configuracao.loadSecrets();
 		String clientId = secret.getProperty("my_anime_list_client_id");
@@ -291,9 +369,9 @@ public class ProcessaComicInfo {
 				
 				if (linguagem.equals(Language.PORTUGUESE)) {
 					if (MANGA.getAlternativeTitles().getEnglish() != null && !MANGA.getAlternativeTitles().getEnglish().isEmpty()) {
-						info.setTitle(info.getSeries());
+						info.setTitle(MANGA.getTitle());
 						info.setSeries(MANGA.getAlternativeTitles().getEnglish());
-					}		
+					}
 				} else if (linguagem.equals(Language.JAPANESE)) {
 					if (MANGA.getAlternativeTitles().getJapanese() != null
 							&& !MANGA.getAlternativeTitles().getJapanese().isEmpty())
@@ -403,7 +481,7 @@ public class ProcessaComicInfo {
 		if (arquivo.getName().toLowerCase().matches(PATTERN)) {
 			File info = null;
 			try {
-				info = extraiInfo(arquivo);
+				info = extraiInfo(arquivo, false);
 			
 				if (info == null || !info.exists())
 					return;
@@ -604,18 +682,21 @@ public class ProcessaComicInfo {
 		}
 	}
 
-	private static File extraiInfo(File arquivo) {
+	private static File extraiInfo(File arquivo, Boolean silent) {
 		File comicInfo = null;
 		Process proc = null;
 		
 		String comando = "cmd.exe /C cd \"" + WINRAR + "\" &&rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"';
-		System.out.println("rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"');
+		
+		if (!silent)
+			System.out.println("rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"');
 		
 		try {
 			Runtime rt = Runtime.getRuntime();
 			proc = rt.exec(comando);
 			
-			System.out.println("Resultado: " + proc.waitFor());
+			if (!silent)
+				System.out.println("Resultado: " + proc.waitFor());
 			
 			String resultado = "";
 
@@ -625,7 +706,7 @@ public class ProcessaComicInfo {
 			while ((s = stdInput.readLine()) != null)
 				resultado += s + "\n";
 
-			if (!resultado.isEmpty())
+			if (!silent && !resultado.isEmpty())
 				System.out.println("Output comand:\n" + resultado);
 
 			s = null;
@@ -637,7 +718,7 @@ public class ProcessaComicInfo {
 
 			if (!resultado.isEmpty()) {
 				System.out.println(
-						"Error comand:\n" + resultado + "\nNão foi possível extrair o arquivo " + COMICINFO + ".");
+							"Error comand:\n" + resultado + "\nNão foi possível extrair o arquivo " + COMICINFO + ".");
 			} else
 				comicInfo = new File(Util.getCaminho(arquivo.getPath()) + '\\' + COMICINFO);
 		} catch (Exception e) {
@@ -695,6 +776,117 @@ public class ProcessaComicInfo {
 		} finally {
 			if (proc != null)
 				proc.destroy();
+		}
+	}
+	
+	private static String valida(Language linguagem, File arquivo) {
+		String valida = "";
+		if (arquivo.getName().toLowerCase().matches(PATTERN)) {
+			File info = null;
+			try {
+				info = extraiInfo(arquivo, true);
+			
+				if (info == null || !info.exists())
+					return "Comic info não encontrado";
+
+				ComicInfo comic;
+				try {
+			        Unmarshaller unmarshaller = JAXBC.createUnmarshaller();
+					comic = (ComicInfo) unmarshaller.unmarshal(info);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return "Não foi possível realizar a extração do Comic info.";
+				}
+				
+				if (comic.getManga() == null)
+					valida += "Tipo de manga ausente. \n";
+				
+				if (comic.getLanguageISO() == null || comic.getLanguageISO().isEmpty())
+					valida += "Linguagem ausente. \n";
+	
+				if (comic.getTitle() == null || comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
+					valida += "Título ausente. \n";
+				
+				if (comic.getTitle() == null || comic.getTitle().toLowerCase().contains("vol.") || comic.getTitle().toLowerCase().contains("volume"))
+					valida += "Título ausente. \n";
+				
+				if (linguagem.equals(Language.PORTUGUESE)) {
+					if (comic.getTranslator() == null || comic.getTranslator().isEmpty())
+						valida += "Tradutor ausente. \n";
+					
+					if (comic.getScanInformation() == null || comic.getScanInformation().isEmpty())
+						valida += "Informação da scan ausente. \n";
+				}
+				
+				Boolean bookmarks = false;
+				for (Pages page : comic.getPages()) {
+					if (page.getBookmark() != null && !page.getBookmark().isEmpty()) {
+						bookmarks = true;
+						break;
+					}
+				}
+				
+				if (!bookmarks)
+					valida += "Bookmars ausentes. \n";
+				
+				Boolean images = true;
+				for (Pages page : comic.getPages()) {
+					if (page.getImageWidth() == null || page.getImageHeight() == null) {
+						images = false;
+						break;
+					}
+				}
+				
+				if (!images)
+					valida += "Tamanho de imagens ausentes. \n";
+				
+				if (comic.getYear() == null || comic.getYear() == 0)
+					valida += "Publicação: Ano ausente. \n";
+				
+				if (comic.getMonth() == null || comic.getMonth() == 0)
+					valida += "Publicação: Mês ausente. \n";
+				
+				if (comic.getDay() == null || comic.getDay() == 0)
+					valida += "Publicação: Dia ausente. \n";
+				
+				try {
+					LocalDate.of(comic.getYear(), comic.getMonth(), comic.getDay());
+				} catch (Exception e) {
+					if (comic.getYear() != null && comic.getMonth() != null && comic.getDay() != null)
+						valida += "Publicação: Data inválida. (" + comic.getDay() + "/" + comic.getMonth() + "/" + comic.getYear() + "). \n";
+					else
+						valida += "Publicação: Data inválida. \n";
+				}
+
+				if (!valida.isEmpty())
+					valida = valida.substring(0, valida.length()-2);
+			} finally {
+				if (info != null)
+					info.delete();
+			}
+		} else
+			valida = "Nome inválido";
+		
+		return valida;
+	}
+	
+	final private static String ARQUIVO_LOG = "Log.txt";
+	private static void gravalog(String diretorio, String texto) {
+		try {
+			String arquivo = diretorio + '\\' +ARQUIVO_LOG;
+			if (arquivo.contains("\\"+"\\"))
+				arquivo = arquivo.replace("\\"+"\\", "\\");
+			
+			File log = new File(arquivo);
+			if (!log.exists())
+				log.createNewFile();
+			
+		    FileWriter fw = new FileWriter(arquivo,true);
+		    fw.write(texto);
+		    fw.close();
+		}
+		catch(IOException ioe) {
+		    System.err.println("IOException: " + ioe.getMessage());
 		}
 	}
 
