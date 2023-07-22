@@ -240,8 +240,9 @@ public class SudachiTokenizer {
 
 	private void processaVocabulario() throws ExcessaoBd {
 		MenuPrincipalController.getController().setAviso("SUDACHI - Processar vocabulário obtendo frase do site Tanoshi Japanese.");
-		Task<Void> processar = new Task<Void>() {
-			String[] palavras = { "" };
+		Task<Void> processar = new Task<>() {
+			String palavra = "";
+			String[] palavras = {""};
 			String vocabulario = "";
 			Dicionario dictionario = Dicionario.FULL;
 			SplitMode mode = SplitMode.C;
@@ -251,7 +252,7 @@ public class SudachiTokenizer {
 			@Override
 			public Void call() throws IOException, InterruptedException {
 				DESATIVAR = false;
-				String significado, links, linha;
+				String ingles, portugues, expressao, significado, links;
 				String[][] frase;
 
 				vocabNovo.clear();
@@ -270,12 +271,22 @@ public class SudachiTokenizer {
 					tokenizer = dict.create();
 
 					i = 1;
-					max = palavras.length;
+					max = palavras.length + 1;
 
-					for (String txt : palavras) {
+					for (String texto : palavras) {
+						ingles = "";
+						portugues = "";
+
+						if (texto.contains("|")) {
+							String[] textos = texto.replace("||", "|").split("\\|");
+							palavra = textos[0];
+							ingles = textos[1] + ".";
+						} else
+							palavra = texto;
+
 						Platform.runLater(() -> {
 							MenuPrincipalController.getController().getLblLog()
-									.setText("Processando vocabulário " + txt + " - " + i + " de " + max);
+									.setText("Processando vocabulário " + palavra + " - " + i + " de " + max);
 						});
 
 						updateProgress(i, max);
@@ -283,49 +294,62 @@ public class SudachiTokenizer {
 
 						i++;
 						repetido.clear();
-						if (!txt.trim().isEmpty()) {
-							linha = "";
-							significado = "";
+						if (!palavra.trim().isEmpty()) {
 							links = "";
-							frase = TanoshiJapanese.getFrase(txt.trim());
+
+							if (!ingles.isEmpty()) {
+								if (ingles.contains(";"))
+									ingles = ingles.replaceAll(";", ",");
+
+								if (ingles.contains("..") && !ingles.contains("..."))
+									ingles = ingles.replaceAll("..", ".");
+
+								ingles = ingles.substring(0, 1).toUpperCase() + ingles.substring(1);
+
+								portugues = ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), ingles, google);
+
+								if (!portugues.isEmpty())
+									portugues = portugues.substring(0, 1).toUpperCase() + portugues.substring(1);
+							}
+
+							expressao = palavra + (isExcel ? "<br><br>" : "\n\n");
+							significado = portugues + (isExcel ? "<br><br>" : "\n\n");
+
+							frase = TanoshiJapanese.getFrase(palavra.trim());
 							for (int i = 0; i < 2; i++) {
 								if (!frase[i][0].isEmpty()) {
 									String processado = processaTokenizer(mode, frase[i][0], false);
-									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-											Language.PORTUGUESE.getSigla(), frase[i][1], google);
+									String traduzido = ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), frase[i][1], google);
+
+									if (frase[i][0].contains("&quot;"))
+										frase[i][0] = frase[i][0].replace("&quot;", "'");
+									else if (frase[i][0].contains(";"))
+										frase[i][0] += frase[i][0].replace(";", ",");
+
+									if (processado.contains(";"))
+										processado = processado.replace(";", ",");
+
+									if (traduzido.contains("&quot;"))
+										traduzido = traduzido.replace("&quot;", "'");
+
+									if (traduzido.contains(";"))
+										traduzido = traduzido.replace(";", ",");
 
 									if (isExcel) {
-										linha += (i == 0 ? txt + ";" : "");
-										
-										if (frase[i][0].contains("&quot;"))
-											linha += frase[i][0].replace("&quot;", "'") + "<br><br>";
-										else if (frase[i][0].contains(";"))
-											linha += frase[i][0].replace(";", ",") + "<br><br>";
-										else
-											linha += frase[i][0] + "<br><br>";
-										
-										if (processado.contains(";"))
-											processado = processado.replace(";", ",");
-										
-										if (traduzido.contains("&quot;"))
-											traduzido = traduzido.replace("&quot;", "'");
-										
-										if (traduzido.contains(";"))
-											traduzido = traduzido.replace(";", ",");
-			
-										significado += processado + "<br><br>" + traduzido + "<br><br>";										
+										expressao += frase[i][0] + "<br><br>";
+										significado += processado + "<br><br>" + traduzido + "<br><br>";
 										links += (!frase[i][2].isEmpty() ? frase[i][2] + ";" : "");
 									} else {
-										linha += (i == 0 ? txt + "\n\n" : "") + frase[i][0] + "\n\n";
+										expressao += frase[i][0] + "\n\n";
 										significado += processado + "\n\n" + traduzido + "\n\n";
 										links += (!frase[i][2].isEmpty() ? frase[i][2] + "\n" : "");
 									}
 								} else {
 									if (i == 0) {
 										if (isExcel)
-											linha = txt + ";" + "***";
+											expressao = palavra + ";" + "***";
 										else
-											linha = txt + "\n\n" + "***" + "\n\n";
+											expressao = palavra + "\n\n" + "***" + "\n\n";
 									}
 								}
 								if (DESATIVAR)
@@ -333,11 +357,9 @@ public class SudachiTokenizer {
 							}
 
 							if (isExcel)
-								linha += ";" + significado + ";" + links + "\n";
+								vocabulario += palavra + ";" + ingles + ";" + portugues + ";" +  expressao + ";" + significado + ";" + links + "\n";
 							else
-								linha += significado + links + "\n" + "-".repeat(10) + "\n";
-
-							vocabulario += linha;
+								vocabulario += palavra + "\n" + ingles + "\n" + portugues + "\n\n" + expressao + significado + links + "\n" + "-".repeat(20) + "\n";
 						}
 					}
 				} catch (IOException e) {
@@ -435,7 +457,7 @@ public class SudachiTokenizer {
 		controller = cnt;
 		configura();
 
-		switch ((Tipo) controller.getTipo()) {
+		switch (controller.getTipo()) {
 		case TEXTO:
 			processaTexto();
 			break;

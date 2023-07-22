@@ -375,21 +375,17 @@ public class FrasesAnkiController implements Initializable {
 	}
 
 	private void adicionaUltimaLinha() {
-		tbVocabulario.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
+		tbVocabulario.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+			if (event.getCode() == KeyCode.DOWN) {
+				@SuppressWarnings("unchecked")
+				TablePosition<Vocabulario, ?> pos = tbVocabulario.getFocusModel().getFocusedCell();
 
-				if (event.getCode() == KeyCode.DOWN) {
-					@SuppressWarnings("unchecked")
-					TablePosition<Vocabulario, ?> pos = tbVocabulario.getFocusModel().getFocusedCell();
-
-					if (pos.getRow() == -1) {
-						tbVocabulario.getSelectionModel().select(0);
-					}
-					// add new row when we are at the last row
-					else if (pos.getRow() == tbVocabulario.getItems().size() - 1) {
-						addRow();
-					}
+				if (pos.getRow() == -1) {
+					tbVocabulario.getSelectionModel().select(0);
+				}
+				// add new row when we are at the last row
+				else if (pos.getRow() == tbVocabulario.getItems().size() - 1) {
+					addRow();
 				}
 			}
 		});
@@ -454,7 +450,6 @@ public class FrasesAnkiController implements Initializable {
 		txtAreaOrigem.focusedProperty().addListener((o, oldVal, newVal) -> {
 			if (oldVal && !cbTipo.getSelectionModel().getSelectedItem().equals(Tipo.VOCABULARIO))
 				processaTexto();
-
 		});
 
 		txtVocabulario.focusedProperty().addListener((o, oldVal, newVal) -> {
@@ -469,23 +464,17 @@ public class FrasesAnkiController implements Initializable {
 				txtExclusoes.setUnFocusColor(Color.web("#106ebe"));
 		});
 
-		txtVocabulario.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent ke) {
-				if (ke.getCode().equals(KeyCode.ENTER)) {
-					salvaVocabulario();
-					robot.keyPress(KeyCode.TAB);
-				}
+		txtVocabulario.setOnKeyPressed(ke -> {
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				salvaVocabulario();
+				robot.keyPress(KeyCode.TAB);
 			}
 		});
 
-		txtExclusoes.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent ke) {
-				if (ke.getCode().equals(KeyCode.ENTER)) {
-					salvaExclusao();
-					robot.keyPress(KeyCode.TAB);
-				}
+		txtExclusoes.setOnKeyPressed(ke -> {
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				salvaExclusao();
+				robot.keyPress(KeyCode.TAB);
 			}
 		});
 	}
