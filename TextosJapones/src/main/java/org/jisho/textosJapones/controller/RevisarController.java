@@ -218,6 +218,7 @@ public class RevisarController implements Initializable {
 			limpaTextos();
 			if (corrigindo != null) {
 				txtVocabulario.setText(corrigindo.getVocabulario());
+				txtAreaIngles.setText(corrigindo.getIngles());
 				txtAreaPortugues.setText(Util.normalize(corrigindo.getPortugues()));
 			}
 
