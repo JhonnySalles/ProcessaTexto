@@ -1,39 +1,5 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
-import org.jisho.textosJapones.model.entities.MangaCapitulo;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTabela;
-import org.jisho.textosJapones.model.entities.MangaTexto;
-import org.jisho.textosJapones.model.entities.MangaVocabulario;
-import org.jisho.textosJapones.model.entities.MangaVolume;
-import org.jisho.textosJapones.model.entities.Revisar;
-import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.enums.Site;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.MangaServices;
-import org.jisho.textosJapones.model.services.RevisarInglesServices;
-import org.jisho.textosJapones.model.services.RevisarJaponesServices;
-import org.jisho.textosJapones.model.services.VocabularioInglesServices;
-import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
-import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
-import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
-import org.jisho.textosJapones.util.Util;
-
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import com.worksap.nlp.sudachi.Dictionary;
@@ -41,11 +7,32 @@ import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
 import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
-
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
+import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
+import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.enums.Modo;
+import org.jisho.textosJapones.model.enums.Site;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.*;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
+import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
+import org.jisho.textosJapones.util.Util;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProcessarMangas {
 

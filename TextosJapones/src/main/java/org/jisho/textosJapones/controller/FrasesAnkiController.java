@@ -1,31 +1,6 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.components.notification.Notificacoes;
-import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Notificacao;
-import org.jisho.textosJapones.model.enums.Tipo;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarJaponesServices;
-import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
-import org.jisho.textosJapones.processar.kanjiStatics.ImportaEstatistica;
-import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
-import org.jisho.textosJapones.util.Util;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
-
+import com.jfoenix.controls.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -33,11 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -50,6 +21,25 @@ import javafx.scene.robot.Robot;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.components.notification.Notificacoes;
+import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Notificacao;
+import org.jisho.textosJapones.model.enums.Tipo;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
+import org.jisho.textosJapones.processar.kanjiStatics.ImportaEstatistica;
+import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
+import org.jisho.textosJapones.util.Util;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FrasesAnkiController implements Initializable {
 

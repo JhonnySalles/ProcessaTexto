@@ -1,11 +1,10 @@
 package org.jisho.textosJapones.model.entities;
 
-import java.io.Serializable;
-import java.util.Objects;
-
+import javafx.scene.image.Image;
 import org.jisho.textosJapones.model.enums.Pagina;
 
-import javafx.scene.image.Image;
+import java.io.Serializable;
+import java.util.Objects;
 
 public class VinculoPagina implements Serializable {
 

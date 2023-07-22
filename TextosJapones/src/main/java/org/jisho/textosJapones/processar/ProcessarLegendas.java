@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.worksap.nlp.sudachi.Dictionary;
+import com.worksap.nlp.sudachi.DictionaryFactory;
+import com.worksap.nlp.sudachi.Morpheme;
+import com.worksap.nlp.sudachi.Tokenizer;
+import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
+import javafx.concurrent.Task;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
@@ -19,13 +19,11 @@ import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 
-import com.worksap.nlp.sudachi.Dictionary;
-import com.worksap.nlp.sudachi.DictionaryFactory;
-import com.worksap.nlp.sudachi.Morpheme;
-import com.worksap.nlp.sudachi.Tokenizer;
-import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
-
-import javafx.concurrent.Task;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ProcessarLegendas {
 

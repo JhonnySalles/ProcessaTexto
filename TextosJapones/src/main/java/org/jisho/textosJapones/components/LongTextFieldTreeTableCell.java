@@ -1,18 +1,13 @@
 package org.jisho.textosJapones.components;
 
-import java.util.function.UnaryOperator;
-
 import javafx.geometry.Insets;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import javafx.util.converter.NumberStringConverter;
+
+import java.util.function.UnaryOperator;
 
 public class LongTextFieldTreeTableCell<S> extends TreeTableCell<S, Long> {
 	

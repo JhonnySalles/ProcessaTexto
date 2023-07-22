@@ -1,9 +1,9 @@
 package org.jisho.textosJapones.fileparse;
 
+import org.jisho.textosJapones.util.Util;
+
 import java.io.File;
 import java.io.IOException;
-
-import org.jisho.textosJapones.util.Util;
 
 public class ParseFactory {
 	public static Parse create(String file) {

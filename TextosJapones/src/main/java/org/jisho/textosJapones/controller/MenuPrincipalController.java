@@ -1,28 +1,7 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-
-import org.controlsfx.control.PopOver;
-import org.controlsfx.control.PopOver.ArrowLocation;
-import org.jisho.textosJapones.components.animation.Animacao;
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.components.notification.Notificacoes;
-import org.jisho.textosJapones.database.mysql.Backup;
-import org.jisho.textosJapones.database.mysql.ConexaoMysql;
-import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.model.enums.Dicionario;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.enums.Notificacao;
-import org.jisho.textosJapones.model.enums.Site;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
@@ -50,6 +29,21 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
+import org.jisho.textosJapones.components.animation.Animacao;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.components.notification.Notificacoes;
+import org.jisho.textosJapones.database.mysql.Backup;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.model.enums.*;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class MenuPrincipalController implements Initializable {
 

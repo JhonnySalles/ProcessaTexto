@@ -1,12 +1,11 @@
 package org.jisho.textosJapones.components.notification;
 
-import org.jisho.textosJapones.controller.PopupAlertaController;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.jisho.textosJapones.controller.PopupAlertaController;
 
 /**
  * <p>

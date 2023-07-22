@@ -1,22 +1,7 @@
 package org.jisho.textosJapones.components.notification;
 
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.imageio.ImageIO;
-
-import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.events.JFXDialogEvent;
-
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BoxBlur;
@@ -27,6 +12,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.TrayIcon.MessageType;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class AlertasPopup {
 

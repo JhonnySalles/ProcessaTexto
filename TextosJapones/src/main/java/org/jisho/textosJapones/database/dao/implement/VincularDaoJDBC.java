@@ -1,34 +1,19 @@
 package org.jisho.textosJapones.database.dao.implement;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.database.mysql.DB;
-import org.jisho.textosJapones.model.entities.MangaCapitulo;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTabela;
-import org.jisho.textosJapones.model.entities.MangaVinculo;
-import org.jisho.textosJapones.model.entities.MangaVolume;
-import org.jisho.textosJapones.model.entities.Vinculo;
-import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.entities.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.configuration.Configuracao;
+
+import java.sql.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class VincularDaoJDBC implements VincularDao {
 

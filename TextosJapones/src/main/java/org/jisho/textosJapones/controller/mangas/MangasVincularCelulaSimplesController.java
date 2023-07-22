@@ -1,10 +1,5 @@
 package org.jisho.textosJapones.controller.mangas;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.model.entities.VinculoPagina;
-
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +7,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MangasVincularCelulaSimplesController implements Initializable {
 

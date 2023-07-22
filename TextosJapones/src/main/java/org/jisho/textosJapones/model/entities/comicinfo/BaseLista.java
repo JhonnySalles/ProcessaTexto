@@ -1,7 +1,6 @@
 package org.jisho.textosJapones.model.entities.comicinfo;
 
 import com.jfoenix.controls.JFXButton;
-
 import javafx.scene.image.ImageView;
 
 public class BaseLista {

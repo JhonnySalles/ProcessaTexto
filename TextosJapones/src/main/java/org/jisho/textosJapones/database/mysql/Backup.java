@@ -1,15 +1,14 @@
 package org.jisho.textosJapones.database.mysql;
 
-import java.io.File;
-import java.io.IOException;
-
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Notificacao;
 
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.IOException;
 
 public class Backup {
 	private static String SEPARATOR = File.separator;

@@ -1,29 +1,5 @@
 package org.jisho.textosJapones.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.jisho.textosJapones.fileparse.Parse;
-import org.jisho.textosJapones.fileparse.ParseFactory;
-import org.jisho.textosJapones.fileparse.RarParse;
-import org.jisho.textosJapones.model.enums.Api;
-
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
@@ -35,6 +11,24 @@ import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.DataFormat;
 import javafx.util.Pair;
+import org.jisho.textosJapones.fileparse.Parse;
+import org.jisho.textosJapones.fileparse.ParseFactory;
+import org.jisho.textosJapones.fileparse.RarParse;
+import org.jisho.textosJapones.model.enums.Api;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Util {
 

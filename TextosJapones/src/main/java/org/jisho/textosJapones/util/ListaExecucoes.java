@@ -1,9 +1,9 @@
 package org.jisho.textosJapones.util;
 
+import javafx.fxml.FXMLLoader;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.fxml.FXMLLoader;
 
 /**
  * Função para realizar a execução de tarefas em sequencia.
@@ -107,7 +107,7 @@ public class ListaExecucoes {
 	 * </p>
 	 * 
 	 * <p>
-	 * {@link org.jisho.textosJapones.util.ListaExecucoes#endProcess}
+	 * {@link ListaExecucoes#endProcess}
 	 * </p>
 	 * 
 	 * @return Deverá retornar um <b>Boolean</b> no qual quando false irá definir se

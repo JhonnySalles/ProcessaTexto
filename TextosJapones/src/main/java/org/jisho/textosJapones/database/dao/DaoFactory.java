@@ -1,13 +1,6 @@
 package org.jisho.textosJapones.database.dao;
 
-import org.jisho.textosJapones.database.dao.implement.EstatisticaDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.MangaDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.ProcessarDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.RevisarInglesDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.RevisarJaponesDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.VincularDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.VocabularioInglesDaoJDBC;
-import org.jisho.textosJapones.database.dao.implement.VocabularioJaponesDaoJDBC;
+import org.jisho.textosJapones.database.dao.implement.*;
 import org.jisho.textosJapones.database.mysql.DB;
 
 public class DaoFactory {

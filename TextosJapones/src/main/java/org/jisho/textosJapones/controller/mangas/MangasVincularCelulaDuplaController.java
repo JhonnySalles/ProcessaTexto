@@ -1,27 +1,22 @@
 package org.jisho.textosJapones.controller.mangas;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.components.listener.VinculoListener;
-import org.jisho.textosJapones.model.entities.VinculoPagina;
-import org.jisho.textosJapones.model.enums.Pagina;
-import org.jisho.textosJapones.util.Util;
-
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.jisho.textosJapones.components.listener.VinculoListener;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.enums.Pagina;
+import org.jisho.textosJapones.util.Util;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MangasVincularCelulaDuplaController implements Initializable {
 

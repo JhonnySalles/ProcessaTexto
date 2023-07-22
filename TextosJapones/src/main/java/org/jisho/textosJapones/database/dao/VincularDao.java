@@ -1,12 +1,12 @@
 package org.jisho.textosJapones.database.dao;
 
-import java.util.List;
-
 import org.jisho.textosJapones.model.entities.MangaTabela;
 import org.jisho.textosJapones.model.entities.MangaVinculo;
 import org.jisho.textosJapones.model.entities.Vinculo;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+
+import java.util.List;
 
 public interface VincularDao {
 

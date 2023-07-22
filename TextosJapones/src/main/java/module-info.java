@@ -40,12 +40,12 @@ module TextosJapones {
     requires java.base;
     requires junrar;
     requires org.apache.commons.compress;
-	requires java.xml.bind;
-	requires Mal4J;
-	requires java.net.http;
+    requires java.xml.bind;
+    requires Mal4J;
+    requires java.net.http;
 
-	opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
-	opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;
+    opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
+    opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;

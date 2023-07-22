@@ -1,19 +1,18 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jisho.textosJapones.model.enums.Dicionario;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
-
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
 import com.worksap.nlp.sudachi.Tokenizer;
 import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
+import org.jisho.textosJapones.model.enums.Dicionario;
+import org.jisho.textosJapones.model.enums.Modo;
+import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessarPalavra {
 

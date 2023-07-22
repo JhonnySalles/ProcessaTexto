@@ -1,17 +1,7 @@
 package org.jisho.textosJapones.controller.legendas;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarJaponesServices;
-import org.jisho.textosJapones.processar.ProcessarLegendas;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +10,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
+import org.jisho.textosJapones.processar.ProcessarLegendas;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class LegendasImportarController implements Initializable {
 

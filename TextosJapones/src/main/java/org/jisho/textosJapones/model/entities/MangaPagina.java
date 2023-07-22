@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.model.entities;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.gson.annotations.Expose;
 
 public class MangaPagina extends Manga {
 

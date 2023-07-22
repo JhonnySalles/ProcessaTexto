@@ -1,20 +1,15 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import javafx.concurrent.Task;
+import javafx.util.Pair;
+import org.jisho.textosJapones.model.enums.Api;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.exceptions.FullTranslateUsage;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,18 +20,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.exceptions.FullTranslateUsage;
-import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javafx.concurrent.Task;
-import javafx.util.Pair;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Amagami {
 

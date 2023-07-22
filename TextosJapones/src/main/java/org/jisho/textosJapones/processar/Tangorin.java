@@ -1,12 +1,12 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.FileNotFoundException;
+import java.net.URL;
 
 public class Tangorin {
 

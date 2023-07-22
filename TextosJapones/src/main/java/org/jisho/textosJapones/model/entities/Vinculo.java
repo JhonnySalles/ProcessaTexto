@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.model.entities;
 
+import org.jisho.textosJapones.model.enums.Language;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.jisho.textosJapones.model.enums.Language;
 
 public class Vinculo {
 

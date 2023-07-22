@@ -1,15 +1,14 @@
 package org.jisho.textosJapones;
 
-import org.jisho.textosJapones.controller.FrasesAnkiController;
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.model.enums.Tela;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.jisho.textosJapones.controller.FrasesAnkiController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.model.enums.Tela;
 
 public class Menu {
 

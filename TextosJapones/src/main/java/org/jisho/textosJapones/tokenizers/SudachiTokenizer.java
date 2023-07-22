@@ -1,29 +1,21 @@
 package org.jisho.textosJapones.tokenizers;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
+import com.worksap.nlp.sudachi.Dictionary;
+import com.worksap.nlp.sudachi.DictionaryFactory;
+import com.worksap.nlp.sudachi.Morpheme;
+import com.worksap.nlp.sudachi.Tokenizer;
+import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.model.enums.Dicionario;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.enums.Tipo;
+import org.jisho.textosJapones.model.enums.*;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
@@ -32,16 +24,14 @@ import org.jisho.textosJapones.processar.Jisho;
 import org.jisho.textosJapones.processar.TanoshiJapanese;
 import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 
-import com.nativejavafx.taskbar.TaskbarProgressbar;
-import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
-import com.worksap.nlp.sudachi.Dictionary;
-import com.worksap.nlp.sudachi.DictionaryFactory;
-import com.worksap.nlp.sudachi.Morpheme;
-import com.worksap.nlp.sudachi.Tokenizer;
-import com.worksap.nlp.sudachi.Tokenizer.SplitMode;
-
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class SudachiTokenizer {
 
@@ -52,7 +42,7 @@ public class SudachiTokenizer {
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
 	private Runnable atualizaBarraWindows = () -> Platform.runLater(
-			() -> TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, TaskbarProgressbar.Type.NORMAL));
+			() -> TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, max, Type.NORMAL));
 
 	private static int i = 0;
 	private static int max = 0;

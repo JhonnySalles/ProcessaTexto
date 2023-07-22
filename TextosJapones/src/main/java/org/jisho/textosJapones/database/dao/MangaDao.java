@@ -1,16 +1,11 @@
 package org.jisho.textosJapones.database.dao;
 
-import java.util.List;
-import java.util.Set;
-
-import org.jisho.textosJapones.model.entities.MangaCapitulo;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTabela;
-import org.jisho.textosJapones.model.entities.MangaTexto;
-import org.jisho.textosJapones.model.entities.MangaVocabulario;
-import org.jisho.textosJapones.model.entities.MangaVolume;
+import org.jisho.textosJapones.model.entities.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+
+import java.util.List;
+import java.util.Set;
 
 public interface MangaDao {
 

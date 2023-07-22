@@ -1,9 +1,9 @@
 package org.jisho.textosJapones.model.entities;
 
+import javafx.scene.control.CheckBox;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.control.CheckBox;
 
 public class Revisar {
 

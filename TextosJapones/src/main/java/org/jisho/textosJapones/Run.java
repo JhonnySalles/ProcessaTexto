@@ -1,7 +1,5 @@
 package org.jisho.textosJapones;
 
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
 
 public class Run extends Application {
 

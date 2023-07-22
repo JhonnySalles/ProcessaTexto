@@ -1,10 +1,8 @@
 package org.jisho.textosJapones.model.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.util.Pair;
 import org.jisho.textosJapones.components.listener.VinculoServiceListener;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
@@ -12,12 +10,7 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.fileparse.Parse;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTabela;
-import org.jisho.textosJapones.model.entities.MangaVinculo;
-import org.jisho.textosJapones.model.entities.MangaVolume;
-import org.jisho.textosJapones.model.entities.Vinculo;
-import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.entities.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Pagina;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -25,9 +18,10 @@ import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.similarity.ImageHistogram;
 import org.jisho.textosJapones.util.similarity.ImagePHash;
 
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.util.Pair;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VincularServices {
 

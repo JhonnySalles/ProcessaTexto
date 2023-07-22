@@ -1,19 +1,17 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.database.mysql.ConexaoMysql;
-import org.jisho.textosJapones.util.constraints.Validadores;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.DirectoryChooser;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.util.constraints.Validadores;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MenuConfiguracaoController implements Initializable {
 

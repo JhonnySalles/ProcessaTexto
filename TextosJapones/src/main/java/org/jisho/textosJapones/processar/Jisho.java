@@ -1,5 +1,10 @@
 package org.jisho.textosJapones.processar;
 
+import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -8,19 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 public class Jisho {
 
@@ -158,7 +150,7 @@ public class Jisho {
 	}
 
 	// An initial deserializer which separates the data and meta entries
-	private JsonDeserializer<Jisho.JishoParseData> deserializer = new JsonDeserializer<JishoParseData>() {
+	private JsonDeserializer<JishoParseData> deserializer = new JsonDeserializer<JishoParseData>() {
 
 		@Override
 		public JishoParseData deserialize(JsonElement json, java.lang.reflect.Type typeOfT,
@@ -166,7 +158,7 @@ public class Jisho {
 
 			JsonObject jsonObject = json.getAsJsonObject();
 
-			return new Jisho.JishoParseData(
+			return new JishoParseData(
 
 					// preserving our data and meta fields and JSON
 					jsonObject.get("data").getAsJsonArray(), jsonObject.get("meta").getAsJsonObject()

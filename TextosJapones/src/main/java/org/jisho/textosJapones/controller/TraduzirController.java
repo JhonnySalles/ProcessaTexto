@@ -1,34 +1,10 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.model.entities.Revisar;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarJaponesServices;
-import org.jisho.textosJapones.processar.JapanDict;
-import org.jisho.textosJapones.processar.Jisho;
-import org.jisho.textosJapones.processar.Kanshudo;
-import org.jisho.textosJapones.processar.ProcessarPalavra;
-import org.jisho.textosJapones.processar.Tangorin;
-import org.jisho.textosJapones.processar.TanoshiJapanese;
-import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
-import org.jisho.textosJapones.util.Util;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -40,6 +16,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
+import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.enums.Modo;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
+import org.jisho.textosJapones.processar.*;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
+import org.jisho.textosJapones.util.Util;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TraduzirController implements Initializable {
 

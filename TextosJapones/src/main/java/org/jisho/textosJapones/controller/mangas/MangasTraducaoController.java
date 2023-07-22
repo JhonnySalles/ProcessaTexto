@@ -1,33 +1,8 @@
 package org.jisho.textosJapones.controller.mangas;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.model.entities.Manga;
-import org.jisho.textosJapones.model.entities.MangaCapitulo;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTabela;
-import org.jisho.textosJapones.model.entities.MangaTexto;
-import org.jisho.textosJapones.model.entities.MangaVolume;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.MangaServices;
-import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
-import org.jisho.textosJapones.util.Util;
-
-import com.jfoenix.controls.JFXAutoCompletePopup;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
-
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -39,18 +14,27 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
 import javafx.util.Callback;
+import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.MangaServices;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
+import org.jisho.textosJapones.util.Util;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MangasTraducaoController implements Initializable {
 

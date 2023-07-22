@@ -1,13 +1,6 @@
 package org.jisho.textosJapones.processar.kanjiStatics;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import javafx.stage.FileChooser;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Estatistica;
 import org.jisho.textosJapones.model.enums.Notificacao;
@@ -18,7 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javafx.stage.FileChooser;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportaEstatistica {
 

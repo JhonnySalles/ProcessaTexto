@@ -1,15 +1,11 @@
 package org.jisho.textosJapones.database.mysql;
 
+import org.jisho.textosJapones.components.notification.Alertas;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
-
-import org.jisho.textosJapones.components.notification.Alertas;
 
 public class DB {
 

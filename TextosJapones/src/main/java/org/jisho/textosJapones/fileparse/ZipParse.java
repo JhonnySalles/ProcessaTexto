@@ -1,21 +1,11 @@
 package org.jisho.textosJapones.fileparse;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.jisho.textosJapones.util.Util;
+
+import java.io.*;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.jisho.textosJapones.util.Util;
 
 public class ZipParse implements Parse {
 

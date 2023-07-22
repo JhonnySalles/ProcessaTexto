@@ -3,8 +3,6 @@ package org.jisho.textosJapones.model.entities.comicinfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
-
 public class MAL extends BaseLista {
 
 	private String arquivo;

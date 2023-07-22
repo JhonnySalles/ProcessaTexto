@@ -1,30 +1,15 @@
 package org.jisho.textosJapones.processar.comicinfo;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.katsute.mal4j.MyAnimeList;
+import javafx.application.Platform;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.util.Callback;
+import javafx.util.Pair;
 import org.jisho.textosJapones.controller.mangas.MangasComicInfoController;
 import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
@@ -35,17 +20,20 @@ import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.configuration.Configuracao;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import dev.katsute.mal4j.MyAnimeList;
-import javafx.application.Platform;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.util.Callback;
-import javafx.util.Pair;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ProcessaComicInfo {
 
@@ -438,7 +426,7 @@ public class ProcessaComicInfo {
 		
 						    HttpResponse<String> response = HttpClient.newBuilder()
 						            .build()
-						            .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+						            .send(request, HttpResponse.BodyHandlers.ofString());
 						    String responseBody = response.body();
 						    
 						    if (responseBody.contains("character")) {

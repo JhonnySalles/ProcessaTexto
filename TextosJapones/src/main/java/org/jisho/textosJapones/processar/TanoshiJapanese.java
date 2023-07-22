@@ -1,13 +1,13 @@
 package org.jisho.textosJapones.processar;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class TanoshiJapanese {
 

@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.model.entities.comicinfo;
 
+import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Page")

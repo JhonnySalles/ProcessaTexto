@@ -1,33 +1,10 @@
 package org.jisho.textosJapones.controller.mangas;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
-import org.jisho.textosJapones.components.notification.AlertasPopup;
-import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
-import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.database.mysql.ConexaoMysql;
-import org.jisho.textosJapones.model.entities.comicinfo.BaseLista;
-import org.jisho.textosJapones.model.entities.comicinfo.MAL;
-import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.processar.comicinfo.ProcessaComicInfo;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
-
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -40,13 +17,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -58,6 +30,28 @@ import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
+import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
+import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
+import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.model.entities.comicinfo.BaseLista;
+import org.jisho.textosJapones.model.entities.comicinfo.MAL;
+import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.processar.comicinfo.ProcessaComicInfo;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MangasComicInfoController implements Initializable {
 
@@ -332,8 +326,8 @@ public class MangasComicInfoController implements Initializable {
 							? REGISTROS.parallelStream()
 									.filter(it -> it.isSelecionado()
 											|| it.getMyanimelist().parallelStream().anyMatch(re -> re.isSelecionado()))
-									.toList()
-							: REGISTROS.parallelStream().toList();
+									.collect(Collectors.toList())
+							: REGISTROS.parallelStream().collect(Collectors.toList());
 
 					for (MAL item : lista) {
 						I++;

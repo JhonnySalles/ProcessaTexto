@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.model.services;
 
-import java.util.List;
-
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.RevisarDao;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+
+import java.util.List;
 
 public class RevisarJaponesServices {
 

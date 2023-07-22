@@ -1,28 +1,6 @@
 package org.jisho.textosJapones.controller.mangas;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.jisho.textosJapones.components.TableViewNoSelectionModel;
-import org.jisho.textosJapones.components.animation.Animacao;
-import org.jisho.textosJapones.components.listener.VinculoTextoListener;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTexto;
-import org.jisho.textosJapones.model.entities.VinculoPagina;
-import org.jisho.textosJapones.model.enums.Language;
-
-import com.jfoenix.controls.JFXAutoCompletePopup;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
-
+import com.jfoenix.controls.*;
 import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -47,6 +25,21 @@ import javafx.scene.paint.Paint;
 import javafx.scene.robot.Robot;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import org.jisho.textosJapones.components.TableViewNoSelectionModel;
+import org.jisho.textosJapones.components.animation.Animacao;
+import org.jisho.textosJapones.components.listener.VinculoTextoListener;
+import org.jisho.textosJapones.model.entities.MangaPagina;
+import org.jisho.textosJapones.model.entities.MangaTexto;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.enums.Language;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MangasTextoController implements Initializable, VinculoTextoListener {
 
@@ -190,7 +183,7 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 
 			listenerAutoCompleteMangaOriginal = new ListChangeListener<String>() {
 				@Override
-				public void onChanged(ListChangeListener.Change<? extends String> change) {
+				public void onChanged(Change<? extends String> change) {
 					while (change.next()) {
 						for (String removed : change.getRemoved())
 							autoCompleteMangaOriginal.getSuggestions().remove(removed);
@@ -203,7 +196,7 @@ public class MangasTextoController implements Initializable, VinculoTextoListene
 
 			listenerAutoCompleteMangaVinculado = new ListChangeListener<String>() {
 				@Override
-				public void onChanged(ListChangeListener.Change<? extends String> change) {
+				public void onChanged(Change<? extends String> change) {
 					while (change.next()) {
 						for (String removed : change.getRemoved())
 							autoCompleteMangaVinculado.getSuggestions().remove(removed);

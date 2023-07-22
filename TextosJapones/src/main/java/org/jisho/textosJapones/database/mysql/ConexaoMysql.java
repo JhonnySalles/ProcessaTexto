@@ -1,11 +1,11 @@
 package org.jisho.textosJapones.database.mysql;
 
+import org.jisho.textosJapones.util.configuration.Configuracao;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import org.jisho.textosJapones.util.configuration.Configuracao;
 
 public class ConexaoMysql {
 

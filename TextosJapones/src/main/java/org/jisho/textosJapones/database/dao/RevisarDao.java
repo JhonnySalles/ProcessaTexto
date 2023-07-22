@@ -1,9 +1,9 @@
 package org.jisho.textosJapones.database.dao;
 
-import java.util.List;
-
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+
+import java.util.List;
 
 public interface RevisarDao {
 

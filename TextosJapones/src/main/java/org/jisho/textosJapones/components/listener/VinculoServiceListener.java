@@ -1,8 +1,7 @@
 package org.jisho.textosJapones.components.listener;
 
-import org.jisho.textosJapones.model.entities.VinculoPagina;
-
 import javafx.collections.ObservableList;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
 
 public interface VinculoServiceListener {
 

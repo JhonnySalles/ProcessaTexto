@@ -1,12 +1,12 @@
 package org.jisho.textosJapones.components;
 
 
-import java.io.Serializable;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+
+import java.io.Serializable;
 
 
 public class SerializableImage implements Serializable {

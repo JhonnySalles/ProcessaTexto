@@ -1,11 +1,5 @@
 package org.jisho.textosJapones.components.notification;
 
-import java.io.IOException;
-
-import org.controlsfx.control.Notifications;
-import org.jisho.textosJapones.controller.PopupNotificacaoController;
-import org.jisho.textosJapones.model.enums.Notificacao;
-
 import animatefx.animation.FadeIn;
 import animatefx.animation.FadeOut;
 import javafx.animation.KeyFrame;
@@ -20,6 +14,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+import org.jisho.textosJapones.controller.PopupNotificacaoController;
+import org.jisho.textosJapones.model.enums.Notificacao;
+
+import java.io.IOException;
 
 public class Notificacoes {
 

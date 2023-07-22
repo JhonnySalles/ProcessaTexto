@@ -1,7 +1,6 @@
 package org.jisho.textosJapones.components;
 
 import com.jfoenix.controls.JFXCheckBox;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;

@@ -1,10 +1,10 @@
 package org.jisho.textosJapones.database.dao;
 
-import java.util.List;
-
 import org.jisho.textosJapones.controller.EstatisticaController.Tabela;
 import org.jisho.textosJapones.model.entities.Estatistica;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+
+import java.util.List;
 
 public interface EstatisticaDao {
 

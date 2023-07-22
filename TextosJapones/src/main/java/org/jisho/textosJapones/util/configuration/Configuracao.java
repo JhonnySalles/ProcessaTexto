@@ -1,13 +1,9 @@
 package org.jisho.textosJapones.util.configuration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Properties;
-
 import org.jisho.textosJapones.components.notification.Alertas;
+
+import java.io.*;
+import java.util.Properties;
 
 public class Configuracao {
 

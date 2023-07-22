@@ -1,33 +1,6 @@
 package org.jisho.textosJapones.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-import org.jisho.textosJapones.model.entities.Revisar;
-import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Api;
-import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.RevisarJaponesServices;
-import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
-import org.jisho.textosJapones.processar.JapanDict;
-import org.jisho.textosJapones.processar.Jisho;
-import org.jisho.textosJapones.processar.Kanshudo;
-import org.jisho.textosJapones.processar.Tangorin;
-import org.jisho.textosJapones.processar.TanoshiJapanese;
-import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
-import org.jisho.textosJapones.util.Util;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
-
+import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,6 +11,23 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Api;
+import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarJaponesServices;
+import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
+import org.jisho.textosJapones.processar.*;
+import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
+import org.jisho.textosJapones.util.Util;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class RevisarController implements Initializable {
 

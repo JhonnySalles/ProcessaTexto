@@ -1,7 +1,6 @@
 package org.jisho.textosJapones.components;
 
 import com.jfoenix.controls.JFXSlider;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;

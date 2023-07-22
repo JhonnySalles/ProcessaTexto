@@ -1,10 +1,10 @@
 package org.jisho.textosJapones.components;
 
+import javafx.util.converter.NumberStringConverter;
+
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import javafx.util.converter.NumberStringConverter;
 
 public class NumberToStringConverter extends NumberStringConverter {
     public NumberToStringConverter() {
