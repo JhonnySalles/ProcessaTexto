@@ -116,27 +116,31 @@ public class TanoshiJapanese {
 
 		Pattern parenteses = Pattern.compile(ENTRE_PARENTESES, Pattern.MULTILINE);
 		Pattern ponto = Pattern.compile(PONTO, Pattern.MULTILINE);
+		try {
+			for (Element elemento : messages) {
+				Elements itens = elemento.getElementsByClass("jp");
 
-		for (Element elemento : messages) {
-			Elements itens = elemento.getElementsByClass("jp");
+				if (elemento.getElementsByClass("entrylinks").size() <= 0)
+					continue;
 
-			if (elemento.getElementsByClass("entrylinks").size() <= 0)
-				continue;
+				String link = elemento.getElementsByClass("entrylinks").first().select("a").first().attr("abs:href");
 
-			String link = elemento.getElementsByClass("entrylinks").first().select("a").first().attr("abs:href");
+				for (Element item : itens) {
+					String palavra = item.text().trim();
 
-			for (Element item : itens) {
-				String palavra = item.text().trim();
+					if (parenteses.matcher(palavra).find())
+						palavra = palavra.replaceAll(ENTRE_PARENTESES, "");
 
-				if (parenteses.matcher(palavra).find())
-					palavra = palavra.replaceAll(ENTRE_PARENTESES, "");
+					if (ponto.matcher(palavra).find())
+						palavra = palavra.replaceAll(PONTO, "");
 
-				if (ponto.matcher(palavra).find())
-					palavra = palavra.replaceAll(PONTO, "");
-
-				if (kanji.equalsIgnoreCase(palavra))
-					return link;
+					if (kanji.equalsIgnoreCase(palavra))
+						return link;
+				}
 			}
+		} catch (Exception e) {
+			System.out.println(pagina.baseUri());
+			e.printStackTrace();
 		}
 
 		return "";

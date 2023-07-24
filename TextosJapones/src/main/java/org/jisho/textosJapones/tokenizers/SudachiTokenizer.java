@@ -252,7 +252,7 @@ public class SudachiTokenizer {
 			@Override
 			public Void call() throws IOException, InterruptedException {
 				DESATIVAR = false;
-				String ingles, portugues, expressao, significado, links;
+				String ingles, portugues, leitura, expressao, significado, links;
 				String[][] frase;
 
 				vocabNovo.clear();
@@ -276,11 +276,14 @@ public class SudachiTokenizer {
 					for (String texto : palavras) {
 						ingles = "";
 						portugues = "";
+						leitura = "";
 
 						if (texto.contains("|")) {
 							String[] textos = texto.replace("||", "|").split("\\|");
 							palavra = textos[0];
 							ingles = textos[1] + ".";
+							if (textos[2] != null)
+								leitura = textos[2];
 						} else
 							palavra = texto;
 
@@ -299,7 +302,7 @@ public class SudachiTokenizer {
 
 							if (!ingles.isEmpty()) {
 								if (ingles.contains(";"))
-									ingles = ingles.replaceAll(";", ",");
+									ingles = ingles.replaceAll(";", ", ");
 
 								if (ingles.contains("..") && !ingles.contains("..."))
 									ingles = ingles.replaceAll("..", ".");
@@ -337,7 +340,7 @@ public class SudachiTokenizer {
 
 									if (isExcel) {
 										expressao += frase[i][0] + "<br><br>";
-										significado += processado + "<br><br>" + traduzido + "<br><br>";
+										significado += (processado.isBlank() ? "" : processado + "<br><br>") + traduzido + "<br><br>";
 										links += (!frase[i][2].isEmpty() ? frase[i][2] + ";" : "");
 									} else {
 										expressao += frase[i][0] + "\n\n";
@@ -347,7 +350,7 @@ public class SudachiTokenizer {
 								} else {
 									if (i == 0) {
 										if (isExcel)
-											expressao = palavra + ";" + "***";
+											expressao = palavra + ";" + portugues + "<br><br>";
 										else
 											expressao = palavra + "\n\n" + "***" + "\n\n";
 									}
@@ -356,8 +359,13 @@ public class SudachiTokenizer {
 									return null;
 							}
 
+							if (isExcel) {
+								expressao = expressao.substring(0, expressao.lastIndexOf("<br><br>"));
+								significado = significado.substring(0, significado.lastIndexOf("<br><br>"));
+							}
+
 							if (isExcel)
-								vocabulario += palavra + ";" + ingles + ";" + portugues + ";" +  expressao + ";" + significado + ";" + links + "\n";
+								vocabulario += palavra + ";" + ingles + ";" + portugues + ";" +  expressao + ";" + significado + ";" + (leitura.isEmpty() ? "" : palavra + "[" + leitura + "]") + ";" + links + "\n";
 							else
 								vocabulario += palavra + "\n" + ingles + "\n" + portugues + "\n\n" + expressao + significado + links + "\n" + "-".repeat(20) + "\n";
 						}
