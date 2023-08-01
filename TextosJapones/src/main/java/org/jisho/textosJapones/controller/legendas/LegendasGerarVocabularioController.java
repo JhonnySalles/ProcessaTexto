@@ -483,7 +483,8 @@ public class LegendasGerarVocabularioController implements Initializable {
                 try {
                     fila = service.selectFila();
 
-                    for (FilaSQL select : fila.stream().filter(f -> !f.isLimpeza() && !f.isExporta()).collect(Collectors.toList())) {
+                    List<FilaSQL> temp = fila.stream().filter(f -> !f.isLimpeza() && !f.isExporta()).collect(Collectors.toList());
+                    for (FilaSQL select : temp) {
                         x++;
 
                         Platform.runLater(() -> {
@@ -506,7 +507,7 @@ public class LegendasGerarVocabularioController implements Initializable {
                             i = 0;
                             for (Processar item : lista) {
                                 i++;
-                                updateMessage("Processando fila " + x + " de " + fila.size() + " - Processando item "
+                                updateMessage("Processando fila " + x + " de " + temp.size() + " - Processando item "
                                         + i + " de " + lista.size());
                                 updateProgress(i, lista.size());
 
