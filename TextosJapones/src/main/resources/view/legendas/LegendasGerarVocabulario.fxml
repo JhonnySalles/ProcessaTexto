@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.legendas.LegendasGerarVocabularioController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.legendas.LegendasGerarVocabularioController">
    <children>
       <SplitPane dividerPositions="0.5887096774193549" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="background-Black2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -29,7 +33,21 @@
                               <Insets left="15.0" right="15.0" />
                            </padding>
                            <children>
-                              <JFXButton fx:id="btnExclusao" focusTraversable="false" minWidth="100.0" onAction="#onBtnEclusao" prefWidth="110.0" styleClass="background-White1" text="Salvar Exclusao" />
+                              <JFXTextField fx:id="txtCaminhoExportar" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Arquivo para exportar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                              <JFXButton fx:id="btnCaminhoExportar" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoExportar" prefWidth="35.0">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icoPasta_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXTextField fx:id="txtPipe" alignment="CENTER" focusColor="#71afe5" labelFloat="true" maxWidth="30.0" prefHeight="25.0" promptText="Pipe" styleClass="texto-stilo" text="|" unFocusColor="#106ebe">
+                                 <HBox.margin>
+                                    <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                              </JFXTextField>
                               <JFXButton fx:id="btnProcessar" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessar" prefWidth="110.0" styleClass="background-White1" text="Processar" />
                            </children>
                         </HBox>
@@ -37,10 +55,10 @@
                            <children>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                  <children>
-                                    <JFXButton fx:id="btnDeletar" focusTraversable="false" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="110.0" styleClass="background-White1" text="Delete" />
-                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" minWidth="100.0" onAction="#onBtnAtualizar" prefWidth="110.0" styleClass="background-White1" text="Select" />
                                     <JFXButton fx:id="btnProcessarTudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarTudo" prefWidth="110.0" styleClass="background-White1" text="Processar tudo" />
+                                    <JFXButton fx:id="btnAtualizar" focusTraversable="false" minWidth="100.0" onAction="#onBtnAtualizar" prefWidth="110.0" styleClass="background-White1" text="Select" />
                                     <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Update" />
+                                    <JFXButton fx:id="btnDeletar" focusTraversable="false" minWidth="100.0" onAction="#onBtnDeletar" prefWidth="110.0" styleClass="background-White1" text="Delete" />
                                     <Line endX="100.0" stroke="WHITE">
                                        <VBox.margin>
                                           <Insets bottom="5.0" top="5.0" />
@@ -50,19 +68,25 @@
                                     <JFXButton fx:id="btnExecutarFila" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarFila" prefWidth="110.0" styleClass="background-White1" text="Executar fila" />
                                  </children>
                               </VBox>
-                              <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                              <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <JFXTextArea fx:id="txtAreaSelect" focusColor="#71afe5" labelFloat="true" promptText="Select" text="SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela" unFocusColor="#106ebe" VBox.vgrow="ALWAYS">
                                        <styleClass>
                                           <String fx:value="background-Blue3" />
                                           <String fx:value="texto-stilo" />
                                        </styleClass>
+                                       <VBox.margin>
+                                          <Insets bottom="10.0" />
+                                       </VBox.margin>
                                     </JFXTextArea>
                                     <JFXTextArea fx:id="txtAreaUpdate" focusColor="#71afe5" labelFloat="true" promptText="Update" text="UPDATE tabela SET campo3 = ? WHERE id = ?" unFocusColor="#106ebe" VBox.vgrow="ALWAYS">
                                        <styleClass>
                                           <String fx:value="background-Blue3" />
                                           <String fx:value="texto-stilo" />
                                        </styleClass>
+                                       <VBox.margin>
+                                          <Insets bottom="10.0" />
+                                       </VBox.margin>
                                     </JFXTextArea>
                                     <JFXTextArea fx:id="txtAreaDelete" focusColor="#71afe5" labelFloat="true" prefHeight="100.0" promptText="Delete" text="UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL" unFocusColor="#106ebe" VBox.vgrow="ALWAYS">
                                        <styleClass>
@@ -70,10 +94,17 @@
                                           <String fx:value="texto-stilo" />
                                        </styleClass>
                                     </JFXTextArea>
+                                    <HBox spacing="20.0">
+                                       <children>
+                                          <JFXCheckBox fx:id="cbExporta" checkedColor="#71afe5" text="Exporta" textFill="WHITE" unCheckedColor="#106ebe" />
+                                          <JFXCheckBox fx:id="cbLimpeza" checkedColor="#71afe5" text="Limpeza" textFill="WHITE" unCheckedColor="#106ebe" />
+                                       </children>
+                                    </HBox>
                                  </children>
                               </VBox>
-                              <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                              <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                                  <children>
+                                    <JFXButton fx:id="btnExclusao" focusTraversable="false" minWidth="100.0" onAction="#onBtnEclusao" prefWidth="110.0" styleClass="background-White1" text="Salvar Exclusao" />
                                     <JFXTextArea fx:id="txtAreaVocabulario" focusColor="#71afe5" labelFloat="true" promptText="Vocabulario" unFocusColor="#106ebe" VBox.vgrow="ALWAYS">
                                        <styleClass>
                                           <String fx:value="background-Blue3" />

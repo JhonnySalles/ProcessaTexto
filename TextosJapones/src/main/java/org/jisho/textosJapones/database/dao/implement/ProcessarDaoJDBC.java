@@ -13,156 +13,162 @@ import java.util.List;
 
 public class ProcessarDaoJDBC implements ProcessarDao {
 
-	private Connection conn;
+    private Connection conn;
 
-	final private String INSERT_FILA = "INSERT INTO fila_sql (selectSQL, updateSQL, vocabulario ) VALUES (?, ?, ?);";
-	final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, vocabulario = ? WHERE sequencial = ?";
-	final private String SELECT_FILA = "SELECT sequencial, selectSQL, updateSQL, deleteSQL, vocabulario FROM fila_sql";
+    final private String INSERT_FILA = "INSERT INTO fila_sql (selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?);";
+    final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, deleteSQL = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE sequencial = ?";
+    final private String SELECT_FILA = "SELECT sequencial, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza FROM fila_sql";
 
-	public ProcessarDaoJDBC(Connection conn) {
-		this.conn = conn;
-	}
+    public ProcessarDaoJDBC(Connection conn) {
+        this.conn = conn;
+    }
 
-	@Override
-	public void update(String update, Processar obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
+    @Override
+    public void update(String update, Processar obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getVocabulario());
-			st.setString(2, obj.getId());
+            st.setString(1, obj.getVocabulario());
+            st.setString(2, obj.getId());
 
-			int rowsAffected = st.executeUpdate();
+            int rowsAffected = st.executeUpdate();
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            if (rowsAffected < 1) {
+                System.out.println(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-	@Override
-	public List<Processar> select(String select) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+    @Override
+    public List<Processar> select(String select) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			st = conn.prepareStatement(select);
-			rs = st.executeQuery();
+            st = conn.prepareStatement(select);
+            rs = st.executeQuery();
 
-			List<Processar> list = new ArrayList<>();
+            List<Processar> list = new ArrayList<>();
 
-			while (rs.next())
-				list.add(new Processar(rs.getString(1), rs.getString(2)));
+            while (rs.next())
+                list.add(new Processar(rs.getString(1), rs.getString(2)));
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-	@Override
-	public void insert(FilaSQL fila) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INSERT_FILA, Statement.RETURN_GENERATED_KEYS);
+    @Override
+    public void insert(FilaSQL fila) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(INSERT_FILA, Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, fila.getSelect());
-			st.setString(2, fila.getUpdate());
-			st.setString(3, fila.getVocabulario());
+            st.setString(1, fila.getSelect());
+            st.setString(2, fila.getUpdate());
+            st.setString(3, fila.getDelete());
+            st.setString(4, fila.getVocabulario());
+            st.setBoolean(5, fila.isExporta());
+            st.setBoolean(6, fila.isLimpeza());
 
-			int rowsAffected = st.executeUpdate();
+            int rowsAffected = st.executeUpdate();
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
+            if (rowsAffected < 1) {
+                System.out.println(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
 
-	}
+    }
 
-	@Override
-	public void update(FilaSQL fila) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(UPDATE_FILA, Statement.RETURN_GENERATED_KEYS);
+    @Override
+    public void update(FilaSQL fila) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(UPDATE_FILA, Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, fila.getSelect());
-			st.setString(2, fila.getUpdate());
-			st.setString(3, fila.getVocabulario());
-			st.setLong(4, fila.getId());
+            st.setString(1, fila.getSelect());
+            st.setString(2, fila.getUpdate());
+            st.setString(3, fila.getDelete());
+            st.setString(4, fila.getVocabulario());
+            st.setBoolean(5, fila.isExporta());
+            st.setBoolean(6, fila.isLimpeza());
+            st.setLong(7, fila.getId());
 
-			int rowsAffected = st.executeUpdate();
+            int rowsAffected = st.executeUpdate();
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
+            if (rowsAffected < 1) {
+                System.out.println(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
 
-	}
+    }
 
-	@Override
-	public List<FilaSQL> select() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+    @Override
+    public List<FilaSQL> select() throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			st = conn.prepareStatement(SELECT_FILA);
-			rs = st.executeQuery();
+            st = conn.prepareStatement(SELECT_FILA);
+            rs = st.executeQuery();
 
-			List<FilaSQL> list = new ArrayList<>();
+            List<FilaSQL> list = new ArrayList<>();
 
-			while (rs.next())
-				list.add(new FilaSQL(rs.getLong("sequencial"), rs.getString("selectSQL"), rs.getString("updateSQL"),
-						rs.getString("deleteSQL"), rs.getString("vocabulario")));
+            while (rs.next())
+                list.add(new FilaSQL(rs.getLong("sequencial"), rs.getString("selectSQL"), rs.getString("updateSQL"),
+                        rs.getString("deleteSQL"), rs.getString("vocabulario"), rs.getBoolean("isExporta"),
+                        rs.getBoolean("isLimpeza")));
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-	@Override
-	public void delete(String delete) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(delete, Statement.RETURN_GENERATED_KEYS);
-
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+    @Override
+    public void delete(String delete) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(delete, Statement.RETURN_GENERATED_KEYS);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            e.printStackTrace();
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
 }

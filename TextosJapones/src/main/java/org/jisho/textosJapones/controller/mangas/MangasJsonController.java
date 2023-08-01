@@ -173,7 +173,7 @@ public class MangasJsonController implements Initializable {
 
 	@FXML
 	private void onBtnCarregarCaminhoSalvar() {
-		String caminho = selecionaPasta(btnCaminhoSalvar.getText());
+		String caminho = selecionaPasta(txtCaminhoSalvar.getText());
 		txtCaminhoSalvar.setText(caminho);
 	}
 

@@ -282,7 +282,7 @@ public class SudachiTokenizer {
 							String[] textos = texto.replace("||", "|").split("\\|");
 							palavra = textos[0];
 							ingles = textos[1] + ".";
-							if (textos[2] != null)
+							if (textos.length > 2 && textos[2] != null)
 								leitura = textos[2];
 						} else
 							palavra = texto;
