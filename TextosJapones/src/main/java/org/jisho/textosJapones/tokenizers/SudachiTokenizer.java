@@ -13,10 +13,12 @@ import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.model.entities.Kanji;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.*;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.KanjiServices;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.JapanDict;
@@ -38,6 +40,7 @@ public class SudachiTokenizer {
 	private Api google = Api.API_GOOGLE;
 	private FrasesAnkiController controller;
 	private VocabularioJaponesServices vocabServ;
+	private KanjiServices kanjiServ;
 	private Set<String> repetido = new HashSet<String>();
 	private List<Vocabulario> vocabNovo = new ArrayList<>();
 
@@ -134,6 +137,61 @@ public class SudachiTokenizer {
 				if (txt != texto[0] && !txt.isEmpty()) {
 					processado += processaTokenizer(mode, txt, false);
 					processado += "\n\n\n";
+				}
+				i++;
+				atualizaProgresso();
+			}
+
+			concluiProgresso(false);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			concluiProgresso(true);
+			AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
+		}
+
+		controller.setTextoDestino(processado);
+		controller.setVocabulario(vocabNovo);
+		processaListaNovo(false);
+	}
+
+	private void processaKanji() throws ExcessaoBd {
+		String[] texto = controller.getTextoOrigem().split("\n");
+		String processado = "";
+
+		vocabNovo.clear();
+		repetido.clear();
+
+		google = MenuPrincipalController.getController().getContaGoogle();
+		controller.setPalavra(texto[0]);
+
+		try (FileInputStream input = new FileInputStream(
+				getPathSettings(MenuPrincipalController.getController().getDicionario()));
+			 Dictionary dict = new DictionaryFactory().create("", readAll(input))) {
+			tokenizer = dict.create();
+
+			i = 0;
+			max = texto.length;
+			SplitMode mode = getModo(MenuPrincipalController.getController().getModo());
+
+			for (String txt : texto) {
+				if (!txt.isEmpty()) {
+					String tokenizer =  processaTokenizer(mode, txt, false);
+					String kanjis = "";
+
+					for (char letra : (tokenizer.isEmpty() ? txt.toCharArray() : tokenizer.toCharArray())) {
+						String kanji = String.valueOf(letra);
+						if (kanji.matches(pattern)) {
+							Kanji palavra = kanjiServ.select(kanji);
+							if (palavra != null)
+								kanjis += kanji + " " + palavra.getPalavra() + " ";
+						}
+					}
+
+					if (tokenizer.isEmpty())
+						processado += kanjis.trim() + "\n\n";
+					else
+						processado += tokenizer + (!kanjis.isEmpty() ? " (" + kanjis.trim() + ")"  : "") + "\n\n";
 				}
 				i++;
 				atualizaProgresso();
@@ -459,6 +517,7 @@ public class SudachiTokenizer {
 
 	private void configura() {
 		setVocabularioServices(new VocabularioJaponesServices());
+		setKanjiServices(new KanjiServices());
 	}
 
 	public void processa(FrasesAnkiController cnt) throws ExcessaoBd {
@@ -475,6 +534,9 @@ public class SudachiTokenizer {
 		case VOCABULARIO:
 			processaVocabulario();
 			break;
+		case KANJI:
+			processaKanji();
+			break;
 		default:
 			break;
 		}
@@ -482,6 +544,10 @@ public class SudachiTokenizer {
 
 	private void setVocabularioServices(VocabularioJaponesServices vocabServ) {
 		this.vocabServ = vocabServ;
+	}
+
+	private void setKanjiServices(KanjiServices kanjiServ) {
+		this.kanjiServ = kanjiServ;
 	}
 
 	public void corrigirLancados(FrasesAnkiController cnt) {

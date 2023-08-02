@@ -37,5 +37,9 @@ public class DaoFactory {
 		return new VincularDaoJDBC(DB.getConnection());
 	}
 
+	public static KanjiDao createKanjiDao() {
+		return new KanjiDaoJDBC(DB.getConnection());
+	}
+
 
 }
