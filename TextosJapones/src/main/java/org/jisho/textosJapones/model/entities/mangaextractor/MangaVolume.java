@@ -1,16 +1,14 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
+import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.enums.Language;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MangaVolume extends Manga {
 
-	private Long id;
+	private UUID id;
 	@Expose
 	private String manga;
 	@Expose
@@ -25,11 +23,11 @@ public class MangaVolume extends Manga {
 	private String arquivo;
 	private Boolean processado;
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -99,7 +97,7 @@ public class MangaVolume extends Manga {
 
 	public MangaVolume() {
 		super();
-		this.id = 0L;
+		this.id = null;
 		this.manga = "";
 		this.volume = 0;
 		this.lingua = Language.PORTUGUESE;
@@ -110,7 +108,7 @@ public class MangaVolume extends Manga {
 		this.arquivo = "";
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo) {
+	public MangaVolume(UUID id, String manga, Integer volume, Language lingua, String arquivo) {
 		super(manga, volume, null);
 		this.id = id;
 		this.manga = manga;
@@ -123,7 +121,7 @@ public class MangaVolume extends Manga {
 		this.processar = true;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+	public MangaVolume(UUID id, String manga, Integer volume, Language lingua, String arquivo,
 			List<MangaCapitulo> capitulos) {
 		super(manga, volume, null);
 		this.id = id;
@@ -137,7 +135,7 @@ public class MangaVolume extends Manga {
 		this.processar = true;
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+	public MangaVolume(UUID id, String manga, Integer volume, Language lingua, String arquivo,
 			Set<MangaVocabulario> vocabularios) {
 		super(manga, volume, null);
 		this.id = id;
@@ -151,7 +149,7 @@ public class MangaVolume extends Manga {
 		this.capitulos = new ArrayList<MangaCapitulo>();
 	}
 
-	public MangaVolume(Long id, String manga, Integer volume, Language lingua, String arquivo,
+	public MangaVolume(UUID id, String manga, Integer volume, Language lingua, String arquivo,
 			Set<MangaVocabulario> vocabularios, List<MangaCapitulo> capitulos) {
 		super(manga, volume, null);
 		this.id = id;
@@ -166,43 +164,17 @@ public class MangaVolume extends Manga {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((lingua == null) ? 0 : lingua.hashCode());
-		result = prime * result + ((manga == null) ? 0 : manga.hashCode());
-		result = prime * result + ((volume == null) ? 0 : volume.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		MangaVolume that = (MangaVolume) o;
+		return Objects.equals(id, that.id) && Objects.equals(manga, that.manga) && Objects.equals(volume, that.volume) && lingua == that.lingua;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MangaVolume other = (MangaVolume) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (lingua != other.lingua)
-			return false;
-		if (manga == null) {
-			if (other.manga != null)
-				return false;
-		} else if (!manga.equals(other.manga))
-			return false;
-		if (volume == null) {
-			if (other.volume != null)
-				return false;
-		} else if (!volume.equals(other.volume))
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), id, manga, volume, lingua);
 	}
 
 	@Override
@@ -210,4 +182,6 @@ public class MangaVolume extends Manga {
 		return "MangaVolume [id=" + id + ", manga=" + manga + ", volume=" + volume + ", lingua=" + lingua
 				+ ", vocabularios=" + vocabularios + ", arquivo=" + arquivo + "]";
 	}
+
+
 }

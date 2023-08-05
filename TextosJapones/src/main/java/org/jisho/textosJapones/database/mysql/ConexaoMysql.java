@@ -15,28 +15,23 @@ public class ConexaoMysql {
 	private static String PASSWORD = "";
 	private static String CAMINHO_MYSQL = "";
 	private static String CAMINHO_WINRAR = "";
-	private static String DATA_BASE_MANGA = "";
-	private static String DATA_BASE_JAPONES = "";
-	private static String DATA_BASE_INGLES = "";
+	private static String DATA_BASE = "";
 
 
 	public static void setDadosConexao(String server, String port, String user, String psswd,
-			String mysql, String winrar, String dataBaseManga, String dataBaseJapones, String dataBaseIngles) {
+			String mysql, String winrar, String dataBase) {
 		SERVER = server;
 		PORT = port;
 		USER = user;
 		PASSWORD = psswd;
 		CAMINHO_MYSQL = mysql;
 		CAMINHO_WINRAR = winrar;
-		DATA_BASE_MANGA = dataBaseManga;
-		DATA_BASE_JAPONES = dataBaseJapones;
-		DATA_BASE_INGLES = dataBaseIngles;
+		DATA_BASE = dataBase;
 		saveDadosConexao();
 	}
 
 	private static void saveDadosConexao() {
-		Configuracao.createProperties(SERVER, PORT, USER, PASSWORD, CAMINHO_MYSQL, CAMINHO_WINRAR, 
-				DATA_BASE_MANGA, DATA_BASE_JAPONES, DATA_BASE_INGLES );
+		Configuracao.createProperties(SERVER, PORT, USER, PASSWORD, CAMINHO_MYSQL, CAMINHO_WINRAR, DATA_BASE );
 	}
 
 	public static String getServer() {
@@ -46,20 +41,10 @@ public class ConexaoMysql {
 	public static String getPort() {
 		return PORT;
 	}
-
-	public static String getDataBaseManga() {
-		return DATA_BASE_MANGA;
-	}
 	
-	public static String getDataBaseJapones() {
-		return DATA_BASE_JAPONES;
+	public static String getDataBase() {
+		return DATA_BASE;
 	}
-
-	
-	public static String getDataBaseIngles() {
-		return DATA_BASE_INGLES;
-	}
-
 
 	public static String getUser() {
 		return USER;
@@ -85,9 +70,7 @@ public class ConexaoMysql {
 		PASSWORD = props.getProperty("password");
 		CAMINHO_MYSQL = props.getProperty("caminho_mysql");
 		CAMINHO_WINRAR = props.getProperty("caminho_winrar");
-		DATA_BASE_MANGA = props.getProperty("base_manga");
-		DATA_BASE_JAPONES = props.getProperty("base_japones");
-		DATA_BASE_INGLES = props.getProperty("base_ingles");
+		DATA_BASE = props.getProperty("base");
 	}
 
 	public static String testaConexaoMySQL() {
@@ -99,18 +82,18 @@ public class ConexaoMysql {
 			String driverName = "com.mysql.cj.jdbc.Driver";
 			Class.forName(driverName);
 
-			String url = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATA_BASE_JAPONES
+			String url = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATA_BASE
 					+ "?useTimezone=true&serverTimezone=UTC";
 			connection = DriverManager.getConnection(url, USER, PASSWORD);
 
 			if (connection != null)
-				conecta = DATA_BASE_JAPONES;
+				conecta = DATA_BASE;
 			
 
 			connection.close();
 
 		} catch (ClassNotFoundException e) { // Driver n�o encontrado
-			System.out.println("O driver de conex�o expecificado nao foi encontrado.");
+			System.out.println("O driver de conexão expecificado nao foi encontrado.");
 			e.printStackTrace();
 
 		} catch (SQLException e) {

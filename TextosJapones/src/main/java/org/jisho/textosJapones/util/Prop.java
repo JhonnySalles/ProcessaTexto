@@ -2,7 +2,10 @@ package org.jisho.textosJapones.util;
 
 import org.jisho.textosJapones.components.notification.Alertas;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class Prop {
 

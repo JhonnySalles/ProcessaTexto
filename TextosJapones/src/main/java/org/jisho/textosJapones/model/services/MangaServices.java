@@ -3,12 +3,13 @@ package org.jisho.textosJapones.model.services;
 import javafx.collections.ObservableList;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
-import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class MangaServices {
 
@@ -37,7 +38,7 @@ public class MangaServices {
 	}
 
 	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem, Boolean inverterTexto) throws ExcessaoBd {
+                                               Language linguagem, Boolean inverterTexto) throws ExcessaoBd {
 		return mangaDao.selectTabelasJson(base, manga, volume, capitulo, linguagem, inverterTexto);
 	}
 
@@ -52,11 +53,11 @@ public class MangaServices {
 	}
 
 	public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
-		Long idVolume = mangaDao.insertVolume(base, volume);
+		UUID idVolume = mangaDao.insertVolume(base, volume);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
+			UUID idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
-				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
+				UUID idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
 				for (MangaTexto texto : pagina.getTextos())
 					mangaDao.insertTexto(base, idPagina, texto);
 			}
@@ -78,8 +79,8 @@ public class MangaServices {
 		mangaDao.updateProcessado(base, "paginas", pagina.getId());
 	}
 
-	public void insertVocabularios(String base, Long idVolume, Long idCapitulo, Long idPagina,
-			Set<MangaVocabulario> vocabularios) throws ExcessaoBd {
+	public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
+								   Set<MangaVocabulario> vocabularios) throws ExcessaoBd {
 		mangaDao.insertVocabulario(base, idVolume, idCapitulo, idPagina, vocabularios);
 	}
 
@@ -102,7 +103,7 @@ public class MangaServices {
 					mangaDao.deletarVocabulario(tabela.getBase());
 				}
 
-				if (volume.getId() == null || volume.getId().compareTo(0L) == 0)
+				if (volume.getId() == null)
 					volume.setId(mangaDao.insertVolume(tabela.getBase(), volume));
 				else if (volume.isAlterado()) {
 					if (volume.isItemExcluido()) {
@@ -183,11 +184,11 @@ public class MangaServices {
 
 	public void salvarTraducao(String base, MangaVolume volume) throws ExcessaoBd {
 		mangaDao.deleteVolume(base, volume);
-		Long idVolume = mangaDao.insertVolume(base, volume);
+		UUID idVolume = mangaDao.insertVolume(base, volume);
 		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			Long idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
+			UUID idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
 			for (MangaPagina pagina : capitulo.getPaginas()) {
-				Long idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
+				UUID idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
 				for (MangaTexto texto : pagina.getTextos())
 					mangaDao.insertTexto(base, idPagina, texto);
 			}

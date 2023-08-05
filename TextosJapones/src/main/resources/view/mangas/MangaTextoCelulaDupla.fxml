@@ -3,12 +3,8 @@
 <?import com.jfoenix.controls.JFXSlider?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-
 <HBox fx:id="hbRoot" alignment="CENTER" spacing="5.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasTextoCelulaDuplaController">
    <children>
       <AnchorPane fx:id="esquerdaRoot" maxHeight="500.0" minHeight="400.0" prefHeight="400.0" HBox.hgrow="ALWAYS">

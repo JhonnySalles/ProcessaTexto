@@ -22,7 +22,7 @@ public class Backup {
 
 	private static void carregaCampos() throws Exception {
 		ConexaoMysql.getDadosConexao();
-		if (ConexaoMysql.getDataBaseManga().isEmpty())
+		if (ConexaoMysql.getDataBase().isEmpty())
 			throw new Exception("Erro, não existe nenhuma base nos arquivos de configuração.");
 
 		if (ConexaoMysql.getCaminhoMysql().isEmpty())
@@ -41,15 +41,15 @@ public class Backup {
 		long time1, time2, time;
 		time1 = System.currentTimeMillis();
 		ProcessBuilder pb = new ProcessBuilder(commando, "--user=" + ConexaoMysql.getUser(),
-				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBaseManga(),
-				"--result-file=" + caminho.getPath() + SEPARATOR + ConexaoMysql.getDataBaseManga() + ".sql");
+				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBase(),
+				"--result-file=" + caminho.getPath() + SEPARATOR + ConexaoMysql.getDataBase() + ".sql");
 
 		pb.start();
 		time2 = System.currentTimeMillis();
 		time = (time2 - time1) / 1000;
 
 		return "Backup realizado com sucesso. Tempo decorrido " + time + "s.\n" + caminho.getPath() + SEPARATOR
-				+ "Backup" + SEPARATOR + ConexaoMysql.getDataBaseManga() + ".sql";
+				+ "Backup" + SEPARATOR + ConexaoMysql.getDataBase() + ".sql";
 	}
 
 	private static String processaImportacao(File arquivo) throws IOException {
@@ -58,7 +58,7 @@ public class Backup {
 		time1 = System.currentTimeMillis();
 
 		ProcessBuilder pb = new ProcessBuilder(commando, "--user=" + ConexaoMysql.getUser(),
-				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBaseManga(), "-e",
+				"--password=" + ConexaoMysql.getPassword(), ConexaoMysql.getDataBase(), "-e",
 				" source " + arquivo.getAbsolutePath());
 
 		pb.start();
@@ -92,7 +92,7 @@ public class Backup {
 				e.printStackTrace();
 				cnt.importaConcluido(true);
 				Notificacoes.notificacao(Notificacao.ERRO, "Erro ao realizar o backup",
-						"Arquivo de configução não encontrado ou nome da base não configurada.");
+						"Arquivo de configuração não encontrado ou nome da base não configurada.");
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class Backup {
 				e.printStackTrace();
 				cnt.exportaConcluido(true);
 				Notificacoes.notificacao(Notificacao.ERRO, "Erro ao realizar o backup",
-						"Arquivo de configução não encontrado ou nome da base não configurada.");
+						"Arquivo de configuração não encontrado ou nome da base não configurada.");
 			}
 		}
 	}

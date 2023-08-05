@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
 

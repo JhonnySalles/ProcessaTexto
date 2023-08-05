@@ -1,4 +1,6 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
+
+import org.jisho.textosJapones.model.entities.Manga;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,9 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.database.mysql.DB;
-import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.entities.Vinculo;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
@@ -32,11 +34,11 @@ public class VincularDaoJDBC implements VincularDao {
 
 	final private String SELECT_MANGAS = "SELECT Manga FROM %s_volumes WHERE linguagem = '%s' GROUP BY manga ORDER BY manga";
 
-	final private String CREATE_TABELA_VINCULO = "CREATE TABLE %s_vinculo (" + "  id INT(11) NOT NULL AUTO_INCREMENT,"
+	final private String CREATE_TABELA_VINCULO = "CREATE TABLE %s_vinculo (" + "  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,"
 			+ "  volume int(11) DEFAULT NULL," + "  original_arquivo VARCHAR(250) DEFAULT NULL,"
-			+ "  original_linguagem VARCHAR(4) DEFAULT NULL," + "  id_volume_original INT(11) DEFAULT NULL,"
+			+ "  original_linguagem VARCHAR(4) DEFAULT NULL," + "  id_volume_original VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  vinculado_arquivo VARCHAR(250) DEFAULT NULL," + "  vinculado_linguagem VARCHAR(4) DEFAULT NULL,"
-			+ "  id_volume_vinculado INT(11) DEFAULT NULL," + "  data_criacao DATETIME DEFAULT NULL,"
+			+ "  id_volume_vinculado VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL," + "  data_criacao DATETIME DEFAULT NULL,"
 			+ "  ultima_alteracao DATETIME DEFAULT NULL," + "  PRIMARY KEY (id),"
 			+ "  KEY %s_original_volume_fk (id_volume_original),"
 			+ "  KEY %s_vinculado_volume_fk (id_volume_vinculado),"
@@ -45,20 +47,20 @@ public class VincularDaoJDBC implements VincularDao {
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private String CREATE_TABELA_VINCULO_PAGINA = "CREATE TABLE %s_vinculo_pagina ("
-			+ "  id INT(11) NOT NULL AUTO_INCREMENT," + "  id_vinculo INT(11) DEFAULT NULL,"
+			+ "  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL," + "  id_vinculo VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  original_nome VARCHAR(250) DEFAULT NULL," + "  original_pasta VARCHAR(500) DEFAULT NULL,"
 			+ "  original_pagina INT(11) DEFAULT NULL," + "  original_paginas INT(11) DEFAULT NULL,"
-			+ "  original_pagina_dupla TINYINT(1) DEFAULT NULL," + "  id_original_pagina INT(11) DEFAULT NULL,"
+			+ "  original_pagina_dupla TINYINT(1) DEFAULT NULL," + "  id_original_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  vinculado_direita_nome VARCHAR(250) DEFAULT NULL,"
 			+ "  vinculado_direita_pasta VARCHAR(500) DEFAULT NULL,"
 			+ "  vinculado_direita_pagina INT(11) DEFAULT NULL," + "  vinculado_direita_paginas INT(11) DEFAULT NULL,"
 			+ "  vinculado_direita_pagina_dupla TINYINT(1) DEFAULT NULL,"
-			+ "  id_vinculado_direita_pagina INT(11) DEFAULT NULL,"
+			+ "  id_vinculado_direita_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  vinculado_esquerda_nome VARCHAR(250) DEFAULT NULL,"
 			+ "  vinculado_esquerda_pasta VARCHAR(500) DEFAULT NULL,"
 			+ "  vinculado_esquerda_pagina INT(11) DEFAULT NULL," + "  vinculado_esquerda_paginas INT(11) DEFAULT NULL,"
 			+ "  vinculado_esquerda_pagina_dupla TINYINT(1) DEFAULT NULL,"
-			+ "  id_vinculado_esquerda_paginas INT(11) DEFAULT NULL," + "  imagem_dupla TINYINT(1) DEFAULT NULL,"
+			+ "  id_vinculado_esquerda_paginas VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL," + "  imagem_dupla TINYINT(1) DEFAULT NULL,"
 			+ "  PRIMARY KEY (id)," + "  KEY %s_vinculo_fk (id_vinculo),"
 			+ "  KEY %s_original_pagina_fk (id_original_pagina),"
 			+ "  KEY %s_direita_pagina_fk (id_vinculado_direita_pagina),"
@@ -70,10 +72,10 @@ public class VincularDaoJDBC implements VincularDao {
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private String CREATE_TABELA_NAO_VINCULADOS = "CREATE TABLE %s_vinculo_pagina_nao_vinculado ("
-			+ "  id INT(11) NOT NULL AUTO_INCREMENT," + "  id_vinculo INT(11) DEFAULT NULL,"
+			+ "  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL," + "  id_vinculo VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  nome VARCHAR(250) DEFAULT NULL," + "  pasta VARCHAR(500) DEFAULT NULL,"
 			+ "  pagina INT(11) DEFAULT NULL," + "  paginas INT(11) DEFAULT NULL,"
-			+ "  pagina_dupla TINYINT(1) DEFAULT NULL," + "  id_vinculado_pagina int(11) DEFAULT NULL,"
+			+ "  pagina_dupla TINYINT(1) DEFAULT NULL," + "  id_vinculado_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  PRIMARY KEY (id)," + "  KEY %s_vinculado_pagina_fk (id_vinculado_pagina),"
 			+ "  KEY %s_vinculo_fk (id_vinculo),"
 			+ "  CONSTRAINT %s_vinculo_nao_vinculado_fk FOREIGN KEY (id_vinculo) REFERENCES %s_vinculo (id) ON DELETE CASCADE ON UPDATE CASCADE,"
@@ -123,21 +125,21 @@ public class VincularDaoJDBC implements VincularDao {
 		BASE_MANGA = props.getProperty("base_manga") + ".";
 	}
 
-	private void insertVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
+	private void insertVinculados(String base, UUID idVinculo, VinculoPagina pagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 
 			st = conn.prepareStatement(String.format(INSERT_PAGINA, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 			st.setString(2, pagina.getOriginalNomePagina());
 			st.setString(3, pagina.getOriginalPathPagina());
 			st.setInt(4, pagina.getOriginalPagina());
 			st.setInt(5, pagina.getOriginalPaginas());
 			st.setBoolean(6, pagina.isOriginalPaginaDupla);
 			if (pagina.getMangaPaginaOriginal() != null)
-				st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+				st.setString(7, pagina.getMangaPaginaOriginal().getId().toString());
 			else
 				st.setNString(7, null);
 
@@ -148,7 +150,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(12, pagina.isVinculadoDireitaPaginaDupla);
 
 			if (pagina.getMangaPaginaDireita() != null)
-				st.setLong(13, pagina.getMangaPaginaDireita().getId());
+				st.setString(13, pagina.getMangaPaginaDireita().getId().toString());
 			else
 				st.setNString(13, null);
 
@@ -159,7 +161,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(18, pagina.isVinculadoEsquerdaPaginaDupla);
 
 			if (pagina.getMangaPaginaEsquerda() != null)
-				st.setLong(19, pagina.getMangaPaginaEsquerda().getId());
+				st.setString(19, pagina.getMangaPaginaEsquerda().getId().toString());
 			else
 				st.setNString(19, null);
 
@@ -185,14 +187,14 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private void insertNaoVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
+	private void insertNaoVinculados(String base, UUID idVinculo, VinculoPagina pagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 
 			st = conn.prepareStatement(String.format(INSERT_PAGINA_NAO_VINCULADA, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 
 			st.setString(2, pagina.getVinculadoEsquerdaNomePagina());
 			st.setString(3, pagina.getVinculadoEsquerdaPathPagina());
@@ -201,7 +203,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(6, pagina.isVinculadoEsquerdaPaginaDupla);
 
 			if (pagina.getMangaPaginaEsquerda() != null)
-				st.setLong(7, pagina.getMangaPaginaEsquerda().getId());
+				st.setString(7, pagina.getMangaPaginaEsquerda().getId().toString());
 			else
 				st.setNString(7, null);
 
@@ -226,7 +228,7 @@ public class VincularDaoJDBC implements VincularDao {
 	}
 
 	@Override
-	public Long insert(String base, Vinculo obj) throws ExcessaoBd {
+	public UUID insert(String base, Vinculo obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 			conn.setAutoCommit(false);
@@ -237,10 +239,10 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setInt(1, obj.getVolume());
 			st.setString(2, obj.getNomeArquivoOriginal());
 			st.setString(3, obj.getLinguagemOriginal().getSigla());
-			st.setLong(4, obj.getVolumeOriginal().getId());
+			st.setString(4, obj.getVolumeOriginal().getId().toString());
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
-			st.setLong(7, obj.getVolumeVinculado().getId());
+			st.setString(7, obj.getVolumeVinculado().getId().toString());
 			st.setTimestamp(8, Util.convertToTimeStamp(obj.getDataCriacao()));
 			st.setTimestamp(9, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
 
@@ -252,7 +254,7 @@ public class VincularDaoJDBC implements VincularDao {
 			} else {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
-					obj.setId(rs.getLong(1));
+					obj.setId(UUID.fromString(rs.getString(1)));
 
 					for (VinculoPagina pagina : obj.getVinculados())
 						insertVinculados(base, obj.getId(), pagina);
@@ -288,7 +290,7 @@ public class VincularDaoJDBC implements VincularDao {
 	private MangaVolume volumeOriginal = null;
 	private MangaVolume volumeVinculado = null;
 
-	private MangaPagina selectPagina(String base, Long id, MangaVolume volume) throws ExcessaoBd {
+	private MangaPagina selectPagina(String base, UUID id, MangaVolume volume) throws ExcessaoBd {
 		if (base == null || id == null)
 			return null;
 
@@ -308,20 +310,20 @@ public class VincularDaoJDBC implements VincularDao {
 		return pagina;
 	}
 
-	private List<VinculoPagina> selectVinculados(String base, Long idVinculo) throws ExcessaoBd {
+	private List<VinculoPagina> selectVinculados(String base, UUID idVinculo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(String.format(SELECT_PAGINA, BASE_MANGA + base));
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 			rs = st.executeQuery();
 
 			List<VinculoPagina> list = new ArrayList<VinculoPagina>();
 			while (rs.next()) {
-				MangaPagina mangaPaginaOriginal = selectPagina(base, rs.getLong("id_original_pagina"), volumeOriginal);
-				MangaPagina mangaPaginaDireita = selectPagina(base, rs.getLong("id_vinculado_direita_pagina"),
+				MangaPagina mangaPaginaOriginal = selectPagina(base, UUID.fromString(rs.getString("id_original_pagina")), volumeOriginal);
+				MangaPagina mangaPaginaDireita = selectPagina(base, UUID.fromString(rs.getString("id_vinculado_direita_pagina")),
 						volumeVinculado);
-				MangaPagina mangaPaginaEsquerda = selectPagina(base, rs.getLong("id_vinculado_esquerda_paginas"),
+				MangaPagina mangaPaginaEsquerda = selectPagina(base, UUID.fromString(rs.getString("id_vinculado_esquerda_paginas")),
 						volumeVinculado);
 
 				list.add(new VinculoPagina(rs.getLong("id"), rs.getString("original_nome"),
@@ -344,19 +346,19 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private List<VinculoPagina> selectNaoVinculados(String base, Long idVinculo) throws ExcessaoBd {
+	private List<VinculoPagina> selectNaoVinculados(String base, UUID idVinculo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
 			st = conn.prepareStatement(String.format(SELECT_PAGINA_NAO_VINCULADA, BASE_MANGA + base));
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 			rs = st.executeQuery();
 
 			List<VinculoPagina> list = new ArrayList<VinculoPagina>();
 			while (rs.next())
 				list.add(new VinculoPagina(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5),
-						rs.getBoolean(6), selectPagina(base, rs.getLong(7), volumeVinculado), true));
+						rs.getBoolean(6), selectPagina(base, UUID.fromString(rs.getString(7)), volumeVinculado), true));
 
 			return list;
 		} catch (SQLException e) {
@@ -368,7 +370,7 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private MangaVolume selectVolume(String base, Long id) throws ExcessaoBd {
+	private MangaVolume selectVolume(String base, UUID id) throws ExcessaoBd {
 		if (base == null || id == null)
 			return null;
 
@@ -376,20 +378,20 @@ public class VincularDaoJDBC implements VincularDao {
 	}
 
 	@Override
-	public Vinculo select(String base, Long id) throws ExcessaoBd {
+	public Vinculo select(String base, UUID id) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
 			st = conn.prepareStatement(String.format(SELECT_VINCULO, BASE_MANGA + base) + " WHERE id = ? ");
-			st.setLong(1, id);
+			st.setString(1, id.toString());
 
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(5));
-				volumeVinculado = selectVolume(base, rs.getLong(8));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+				volumeOriginal = selectVolume(base, UUID.fromString(rs.getString(5)));
+				volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
+				Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
 						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
 						Util.convertToDateTime(rs.getTimestamp(10)));
@@ -447,9 +449,9 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(5));
-				volumeVinculado = selectVolume(base, rs.getLong(8));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+				volumeOriginal = selectVolume(base, UUID.fromString(rs.getString(5)));
+				volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
+				Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
 						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
 						Util.convertToDateTime(rs.getTimestamp(10)));
@@ -486,9 +488,9 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(5));
-				volumeVinculado = selectVolume(base, rs.getLong(8));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+				volumeOriginal = selectVolume(base, UUID.fromString(rs.getString(5)));
+				volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
+				Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
 						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
 						Util.convertToDateTime(rs.getTimestamp(10)));
@@ -525,9 +527,9 @@ public class VincularDaoJDBC implements VincularDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(5));
-				volumeVinculado = selectVolume(base, rs.getLong(8));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+				volumeOriginal = selectVolume(base, UUID.fromString(rs.getString(5)));
+				volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
+				Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
 						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
 						Util.convertToDateTime(rs.getTimestamp(10)));
@@ -579,9 +581,9 @@ public class VincularDaoJDBC implements VincularDao {
 
 			List<Vinculo> list = new ArrayList<Vinculo>();
 			while (rs.next()) {
-				volumeOriginal = selectVolume(base, rs.getLong(5));
-				volumeVinculado = selectVolume(base, rs.getLong(8));
-				Vinculo obj = new Vinculo(rs.getLong(1), base, rs.getInt(2), rs.getString(3),
+				volumeOriginal = selectVolume(base, UUID.fromString(rs.getString(5)));
+				volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
+				Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
 						Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
 						Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
 						Util.convertToDateTime(rs.getTimestamp(10)));
@@ -603,13 +605,11 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private void deleteVinculado(String base, Long idVinculo) throws ExcessaoBd {
+	private void deleteVinculado(String base, UUID idVinculo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(String.format(DELETE_PAGINA, BASE_MANGA + base));
-
-			st.setLong(1, idVinculo);
-
+			st.setString(1, idVinculo.toString());
 			int rowsAffected = st.executeUpdate();
 
 			if (rowsAffected < 1) {
@@ -625,11 +625,11 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private void deleteNaoVinculado(String base, Long idVinculo) throws ExcessaoBd {
+	private void deleteNaoVinculado(String base, UUID idVinculo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(String.format(DELETE_PAGINA_NAO_VINCULADA, BASE_MANGA + base));
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 			st.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(st.toString());
@@ -651,7 +651,7 @@ public class VincularDaoJDBC implements VincularDao {
 
 			st = conn.prepareStatement(String.format(DELETE_VINCULO, BASE_MANGA + base));
 
-			st.setLong(1, obj.getId());
+			st.setString(1, obj.getId().toString());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -680,14 +680,14 @@ public class VincularDaoJDBC implements VincularDao {
 
 	}
 
-	private void updateVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
+	private void updateVinculados(String base, UUID idVinculo, VinculoPagina pagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
 
 			st = conn.prepareStatement(String.format(UPDATE_PAGINA, BASE_MANGA + base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setLong(1, idVinculo);
+			st.setString(1, idVinculo.toString());
 			st.setString(2, pagina.getOriginalNomePagina());
 			st.setString(3, pagina.getOriginalPathPagina());
 			st.setInt(4, pagina.getOriginalPagina());
@@ -695,7 +695,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(6, pagina.isOriginalPaginaDupla);
 
 			if (pagina.getMangaPaginaOriginal() != null)
-				st.setLong(7, pagina.getMangaPaginaOriginal().getId());
+				st.setString(7, pagina.getMangaPaginaOriginal().getId().toString());
 			else
 				st.setNString(7, null);
 
@@ -706,7 +706,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(12, pagina.isVinculadoDireitaPaginaDupla);
 
 			if (pagina.getMangaPaginaDireita() != null)
-				st.setLong(13, pagina.getMangaPaginaDireita().getId());
+				st.setString(13, pagina.getMangaPaginaDireita().getId().toString());
 			else
 				st.setNString(13, null);
 
@@ -717,7 +717,7 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setBoolean(18, pagina.isVinculadoEsquerdaPaginaDupla);
 
 			if (pagina.getMangaPaginaEsquerda() != null)
-				st.setLong(19, pagina.getMangaPaginaEsquerda().getId());
+				st.setString(19, pagina.getMangaPaginaEsquerda().getId().toString());
 			else
 				st.setNString(19, null);
 
@@ -744,7 +744,7 @@ public class VincularDaoJDBC implements VincularDao {
 		}
 	}
 
-	private void updateNaoVinculados(String base, Long idVinculo, VinculoPagina pagina) throws ExcessaoBd {
+	private void updateNaoVinculados(String base, UUID idVinculo, VinculoPagina pagina) throws ExcessaoBd {
 		insertNaoVinculados(base, idVinculo, pagina);
 	}
 
@@ -760,12 +760,12 @@ public class VincularDaoJDBC implements VincularDao {
 			st.setInt(1, obj.getVolume());
 			st.setString(2, obj.getNomeArquivoOriginal());
 			st.setString(3, obj.getLinguagemOriginal().getSigla());
-			st.setLong(4, obj.getVolumeOriginal().getId());
+			st.setString(4, obj.getVolumeOriginal().getId().toString());
 			st.setString(5, obj.getNomeArquivoVinculado());
 			st.setString(6, obj.getLinguagemVinculado().getSigla());
-			st.setLong(7, obj.getVolumeVinculado().getId());
+			st.setString(7, obj.getVolumeVinculado().getId().toString());
 			st.setTimestamp(8, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
-			st.setLong(9, obj.getId());
+			st.setString(9, obj.getId().toString());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -916,7 +916,7 @@ public class VincularDaoJDBC implements VincularDao {
 	private Integer sequencia;
 
 	private List<MangaVinculo> selectVinculo(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem, Boolean isValidaTabela) throws ExcessaoBd {
+                                             Language linguagem, Boolean isValidaTabela) throws ExcessaoBd {
 		final List<Vinculo> vinculos = select(base, manga, volume, capitulo, linguagem, isValidaTabela);
 
 		vinculos.stream().forEach(vol -> {
@@ -959,13 +959,13 @@ public class VincularDaoJDBC implements VincularDao {
 
 	@Override
 	public List<MangaVinculo> selectVinculo(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem) throws ExcessaoBd {
+                                            Language linguagem) throws ExcessaoBd {
 		return selectVinculo(base, manga, volume, capitulo, linguagem, true);
 	}
 
 	@Override
 	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem) throws ExcessaoBd {
+                                               Language linguagem) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {

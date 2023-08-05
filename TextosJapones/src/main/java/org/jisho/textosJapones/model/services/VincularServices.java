@@ -10,7 +10,12 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.database.dao.VincularDao;
 import org.jisho.textosJapones.fileparse.Parse;
-import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.entities.Vinculo;
+import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaTabela;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaVinculo;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Pagina;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -21,6 +26,7 @@ import org.jisho.textosJapones.util.similarity.ImagePHash;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class VincularServices {
@@ -57,7 +63,7 @@ public class VincularServices {
 		}
 	}
 	
-	public Vinculo select(String base, Long id) throws ExcessaoBd {
+	public Vinculo select(String base, UUID id) throws ExcessaoBd {
 		if (base == null || base.isEmpty())
 			return null;
 		
@@ -106,7 +112,7 @@ public class VincularServices {
 		dao.delete(base, obj);
 	}
 
-	public Long insert(String base, Vinculo obj) throws ExcessaoBd {
+	public UUID insert(String base, Vinculo obj) throws ExcessaoBd {
 		if (base == null || base.isEmpty())
 			return null;
 
@@ -130,12 +136,12 @@ public class VincularServices {
 	}
 
 	public List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem) throws ExcessaoBd {
+											   Language linguagem) throws ExcessaoBd {
 		return dao.selectTabelasJson(base, manga, volume, capitulo, linguagem);
 	}
 
 	public List<MangaVinculo> getMangaVinculo(String base, String manga, Integer volume, Float capitulo,
-			Language linguagem) throws ExcessaoBd {
+											  Language linguagem) throws ExcessaoBd {
 		return dao.selectVinculo(base, manga, volume, capitulo, linguagem);
 	}
 
@@ -1037,7 +1043,7 @@ public class VincularServices {
 	}
 
 	public MangaPagina findPagina(List<MangaPagina> paginas, List<MangaPagina> encontrados, String path,
-			String nomePagina, Integer numeroPagina, String hash) {
+								  String nomePagina, Integer numeroPagina, String hash) {
 		MangaPagina manga = null;
 
 		if (paginas.isEmpty())

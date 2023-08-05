@@ -8,7 +8,7 @@ import java.util.Properties;
 public class Configuracao {
 
 	public static void createProperties(String server, String port, String user, String pws, 
-			String mysql, String winrar, String baseManga, String baseJapones, String baseIngles) {
+			String mysql, String winrar, String base) {
 		try (OutputStream os = new FileOutputStream("db.properties")) {
 			Properties props = new Properties();
 
@@ -18,9 +18,7 @@ public class Configuracao {
 			props.setProperty("password", pws);
 			props.setProperty("caminho_mysql", mysql);
 			props.setProperty("caminho_winrar", winrar);
-			props.setProperty("base_manga", baseManga);
-			props.setProperty("base_japones", baseJapones);
-			props.setProperty("base_ingles", baseIngles);
+			props.setProperty("base", base);
 			props.store(os, "");
 		} catch (IOException e) {
 			Alertas.Tela_Alerta("Erro ao salvar o properties", e.getMessage());
@@ -31,7 +29,7 @@ public class Configuracao {
 	public static Properties loadProperties() {
 		File f = new File("db.properties");
 		if (!f.exists())
-			createProperties("", "", "", "", "", "", "", "", "");
+			createProperties("", "", "", "", "", "", "");
 
 		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();

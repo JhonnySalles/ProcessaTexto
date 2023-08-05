@@ -1,16 +1,14 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
+import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.enums.Language;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MangaCapitulo extends Manga {
 
-	private Long id;
+	private UUID id;
 	@Expose
 	private String manga;
 	@Expose
@@ -31,11 +29,11 @@ public class MangaCapitulo extends Manga {
 	private Set<MangaVocabulario> vocabularios;
 	private Boolean processado;
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -129,7 +127,7 @@ public class MangaCapitulo extends Manga {
 
 	public MangaCapitulo() {
 		super();
-		this.id = 0L;
+		this.id = null;
 		this.manga = "";
 		this.volume = 0;
 		this.capitulo = 0F;
@@ -141,7 +139,7 @@ public class MangaCapitulo extends Manga {
 		this.paginas = new ArrayList<MangaPagina>();
 	}
 
-	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
+	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado) {
 		super(manga, volume, capitulo);
 		this.id = id;
@@ -158,7 +156,7 @@ public class MangaCapitulo extends Manga {
 		this.raw = raw;
 	}
 
-	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
+	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado, List<MangaPagina> paginas) {
 		super(manga, volume, capitulo);
 		this.id = id;
@@ -175,7 +173,7 @@ public class MangaCapitulo extends Manga {
 		this.raw = raw;
 	}
 
-	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
+	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean processado, Set<MangaVocabulario> vocabularios) {
 		super(manga, volume, capitulo);
 		this.id = id;
@@ -190,7 +188,7 @@ public class MangaCapitulo extends Manga {
 		this.paginas = new ArrayList<MangaPagina>();
 	}
 
-	public MangaCapitulo(Long id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
+	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
 			Boolean extra, Boolean raw, Boolean processado, Set<MangaVocabulario> vocabularios,
 			List<MangaPagina> paginas) {
 		super(manga, volume, capitulo);
@@ -209,67 +207,17 @@ public class MangaCapitulo extends Manga {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((capitulo == null) ? 0 : capitulo.hashCode());
-		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((lingua == null) ? 0 : lingua.hashCode());
-		result = prime * result + ((manga == null) ? 0 : manga.hashCode());
-		result = prime * result + ((raw == null) ? 0 : raw.hashCode());
-		result = prime * result + ((scan == null) ? 0 : scan.hashCode());
-		result = prime * result + ((volume == null) ? 0 : volume.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		MangaCapitulo that = (MangaCapitulo) o;
+		return Objects.equals(id, that.id) && Objects.equals(manga, that.manga) && Objects.equals(volume, that.volume) && Objects.equals(capitulo, that.capitulo) && lingua == that.lingua && Objects.equals(scan, that.scan) && Objects.equals(extra, that.extra) && Objects.equals(raw, that.raw);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MangaCapitulo other = (MangaCapitulo) obj;
-		if (capitulo == null) {
-			if (other.capitulo != null)
-				return false;
-		} else if (!capitulo.equals(other.capitulo))
-			return false;
-		if (extra == null) {
-			if (other.extra != null)
-				return false;
-		} else if (!extra.equals(other.extra))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (lingua != other.lingua)
-			return false;
-		if (manga == null) {
-			if (other.manga != null)
-				return false;
-		} else if (!manga.equals(other.manga))
-			return false;
-		if (raw == null) {
-			if (other.raw != null)
-				return false;
-		} else if (!raw.equals(other.raw))
-			return false;
-		if (scan == null) {
-			if (other.scan != null)
-				return false;
-		} else if (!scan.equals(other.scan))
-			return false;
-		if (volume == null) {
-			if (other.volume != null)
-				return false;
-		} else if (!volume.equals(other.volume))
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), id, manga, volume, capitulo, lingua, scan, extra, raw);
 	}
 
 	@Override

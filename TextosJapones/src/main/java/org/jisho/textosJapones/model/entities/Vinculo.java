@@ -1,15 +1,17 @@
 package org.jisho.textosJapones.model.entities;
 
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Vinculo {
 
-	private Long id;
+	private UUID id;
 	private String base;
 	private Integer volume;
 	private String nomeArquivoOriginal;
@@ -23,11 +25,11 @@ public class Vinculo {
 	private LocalDateTime dataCriacao;
 	private LocalDateTime ultimaAlteracao;
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -160,9 +162,9 @@ public class Vinculo {
 		this.ultimaAlteracao = LocalDateTime.now();
 	}
 
-	public Vinculo(Long id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
-			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
-			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao) {
+	public Vinculo(UUID id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
+                   MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
+                   MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao) {
 		this.id = id;
 		this.base = base;
 		this.volume = volume;
@@ -178,10 +180,10 @@ public class Vinculo {
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
-	public Vinculo(Long id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
-			MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
-			MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao,
-			List<VinculoPagina> vinculados, List<VinculoPagina> naoVinculados) {
+	public Vinculo(UUID id, String base, Integer volume, String nomeArquivoOriginal, Language linguagemOriginal,
+                   MangaVolume volumeOriginal, String nomeArquivoVinculado, Language linguagemVinculado,
+                   MangaVolume volumeVinculado, LocalDateTime dataCriacao, LocalDateTime ultimaAlteracao,
+                   List<VinculoPagina> vinculados, List<VinculoPagina> naoVinculados) {
 		this.id = id;
 		this.base = base;
 		this.volume = volume;

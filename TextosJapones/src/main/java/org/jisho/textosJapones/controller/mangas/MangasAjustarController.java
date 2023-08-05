@@ -26,7 +26,8 @@ import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.model.entities.*;
+import org.jisho.textosJapones.model.entities.Manga;
+import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
@@ -480,7 +481,7 @@ public class MangasAjustarController implements Initializable {
 				TreeItem<Manga> itmVolume = new TreeItem<Manga>(destino);
 				itmVolume.getChildren().add(treeItem);
 				treeLanguage.getChildren().add(itmVolume);
-				destino.setId(0L);
+				destino.setId(null);
 			}
 
 			setVolumesChildreen(treeItem, volume);

@@ -51,4 +51,6 @@ module TextosJapones {
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
     opens org.jisho.textosJapones.processar to com.google.gson;
+    exports org.jisho.textosJapones.model.entities.mangaextractor;
+    opens org.jisho.textosJapones.model.entities.mangaextractor to com.google.gson, javafx.base;
 }

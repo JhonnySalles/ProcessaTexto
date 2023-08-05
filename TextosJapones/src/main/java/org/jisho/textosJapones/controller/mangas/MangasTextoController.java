@@ -28,9 +28,9 @@ import javafx.util.Callback;
 import org.jisho.textosJapones.components.TableViewNoSelectionModel;
 import org.jisho.textosJapones.components.animation.Animacao;
 import org.jisho.textosJapones.components.listener.VinculoTextoListener;
-import org.jisho.textosJapones.model.entities.MangaPagina;
-import org.jisho.textosJapones.model.entities.MangaTexto;
 import org.jisho.textosJapones.model.entities.VinculoPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaTexto;
 import org.jisho.textosJapones.model.enums.Language;
 
 import java.io.IOException;

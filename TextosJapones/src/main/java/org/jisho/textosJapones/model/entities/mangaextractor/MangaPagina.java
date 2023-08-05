@@ -1,15 +1,13 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
+import org.jisho.textosJapones.model.entities.Manga;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MangaPagina extends Manga {
 
-	private Long id;
+	private UUID id;
 	@Expose
 	private String nomePagina;
 	@Expose
@@ -25,11 +23,11 @@ public class MangaPagina extends Manga {
 	@Expose
 	private Integer sequencia;
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -98,7 +96,7 @@ public class MangaPagina extends Manga {
 	}
 
 	public MangaPagina() {
-		this.id = 0L;
+		this.id = null;
 		this.nomePagina = "";
 		this.numero = 0;
 		this.hash = "";
@@ -108,7 +106,7 @@ public class MangaPagina extends Manga {
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
-	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado) {
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
@@ -120,7 +118,7 @@ public class MangaPagina extends Manga {
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
-	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado,
 			List<MangaTexto> textos) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
@@ -133,7 +131,7 @@ public class MangaPagina extends Manga {
 		this.processar = true;
 	}
 
-	public MangaPagina(Long id, String nomePagina, Integer numero, String hash, Boolean processado,
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado,
 			List<MangaTexto> textos, Set<MangaVocabulario> vocabularios) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
@@ -147,46 +145,17 @@ public class MangaPagina extends Manga {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((nomePagina == null) ? 0 : nomePagina.hashCode());
-		result = prime * result + ((numero == null) ? 0 : numero.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		MangaPagina that = (MangaPagina) o;
+		return Objects.equals(id, that.id) && Objects.equals(nomePagina, that.nomePagina) && Objects.equals(numero, that.numero) && Objects.equals(hash, that.hash);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MangaPagina other = (MangaPagina) obj;
-		if (hash == null) {
-			if (other.hash != null)
-				return false;
-		} else if (!hash.equals(other.hash))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (nomePagina == null) {
-			if (other.nomePagina != null)
-				return false;
-		} else if (!nomePagina.equals(other.nomePagina))
-			return false;
-		if (numero == null) {
-			if (other.numero != null)
-				return false;
-		} else if (!numero.equals(other.numero))
-			return false;
-		return true;
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), id, nomePagina, numero, hash);
 	}
 
 	@Override

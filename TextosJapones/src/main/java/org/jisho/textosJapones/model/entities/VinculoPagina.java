@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.model.entities;
 
 import javafx.scene.image.Image;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
 import org.jisho.textosJapones.model.enums.Pagina;
 
 import java.io.Serializable;
@@ -354,9 +355,9 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public void addVinculoEsquerda(String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
-			MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda, String vinculadoEsquerdaHash,
-			String vinculadoEsquerdaPHash, float[] vinculadoEsquerdaHistogram) {
+                                   Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
+                                   MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda, String vinculadoEsquerdaHash,
+                                   String vinculadoEsquerdaPHash, float[] vinculadoEsquerdaHistogram) {
 		this.vinculadoEsquerdaNomePagina = vinculadoEsquerdaNomePagina;
 		this.vinculadoEsquerdaPathPagina = vinculadoEsquerdaPathPagina;
 		this.vinculadoEsquerdaPagina = vinculadoEsquerdaPagina;
@@ -384,9 +385,9 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public void addVinculoDireita(String vinculadoDireitaNomePagina, String vinculadoDireitaPathPagina,
-			Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas, Boolean isVinculadoDireitaPaginaDupla,
-			MangaPagina mangaPaginaDireita, Image imagemVinculadoDireita, String vinculadoDireitaHash,
-			String vinculadoDireitaPHash, float[] vinculadoDireitaHistogram) {
+                                  Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas, Boolean isVinculadoDireitaPaginaDupla,
+                                  MangaPagina mangaPaginaDireita, Image imagemVinculadoDireita, String vinculadoDireitaHash,
+                                  String vinculadoDireitaPHash, float[] vinculadoDireitaHistogram) {
 		if (this.vinculadoEsquerdaPagina == PAGINA_VAZIA) {
 			this.vinculadoEsquerdaNomePagina = vinculadoDireitaNomePagina;
 			this.vinculadoEsquerdaPathPagina = vinculadoDireitaPathPagina;
@@ -592,9 +593,9 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public VinculoPagina(String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
-			MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda, Boolean naoVinculado,
-			String vinculadoEsquerdaHash, String vinculadoEsquerdaPHash, float[] vinculadoEsquerdaHistogram) {
+                         Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
+                         MangaPagina mangaPaginaEsquerda, Image imagemVinculadoEsquerda, Boolean naoVinculado,
+                         String vinculadoEsquerdaHash, String vinculadoEsquerdaPHash, float[] vinculadoEsquerdaHistogram) {
 		this.id = null;
 
 		this.originalNomePagina = "";
@@ -637,8 +638,8 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public VinculoPagina(Long id, String vinculadoEsquerdaNomePagina, String vinculadoEsquerdaPathPagina,
-			Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
-			MangaPagina mangaPaginaEsquerda, Boolean naoVinculado) {
+                         Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas, Boolean isVinculadoEsquerdaPaginaDupla,
+                         MangaPagina mangaPaginaEsquerda, Boolean naoVinculado) {
 		this.id = id;
 
 		this.originalNomePagina = "";
@@ -681,12 +682,12 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
-			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
-			String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
-			Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
-			String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
-			Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
-			MangaPagina mangaPaginaEsquerda, Boolean imagemDupla, Boolean naoVinculado) {
+                         Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
+                         String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
+                         Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
+                         String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
+                         Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
+                         MangaPagina mangaPaginaEsquerda, Boolean imagemDupla, Boolean naoVinculado) {
 		this.id = id;
 
 		this.originalNomePagina = originalNomePagina;
@@ -730,14 +731,14 @@ public class VinculoPagina implements Serializable {
 	}
 
 	public VinculoPagina(Long id, String originalNomePagina, String originalPathPagina, Integer originalPagina,
-			Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
-			String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
-			Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
-			String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
-			Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
-			MangaPagina mangaPaginaEsquerda, Image imagemOriginal, Image imagemVinculadoDireita,
-			Image imagemVinculadoEsquerda, Boolean imagemDupla, Boolean naoVinculado, String originalHash,
-			String vinculadoDireitaHash, String vinculadoEsquerdaHash) {
+                         Integer originalPaginas, Boolean isOriginalPaginaDupla, String vinculadoDireitaNomePagina,
+                         String vinculadoDireitaPathPagina, Integer vinculadoDireitaPagina, Integer vinculadoDireitaPaginas,
+                         Boolean isVinculadoDireitaPaginaDupla, String vinculadoEsquerdaNomePagina,
+                         String vinculadoEsquerdaPathPagina, Integer vinculadoEsquerdaPagina, Integer vinculadoEsquerdaPaginas,
+                         Boolean isVinculadoEsquerdaPaginaDupla, MangaPagina mangaPaginaOriginal, MangaPagina mangaPaginaDireita,
+                         MangaPagina mangaPaginaEsquerda, Image imagemOriginal, Image imagemVinculadoDireita,
+                         Image imagemVinculadoEsquerda, Boolean imagemDupla, Boolean naoVinculado, String originalHash,
+                         String vinculadoDireitaHash, String vinculadoEsquerdaHash) {
 		this.id = id;
 
 		this.originalNomePagina = originalNomePagina;

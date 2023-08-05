@@ -1,10 +1,12 @@
-package org.jisho.textosJapones.model.entities;
+package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.UUID;
+
 public class MangaVocabulario {
 
-	Long id;
+	UUID id;
 	@Expose
 	String palavra;
 	@Expose
@@ -16,11 +18,11 @@ public class MangaVocabulario {
 	@Expose
 	Boolean revisado;
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -65,7 +67,7 @@ public class MangaVocabulario {
 	}
 
 	public MangaVocabulario() {
-		this.id = 0L;
+		this.id = null;
 		this.palavra = "";
 		this.portugues = "";
 		this.ingles = "";
@@ -74,7 +76,7 @@ public class MangaVocabulario {
 	}
 	
 	public MangaVocabulario(String palavra, String portugues) {
-		this.id = 0L;
+		this.id = null;
 		this.palavra = palavra;
 		this.portugues = portugues;
 		this.ingles = "";
@@ -83,7 +85,7 @@ public class MangaVocabulario {
 	}
 	
 	public MangaVocabulario(String palavra, String portugues, String ingles, String leitura) {
-		this.id = 0L;
+		this.id = null;
 		this.palavra = palavra;
 		this.portugues = portugues;
 		this.ingles = ingles;
@@ -92,7 +94,7 @@ public class MangaVocabulario {
 	}
 	
 	public MangaVocabulario(String palavra, String portugues, String ingles, String leitura, Boolean revisado) {
-		this.id = 0L;
+		this.id = null;
 		this.palavra = palavra;
 		this.portugues = portugues;
 		this.ingles = ingles;
@@ -100,7 +102,7 @@ public class MangaVocabulario {
 		this.revisado = revisado;
 	}
 
-	public MangaVocabulario(Long id, String palavra, String portugues, String ingles, String leitura, Boolean revisado) {
+	public MangaVocabulario(UUID id, String palavra, String portugues, String ingles, String leitura, Boolean revisado) {
 		this.id = id;
 		this.palavra = palavra;
 		this.portugues = portugues;

@@ -5,7 +5,6 @@ import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
-import org.jisho.textosJapones.util.configuration.Configuracao;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,33 +13,31 @@ import java.util.List;
 public class RevisarInglesDaoJDBC implements RevisarDao {
 
 	private Connection conn;
-	private String BASE_INGLES;
 
-	final private String INSERT = "INSERT IGNORE INTO %srevisar (vocabulario, leitura, portugues, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?);";
-	final private String UPDATE = "UPDATE %srevisar SET leitura = ?, portugues = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
-	final private String DELETE = "DELETE FROM %srevisar WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, leitura, portugues, revisado, isAnime, isManga FROM %srevisar ";
+	final private String INSERT = "INSERT IGNORE INTO revisar (vocabulario, leitura, portugues, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?);";
+	final private String UPDATE = "UPDATE revisar SET leitura = ?, portugues = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
+	final private String DELETE = "DELETE FROM revisar WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT vocabulario, leitura, portugues, revisado, isAnime, isManga FROM revisar ";
 	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM %srevisar WHERE vocabulario = ?;";
-	final private String IS_VALIDO = "SELECT palavra FROM %svalido WHERE palavra LIKE ?;";
+	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
+	final private String IS_VALIDO = "SELECT palavra FROM valido WHERE palavra LIKE ?;";
 	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
 	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
-	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM %srevisar";
+	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
 	final private String SELECT_REVISAR = SELECT + "WHERE %s ORDER BY aparece DESC LIMIT 1";
 	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? LIMIT 1";
-	final private String INCREMENTA_VEZES_APARECE = "UPDATE %srevisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
-	final private String SET_ISMANGA = "UPDATE %srevisar SET isManga = ? WHERE vocabulario = ?;";
+	final private String INCREMENTA_VEZES_APARECE = "UPDATE revisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
+	final private String SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;";
 
 	public RevisarInglesDaoJDBC(Connection conn) {
 		this.conn = conn;
-		BASE_INGLES = Configuracao.loadProperties().getProperty("base_ingles") + ".";
 	}
 
 	@Override
 	public void insert(Revisar obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INSERT, BASE_INGLES), Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getVocabulario());
 			st.setString(2, obj.getLeitura());
@@ -63,7 +60,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	public void update(Revisar obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(UPDATE, BASE_INGLES), Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
 
 			st.setString(1, obj.getLeitura());
 			st.setString(2, obj.getPortugues());
@@ -91,7 +88,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	public void delete(Revisar obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(DELETE, BASE_INGLES));
+			st = conn.prepareStatement(DELETE);
 
 			st.setString(1, obj.getVocabulario());
 
@@ -114,7 +111,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	public void delete(String vocabulario) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(DELETE, BASE_INGLES));
+			st = conn.prepareStatement(DELETE);
 
 			st.setString(1, vocabulario);
 
@@ -138,7 +135,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_PALAVRA, BASE_INGLES));
+			st = conn.prepareStatement(SELECT_PALAVRA);
 			st.setString(1, vocabulario);
 			rs = st.executeQuery();
 
@@ -163,7 +160,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		ResultSet rs = null;
 		try {
 
-			st = conn.prepareStatement(String.format(SELECT_ALL, BASE_INGLES));
+			st = conn.prepareStatement(SELECT_ALL);
 			rs = st.executeQuery();
 
 			List<Revisar> list = new ArrayList<>();
@@ -189,7 +186,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		ResultSet rs = null;
 		try {
 
-			st = conn.prepareStatement(String.format(SELECT_TRADUZIR, BASE_INGLES) + (quantidadeRegistros > 0 ? " LIMIT " + quantidadeRegistros.toString() : " LIMIT 1000"));
+			st = conn.prepareStatement(SELECT_TRADUZIR + (quantidadeRegistros > 0 ? " LIMIT " + quantidadeRegistros.toString() : " LIMIT 1000"));
 			rs = st.executeQuery();
 
 			List<Revisar> list = new ArrayList<>();
@@ -214,7 +211,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(EXIST, BASE_INGLES));
+			st = conn.prepareStatement(EXIST);
 			st.setString(1, vocabulario);
 			rs = st.executeQuery();
 
@@ -234,7 +231,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(IS_VALIDO, BASE_INGLES));
+			st = conn.prepareStatement(IS_VALIDO);
 			st.setString(1, vocabulario);
 			rs = st.executeQuery();
 
@@ -278,7 +275,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement(String.format(SELECT_QUANTIDADE_RESTANTE, BASE_INGLES));
+			st = conn.prepareStatement(SELECT_QUANTIDADE_RESTANTE);
 			rs = st.executeQuery();
 
 			if (rs.next())
@@ -300,7 +297,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 		try {
 
 			if (!pesquisar.trim().isEmpty()) {
-				st = conn.prepareStatement(String.format(SELECT_REVISAR_PESQUISA, BASE_INGLES));
+				st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
 				st.setString(1, pesquisar);
 				st.setString(2, pesquisar);
 			} else {
@@ -315,7 +312,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 						parametro = "isManga = true";
 				}
 
-				st = conn.prepareStatement(String.format(SELECT_REVISAR, BASE_INGLES, parametro));
+				st = conn.prepareStatement(String.format(SELECT_REVISAR, parametro));
 			}
 
 			rs = st.executeQuery();
@@ -343,7 +340,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(INCREMENTA_VEZES_APARECE, BASE_INGLES));
+			st = conn.prepareStatement(INCREMENTA_VEZES_APARECE);
 			st.setString(1, vocabulario);
 			st.executeUpdate();
 		} catch (SQLException e) {
@@ -357,7 +354,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 	public void setIsManga(Revisar obj) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(SET_ISMANGA, BASE_INGLES));
+			st = conn.prepareStatement(SET_ISMANGA);
 			st.setBoolean(1, obj.isManga());
 			st.setString(2, obj.getVocabulario());
 			st.executeUpdate();
