@@ -17,52 +17,52 @@ public class MangaDaoJDBC implements MangaDao {
 	
 	final private String CREATE_VOLUMES = "CREATE TABLE %s_volumes (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, manga varchar(250) DEFAULT NULL, "
 			+ "  volume INT(4) DEFAULT NULL, linguagem varchar(4) DEFAULT NULL, arquivo varchar(250) DEFAULT NULL, vocabulario longtext, "
-			+ "  is_processado TINYINT(1) DEFAULT '0', PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
-	final private String CREATE_CAPITULOS = "CREATE TABLE %s_capitulos (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_volume VARCHAR(36) DEFAULT NULL, "
+			+ "  is_processado TINYINT(1) DEFAULT '0',"  + "  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP," + " PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+	final private String CREATE_CAPITULOS = "CREATE TABLE %s_capitulos (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, "
 			+ "  manga LONGTEXT COLLATE utf8mb4_unicode_ci NOT NULL, volume INT(4) NOT NULL, "
 			+ "  capitulo DOUBLE NOT NULL, linguagem VARCHAR(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL, scan VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL, "
 			+ "  is_extra TINYINT(1) DEFAULT NULL, is_raw TINYINT(1) DEFAULT NULL, is_processado TINYINT(1) DEFAULT '0', vocabulario LONGTEXT COLLATE utf8mb4_unicode_ci, "
-			+ "  PRIMARY KEY (id), KEY %s_volumes_fk (id_volume), "
+			+ "  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP," + "  PRIMARY KEY (id), KEY %s_volumes_fk (id_volume), "
 			+ "  CONSTRAINT %s_volumes_capitulos_fk FOREIGN KEY (id_volume) REFERENCES %s_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE "
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-	final private String CREATE_PAGINAS = "CREATE TABLE %s_paginas (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_capitulo VARCHAR(36) NOT NULL, "
+	final private String CREATE_PAGINAS = "CREATE TABLE %s_paginas (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_capitulo VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, "
 			+ "  nome VARCHAR(250) DEFAULT NULL, numero VARCHAR(36) DEFAULT NULL, hash_pagina VARCHAR(250) DEFAULT NULL, is_processado TINYINT(1) DEFAULT '0', "
-			+ "  vocabulario LONGTEXT, PRIMARY KEY (id), KEY %s_capitulos_fk (id_capitulo), "
+			+ "  vocabulario LONGTEXT," + "  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP," + " PRIMARY KEY (id), KEY %s_capitulos_fk (id_capitulo), "
 			+ "  CONSTRAINT %s_capitulos_paginas_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id) ON DELETE CASCADE ON UPDATE CASCADE "
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8";
-	final private String CREATE_TEXTO = "CREATE TABLE %s_textos (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_pagina VARCHAR(36) NOT NULL, "
+	final private String CREATE_TEXTO = "CREATE TABLE %s_textos (id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, id_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL, "
 			+ "  sequencia INT(4) DEFAULT NULL, texto LONGTEXT COLLATE utf8mb4_unicode_ci, posicao_x1 DOUBLE DEFAULT NULL, "
-			+ "  posicao_y1 DOUBLE DEFAULT NULL, posicao_x2 DOUBLE DEFAULT NULL, posicao_y2 DOUBLE DEFAULT NULL, versao_app VARCHAR(36) DEFAULT '0', PRIMARY KEY (id), "
+			+ "  posicao_y1 DOUBLE DEFAULT NULL, posicao_x2 DOUBLE DEFAULT NULL, posicao_y2 DOUBLE DEFAULT NULL, versao_app VARCHAR(36) DEFAULT '0',"
+			+ "  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP," + "PRIMARY KEY (id), "
 			+ "  KEY %s_paginas_fk (id_pagina), "
 			+ "  CONSTRAINT %s_paginas_textos_fk FOREIGN KEY (id_pagina) REFERENCES %s_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE "
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 	final private String CREATE_VOCABULARIO = "CREATE TABLE %s_vocabularios (" + "  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,"
-			+ "  id_volume VARCHAR(36) DEFAULT NULL," + "  id_capitulo VARCHAR(36) DEFAULT NULL,"
-			+ "  id_pagina VARCHAR(36) DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
+			+ "  id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL," + "  id_capitulo VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
+			+ "  id_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL," + "  palavra VARCHAR(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,"
 			+ "  portugues LONGTEXT COLLATE utf8mb4_unicode_ci," + "  ingles LONGTEXT COLLATE utf8mb4_unicode_ci,"
-			+ "  leitura LONGTEXT COLLATE utf8mb4_unicode_ci," + "  revisado TINYINT(1) DEFAULT 1," + "  PRIMARY KEY (id),"
+			+ "  leitura LONGTEXT COLLATE utf8mb4_unicode_ci," + "  revisado TINYINT(1) DEFAULT 1,"
+			+ "  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP," + "  PRIMARY KEY (id),"
 			+ "  KEY %s_vocab_volume_fk (id_volume)," + "  KEY %s_vocab_capitulo_fk (id_capitulo)," + "  KEY %s_vocab_pagina_fk (id_pagina),"
 			+ "  CONSTRAINT %s_vocab_capitulo_fk FOREIGN KEY (id_capitulo) REFERENCES %s_capitulos (id),"
 			+ "  CONSTRAINT %s_vocab_pagina_fk FOREIGN KEY (id_pagina) REFERENCES %s_paginas (id),"
 			+ "  CONSTRAINT %s_vocab_volume_fk FOREIGN KEY (id_volume) REFERENCES %s_volumes (id)"
 			+ ") ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
-	final private String CREATE_TRIGGER_INSERT = "DELIMITER $$" +
+	final private String CREATE_TRIGGER_INSERT =
 			"CREATE TRIGGER tr_%s_insert BEFORE UPDATE ON %s" +
 			"  FOR EACH ROW BEGIN" +
 			"    IF (NEW.id IS NULL OR NEW.id = '') THEN" +
 			"      SET new.id = UUID();" +
 			"    END IF;" +
-			"  END$$" +
-			"DELIMITER ;";
+			"  END";
 
-	final private String CREATE_TRIGGER_UPDATE = "DELIMITER $$" +
+	final private String CREATE_TRIGGER_UPDATE =
 			"CREATE TRIGGER tr_%s_update BEFORE UPDATE ON %s" +
 			"  FOR EACH ROW BEGIN" +
 			"    SET new.Atualizacao = NOW();" +
-			"  END$$" +
-			"DELIMITER ;";
+			"  END";
 
 	final private String UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, is_processado = ? WHERE id = ?";
 	final private String UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ?, is_processado = ? WHERE id = ?";
@@ -71,10 +71,10 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
 	final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id = ?";
 
-	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (manga, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?)";
-	final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado) VALUES (?,?,?,?,?,?,?,?,?)";
-	final private String INSERT_PAGINAS = "INSERT INTO %s_paginas (id_capitulo, nome, numero, hash_pagina, is_processado) VALUES (?,?,?,?,?)";
-	final private String INSERT_TEXTO = "INSERT INTO %s_textos (id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?)";
+	final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (id, manga, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?)";
+	final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)";
+	final private String INSERT_PAGINAS = "INSERT INTO %s_paginas (id, id_capitulo, nome, numero, hash_pagina, is_processado) VALUES (?,?,?,?,?,?)";
+	final private String INSERT_TEXTO = "INSERT INTO %s_textos (id, id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?,?)";
 
 	final private String DELETE_VOLUMES = "DELETE v FROM %s_volumes AS v %s";
 	final private String DELETE_CAPITULOS = "DELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
@@ -111,7 +111,7 @@ public class MangaDaoJDBC implements MangaDao {
 			+ " FROM information_schema.tables WHERE table_schema = '%s' "
 			+ " AND Table_Name LIKE '%%_vocabularios%%' AND Table_Name LIKE '%%%s%%' GROUP BY Tabela ";
 
-	final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s;";
+	final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ?;";
 	final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabularios (%s, palavra, portugues, ingles, leitura, revisado) "
 			+ " VALUES (?,?,?,?,?,?);";
 	final private String SELECT_VOCABUALARIO = "SELECT id, palavra, portugues, ingles, leitura, revisado FROM %s_vocabularios WHERE %s ";
@@ -239,12 +239,9 @@ public class MangaDaoJDBC implements MangaDao {
 			if (idVolume == null && idCapitulo == null && idPagina == null)
 				return;
 
-			String where = idVolume != null ? ("id_volume = " + idVolume)
-					: idCapitulo != null ? ("id_capitulo = " + idCapitulo) : ("id_pagina = " + idPagina);
-			clearVocabulario(base, where);
-
 			String campo = idVolume != null ? "id_volume" : idCapitulo != null ? "id_capitulo" : "id_pagina";
 			UUID id = idVolume != null ? idVolume : idCapitulo != null ? idCapitulo : idPagina;
+			clearVocabulario(base, campo, id);
 
 			for (MangaVocabulario vocab : vocabulario) {
 				st = conn.prepareStatement(String.format(INSERT_VOCABULARIO, base, campo),
@@ -268,12 +265,11 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	private void clearVocabulario(String base, String where) throws ExcessaoBd {
+	private void clearVocabulario(String base, String campo, UUID id) throws ExcessaoBd {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(DELETE_VOCABULARIO, base, where),
-					Statement.RETURN_GENERATED_KEYS);
-
+			st = conn.prepareStatement(String.format(DELETE_VOCABULARIO, base, campo));
+			st.setString(1, id.toString());
 			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -391,7 +387,7 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaVolume> selectVolumesTransferir(String baseOrigem) throws ExcessaoBd {
+	private List<MangaVolume> selectVolumesTransferir(String baseOrigem) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
@@ -400,10 +396,15 @@ public class MangaDaoJDBC implements MangaDao {
 
 			List<MangaVolume> list = new ArrayList<>();
 
-			while (rs.next())
-				list.add(new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
-						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-						selectCapitulosTransferir(baseOrigem, UUID.fromString(rs.getString("id")))));
+			while (rs.next()) {
+				UUID id = UUID.randomUUID();
+				list.add(new MangaVolume(id,
+						rs.getString("manga"),
+						rs.getInt("volume"),
+						Language.getEnum(rs.getString("linguagem")),
+						rs.getString("arquivo"),
+						selectCapitulosTransferir(baseOrigem, id, rs.getString("id"))));
+			}
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -491,21 +492,29 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaCapitulo> selectCapitulosTransferir(String baseOrigem, UUID idVolume) throws ExcessaoBd {
+	private List<MangaCapitulo> selectCapitulosTransferir(String baseOrigem, UUID idVolume, String idOldVolume) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 			st = conn.prepareStatement(String.format(SELECT_CAPITULOS, baseOrigem, "", "1>0"));
-			st.setString(1, idVolume.toString());
+			st.setString(1, idOldVolume);
 			rs = st.executeQuery();
 
 			List<MangaCapitulo> list = new ArrayList<>();
 
-			while (rs.next())
-				list.add(new MangaCapitulo(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
-						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
-						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectPaginasTransferir(baseOrigem, UUID.fromString(rs.getString("id")))));
+			while (rs.next()) {
+				UUID id = UUID.randomUUID();
+				list.add(new MangaCapitulo(id,
+						rs.getString("manga"),
+						rs.getInt("volume"),
+						rs.getFloat("capitulo"),
+						Language.getEnum(rs.getString("linguagem")),
+						rs.getString("scan"),
+						rs.getBoolean("is_extra"),
+						rs.getBoolean("is_raw"),
+						false,
+						selectPaginasTransferir(baseOrigem, id, rs.getString("id"))));
+			}
 
 			return list;
 		} catch (SQLException e) {
@@ -602,21 +611,26 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaPagina> selectPaginasTransferir(String baseOrigem, UUID idCapitulo) throws ExcessaoBd {
+	private List<MangaPagina> selectPaginasTransferir(String baseOrigem, UUID idCapitulo, String idOldCapitulo) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
 			st = conn.prepareStatement(String.format(SELECT_PAGINAS, baseOrigem, "1>0"));
-			st.setString(1, idCapitulo.toString());
+			st.setString(1, idOldCapitulo);
 			rs = st.executeQuery();
 
 			List<MangaPagina> list = new ArrayList<>();
 
-			while (rs.next())
-				list.add(new MangaPagina(UUID.fromString(rs.getString("id")), rs.getString("nome"), rs.getInt("numero"),
-						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
-						selectTextosTransferir(baseOrigem, UUID.fromString(rs.getString("id")))));
+			while (rs.next()) {
+				UUID id = UUID.randomUUID();
+				list.add(new MangaPagina(id,
+						rs.getString("nome"),
+						rs.getInt("numero"),
+						rs.getString("hash_pagina"),
+						false,
+						selectTextosTransferir(baseOrigem, id, rs.getString("id"))));
+			}
 
 			return list;
 		} catch (SQLException e) {
@@ -660,20 +674,24 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 	}
 
-	public List<MangaTexto> selectTextosTransferir(String baseOrigem, UUID idPagina) throws ExcessaoBd {
+	private List<MangaTexto> selectTextosTransferir(String baseOrigem, UUID idPagina, String idOldPagina) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 
 			st = conn.prepareStatement(String.format(SELECT_TEXTOS, baseOrigem));
-			st.setString(1, idPagina.toString());
+			st.setString(1, idOldPagina);
 			rs = st.executeQuery();
 
 			List<MangaTexto> list = new ArrayList<>();
 
 			while (rs.next())
-				list.add(new MangaTexto(UUID.fromString(rs.getString("id")), rs.getString("texto"), rs.getInt("sequencia"),
-						rs.getInt("posicao_x1"), rs.getInt("posicao_y1"), rs.getInt("posicao_x2"),
+				list.add(new MangaTexto(UUID.randomUUID(),
+						rs.getString("texto"),
+						rs.getInt("sequencia"),
+						rs.getInt("posicao_x1"),
+						rs.getInt("posicao_y1"),
+						rs.getInt("posicao_x2"),
 						rs.getInt("posicao_y2")));
 
 			return list;
@@ -1168,11 +1186,13 @@ public class MangaDaoJDBC implements MangaDao {
 			st = conn.prepareStatement(String.format(INSERT_VOLUMES, base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getManga());
-			st.setInt(2, obj.getVolume());
-			st.setString(3, obj.getLingua().getSigla());
-			st.setString(4, obj.getArquivo());
-			st.setBoolean(5, obj.getProcessado());
+			Integer index = 0;
+			st.setString(++index, obj.getId().toString());
+			st.setString(++index, obj.getManga());
+			st.setInt(++index, obj.getVolume());
+			st.setString(++index, obj.getLingua().getSigla());
+			st.setString(++index, obj.getArquivo());
+			st.setBoolean(++index, obj.getProcessado());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -1180,14 +1200,8 @@ public class MangaDaoJDBC implements MangaDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
 			} else {
-				ResultSet rs = st.getGeneratedKeys();
-				UUID id = null;
-				if (rs.next())
-					id = UUID.fromString(rs.getString(1));
-
-				insertVocabulario(base, id, null, null, obj.getVocabularios());
-
-				return id;
+				insertVocabulario(base, obj.getId(), null, null, obj.getVocabularios());
+				return obj.getId();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1205,15 +1219,17 @@ public class MangaDaoJDBC implements MangaDao {
 			st = conn.prepareStatement(String.format(INSERT_CAPITULOS, base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, idVolume.toString());
-			st.setString(2, obj.getManga());
-			st.setInt(3, obj.getVolume());
-			st.setFloat(4, obj.getCapitulo());
-			st.setString(5, obj.getLingua().getSigla());
-			st.setString(6, obj.getScan());
-			st.setBoolean(7, obj.isExtra());
-			st.setBoolean(8, obj.isRaw());
-			st.setBoolean(9, obj.getProcessado());
+			Integer index = 0;
+			st.setString(++index, obj.getId().toString());
+			st.setString(++index, idVolume.toString());
+			st.setString(++index, obj.getManga());
+			st.setInt(++index, obj.getVolume());
+			st.setFloat(++index, obj.getCapitulo());
+			st.setString(++index, obj.getLingua().getSigla());
+			st.setString(++index, obj.getScan());
+			st.setBoolean(++index, obj.isExtra());
+			st.setBoolean(++index, obj.isRaw());
+			st.setBoolean(++index, obj.getProcessado());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -1221,14 +1237,8 @@ public class MangaDaoJDBC implements MangaDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
 			} else {
-				ResultSet rs = st.getGeneratedKeys();
-				UUID id = null;
-				if (rs.next())
-					id = UUID.fromString(rs.getString(1));
-
-				insertVocabulario(base, null, id, null, obj.getVocabularios());
-
-				return id;
+				insertVocabulario(base, null, obj.getId(), null, obj.getVocabularios());
+				return obj.getId();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1246,11 +1256,13 @@ public class MangaDaoJDBC implements MangaDao {
 			st = conn.prepareStatement(String.format(INSERT_PAGINAS, base),
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, idCapitulo.toString());
-			st.setString(2, obj.getNomePagina());
-			st.setInt(3, obj.getNumero());
-			st.setString(4, obj.getHash());
-			st.setBoolean(5, obj.getProcessado());
+			Integer index = 0;
+			st.setString(++index, obj.getId().toString());
+			st.setString(++index, idCapitulo.toString());
+			st.setString(++index, obj.getNomePagina());
+			st.setInt(++index, obj.getNumero());
+			st.setString(++index, obj.getHash());
+			st.setBoolean(++index, obj.getProcessado());
 
 			int rowsAffected = st.executeUpdate();
 
@@ -1258,13 +1270,8 @@ public class MangaDaoJDBC implements MangaDao {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
 			} else {
-				ResultSet rs = st.getGeneratedKeys();
-				UUID id = null;
-				if (rs.next())
-					id = UUID.fromString(rs.getString(1));
-
-				insertVocabulario(base, null, null, id, obj.getVocabularios());
-				return id;
+				insertVocabulario(base, null, null, obj.getId(), obj.getVocabularios());
+				return obj.getId();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1281,24 +1288,23 @@ public class MangaDaoJDBC implements MangaDao {
 		try {
 			st = conn.prepareStatement(String.format(INSERT_TEXTO, base), Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, idPagina.toString());
-			st.setInt(2, obj.getSequencia());
-			st.setString(3, obj.getTexto());
-			st.setInt(4, obj.getX1());
-			st.setInt(5, obj.getY1());
-			st.setInt(6, obj.getX2());
-			st.setInt(7, obj.getY2());
+			Integer index = 0;
+			st.setString(++index, obj.getId().toString());
+			st.setString(++index, idPagina.toString());
+			st.setInt(++index, obj.getSequencia());
+			st.setString(++index, obj.getTexto());
+			st.setInt(++index, obj.getX1());
+			st.setInt(++index, obj.getY1());
+			st.setInt(++index, obj.getX2());
+			st.setInt(++index, obj.getY2());
 
 			int rowsAffected = st.executeUpdate();
 
 			if (rowsAffected < 1) {
 				System.out.println(st.toString());
 				throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-			} else {
-				ResultSet rs = st.getGeneratedKeys();
-				if (rs.next())
-					return UUID.fromString(rs.getString(1));
-			}
+			} else
+				return obj.getId();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println(st.toString());
@@ -1306,7 +1312,6 @@ public class MangaDaoJDBC implements MangaDao {
 		} finally {
 			DB.closeStatement(st);
 		}
-		return null;
 	}
 
 	@Override
@@ -1314,11 +1319,11 @@ public class MangaDaoJDBC implements MangaDao {
 		return selectVolumesTransferir(baseOrigem);
 	}
 
-	private void createTriggers(String base, String nome) throws ExcessaoBd {
+	private void createTriggers(String nome) throws ExcessaoBd {
 		PreparedStatement st = null;
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome,  base + nome));
+			st = conn.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome,  nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1329,7 +1334,7 @@ public class MangaDaoJDBC implements MangaDao {
 		}
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome,  base + nome));
+			st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome,  nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1342,16 +1347,13 @@ public class MangaDaoJDBC implements MangaDao {
 
 	@Override
 	public void createDatabase(String baseDestino) throws ExcessaoBd {
-		String base = schema;
 		String nome = baseDestino.trim();
-		if (nome.contains(".")) {
+		if (nome.contains("."))
 			nome = baseDestino.substring(baseDestino.indexOf(".")).replace(".", "");
-			base = baseDestino.substring(0, baseDestino.indexOf(".")) + ".";
-		}
 
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement(String.format(CREATE_VOLUMES, base + nome));
+			st = conn.prepareStatement(String.format(CREATE_VOLUMES, nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1361,10 +1363,10 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 
-		createTriggers(base, nome + "_volumes");
+		createTriggers(nome + "_volumes");
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_CAPITULOS, base + nome, nome, nome, base + nome));
+			st = conn.prepareStatement(String.format(CREATE_CAPITULOS, nome, nome, nome, nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1374,10 +1376,10 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 
-		createTriggers(base, nome + "_capitulos");
+		createTriggers(nome + "_capitulos");
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_PAGINAS, base + nome, nome, nome, base + nome));
+			st = conn.prepareStatement(String.format(CREATE_PAGINAS, nome, nome, nome, nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1387,10 +1389,10 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 
-		createTriggers(base, nome + "_paginas");
+		createTriggers(nome + "_paginas");
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_TEXTO, base + nome, nome, nome, base + nome));
+			st = conn.prepareStatement(String.format(CREATE_TEXTO, nome, nome, nome, nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1400,11 +1402,10 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 
-		createTriggers(base, nome + "_textos");
+		createTriggers(nome + "_textos");
 
 		try {
-			st = conn.prepareStatement(String.format(CREATE_VOCABULARIO, base + nome, nome, nome, nome, nome,
-					base + nome, nome, base + nome, nome, base + nome));
+			st = conn.prepareStatement(String.format(CREATE_VOCABULARIO, nome, nome, nome, nome, nome, nome, nome, nome, nome, nome));
 			st.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1414,7 +1415,7 @@ public class MangaDaoJDBC implements MangaDao {
 			DB.closeStatement(st);
 		}
 
-		createTriggers(base, nome + "_vocabularios");
+		createTriggers(nome + "_vocabularios");
 	}
 
 	@Override
@@ -1510,12 +1511,16 @@ public class MangaDaoJDBC implements MangaDao {
 	}
 
 	@Override
-	public List<String> getTabelas() throws ExcessaoBd {
+	public List<String> getTabelas(String base) throws ExcessaoBd {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
+			String consulta = this.schema;
+			if (base != null && !base.isEmpty())
+				consulta = base;
+
 			st = conn.prepareStatement(
-					String.format(SELECT_LISTA_TABELAS, schema));
+					String.format(SELECT_LISTA_TABELAS, consulta));
 			rs = st.executeQuery();
 
 			List<String> list = new ArrayList<>();
