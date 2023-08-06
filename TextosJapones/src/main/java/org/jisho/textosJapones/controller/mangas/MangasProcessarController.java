@@ -37,6 +37,7 @@ import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.processar.ProcessarMangas;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -227,26 +228,41 @@ public class MangasProcessarController implements Initializable {
 				try {
 					error = "";
 					updateMessage("Carregando dados....");
-					List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM);
+					List<String> bases = new ArrayList<>();
 
-					if (ckbCriarBase.isSelected()) {
-						updateMessage("Criando a base....");
-						service.createDataBase(BASE_DESTINO);
-					}
+					String aux = "";
+					if (BASE_ORIGEM.contains(".*")) {
+						BASE_ORIGEM = BASE_ORIGEM.replace(".*", "");
+						BASE_ORIGEM += ".";
+						aux = "*";
+					} else
+						bases.add(BASE_DESTINO);
 
-					updateMessage("Transferindo dados....");
-					I = 0;
-					for (MangaVolume volume : lista) {
-						updateMessage("Transferindo dados.... " + volume.getManga());
-						I++;
-						service.insertDadosTransferir(BASE_DESTINO, volume);
-						updateProgress(I, lista.size());
+					BASE_ORIGEM = BASE_ORIGEM.substring(0, BASE_ORIGEM.lastIndexOf(".")).replace(".", "");
+					bases.addAll(service.getTabelasTransferir(BASE_ORIGEM, aux));
 
-						Platform.runLater(() -> {
-							if (TaskbarProgressbar.isSupported())
-								TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
-										Type.NORMAL);
-						});
+					for (String tabela : bases) {
+						List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM, tabela);
+
+						if (ckbCriarBase.isSelected()) {
+							updateMessage("Criando a tabela....");
+							service.createTabela(tabela);
+						}
+
+						updateMessage("Transferindo dados....");
+						I = 0;
+						for (MangaVolume volume : lista) {
+							updateMessage("Transferindo dados.... " + volume.getManga());
+							I++;
+							service.insertDadosTransferir(tabela, volume);
+							updateProgress(I, lista.size());
+
+							Platform.runLater(() -> {
+								if (TaskbarProgressbar.isSupported())
+									TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I, lista.size(),
+											Type.NORMAL);
+							});
+						}
 					}
 
 				} catch (ExcessaoBd e) {

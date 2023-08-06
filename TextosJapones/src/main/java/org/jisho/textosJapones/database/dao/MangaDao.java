@@ -65,16 +65,15 @@ public interface MangaDao {
 
     void deletarVocabulario(String base) throws ExcessaoBd;
 
-    List<MangaVolume> selectTransferir(String baseOrigem) throws ExcessaoBd;
-
     public void updateProcessado(String base, String tabela, UUID id) throws ExcessaoBd;
 
     public void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
                                   Set<MangaVocabulario> vocabulario) throws ExcessaoBd;
 
-    void createDatabase(String base) throws ExcessaoBd;
+    List<MangaVolume> selectDadosTransferir(String base, String tabela) throws ExcessaoBd;
+    List<String> getTabelasTransferir(String base, String tabela) throws ExcessaoBd;
 
-    public void createBaseVocabulario(String nome) throws ExcessaoBd;
+    void createTabela(String base) throws ExcessaoBd;
 
     List<String> getTabelas() throws ExcessaoBd;
 

@@ -101,7 +101,6 @@ public class MangaPagina extends Manga {
 		this.numero = 0;
 		this.hash = "";
 		this.processado = false;
-		this.processar = true;
 		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.textos = new ArrayList<MangaTexto>();
 	}
@@ -114,7 +113,6 @@ public class MangaPagina extends Manga {
 		this.hash = hash;
 		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.processado = processado;
-		this.processar = true;
 		this.textos = new ArrayList<MangaTexto>();
 	}
 
@@ -128,7 +126,6 @@ public class MangaPagina extends Manga {
 		this.vocabularios = new HashSet<MangaVocabulario>();
 		this.processado = processado;
 		this.textos = textos;
-		this.processar = true;
 	}
 
 	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado,
@@ -141,7 +138,6 @@ public class MangaPagina extends Manga {
 		this.vocabularios = vocabularios;
 		this.processado = processado;
 		this.textos = textos;
-		this.processar = true;
 	}
 
 	@Override

@@ -26,6 +26,6 @@ public interface VocabularioDao {
 	
 	boolean existeExclusao(String palavra, String basico) throws ExcessaoBd;
 	
-	Set<String> selectExclusao() throws ExcessaoBd; 
+	Set<String> selectExclusao() throws ExcessaoBd;
 
 }

@@ -42,8 +42,12 @@ public class MangaServices {
 		return mangaDao.selectTabelasJson(base, manga, volume, capitulo, linguagem, inverterTexto);
 	}
 
-	public List<MangaVolume> selectDadosTransferir(String baseOrigem) throws ExcessaoBd {
-		return mangaDao.selectTransferir(baseOrigem);
+	public List<MangaVolume> selectDadosTransferir(String base, String tabela) throws ExcessaoBd {
+		return mangaDao.selectDadosTransferir(base, tabela);
+	}
+
+	public List<String> getTabelasTransferir(String base, String tabela) throws ExcessaoBd {
+		return mangaDao.getTabelasTransferir(base, tabela);
 	}
 
 	public void updateCancel(String base, MangaVolume obj) throws ExcessaoBd {
@@ -84,14 +88,9 @@ public class MangaServices {
 		mangaDao.insertVocabulario(base, idVolume, idCapitulo, idPagina, vocabularios);
 	}
 
-	public void createDataBase(String base) throws ExcessaoBd {
-		mangaDao.createDatabase(base);
+	public void createTabela(String base) throws ExcessaoBd {
+		mangaDao.createTabela(base);
 	}
-
-	public void createBaseVocabulario(String base) throws ExcessaoBd {
-		mangaDao.createBaseVocabulario(base);
-	}
-
 	private Boolean limpeza = true;
 
 	public void salvarAjustes(ObservableList<MangaTabela> tabelas) throws ExcessaoBd {
