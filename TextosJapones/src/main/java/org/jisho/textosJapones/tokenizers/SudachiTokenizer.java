@@ -410,9 +410,10 @@ public class SudachiTokenizer {
 									}
 								} else {
 									if (i == 0) {
-										if (isExcel)
-											expressao = palavra + ";" + portugues + "<br><br>";
-										else
+										if (isExcel) {
+											expressao = palavra + "<br><br>";
+											significado = portugues + "<br><br>";
+										} else
 											expressao = palavra + "\n\n" + "***" + "\n\n";
 									}
 								}
@@ -426,7 +427,7 @@ public class SudachiTokenizer {
 							}
 
 							if (isExcel)
-								vocabulario += palavra + ";" + ingles + ";" + portugues + ";" +  expressao + ";" + significado + ";" + (leitura.isEmpty() ? "" : palavra + "[" + leitura + "]") + ";" + links + "\n";
+								vocabulario += palavra + ";" + ingles + ";" + portugues + ";" +  expressao + ";" + significado + ";" + (leitura.isEmpty() ? palavra : palavra + "[" + leitura + "]") + ";" + links + "\n";
 							else
 								vocabulario += palavra + "\n" + ingles + "\n" + portugues + "\n\n" + expressao + significado + links + "\n" + "-".repeat(20) + "\n";
 						}
