@@ -1,12 +1,23 @@
 package org.jisho.textosJapones.model.entities;
 
+import java.util.UUID;
+
 public class Vocabulario {
 
+	private UUID id;
 	private String vocabulario;
 	private String formaBasica;
 	private String leitura;
 	private String ingles;
 	private String portugues;
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
 	public String getVocabulario() {
 		return vocabulario;
@@ -49,6 +60,7 @@ public class Vocabulario {
 	}
 
 	public Vocabulario() {
+		this.id = null;
 		this.vocabulario = "";
 		this.formaBasica = "";
 		this.leitura = "";
@@ -57,6 +69,7 @@ public class Vocabulario {
 	}
 
 	public Vocabulario(String vocabulario) {
+		this.id = null;
 		this.vocabulario = vocabulario;
 		this.formaBasica = "";
 		this.leitura = "";
@@ -65,6 +78,7 @@ public class Vocabulario {
 	}
 
 	public Vocabulario(String vocabulario, String portugues) {
+		this.id = null;
 		this.vocabulario = vocabulario;
 		this.portugues = portugues;
 		this.leitura = "";
@@ -73,6 +87,7 @@ public class Vocabulario {
 	}
 	
 	public Vocabulario(String vocabulario, String formaBasica, String leitura) {
+		this.id = null;
 		this.vocabulario = vocabulario;
 		this.formaBasica = formaBasica;
 		this.leitura = leitura;
@@ -80,7 +95,8 @@ public class Vocabulario {
 		this.ingles = "";
 	}
 
-	public Vocabulario(String vocabulario, String formaBasica, String leitura, String ingles, String portugues) {
+	public Vocabulario(UUID id, String vocabulario, String formaBasica, String leitura, String ingles, String portugues) {
+		this.id = id;
 		this.vocabulario = vocabulario;
 		this.formaBasica = formaBasica;
 		this.leitura = leitura;

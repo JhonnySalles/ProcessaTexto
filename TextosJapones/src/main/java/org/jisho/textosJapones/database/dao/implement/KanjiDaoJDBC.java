@@ -10,11 +10,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class KanjiDaoJDBC implements KanjiDao {
 
     private Connection conn;
-    final private String SELECT = "SELECT sequencia, kanji, palavra, significado FROM kanjax_pt WHERE kanji = ?;";
+    final private String SELECT = "SELECT id, kanji, palavra, significado FROM kanjax_pt WHERE kanji = ?;";
 
     public KanjiDaoJDBC(Connection conn) {
         this.conn = conn;
@@ -30,7 +31,7 @@ public class KanjiDaoJDBC implements KanjiDao {
             rs = st.executeQuery();
 
             if (rs.next()) {
-                return new Kanji(rs.getLong("sequencia"),
+                return new Kanji(UUID.fromString(rs.getString("id")),
                         rs.getString("kanji"), rs.getString("palavra"), rs.getString("significado"));
             }
         } catch (SQLException e) {

@@ -183,15 +183,7 @@ public class MangaServices {
 
 	public void salvarTraducao(String base, MangaVolume volume) throws ExcessaoBd {
 		mangaDao.deleteVolume(base, volume);
-		UUID idVolume = mangaDao.insertVolume(base, volume);
-		for (MangaCapitulo capitulo : volume.getCapitulos()) {
-			UUID idCapitulo = mangaDao.insertCapitulo(base, idVolume, capitulo);
-			for (MangaPagina pagina : capitulo.getPaginas()) {
-				UUID idPagina = mangaDao.insertPagina(base, idCapitulo, pagina);
-				for (MangaTexto texto : pagina.getTextos())
-					mangaDao.insertTexto(base, idPagina, texto);
-			}
-		}
+		insertDadosTransferir(base, volume);
 	}
 
 }

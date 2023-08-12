@@ -7,6 +7,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class VocabularioInglesServices {
 
@@ -17,7 +18,7 @@ public class VocabularioInglesServices {
 			if (vocabularioDao.exist(obj.getVocabulario()))
 				vocabularioDao.update(obj);
 			else
-				vocabularioDao.insert(obj);
+				save(obj);
 		}
 
 		return this;
@@ -27,14 +28,23 @@ public class VocabularioInglesServices {
 		if (vocabularioDao.exist(obj.getVocabulario()))
 			vocabularioDao.update(obj);
 		else
-			vocabularioDao.insert(obj);
+			save(obj);
 
 		return this;
 	}
 
+	private void save(Vocabulario obj) throws ExcessaoBd {
+		if (obj.getId() == null)
+			obj.setId(UUID.randomUUID());
+		vocabularioDao.insert(obj);
+	}
+
 	public VocabularioInglesServices insert(Vocabulario obj) throws ExcessaoBd {
-		if (!obj.getPortugues().isEmpty())
+		if (!obj.getPortugues().isEmpty()) {
+			if (obj.getId() == null)
+				obj.setId(UUID.randomUUID());
 			vocabularioDao.insert(obj);
+		}
 
 		return this;
 	}

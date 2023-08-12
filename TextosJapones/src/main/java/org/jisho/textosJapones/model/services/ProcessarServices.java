@@ -30,7 +30,7 @@ public class ProcessarServices {
 	}
 
 	public void insertOrUpdateFila(FilaSQL fila) throws ExcessaoBd {
-		if (fila.getId() == 0)
+		if (fila.getId() == null)
 			processarDao.insert(fila);
 		else
 			processarDao.update(fila);

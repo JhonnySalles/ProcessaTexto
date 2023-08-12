@@ -7,22 +7,19 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
 	private Connection conn;
 
-	final private String INSERT = "INSERT IGNORE INTO vocabulario (vocabulario, formaBasica, leitura, portugues, ingles) VALUES (?,?,?,?,?);";
-	final private String UPDATE = "UPDATE vocabulario SET formaBasica = ?, leitura = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
+	final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, portugues, ingles) VALUES (?, ?,?,?,?,?);";
+	final private String UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
 	final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, formaBasica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR formaBasica = ?;";
-	final private String SELECT_PALAVRA = "SELECT vocabulario, formaBasica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR forma_basica = ?;";
+	final private String SELECT_PALAVRA = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
 	final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
-	final private String SELECT_ALL = "SELECT vocabulario, formaBasica, leitura, portugues, ingles FROM vocabulario WHERE formaBasica = '' OR leitura = '';";
+	final private String SELECT_ALL = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE forma_basica = '' OR leitura = '';";
 	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
 	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
@@ -37,11 +34,12 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 		try {
 			st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getVocabulario());
-			st.setString(2, obj.getFormaBasica());
-			st.setString(3, obj.getLeitura());
-			st.setString(4, obj.getPortugues());
-			st.setString(5, obj.getIngles());
+			st.setString(1, obj.getId().toString());
+			st.setString(2, obj.getVocabulario());
+			st.setString(3, obj.getFormaBasica());
+			st.setString(4, obj.getLeitura());
+			st.setString(5, obj.getPortugues());
+			st.setString(6, obj.getIngles());
 
 			st.executeUpdate();
 		} catch (SQLException e) {
@@ -115,7 +113,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				return new Vocabulario(rs.getString("vocabulario"), rs.getString("formaBasica"),
+				return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
 						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
 			}
 		} catch (SQLException e) {
@@ -138,7 +136,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				return new Vocabulario(rs.getString("vocabulario"), rs.getString("formaBasica"),
+				return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
 						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
 			}
 		} catch (SQLException e) {
@@ -163,7 +161,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 			List<Vocabulario> list = new ArrayList<>();
 
 			while (rs.next()) {
-				list.add(new Vocabulario(rs.getString("vocabulario"), rs.getString("formaBasica"),
+				list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
 						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues")));
 			}
 			return list;

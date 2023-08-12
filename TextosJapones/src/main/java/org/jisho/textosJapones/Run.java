@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.database.mysql.DB;
 
 public class Run extends Application {
 
@@ -49,6 +50,11 @@ public class Run extends Application {
 				System.exit(0);
 			}
 		});
+	}
+
+	@Override
+	public void stop(){
+		DB.closeConnection();
 	}
 
 	public static Scene getMainScene() {

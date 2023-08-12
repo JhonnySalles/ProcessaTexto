@@ -7,6 +7,7 @@ import org.jisho.textosJapones.model.entities.Estatistica;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
+import java.util.UUID;
 
 public class EstatisticaServices {
 
@@ -29,14 +30,16 @@ public class EstatisticaServices {
 	}
 
 	public void insert(Estatistica obj) throws ExcessaoBd {
-		if (!obj.getKanji().isEmpty())
+		if (!obj.getKanji().isEmpty()) {
+			if (obj.getId() == null)
+				obj.setId(UUID.randomUUID());
 			estatisticaDao.insert(obj);
+		}
 	}
 
 	public void insert(List<Estatistica> lista) throws ExcessaoBd {
 		for (Estatistica obj : lista)
-			if (!obj.getKanji().isEmpty())
-				estatisticaDao.insert(obj);
+			insert(obj);
 	}
 
 	public void update(Estatistica obj) throws ExcessaoBd {

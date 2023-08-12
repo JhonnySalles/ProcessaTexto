@@ -10,14 +10,15 @@ import org.jisho.textosJapones.model.message.Mensagens;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProcessarDaoJDBC implements ProcessarDao {
 
     private Connection conn;
 
-    final private String INSERT_FILA = "INSERT INTO fila_sql (selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?);";
-    final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, deleteSQL = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE sequencial = ?";
-    final private String SELECT_FILA = "SELECT sequencial, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza FROM fila_sql";
+    final private String INSERT_FILA = "INSERT INTO fila_sql (id, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, deleteSQL = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE id = ?";
+    final private String SELECT_FILA = "SELECT id, sequencial, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza FROM fila_sql";
 
     public ProcessarDaoJDBC(Connection conn) {
         this.conn = conn;
@@ -77,12 +78,13 @@ public class ProcessarDaoJDBC implements ProcessarDao {
         try {
             st = conn.prepareStatement(INSERT_FILA, Statement.RETURN_GENERATED_KEYS);
 
-            st.setString(1, fila.getSelect());
-            st.setString(2, fila.getUpdate());
-            st.setString(3, fila.getDelete());
-            st.setString(4, fila.getVocabulario());
-            st.setBoolean(5, fila.isExporta());
-            st.setBoolean(6, fila.isLimpeza());
+            st.setString(1, UUID.randomUUID().toString());
+            st.setString(2, fila.getSelect());
+            st.setString(3, fila.getUpdate());
+            st.setString(4, fila.getDelete());
+            st.setString(5, fila.getVocabulario());
+            st.setBoolean(6, fila.isExporta());
+            st.setBoolean(7, fila.isLimpeza());
 
             int rowsAffected = st.executeUpdate();
 
@@ -112,7 +114,7 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             st.setString(4, fila.getVocabulario());
             st.setBoolean(5, fila.isExporta());
             st.setBoolean(6, fila.isLimpeza());
-            st.setLong(7, fila.getId());
+            st.setString(7, fila.getId().toString());
 
             int rowsAffected = st.executeUpdate();
 
@@ -142,9 +144,9 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             List<FilaSQL> list = new ArrayList<>();
 
             while (rs.next())
-                list.add(new FilaSQL(rs.getLong("sequencial"), rs.getString("selectSQL"), rs.getString("updateSQL"),
-                        rs.getString("deleteSQL"), rs.getString("vocabulario"), rs.getBoolean("isExporta"),
-                        rs.getBoolean("isLimpeza")));
+                list.add(new FilaSQL(UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("selectSQL"),
+                        rs.getString("updateSQL"), rs.getString("deleteSQL"), rs.getString("vocabulario"),
+                        rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")));
 
             return list;
         } catch (SQLException e) {

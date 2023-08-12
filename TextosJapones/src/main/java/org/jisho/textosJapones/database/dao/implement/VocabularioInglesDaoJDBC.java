@@ -10,16 +10,17 @@ import java.sql.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
 	private Connection conn;
 
-	final private String INSERT = "INSERT IGNORE INTO vocabulario (vocabulario, leitura, portugues) VALUES (?,?,?,?);";
+	final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, leitura, portugues) VALUES (?,?,?,?,?);";
 	final private String UPDATE = "UPDATE vocabulario SET leitura = ?, portugues = ? WHERE vocabulario = ?;";
 	final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT vocabulario, leitura, portugues FROM vocabulario WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
+	final private String SELECT = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE vocabulario = ?;";
+	final private String EXIST = "SELECT id, vocabulario FROM vocabulario WHERE vocabulario = ?;";
 	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
 	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
 	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? ";
@@ -34,9 +35,10 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 		try {
 			st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, obj.getVocabulario());
-			st.setString(2, obj.getLeitura());
-			st.setString(3, obj.getPortugues());
+			st.setString(1, obj.getId().toString());
+			st.setString(2, obj.getVocabulario());
+			st.setString(3, obj.getLeitura());
+			st.setString(4, obj.getPortugues());
 
 			st.executeUpdate();
 		} catch (SQLException e) {
@@ -112,7 +114,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 			rs = st.executeQuery();
 
 			if (rs.next()) {
-				return new Vocabulario(rs.getString("vocabulario"), "",
+				return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
 						rs.getString("leitura"), "", rs.getString("portugues"));
 			}
 		} catch (SQLException e) {

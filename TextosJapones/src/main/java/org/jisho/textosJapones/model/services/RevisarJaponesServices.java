@@ -6,6 +6,7 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RevisarJaponesServices {
 
@@ -20,12 +21,8 @@ public class RevisarJaponesServices {
 	}
 
 	public RevisarJaponesServices insertOrUpdate(List<Revisar> lista) throws ExcessaoBd {
-		for (Revisar obj : lista) {
-			if (revisarDao.exist(obj.getVocabulario()))
-				revisarDao.update(obj);
-			else
-				revisarDao.insert(obj);
-		}
+		for (Revisar obj : lista)
+			insertOrUpdate(obj);
 
 		return this;
 	}
@@ -34,19 +31,21 @@ public class RevisarJaponesServices {
 		if (revisarDao.exist(obj.getVocabulario()))
 			revisarDao.update(obj);
 		else
-			revisarDao.insert(obj);
+			insert(obj);
 
 		return this;
 	}
 
 	public RevisarJaponesServices insert(Revisar obj) throws ExcessaoBd {
+		if (obj.getId() == null)
+			obj.setId(UUID.randomUUID());
 		revisarDao.insert(obj);
 		return this;
 	}
 
 	public RevisarJaponesServices insert(List<Revisar> lista) throws ExcessaoBd {
 		for (Revisar obj : lista)
-			revisarDao.insert(obj);
+			insert(obj);
 
 		return this;
 	}

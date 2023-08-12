@@ -1,16 +1,18 @@
 package org.jisho.textosJapones.model.entities;
 
+import java.util.UUID;
+
 public class Kanji {
-    private Long id;
+    private UUID id;
     private String kanji;
     private String palavra;
     private String significado;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -38,7 +40,7 @@ public class Kanji {
         this.significado = significado;
     }
 
-    public Kanji(Long id, String kanji, String palavra, String significado) {
+    public Kanji(UUID id, String kanji, String palavra, String significado) {
         this.id = id;
         this.kanji = kanji;
         this.palavra = palavra;
