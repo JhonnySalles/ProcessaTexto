@@ -88,8 +88,15 @@ public class MenuConfiguracaoController implements Initializable {
 		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
 
 		Properties props = Configuracao.getProperties();
-		txtCaminhoWinrar.setText(props.getProperty("caminho_winrar"));
-		txtCaminhoCommicTagger.setText(props.getProperty("caminho_commictagger"));
+		if (props.containsKey("caminho_winrar"))
+			txtCaminhoWinrar.setText(props.getProperty("caminho_winrar"));
+		else
+			txtCaminhoWinrar.setText("");
+
+		if (props.containsKey("caminho_commictagger"))
+			txtCaminhoCommicTagger.setText(props.getProperty("caminho_commictagger"));
+		else
+			txtCaminhoCommicTagger.setText("");
 	}
 
 	private String selecionaPasta(String titulo, String pasta) {
