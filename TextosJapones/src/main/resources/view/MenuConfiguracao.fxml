@@ -42,6 +42,20 @@
                   </JFXButton>
                </children>
             </HBox>
+            <HBox>
+               <children>
+                  <JFXTextField fx:id="txtCaminhoCommicTagger" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Caminho CommicTagger" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnCaminhoCommicTagger" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoCommicTagger" prefWidth="35.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/icoPasta_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>

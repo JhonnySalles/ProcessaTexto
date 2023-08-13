@@ -16,9 +16,9 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 
     private Connection conn;
 
-    final private String INSERT_FILA = "INSERT INTO fila_sql (id, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    final private String UPDATE_FILA = "UPDATE fila_sql SET selectSQL = ?, updateSQL = ?, deleteSQL = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE id = ?";
-    final private String SELECT_FILA = "SELECT id, sequencial, selectSQL, updateSQL, deleteSQL, vocabulario, isExporta, isLimpeza FROM fila_sql";
+    final private String INSERT_FILA = "INSERT INTO fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    final private String UPDATE_FILA = "UPDATE fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE id = ?";
+    final private String SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, isExporta, isLimpeza FROM fila_sql";
 
     public ProcessarDaoJDBC(Connection conn) {
         this.conn = conn;
@@ -144,8 +144,8 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             List<FilaSQL> list = new ArrayList<>();
 
             while (rs.next())
-                list.add(new FilaSQL(UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("selectSQL"),
-                        rs.getString("updateSQL"), rs.getString("deleteSQL"), rs.getString("vocabulario"),
+                list.add(new FilaSQL(UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("select_sql"),
+                        rs.getString("update_sql"), rs.getString("delete_sql"), rs.getString("vocabulario"),
                         rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")));
 
             return list;

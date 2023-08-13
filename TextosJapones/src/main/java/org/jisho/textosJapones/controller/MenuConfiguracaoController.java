@@ -7,10 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.DirectoryChooser;
 import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.util.configuration.Configuracao;
 import org.jisho.textosJapones.util.constraints.Validadores;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class MenuConfiguracaoController implements Initializable {
@@ -37,10 +39,16 @@ public class MenuConfiguracaoController implements Initializable {
 	public JFXTextField txtCaminhoWinrar;
 
 	@FXML
+	public JFXTextField txtCaminhoCommicTagger;
+
+	@FXML
 	public JFXButton btnCaminhoMysql;
 	
 	@FXML
 	public JFXButton btnCaminhoWinrar;
+
+	@FXML
+	public JFXButton btnCaminhoCommicTagger;
 
 	private MenuPrincipalController controller;
 
@@ -57,10 +65,17 @@ public class MenuConfiguracaoController implements Initializable {
 		txtCaminhoWinrar.setText(selecionaPasta("Selecione a pasta do winrar", txtCaminhoWinrar.getText()));
 	}
 
+	@FXML
+	private void onBtnCarregarCaminhoCommicTagger() {
+		controller.getPopPup().setDetached(true);
+		txtCaminhoCommicTagger.setText(selecionaPasta("Selecione a pasta do commictagger", txtCaminhoCommicTagger.getText()));
+	}
+
 	public void salvar() {
-		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtUsuario.getText(), pswSenha.getText(), 
-				txtCaminhoMysql.getText(), txtCaminhoWinrar.getText(), txtDataBase.getText());
+		ConexaoMysql.setDadosConexao(txtServer.getText(), txtPorta.getText(), txtUsuario.getText(), pswSenha.getText(), txtCaminhoMysql.getText(), txtDataBase.getText());
 		controller.verificaConexao();
+
+		Configuracao.saveProperties(txtCaminhoWinrar.getText(), txtCaminhoCommicTagger.getText());
 	}
 
 	public void carregar() {
@@ -71,7 +86,10 @@ public class MenuConfiguracaoController implements Initializable {
 		txtUsuario.setText(ConexaoMysql.getUser());
 		pswSenha.setText(ConexaoMysql.getPassword());
 		txtCaminhoMysql.setText(ConexaoMysql.getCaminhoMysql());
-		txtCaminhoWinrar.setText(ConexaoMysql.getCaminhoWinrar());
+
+		Properties props = Configuracao.getProperties();
+		txtCaminhoWinrar.setText(props.getProperty("caminho_winrar"));
+		txtCaminhoCommicTagger.setText(props.getProperty("caminho_commictagger"));
 	}
 
 	private String selecionaPasta(String titulo, String pasta) {

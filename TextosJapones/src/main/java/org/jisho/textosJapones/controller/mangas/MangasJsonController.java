@@ -43,6 +43,7 @@ import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.model.services.VincularServices;
+import org.jisho.textosJapones.util.configuration.Configuracao;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -157,7 +158,7 @@ public class MangasJsonController implements Initializable {
 			return;
 		}
 
-		if (ckbInserirArquivos.isSelected() && ConexaoMysql.getCaminhoWinrar().isEmpty()) {
+		if (ckbInserirArquivos.isSelected() && Configuracao.getCaminhoWinrar().isEmpty()) {
 			AlertasPopup.AvisoModal("Aviso", "Necessário informar o caminho do winrar nas configurações.");
 			return;
 		}
@@ -349,7 +350,7 @@ public class MangasJsonController implements Initializable {
 				try {
 					inserirArquivos = ckbInserirArquivos.isSelected();
 					excluirAoInserir = ckbExcluirAoInserirArquivos.isSelected();
-					winrar = ConexaoMysql.getCaminhoWinrar();
+					winrar = Configuracao.getCaminhoWinrar();
 					error = "";
 
 					updateMessage("Gravando Jsons....");

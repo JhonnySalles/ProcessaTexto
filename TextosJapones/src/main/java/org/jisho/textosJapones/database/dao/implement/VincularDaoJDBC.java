@@ -121,7 +121,7 @@ public class VincularDaoJDBC implements VincularDao {
 
 	public VincularDaoJDBC(Connection conn) {
 		this.conn = conn;
-		Properties props = Configuracao.loadProperties();
+		Properties props = Configuracao.getProperties();
 		BASE_MANGA = props.getProperty("base_manga") + ".";
 	}
 

@@ -41,6 +41,7 @@ import org.jisho.textosJapones.model.entities.comicinfo.MAL;
 import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.processar.comicinfo.ProcessaComicInfo;
+import org.jisho.textosJapones.util.configuration.Configuracao;
 
 import java.awt.*;
 import java.io.File;
@@ -50,6 +51,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -259,7 +261,7 @@ public class MangasComicInfoController implements Initializable {
 						}
 					};
 
-					ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(),
+					ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(),
 							txtCaminho.getText(), txtDescricaoCapitulo.getText(), callback);
 
 				} catch (Exception e) {
@@ -345,7 +347,7 @@ public class MangasComicInfoController implements Initializable {
 								.findFirst();
 
 						if (registro.isPresent()) {
-							if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(),
+							if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(),
 									registro.get().getParent().getArquivo(), registro.get().getId()))
 								REGISTROS.remove(item);
 
@@ -425,7 +427,7 @@ public class MangasComicInfoController implements Initializable {
 						}
 					};
 
-					ProcessaComicInfo.validar(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), callback);
+					ProcessaComicInfo.validar(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), callback);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -495,7 +497,7 @@ public class MangasComicInfoController implements Initializable {
 				processar.getStyleClass().add("background-White1");
 				processar.setOnAction(event -> {
 					String arquivo = registro.getParent().getArquivo();
-					if (ProcessaComicInfo.processa(ConexaoMysql.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo,
+					if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo,
 							registro.getId())) {
 						REGISTROS.remove(item);
 						itmRoot.getChildren().remove(itmManga);

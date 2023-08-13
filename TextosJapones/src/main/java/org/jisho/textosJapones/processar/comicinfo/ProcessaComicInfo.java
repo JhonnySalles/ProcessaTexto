@@ -136,10 +136,8 @@ public class ProcessaComicInfo {
 		WINRAR = winrar;
 		CANCELAR_PROCESSAMENTO = false;
 		MARCACAPITULO = marcaCapitulo == null ? "" : marcaCapitulo;
-		
-		Properties secret = Configuracao.loadSecrets();
-		String clientId = secret.getProperty("my_anime_list_client_id");
-		MAL = MyAnimeList.withClientID(clientId);
+
+		MAL = MyAnimeList.withClientID(Configuracao.getMyAnimeListClient());
 
 		File arquivos = new File(path);
 		Integer[] size = new Integer[2];
@@ -183,10 +181,8 @@ public class ProcessaComicInfo {
 	public static Boolean processa(String winrar, Language linguagem, String arquivo, Long idMal) {
 		WINRAR = winrar;
 		CANCELAR_PROCESSAMENTO = false;
-		
-		Properties secret = Configuracao.loadSecrets();
-		String clientId = secret.getProperty("my_anime_list_client_id");
-		MAL = MyAnimeList.withClientID(clientId);
+
+		MAL = MyAnimeList.withClientID(Configuracao.getMyAnimeListClient());
 
 		File arquivos = new File(arquivo);
 		
@@ -232,11 +228,8 @@ public class ProcessaComicInfo {
 	}
 	
 	public static boolean getById(Long idMal, org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro registro) {
-		if (MAL == null) {
-			Properties secret = Configuracao.loadSecrets();
-			String clientId = secret.getProperty("my_anime_list_client_id");
-			MAL = MyAnimeList.withClientID(clientId);
-		}
+		if (MAL == null)
+			MAL = MyAnimeList.withClientID(Configuracao.getMyAnimeListClient());
 		
 		dev.katsute.mal4j.manga.Manga manga = MAL.getManga(idMal);
 		
