@@ -23,7 +23,7 @@ public class MangaDaoJDBC implements MangaDao {
 	final private String TABELA_VOCABULARIO = "_vocabularios";
 
 	final private String CREATE_TRIGGER_INSERT =
-			"CREATE TRIGGER tr_%s_insert BEFORE UPDATE ON %s" +
+			"CREATE TRIGGER tr_%s_insert BEFORE INSERT ON %s" +
 			"  FOR EACH ROW BEGIN" +
 			"    IF (NEW.id IS NULL OR NEW.id = '') THEN" +
 			"      SET new.id = UUID();" +
@@ -371,7 +371,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-						selectVocabulario(base, "id_volume = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), apenasJapones)));
 			return list;
 		} catch (SQLException e) {
@@ -417,7 +417,7 @@ public class MangaDaoJDBC implements MangaDao {
 			while (rs.next())
 				list.add(new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-						selectVocabulario(base, "id_volume = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), capitulo, linguagem, inverterTexto)));
 			return list;
 		} catch (SQLException e) {
@@ -488,7 +488,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaCapitulo(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectVocabulario(base, "id_capitulo = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectPaginas(base, todos, UUID.fromString(rs.getString("id")), false, false)));
 
 			return list;
@@ -535,7 +535,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaCapitulo(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectVocabulario(base, "id_capitulo = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectPaginas(base, todos, UUID.fromString(rs.getString("id")), inverterTexto, true)));
 
 			return list;
@@ -598,7 +598,7 @@ public class MangaDaoJDBC implements MangaDao {
 				list.add(new MangaPagina(UUID.fromString(rs.getString("id")), rs.getString("nome"), rs.getInt("numero"),
 						rs.getString("hash_pagina"), rs.getBoolean("is_processado"),
 						selectTextos(base, UUID.fromString(rs.getString("id")), inverterTexto),
-						(selectVocabulario ? selectVocabulario(base, "id_pagina = " + UUID.fromString(rs.getString("id")), inverterTexto)
+						(selectVocabulario ? selectVocabulario(base, "id_pagina = " + '"' + UUID.fromString(rs.getString("id")) + '"', inverterTexto)
 								: new HashSet<MangaVocabulario>())));
 
 			return list;
@@ -689,7 +689,7 @@ public class MangaDaoJDBC implements MangaDao {
 			if (rs.next())
 				return new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-						selectVocabulario(base, "id_volume = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
 			return null;
 		} catch (SQLException e) {
@@ -714,7 +714,7 @@ public class MangaDaoJDBC implements MangaDao {
 			if (rs.next())
 				return new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-						selectVocabulario(base, "id_volume = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
 			return null;
 		} catch (SQLException e) {
@@ -740,7 +740,7 @@ public class MangaDaoJDBC implements MangaDao {
 				return new MangaCapitulo(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
 						rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem")), rs.getString("scan"),
 						rs.getBoolean("is_extra"), rs.getBoolean("is_raw"), rs.getBoolean("is_processado"),
-						selectVocabulario(base, "id_capitulo = " + UUID.fromString(rs.getString("id")), false),
+						selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
 						selectPaginas(base, true, UUID.fromString(rs.getString("id")), false, false));
 
 			return null;
