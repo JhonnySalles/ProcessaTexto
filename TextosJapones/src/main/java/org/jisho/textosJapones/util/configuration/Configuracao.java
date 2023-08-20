@@ -12,7 +12,7 @@ public class Configuracao {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuracao.class);
 
     private static Properties props = null;
-    private static final Properties secrets = null;
+    private static Properties secrets = null;
 
     public static void saveProperties(String winrar, String commictagger) {
         try (OutputStream os = new FileOutputStream("db.properties")) {
@@ -128,7 +128,7 @@ public class Configuracao {
         File f = new File("secrets.properties");
 
         if (!f.exists()) {
-            try (OutputStream os = new FileOutputStream("db.properties")) {
+            try (OutputStream os = new FileOutputStream("secrets.properties")) {
                 Properties props = new Properties();
 
                 props.setProperty("my_anime_list_client_id", "");
@@ -154,13 +154,12 @@ public class Configuracao {
 
     public static Properties getSecrets() {
         if (secrets == null)
-            loadSecrets();
+            secrets = loadSecrets();
         return secrets;
     }
 
     public static String getMyAnimeListClient() {
         return getSecrets().getProperty("my_anime_list_client_id");
     }
-
 
 }

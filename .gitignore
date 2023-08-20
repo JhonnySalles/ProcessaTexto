@@ -1,6 +1,6 @@
-/Dicionario/*
-/TextosJapones/cache/*
-/TextosJapones/target/*
+/Dicionario/
+/TextosJapones/cache/
+/TextosJapones/target/
 /TextosJapones/target/classes/sudachi_coredict.json
 /TextosJapones/target/classes/sudachi_fulldict.json
 /TextosJapones/target/classes/sudachi_smalldict.json
@@ -14,6 +14,7 @@
 /TextosJapones/system_full.dic
 /TextosJapones/system_small.dic
 /App/*
+
 ##############################
 ## Java
 ##############################
