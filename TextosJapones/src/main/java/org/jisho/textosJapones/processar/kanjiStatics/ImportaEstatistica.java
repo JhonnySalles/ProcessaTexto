@@ -10,6 +10,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,10 +19,12 @@ import java.util.List;
 
 public class ImportaEstatistica {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportaEstatistica.class);
+
     final private static String PIPE = "\\|\\|";
     final private static String TITULO_HTML = "<!DOCTYPE html> <html lang=\"jp\"> <body>";
     final private static String RODAPE_HTML = "</body> </html>";
-    private static List<Estatistica> estatisticas = new ArrayList<>();
+    private static final List<Estatistica> estatisticas = new ArrayList<>();
     private static EstatisticaServices estatisticaServ;
 
     public static void importa() {
@@ -89,15 +93,18 @@ public class ImportaEstatistica {
             Notificacoes.notificacao(Notificacao.SUCESSO, "Concluido", "Importação concluida com sucesso.");
             br.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Arquivo não encontrado",
                     "Não foi possível carregar o arquivo para importação.");
         } catch (IOException e) {
-            e.printStackTrace();
-            Notificacoes.notificacao(Notificacao.ERRO, "Erro ao procesar o arquivo", e.getMessage().toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            Notificacoes.notificacao(Notificacao.ERRO, "Erro ao procesar o arquivo", e.getMessage());
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
-            Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar os dados", e.getMessage().toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar os dados", e.getMessage());
         }
 
     }

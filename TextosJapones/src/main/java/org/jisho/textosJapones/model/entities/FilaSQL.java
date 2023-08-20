@@ -4,11 +4,11 @@ import java.util.UUID;
 
 public class FilaSQL {
 
-    private UUID id;
-    private Long sequencial;
-    private String select;
-    private String update;
-    private String delete;
+    private final UUID id;
+    private final Long sequencial;
+    private final String select;
+    private final String update;
+    private final String delete;
     private String vocabulario;
     private Boolean isExporta;
     private Boolean isLimpeza;

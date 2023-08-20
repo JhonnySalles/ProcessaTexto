@@ -9,7 +9,7 @@ import java.util.List;
 
 public class RevisarInglesServices {
 
-	private RevisarDao revisarDao = DaoFactory.createRevisarInglesDao();
+	private final RevisarDao revisarDao = DaoFactory.createRevisarInglesDao();
 
 	public List<Revisar> selectAll() throws ExcessaoBd {
 		return revisarDao.selectAll();

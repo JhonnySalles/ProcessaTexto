@@ -18,6 +18,8 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,186 +29,191 @@ import java.util.Set;
 
 public class ProcessarLegendas {
 
-	private VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
-	private RevisarJaponesServices service = new RevisarJaponesServices();
-	private LegendasImportarController controller;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessarLegendas.class);
 
-	public ProcessarLegendas(LegendasImportarController controller) {
-		this.controller = controller;
-	}
+    private final VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
+    private final RevisarJaponesServices service = new RevisarJaponesServices();
+    private final LegendasImportarController controller;
 
-	public void processarLegendas(List<String> frases) {
-		GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
-		progress.getTitulo().setText("Legendas - Processar");
-		// Criacao da thread para que esteja validando a conexao e nao trave a tela.
-		Task<Void> processarVocabulario = new Task<Void>() {
+    public ProcessarLegendas(LegendasImportarController controller) {
+        this.controller = controller;
+    }
 
-			@Override
-			protected Void call() throws Exception {
-				try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer.readAll(new FileInputStream(
-						SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
-					tokenizer = dict.create();
-					mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
+    public void processarLegendas(List<String> frases) {
+        GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
+        progress.getTitulo().setText("Legendas - Processar");
+        // Criacao da thread para que esteja validando a conexao e nao trave a tela.
+        Task<Void> processarVocabulario = new Task<Void>() {
 
-					int x = 0;
-					for (String frase : frases) {
-						x++;
-						updateProgress(x, frases.size());
-						updateMessage("Processando " + x + " de " + frases.size() + " registros.");
-						processar(frase);
-					}
+            @Override
+            protected Void call() throws Exception {
+                try (Dictionary dict = new DictionaryFactory().create("", SudachiTokenizer.readAll(new FileInputStream(
+                        SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
+                    tokenizer = dict.create();
+                    mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
 
-				} catch (IOException e) {
-					e.printStackTrace();
-					AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
-							controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
-				}
+                    int x = 0;
+                    for (String frase : frases) {
+                        x++;
+                        updateProgress(x, frases.size());
+                        updateMessage("Processando " + x + " de " + frases.size() + " registros.");
+                        processar(frase);
+                    }
 
-				return null;
-			}
+                } catch (IOException e) {
+                    
+                    LOGGER.error(e.getMessage(), e);
+                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
+                            controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
+                }
 
-			@Override
-			protected void succeeded() {
-				super.succeeded();
-				AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
-						controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
-				progress.getBarraProgresso().progressProperty().unbind();
-				progress.getLog().textProperty().unbind();
-			}
+                return null;
+            }
 
-			@Override
-			protected void failed() {
-				super.failed();
-				System.out.print("Erro na thread de processamento do vocabulário: " + super.getMessage());
-			}
-		};
-		progress.getBarraProgresso().progressProperty().bind(processarVocabulario.progressProperty());
-		progress.getLog().textProperty().bind(processarVocabulario.messageProperty());
-		Thread t = new Thread(processarVocabulario);
-		t.start();
-	}
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
+                        controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
+                progress.getBarraProgresso().progressProperty().unbind();
+                progress.getLog().textProperty().unbind();
+            }
 
-	public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
-		existe.clear();
-		this.vocabulario.clear();
-		String vocabulario = "";
-		try (Dictionary dict = new DictionaryFactory().create("",
-				SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
-			tokenizer = dict.create();
-			mode = SudachiTokenizer.getModo(modo);
+            @Override
+            protected void failed() {
+                super.failed();
+                LOGGER.warn("Erro na thread de processamento do vocabulário: " + super.getMessage());
+                System.out.print("Erro na thread de processamento do vocabulário: " + super.getMessage());
+            }
+        };
+        progress.getBarraProgresso().progressProperty().bind(processarVocabulario.progressProperty());
+        progress.getLog().textProperty().bind(processarVocabulario.messageProperty());
+        Thread t = new Thread(processarVocabulario);
+        t.start();
+    }
 
-			vocabulario = gerarVocabulario(frase);
+    public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
+        existe.clear();
+        this.vocabulario.clear();
+        String vocabulario = "";
+        try (Dictionary dict = new DictionaryFactory().create("",
+                SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
+            tokenizer = dict.create();
+            mode = SudachiTokenizer.getModo(modo);
 
-			if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.C))) {
-				mode = SudachiTokenizer.getModo(Modo.B);
-				vocabulario = gerarVocabulario(frase);
-			}
+            vocabulario = gerarVocabulario(frase);
 
-			if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.B))) {
-				mode = SudachiTokenizer.getModo(Modo.C);
-				vocabulario = gerarVocabulario(frase);
-			}
+            if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.C))) {
+                mode = SudachiTokenizer.getModo(Modo.B);
+                vocabulario = gerarVocabulario(frase);
+            }
 
-		} catch (IOException | ExcessaoBd e) {
-			vocabulario = "";
-			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
-					controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
-		}
+            if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.B))) {
+                mode = SudachiTokenizer.getModo(Modo.C);
+                vocabulario = gerarVocabulario(frase);
+            }
 
-		return vocabulario.trim();
-	}
+        } catch (IOException | ExcessaoBd e) {
+            vocabulario = "";
+            
+            LOGGER.error(e.getMessage(), e);
+            AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
+                    controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
+        }
 
-	final private String pattern = ".*[\u4E00-\u9FAF].*";
-	final private String japanese = ".*[\u3041-\u9FAF].*";
-	private Tokenizer tokenizer;
-	private SplitMode mode;
+        return vocabulario.trim();
+    }
 
-	private void processar(String frase) throws ExcessaoBd {
-		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
-			if (m.surface().matches(pattern)) {
-				Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
+    final private String pattern = ".*[\u4E00-\u9FAF].*";
+    final private String japanese = ".*[\u3041-\u9FAF].*";
+    private Tokenizer tokenizer;
+    private SplitMode mode;
 
-				if (palavra == null) {
-					Revisar revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, true, false);
-					service.insert(revisar);
-				}
-			}
-		}
-	}
+    private void processar(String frase) throws ExcessaoBd {
+        for (Morpheme m : tokenizer.tokenize(mode, frase)) {
+            if (m.surface().matches(pattern)) {
+                Vocabulario palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
 
-	private Boolean usarRevisar = true;
-	private Set<Vocabulario> vocabHistorico = new HashSet<>();
-	private Set<String> validaHistorico = new HashSet<>();
+                if (palavra == null) {
+                    Revisar revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, true, false);
+                    service.insert(revisar);
+                }
+            }
+        }
+    }
 
-	public Set<String> vocabulario = new HashSet<>();
-	private Set<String> existe = new HashSet<>();
-	
-	public void clearVocabulary() {
-		vocabHistorico.clear();
-		validaHistorico.clear();
-		vocabulario.clear();
-		existe.clear();
-	}
+    private final Boolean usarRevisar = true;
+    private final Set<Vocabulario> vocabHistorico = new HashSet<>();
+    private final Set<String> validaHistorico = new HashSet<>();
 
-	private String gerarVocabulario(String frase) throws ExcessaoBd {
-		String vocabularios = "";
-		for (Morpheme m : tokenizer.tokenize(mode, frase)) {
-			if (m.surface().matches(pattern)) {
-				if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())
-						&& !existe.contains(m.dictionaryForm())) {
-					existe.add(m.dictionaryForm());
+    public Set<String> vocabulario = new HashSet<>();
+    private final Set<String> existe = new HashSet<>();
 
-					Vocabulario palavra = null;
-					if (validaHistorico.contains(m.dictionaryForm()))
-						palavra = vocabHistorico.stream()
-								.filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getVocabulario()))
-								.findFirst().orElse(null);
+    public void clearVocabulary() {
+        vocabHistorico.clear();
+        validaHistorico.clear();
+        vocabulario.clear();
+        existe.clear();
+    }
 
-					if (palavra != null)
-						vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
-					else {
-						palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
-						if (palavra != null) {
-							if (palavra.getPortugues().substring(0, 2).matches(japanese))
-								vocabularios += palavra.getPortugues() + " ";
-							else
-								vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
+    private String gerarVocabulario(String frase) throws ExcessaoBd {
+        String vocabularios = "";
+        for (Morpheme m : tokenizer.tokenize(mode, frase)) {
+            if (m.surface().matches(pattern)) {
+                if (!vocabularioService.existeExclusao(m.surface(), m.dictionaryForm())
+                        && !existe.contains(m.dictionaryForm())) {
+                    existe.add(m.dictionaryForm());
 
-							// Usado apenas para correção em formas em branco.
-							if (palavra.getFormaBasica().isEmpty()) {
-								palavra.setFormaBasica(m.dictionaryForm());
-								palavra.setLeitura(m.readingForm());
-								vocabularioService.update(palavra);
-							}
+                    Vocabulario palavra = null;
+                    if (validaHistorico.contains(m.dictionaryForm()))
+                        palavra = vocabHistorico.stream()
+                                .filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getVocabulario()))
+                                .findFirst().orElse(null);
 
-							validaHistorico.add(m.dictionaryForm());
-							vocabHistorico.add(palavra);
+                    if (palavra != null)
+                        vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
+                    else {
+                        palavra = vocabularioService.select(m.surface(), m.dictionaryForm());
+                        if (palavra != null) {
+                            if (palavra.getPortugues().substring(0, 2).matches(japanese))
+                                vocabularios += palavra.getPortugues() + " ";
+                            else
+                                vocabularios += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
 
-							vocabulario.add(palavra.getFormaBasica());
-						} else if (usarRevisar) {
-							Revisar revisar = service.select(m.surface(), m.dictionaryForm());
-							if (revisar != null) {
+                            // Usado apenas para correção em formas em branco.
+                            if (palavra.getFormaBasica().isEmpty()) {
+                                palavra.setFormaBasica(m.dictionaryForm());
+                                palavra.setLeitura(m.readingForm());
+                                vocabularioService.update(palavra);
+                            }
 
-								if (!revisar.getPortugues().isEmpty()
-										&& revisar.getPortugues().substring(0, 2).matches(japanese))
-									vocabularios += revisar.getPortugues() + "¹ ";
-								else {
-									vocabularios += m.dictionaryForm() + " - " + revisar.getPortugues() + "¹ ";
-									validaHistorico.add(m.dictionaryForm());
-									vocabHistorico
-											.add(new Vocabulario(m.dictionaryForm(), revisar.getPortugues() + "¹"));
-								}
+                            validaHistorico.add(m.dictionaryForm());
+                            vocabHistorico.add(palavra);
 
-								vocabulario.add(m.dictionaryForm());
-							}
-						}
-					}
+                            vocabulario.add(palavra.getFormaBasica());
+                        } else if (usarRevisar) {
+                            Revisar revisar = service.select(m.surface(), m.dictionaryForm());
+                            if (revisar != null) {
 
-				}
-			}
-		}
-		return vocabularios;
-	}
+                                if (!revisar.getPortugues().isEmpty()
+                                        && revisar.getPortugues().substring(0, 2).matches(japanese))
+                                    vocabularios += revisar.getPortugues() + "¹ ";
+                                else {
+                                    vocabularios += m.dictionaryForm() + " - " + revisar.getPortugues() + "¹ ";
+                                    validaHistorico.add(m.dictionaryForm());
+                                    vocabHistorico
+                                            .add(new Vocabulario(m.dictionaryForm(), revisar.getPortugues() + "¹"));
+                                }
+
+                                vocabulario.add(m.dictionaryForm());
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        return vocabularios;
+    }
 
 }

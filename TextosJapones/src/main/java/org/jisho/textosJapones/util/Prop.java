@@ -1,6 +1,8 @@
 package org.jisho.textosJapones.util;
 
 import org.jisho.textosJapones.components.notification.Alertas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,6 +11,8 @@ import java.io.OutputStream;
 
 public class Prop {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Prop.class);
+
     public static java.util.Properties loadProperties() {
         try (FileInputStream fs = new FileInputStream("db.properties")) {
             java.util.Properties props = new java.util.Properties();
@@ -16,7 +20,8 @@ public class Prop {
             return props;
         } catch (IOException e) {
             Alertas.Tela_Alerta("Erro ao carregar o properties", e.getMessage());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -26,7 +31,8 @@ public class Prop {
             propertie.store(os, "");
         } catch (IOException e) {
             Alertas.Tela_Alerta("Erro ao salvar o properties", e.getMessage());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

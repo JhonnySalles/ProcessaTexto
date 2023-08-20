@@ -15,6 +15,8 @@ import org.jisho.textosJapones.fileparse.Parse;
 import org.jisho.textosJapones.fileparse.ParseFactory;
 import org.jisho.textosJapones.fileparse.RarParse;
 import org.jisho.textosJapones.model.enums.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,6 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Util {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
 	final public static DataFormat VINCULO_ITEM_FORMAT = new DataFormat("custom.item.vinculo");
 	final public static DataFormat NUMERO_PAGINA_ITEM_FORMAT = new DataFormat("custom.item.numero.pagina");
@@ -90,8 +94,8 @@ public class Util {
 		return next;
 	}
 
-	private static String PASTA_CACHE = new File(".").getAbsolutePath() + "/cache/";
-	private static Random random = new Random();
+	private static final String PASTA_CACHE = new File(".").getAbsolutePath() + "/cache/";
+	private static final Random random = new Random();
 
 	public static Parse criaParse(File arquivo) {
 		Parse parse = ParseFactory.create(arquivo);
@@ -108,9 +112,10 @@ public class Util {
 
 		if (parse instanceof RarParse)
 			try {
-				((RarParse) parse).destroir();
+				parse.destroir();
 			} catch (IOException e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 			}
 	}
 
@@ -168,12 +173,14 @@ public class Util {
 
 			return md5;
 		} catch (Exception e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		} finally {
 			try {
 				image.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 
@@ -197,9 +204,9 @@ public class Util {
 	public static String getNome(String path) {
 		String name = path;
 		if (name.contains("/"))
-			name = name.substring(name.lastIndexOf("/") + 1, name.length());
+			name = name.substring(name.lastIndexOf("/") + 1);
 		else if (name.contains("\\"))
-			name = name.substring(name.lastIndexOf("\\") + 1, name.length());
+			name = name.substring(name.lastIndexOf("\\") + 1);
 
 		return name;
 	}
@@ -208,9 +215,9 @@ public class Util {
 		String name = path;
 
 		if (name.contains("/"))
-			name = name.substring(name.lastIndexOf("/") + 1, name.length());
+			name = name.substring(name.lastIndexOf("/") + 1);
 		else if (name.contains("\\"))
-			name = name.substring(name.lastIndexOf("\\") + 1, name.length());
+			name = name.substring(name.lastIndexOf("\\") + 1);
 
 		if (name.contains("."))
 			name = name.substring(0, name.lastIndexOf("."));
@@ -220,7 +227,7 @@ public class Util {
 
 	public static String getExtenssao(String path) {
 		if (path.contains("."))
-			return path.substring(path.lastIndexOf("."), path.length());
+			return path.substring(path.lastIndexOf("."));
 		else
 			return path;
 	}
@@ -258,9 +265,9 @@ public class Util {
 			pasta = pasta.substring(0, pasta.lastIndexOf("\\"));
 
 		if (pasta.contains("/"))
-			pasta = pasta.substring(pasta.lastIndexOf("/") + 1, pasta.length());
+			pasta = pasta.substring(pasta.lastIndexOf("/") + 1);
 		else if (pasta.contains("\\"))
-			pasta = pasta.substring(pasta.lastIndexOf("\\") + 1, pasta.length());
+			pasta = pasta.substring(pasta.lastIndexOf("\\") + 1);
 
 		return pasta;
 	}

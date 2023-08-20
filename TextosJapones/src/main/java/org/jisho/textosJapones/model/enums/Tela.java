@@ -4,7 +4,7 @@ public enum Tela {
 	
 	TEXTO("Texto"), LEGENDA("Legenda"), MANGA("Manga");
 
-	private String tela;
+	private final String tela;
 
 	Tela(String tela) {
 		this.tela = tela;

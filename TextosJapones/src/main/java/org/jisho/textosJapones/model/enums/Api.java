@@ -6,7 +6,7 @@ public enum Api {
 	CONTA_MIGRACAO_1("Google - Migracao 1"), CONTA_MIGRACAO_2("Google - Migracao 2"),
 	CONTA_MIGRACAO_3("Google - Migracao 3"), CONTA_MIGRACAO_4("Google - Migracao 4"), API_GOOGLE("Api Google");
 
-	private String api;
+	private final String api;
 
 	Api(String api) {
 		this.api = api;

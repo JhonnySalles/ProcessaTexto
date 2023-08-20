@@ -31,6 +31,8 @@ import org.jisho.textosJapones.model.services.ProcessarServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 import org.jisho.textosJapones.util.Prop;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,6 +43,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class LegendasGerarVocabularioController implements Initializable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegendasGerarVocabularioController.class);
 
     @FXML
     private AnchorPane apRoot;
@@ -108,9 +112,9 @@ public class LegendasGerarVocabularioController implements Initializable {
     @FXML
     private TableColumn<Processar, String> tcVocabulario;
 
-    private ProcessarServices service = new ProcessarServices();
-    private VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
-    private ProcessarLegendas processar = new ProcessarLegendas(null);
+    private final ProcessarServices service = new ProcessarServices();
+    private final VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
+    private final ProcessarLegendas processar = new ProcessarLegendas(null);
 
     private LegendasController controller;
 
@@ -196,7 +200,8 @@ public class LegendasGerarVocabularioController implements Initializable {
             onBtnAtualizar();
 
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar as atualizações.");
         } finally {
@@ -221,7 +226,8 @@ public class LegendasGerarVocabularioController implements Initializable {
             tbLista.setItems(FXCollections.observableArrayList(service.select(txtAreaSelect.getText())));
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Concluido....");
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao realizar a pesquisa.");
         }
@@ -241,7 +247,8 @@ public class LegendasGerarVocabularioController implements Initializable {
             service.delete(txtAreaDelete.getText());
 
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar as atualizações.");
         } finally {
@@ -301,8 +308,8 @@ public class LegendasGerarVocabularioController implements Initializable {
         progress.getTitulo().setText("Legendas - Processar Vocabulario");
         Task<Void> processarTudo = new Task<Void>() {
             List<Processar> lista = null;
-            Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
-            Modo modo = MenuPrincipalController.getController().getModo();
+            final Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
+            final Modo modo = MenuPrincipalController.getController().getModo();
             Integer i = 0;
 
             @Override
@@ -330,7 +337,8 @@ public class LegendasGerarVocabularioController implements Initializable {
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    
+                    LOGGER.error(e.getMessage(), e);
                 } finally {
                     Platform.runLater(() -> tbLista.setItems(FXCollections.observableArrayList(lista)));
 
@@ -373,7 +381,8 @@ public class LegendasGerarVocabularioController implements Initializable {
                     .insertExclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
             txtAreaVocabulario.setText("");
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar a exclusao.");
         }
@@ -412,7 +421,8 @@ public class LegendasGerarVocabularioController implements Initializable {
             AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
                     "Salvo com sucesso.");
         } catch (ExcessaoBd e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar ao salvar a fila.");
         }
@@ -472,11 +482,11 @@ public class LegendasGerarVocabularioController implements Initializable {
         Task<Void> processarFila = new Task<Void>() {
             List<Processar> lista = null;
             List<FilaSQL> fila = null;
-            Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
-            Modo modo = MenuPrincipalController.getController().getModo();
+            final Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
+            final Modo modo = MenuPrincipalController.getController().getModo();
             Integer i = 0, x = 0;
-            String pipe = txtPipe.getText();
-            File arquivo = (txtCaminhoExportar.getText().isEmpty() ? null : new File(txtCaminhoExportar.getText()));
+            final String pipe = txtPipe.getText();
+            final File arquivo = (txtCaminhoExportar.getText().isEmpty() ? null : new File(txtCaminhoExportar.getText()));
             @Override
             public Void call() throws IOException, InterruptedException {
                 try {
@@ -531,7 +541,8 @@ public class LegendasGerarVocabularioController implements Initializable {
                             select.setVocabulario(processar.vocabulario.stream().collect(Collectors.joining("\n")));
                             service.insertOrUpdateFila(select);
                         } catch (ExcessaoBd e) {
-                            e.printStackTrace();
+                            
+                            LOGGER.error(e.getMessage(), e);
                         }
                     }
 

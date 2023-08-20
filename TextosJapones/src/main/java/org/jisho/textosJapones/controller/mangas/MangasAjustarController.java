@@ -34,12 +34,16 @@ import org.jisho.textosJapones.model.message.Mensagens;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.util.converter.FloatConverter;
 import org.jisho.textosJapones.util.converter.IntegerConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MangasAjustarController implements Initializable {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MangasAjustarController.class);
 
 	@FXML
 	private AnchorPane apRoot;
@@ -175,7 +179,8 @@ public class MangasAjustarController implements Initializable {
 							LINGUAGEM, ckbInverterOrdemTexto.isSelected()));
 					DADOS = getTreeData();
 				} catch (ExcessaoBd e) {
-					e.printStackTrace();
+					
+					LOGGER.error(e.getMessage(), e);
 					throw new Exception(Mensagens.BD_ERRO_SELECT);
 				}
 				return null;
@@ -201,6 +206,7 @@ public class MangasAjustarController implements Initializable {
 			@Override
 			protected void failed() {
 				super.failed();
+				LOGGER.warn("Erro na thread de carregamento de itens: " + super.getMessage());
 				System.out.print("Erro na thread de carregamento de itens: " + super.getMessage());
 			}
 		};
@@ -243,7 +249,8 @@ public class MangasAjustarController implements Initializable {
 					TABELAS.clear();
 					DADOS.getChildren().clear();
 				} catch (ExcessaoBd e) {
-					e.printStackTrace();
+					
+					LOGGER.error(e.getMessage(), e);
 				}
 				return null;
 			}
@@ -269,6 +276,7 @@ public class MangasAjustarController implements Initializable {
 			@Override
 			protected void failed() {
 				super.failed();
+				LOGGER.warn("Falha ao executar a thread de salvamento de as informações corrigidas: " + super.getMessage());
 			}
 		};
 		Thread t = new Thread(carregaItens);
@@ -670,14 +678,15 @@ public class MangasAjustarController implements Initializable {
 		editaColunas();
 	}
 
-	private Robot robot = new Robot();
+	private final Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		try {
 			cbBase.getItems().setAll(service.getTabelas());
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}
 		

@@ -5,255 +5,268 @@ import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
 
 public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
-	private Connection conn;
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularioJaponesDaoJDBC.class);
 
-	final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, portugues, ingles) VALUES (?, ?,?,?,?,?);";
-	final private String UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
-	final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR forma_basica = ?;";
-	final private String SELECT_PALAVRA = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
-	final private String SELECT_ALL = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE forma_basica = '' OR leitura = '';";
-	final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
-	final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
-	final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
+    private final Connection conn;
 
-	public VocabularioJaponesDaoJDBC(Connection conn) {
-		this.conn = conn;
-	}
+    final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, portugues, ingles) VALUES (?, ?,?,?,?,?);";
+    final private String UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
+    final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
+    final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR forma_basica = ?;";
+    final private String SELECT_PALAVRA = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
+    final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
+    final private String SELECT_ALL = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE forma_basica = '' OR leitura = '';";
+    final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
+    final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
+    final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
 
-	@Override
-	public void insert(Vocabulario obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+    public VocabularioJaponesDaoJDBC(Connection conn) {
+        this.conn = conn;
+    }
 
-			st.setString(1, obj.getId().toString());
-			st.setString(2, obj.getVocabulario());
-			st.setString(3, obj.getFormaBasica());
-			st.setString(4, obj.getLeitura());
-			st.setString(5, obj.getPortugues());
-			st.setString(6, obj.getIngles());
+    @Override
+    public void insert(Vocabulario obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            st.setString(1, obj.getId().toString());
+            st.setString(2, obj.getVocabulario());
+            st.setString(3, obj.getFormaBasica());
+            st.setString(4, obj.getLeitura());
+            st.setString(5, obj.getPortugues());
+            st.setString(6, obj.getIngles());
 
-	@Override
-	public void update(Vocabulario obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			st.setString(1, obj.getFormaBasica());
-			st.setString(2, obj.getLeitura());
-			st.setString(3, obj.getPortugues());
-			st.setString(4, obj.getIngles());
-			st.setString(5, obj.getVocabulario());
+    @Override
+    public void update(Vocabulario obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
 
-			int rowsAffected = st.executeUpdate();
+            st.setString(1, obj.getFormaBasica());
+            st.setString(2, obj.getLeitura());
+            st.setString(3, obj.getPortugues());
+            st.setString(4, obj.getIngles());
+            st.setString(5, obj.getVocabulario());
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-			}
-			;
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            int rowsAffected = st.executeUpdate();
 
-	@Override
-	public void delete(Vocabulario obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(DELETE);
+            if (rowsAffected < 1) {
+                System.out.println(st);
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			st.setString(1, obj.getVocabulario());
+    @Override
+    public void delete(Vocabulario obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(DELETE);
 
-			int rowsAffected = st.executeUpdate();
+            st.setString(1, obj.getVocabulario());
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            int rowsAffected = st.executeUpdate();
 
-	@Override
-	public Vocabulario select(String vocabulario, String base) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT);
-			st.setString(1, vocabulario);
-			st.setString(2, base);
-			rs = st.executeQuery();
+            if (rowsAffected < 1) {
+                System.out.println(st);
+                throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			if (rs.next()) {
-				return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return null;
-	}
+    @Override
+    public Vocabulario select(String vocabulario, String base) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT);
+            st.setString(1, vocabulario);
+            st.setString(2, base);
+            rs = st.executeQuery();
 
-	@Override
-	public Vocabulario select(String vocabulario) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_PALAVRA);
-			st.setString(1, vocabulario);
-			rs = st.executeQuery();
+            if (rs.next()) {
+                return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
+            }
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return null;
+    }
 
-			if (rs.next()) {
-				return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return new Vocabulario(vocabulario);
-	}
+    @Override
+    public Vocabulario select(String vocabulario) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_PALAVRA);
+            st.setString(1, vocabulario);
+            rs = st.executeQuery();
 
-	@Override
-	public List<Vocabulario> selectAll() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+            if (rs.next()) {
+                return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
+            }
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return new Vocabulario(vocabulario);
+    }
 
-			st = conn.prepareStatement(SELECT_ALL);
-			rs = st.executeQuery();
+    @Override
+    public List<Vocabulario> selectAll() throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			List<Vocabulario> list = new ArrayList<>();
+            st = conn.prepareStatement(SELECT_ALL);
+            rs = st.executeQuery();
 
-			while (rs.next()) {
-				list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues")));
-			}
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            List<Vocabulario> list = new ArrayList<>();
 
-	@Override
-	public boolean exist(String vocabulario) {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(EXIST);
-			st.setString(1, vocabulario);
-			rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues")));
+            }
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-			if (rs.next()) {
-				return true;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return false;
-	}
+    @Override
+    public boolean exist(String vocabulario) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(EXIST);
+            st.setString(1, vocabulario);
+            rs = st.executeQuery();
 
-	@Override
-	public void insertExclusao(String palavra) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
-			st.setString(1, palavra);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return false;
+    }
 
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+    @Override
+    public void insertExclusao(String palavra) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
+            st.setString(1, palavra);
 
-	@Override
-	public Set<String> selectExclusao() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_ALL_EXCLUSAO);
-			rs = st.executeQuery();
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			Set<String> list = new HashSet<String>();
+    @Override
+    public Set<String> selectExclusao() throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_ALL_EXCLUSAO);
+            rs = st.executeQuery();
 
-			while (rs.next())
-				list.add(rs.getString("palavra"));
+            Set<String> list = new HashSet<String>();
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            while (rs.next())
+                list.add(rs.getString("palavra"));
 
-	@Override
-	public boolean existeExclusao(String palavra, String basico) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_EXCLUSAO);
-			st.setString(1, palavra);
-			st.setString(2, basico);
-			rs = st.executeQuery();
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-			if (rs.next())
-				return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return false;
-	}
+    @Override
+    public boolean existeExclusao(String palavra, String basico) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_EXCLUSAO);
+            st.setString(1, palavra);
+            st.setString(2, basico);
+            rs = st.executeQuery();
+
+            if (rs.next())
+                return true;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return false;
+    }
 
 }

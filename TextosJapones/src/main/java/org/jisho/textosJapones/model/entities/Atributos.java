@@ -2,9 +2,9 @@ package org.jisho.textosJapones.model.entities;
 
 public class Atributos {
 
-	private Boolean dupla;
-	private String md5;
-	private String pHash;
+	private final Boolean dupla;
+	private final String md5;
+	private final String pHash;
 
 	public Boolean getDupla() {
 		return dupla;

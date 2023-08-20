@@ -1,6 +1,8 @@
 package org.jisho.textosJapones.database.mysql;
 
 import org.jisho.textosJapones.util.configuration.Configuracao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConexaoMysql {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConexaoMysql.class);
 
     private static String SERVER = "";
     private static String PORT = "";
@@ -86,11 +90,13 @@ public class ConexaoMysql {
 
         } catch (ClassNotFoundException e) { // Driver n�o encontrado
             System.out.println("O driver de conexão expecificado nao foi encontrado.");
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
 
         } catch (SQLException e) {
             System.out.println("Nao foi possivel conectar ao Banco de Dados.");
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
 
         }
         return conecta;

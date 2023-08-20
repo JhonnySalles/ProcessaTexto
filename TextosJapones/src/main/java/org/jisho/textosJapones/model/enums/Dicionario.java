@@ -3,7 +3,7 @@ package org.jisho.textosJapones.model.enums;
 public enum Dicionario {
 	SAMLL("Sudachi - small"), CORE("Sudachi - core"), FULL("Sudachi - full");
 
-	private String dicionario;
+	private final String dicionario;
 
 	Dicionario(String dicionario) {
 		this.dicionario = dicionario;

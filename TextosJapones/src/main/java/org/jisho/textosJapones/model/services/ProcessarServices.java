@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ProcessarServices {
 
-	private ProcessarDao processarDao = DaoFactory.createProcessarDao();
+	private final ProcessarDao processarDao = DaoFactory.createProcessarDao();
 
 	public void update(String update, List<Processar> lista) throws ExcessaoBd {
 		for (Processar obj : lista)

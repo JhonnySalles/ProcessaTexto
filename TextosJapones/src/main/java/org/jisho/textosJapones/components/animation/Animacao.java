@@ -101,7 +101,7 @@ public class Animacao {
 		FadeOut fade = new FadeOut(nodeCima);
 
 		fade.setOnFinished(event -> {
-			spRoot.getChildren().remove(spRoot.getChildren().indexOf(nodeCima));
+			spRoot.getChildren().remove(nodeCima);
 			nodeCima.setVisible(false);
 		});
 		fade.play();

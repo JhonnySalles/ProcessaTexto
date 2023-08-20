@@ -1,122 +1,128 @@
 package org.jisho.textosJapones.fileparse;
 
 import org.jisho.textosJapones.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZipParse implements Parse {
 
-	private ZipFile mArquivoZip;
-	private ArrayList<ZipEntry> mEntrada;
-	private ArrayList<ZipEntry> mLegendas;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZipParse.class);
 
-	@Override
-	public void parse(File file) throws IOException {
-		mArquivoZip = new ZipFile(file.getAbsolutePath());
-		mEntrada = new ArrayList<ZipEntry>();
+    private ZipFile mArquivoZip;
+    private ArrayList<ZipEntry> mEntrada;
+    private ArrayList<ZipEntry> mLegendas;
 
-		Enumeration<? extends ZipEntry> e = mArquivoZip.entries();
-		while (e.hasMoreElements()) {
-			ZipEntry ze = e.nextElement();
-			if (!ze.isDirectory() && Util.isImage(ze.getName())) {
-				mEntrada.add(ze);
-			}
-		}
+    @Override
+    public void parse(File file) throws IOException {
+        mArquivoZip = new ZipFile(file.getAbsolutePath());
+        mEntrada = new ArrayList<ZipEntry>();
 
-		Collections.sort(mEntrada, new Comparator<ZipEntry>() {
-			public int compare(ZipEntry a, ZipEntry b) {
-				return Util.getCaminho(a.getName()).compareTo(Util.getCaminho(b.getName()));
-			}
-		}.thenComparing(new Comparator<ZipEntry>() {
-			public int compare(ZipEntry a, ZipEntry b) {
-				return Util.getNomeNormalizadoOrdenacao(a.getName()).compareTo(Util.getNomeNormalizadoOrdenacao(b.getName()));
-			}
-		}));
-	}
+        Enumeration<? extends ZipEntry> e = mArquivoZip.entries();
+        while (e.hasMoreElements()) {
+            ZipEntry ze = e.nextElement();
+            if (!ze.isDirectory() && Util.isImage(ze.getName())) {
+                mEntrada.add(ze);
+            }
+        }
 
-	@Override
-	public int getSize() {
-		return mEntrada.size();
-	}
+        Collections.sort(mEntrada, new Comparator<ZipEntry>() {
+            public int compare(ZipEntry a, ZipEntry b) {
+                return Util.getCaminho(a.getName()).compareTo(Util.getCaminho(b.getName()));
+            }
+        }.thenComparing(new Comparator<ZipEntry>() {
+            public int compare(ZipEntry a, ZipEntry b) {
+                return Util.getNomeNormalizadoOrdenacao(a.getName()).compareTo(Util.getNomeNormalizadoOrdenacao(b.getName()));
+            }
+        }));
+    }
 
-	@Override
-	public InputStream getPagina(int num) throws IOException {
-		return mArquivoZip.getInputStream(mEntrada.get(num));
-	}
+    @Override
+    public int getSize() {
+        return mEntrada.size();
+    }
 
-	@Override
-	public String getTipo() {
-		return "zip";
-	}
+    @Override
+    public InputStream getPagina(int num) throws IOException {
+        return mArquivoZip.getInputStream(mEntrada.get(num));
+    }
 
-	@Override
-	public void destroir() throws IOException {
-		mArquivoZip.close();
-	}
+    @Override
+    public String getTipo() {
+        return "zip";
+    }
 
-	@Override
-	public List<String> getLegenda() {
-		List<String> legendas = new ArrayList<String>();
-		mLegendas.forEach((it) -> {
-			InputStream sub;
-			BufferedReader reader;
-			try {
-				sub = mArquivoZip.getInputStream(it);
-				reader = new BufferedReader(new InputStreamReader(sub, "UTF-8"));
-				StringBuilder content = new StringBuilder();
+    @Override
+    public void destroir() throws IOException {
+        mArquivoZip.close();
+    }
 
-				var line = reader.readLine();
-				while (line != null) {
-					content.append(line);
-					line = reader.readLine();
-				}
+    @Override
+    public List<String> getLegenda() {
+        List<String> legendas = new ArrayList<String>();
+        mLegendas.forEach((it) -> {
+            InputStream sub;
+            BufferedReader reader;
+            try {
+                sub = mArquivoZip.getInputStream(it);
+                reader = new BufferedReader(new InputStreamReader(sub, StandardCharsets.UTF_8));
+                StringBuilder content = new StringBuilder();
 
-				legendas.add(content.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		return legendas;
-	}
+                var line = reader.readLine();
+                while (line != null) {
+                    content.append(line);
+                    line = reader.readLine();
+                }
 
-	@Override
-	public Map<String, Integer> getLegendaNomes() {
-		Map<String, Integer> arquivos = new HashMap<String, Integer>();
+                legendas.add(content.toString());
+            } catch (IOException e) {
+                
+                LOGGER.error(e.getMessage(), e);
+            }
+        });
+        return legendas;
+    }
 
-		for (var i = 0; i < mLegendas.size(); i++) {
-			String path = Util.getNome(getName(mLegendas.get(i)));
-			if (!path.isEmpty() && !arquivos.containsKey(path))
-				arquivos.put(path, i);
-		}
+    @Override
+    public Map<String, Integer> getLegendaNomes() {
+        Map<String, Integer> arquivos = new HashMap<String, Integer>();
 
-		return arquivos;
-	}
+        for (var i = 0; i < mLegendas.size(); i++) {
+            String path = Util.getNome(getName(mLegendas.get(i)));
+            if (!path.isEmpty() && !arquivos.containsKey(path))
+                arquivos.put(path, i);
+        }
 
-	private String getName(ZipEntry entry) {
-		return entry.getName();
-	}
+        return arquivos;
+    }
 
-	@Override
-	public String getPaginaPasta(Integer num) {
-		if (mEntrada.size() < num)
-			return null;
-		return getName(mEntrada.get(num));
-	}
+    private String getName(ZipEntry entry) {
+        return entry.getName();
+    }
 
-	@Override
-	public Map<String, Integer> getPastas() {
-		Map<String, Integer> pastas = new HashMap<String, Integer>();
+    @Override
+    public String getPaginaPasta(Integer num) {
+        if (mEntrada.size() < num)
+            return null;
+        return getName(mEntrada.get(num));
+    }
 
-		for (var i = 0; i < mEntrada.size(); i++) {
-			String path = Util.getPasta(getName(mEntrada.get(i)));
-			if (!path.isEmpty() && !pastas.containsKey(path))
-				pastas.put(path, i);
-		}
+    @Override
+    public Map<String, Integer> getPastas() {
+        Map<String, Integer> pastas = new HashMap<String, Integer>();
 
-		return pastas;
-	}
+        for (var i = 0; i < mEntrada.size(); i++) {
+            String path = Util.getPasta(getName(mEntrada.get(i)));
+            if (!path.isEmpty() && !pastas.containsKey(path))
+                pastas.put(path, i);
+        }
+
+        return pastas;
+    }
 
 }

@@ -4,52 +4,58 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
 
 public class JapanDict {
 
-	final private static String LINK = "https://www.japandict.com/?s={kanji}&lang=eng";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JapanDict.class);
 
-	public static String processa(String kanji) {
-		try {
-			String url = LINK.replace("{kanji}", kanji);
-			Document pagina = null;
+    final private static String LINK = "https://www.japandict.com/?s={kanji}&lang=eng";
 
-			try {
-				pagina = Jsoup.parse(new URL(url).openStream(), "ISO-8859-1", url);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return "";
-			}
+    public static String processa(String kanji) {
+        try {
+            String url = LINK.replace("{kanji}", kanji);
+            Document pagina = null;
 
-			Elements grupos = pagina.getElementsByClass("list-group-item");
+            try {
+                pagina = Jsoup.parse(new URL(url).openStream(), "ISO-8859-1", url);
+            } catch (FileNotFoundException e) {
+                
+                LOGGER.error(e.getMessage(), e);
+                return "";
+            }
 
-			if (grupos == null || grupos.size() == 0)
-				return "";
+            Elements grupos = pagina.getElementsByClass("list-group-item");
 
-			for (Element elemento : grupos) {
+            if (grupos == null || grupos.size() == 0)
+                return "";
 
-				Elements traducoes = elemento.getElementsByAttributeValue("lang", "en");
+            for (Element elemento : grupos) {
 
-				if (traducoes != null && traducoes.size() > 0) {
-					String resultado = "";
-					for (Element traducao : traducoes)
-						if (!traducao.text().isEmpty())
-							resultado += traducao.text().concat("; ");
+                Elements traducoes = elemento.getElementsByAttributeValue("lang", "en");
 
-					if (resultado.contains("; "))
-						resultado = resultado.substring(0, resultado.lastIndexOf("; "));
+                if (traducoes != null && traducoes.size() > 0) {
+                    String resultado = "";
+                    for (Element traducao : traducoes)
+                        if (!traducao.text().isEmpty())
+                            resultado += traducao.text().concat("; ");
 
-					return resultado;
-				}
-			}
+                    if (resultado.contains("; "))
+                        resultado = resultado.substring(0, resultado.lastIndexOf("; "));
 
-			return "";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
+                    return resultado;
+                }
+            }
+
+            return "";
+        } catch (Exception e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            return "";
+        }
+    }
 }

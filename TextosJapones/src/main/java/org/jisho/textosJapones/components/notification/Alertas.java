@@ -6,6 +6,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.jisho.textosJapones.controller.PopupAlertaController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -16,6 +18,8 @@ import org.jisho.textosJapones.controller.PopupAlertaController;
  * @author Jhonny de Salles Noschang
  */
 public class Alertas {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Alertas.class);
 
 	public static void Tela_Alerta(String titulo, String texto) {
 		try {
@@ -46,7 +50,8 @@ public class Alertas {
 			stageTela.showAndWait(); // Mostra a tela.
 		} catch (Exception e) {
 			System.out.println("Erro ao tentar carregar o alerta.");
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 

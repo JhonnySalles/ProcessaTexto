@@ -132,7 +132,7 @@ public class ImagePHash {
 		return resizedImage;
 	}
 
-	private ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+	private final ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
 	private BufferedImage grayscale(BufferedImage img) {
 		colorConvert.filter(img, img);

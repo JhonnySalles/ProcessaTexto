@@ -3,6 +3,8 @@ package org.jisho.textosJapones.database.mysql;
 import org.jisho.textosJapones.components.notification.Alertas;
 import org.jisho.textosJapones.model.entities.DadosConexao;
 import org.jisho.textosJapones.model.enums.Conexao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,15 +13,18 @@ import java.util.*;
 
 public class DB {
 
-    private static Set<DadosConexao> dados = new HashSet<>();
-    private static Map<Conexao, Connection> connections = new HashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DB.class);
+
+    private static final Set<DadosConexao> dados = new HashSet<>();
+    private static final Map<Conexao, Connection> connections = new HashMap<>();
     private static Connection conn = null;
 
     private static Connection createConnection(Properties props, String url) {
         try {
             return DriverManager.getConnection(url, props);
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -71,7 +76,8 @@ public class DB {
                 return createConnection(props, url);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);
             DB.closeResultSet(rs);
@@ -89,7 +95,8 @@ public class DB {
             try {
                 conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -101,7 +108,8 @@ public class DB {
             return props;
         } catch (IOException e) {
             Alertas.Tela_Alerta("Erro ao carregar o properties", e.getMessage());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -111,7 +119,8 @@ public class DB {
             try {
                 st.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
@@ -121,7 +130,8 @@ public class DB {
             try {
                 rs.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

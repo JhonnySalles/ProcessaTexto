@@ -7,7 +7,7 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 public class KanjiServices {
 
-    private KanjiDao kanjiDao = DaoFactory.createKanjiDao();
+    private final KanjiDao kanjiDao = DaoFactory.createKanjiDao();
 
     public Kanji select(String kanji) throws ExcessaoBd {
         return kanjiDao.select(kanji);

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class RevisarJaponesServices {
 
-	private RevisarDao revisarDao = DaoFactory.createRevisarJaponesDao();
+	private final RevisarDao revisarDao = DaoFactory.createRevisarJaponesDao();
 
 	public List<Revisar> selectAll() throws ExcessaoBd {
 		return revisarDao.selectAll();

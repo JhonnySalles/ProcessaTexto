@@ -4,5 +4,5 @@ public enum Manga {
 	Unknown,
 	No,
 	Yes,
-	YesAndRightToLeft;
+	YesAndRightToLeft
 }

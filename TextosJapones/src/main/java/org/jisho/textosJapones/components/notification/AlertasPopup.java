@@ -181,7 +181,7 @@ public class AlertasPopup {
 		RESULTADO = false;
 		BoxBlur blur = new BoxBlur(3, 3, 3);
 
-		JFXAlert<String> alert = new JFXAlert<>((Stage) rootStackPane.getScene().getWindow());
+		JFXAlert<String> alert = new JFXAlert<>(rootStackPane.getScene().getWindow());
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setOverlayClose(false);
 

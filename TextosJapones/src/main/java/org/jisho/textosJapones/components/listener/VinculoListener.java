@@ -5,11 +5,11 @@ import org.jisho.textosJapones.model.entities.VinculoPagina;
 import org.jisho.textosJapones.model.enums.Pagina;
 
 public interface VinculoListener {
-	public Boolean onDuploClique(Node root, VinculoPagina vinculo, Pagina origem);
+	Boolean onDuploClique(Node root, VinculoPagina vinculo, Pagina origem);
 
-	public void onDrop(Pagina origem, VinculoPagina vinculoOrigem, Pagina destino, VinculoPagina vinculoDestino);
+	void onDrop(Pagina origem, VinculoPagina vinculoOrigem, Pagina destino, VinculoPagina vinculoDestino);
 
-	public void onDragStart();
+	void onDragStart();
 
-	public void onDragEnd();
+	void onDragEnd();
 }

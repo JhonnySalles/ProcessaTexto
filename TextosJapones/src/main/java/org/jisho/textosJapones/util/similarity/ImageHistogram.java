@@ -14,9 +14,9 @@ public class ImageHistogram {
 	// Expected threshold for the image to be similar, where above it will be equal
 	final static public double LIMIAR = 0.7;
 
-	private int redBins;
-	private int greenBins;
-	private int blueBins;
+	private final int redBins;
+	private final int greenBins;
+	private final int blueBins;
 
 	public ImageHistogram() {
 		redBins = greenBins = blueBins = 4;

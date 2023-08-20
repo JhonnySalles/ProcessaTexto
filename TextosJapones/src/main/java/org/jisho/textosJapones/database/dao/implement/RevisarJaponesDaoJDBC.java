@@ -5,6 +5,8 @@ import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,392 +15,409 @@ import java.util.UUID;
 
 public class RevisarJaponesDaoJDBC implements RevisarDao {
 
-	private Connection conn;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RevisarJaponesDaoJDBC.class);
 
-	final private String INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, forma_basica, leitura, portugues, ingles, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?,?,?);";
-	final private String UPDATE = "UPDATE revisar SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
-	final private String DELETE = "DELETE FROM revisar WHERE vocabulario = ?;";
-	final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles, revisado, isAnime, isManga FROM revisar ";
-	final private String SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR forma_basica = ?;";
-	final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
-	final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
-	final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
-	final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
-	final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
-	final private String SELECT_REVISAR = SELECT + "WHERE %s ORDER BY aparece DESC LIMIT 1";
-	final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or forma_basica = ? LIMIT 1";
-	final private String SELECT_SIMILAR = SELECT + "WHERE vocabulario <> ? AND ingles <> '' AND ingles = ?";
-	final private String INCREMENTA_VEZES_APARECE = "UPDATE revisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
-	final private String SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;";
+    private final Connection conn;
 
-	public RevisarJaponesDaoJDBC(Connection conn) {
-		this.conn = conn;
-	}
+    final private String INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, forma_basica, leitura, portugues, ingles, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?,?,?);";
+    final private String UPDATE = "UPDATE revisar SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;";
+    final private String DELETE = "DELETE FROM revisar WHERE vocabulario = ?;";
+    final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles, revisado, isAnime, isManga FROM revisar ";
+    final private String SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR forma_basica = ?;";
+    final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
+    final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
+    final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
+    final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
+    final private String SELECT_QUANTIDADE_RESTANTE = "SELECT COUNT(*) AS Quantidade FROM revisar";
+    final private String SELECT_REVISAR = SELECT + "WHERE %s ORDER BY aparece DESC LIMIT 1";
+    final private String SELECT_REVISAR_PESQUISA = SELECT + "WHERE vocabulario = ? or forma_basica = ? LIMIT 1";
+    final private String SELECT_SIMILAR = SELECT + "WHERE vocabulario <> ? AND ingles <> '' AND ingles = ?";
+    final private String INCREMENTA_VEZES_APARECE = "UPDATE revisar SET aparece = (aparece + 1) WHERE vocabulario = ?;";
+    final private String SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;";
 
-	@Override
-	public void insert(Revisar obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+    public RevisarJaponesDaoJDBC(Connection conn) {
+        this.conn = conn;
+    }
 
-			st.setString(1, obj.getId().toString());
-			st.setString(2, obj.getVocabulario());
-			st.setString(3, obj.getFormaBasica());
-			st.setString(4, obj.getLeitura());
-			st.setString(5, obj.getPortugues());
-			st.setString(6, obj.getIngles());
-			st.setBoolean(7, obj.getRevisado().isSelected());
-			st.setBoolean(8, obj.isAnime());
-			st.setBoolean(9, obj.isManga());
+    @Override
+    public void insert(Revisar obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            st.setString(1, obj.getId().toString());
+            st.setString(2, obj.getVocabulario());
+            st.setString(3, obj.getFormaBasica());
+            st.setString(4, obj.getLeitura());
+            st.setString(5, obj.getPortugues());
+            st.setString(6, obj.getIngles());
+            st.setBoolean(7, obj.getRevisado().isSelected());
+            st.setBoolean(8, obj.isAnime());
+            st.setBoolean(9, obj.isManga());
 
-	@Override
-	public void update(Revisar obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			st.setString(1, obj.getFormaBasica());
-			st.setString(2, obj.getLeitura());
-			st.setString(3, obj.getPortugues());
-			st.setString(4, obj.getIngles());
-			st.setBoolean(5, obj.getRevisado().isSelected());
-			st.setBoolean(6, obj.isAnime());
-			st.setBoolean(7, obj.isManga());
-			st.setString(8, obj.getVocabulario());
+    @Override
+    public void update(Revisar obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
 
-			int rowsAffected = st.executeUpdate();
+            st.setString(1, obj.getFormaBasica());
+            st.setString(2, obj.getLeitura());
+            st.setString(3, obj.getPortugues());
+            st.setString(4, obj.getIngles());
+            st.setBoolean(5, obj.getRevisado().isSelected());
+            st.setBoolean(6, obj.isAnime());
+            st.setBoolean(7, obj.isManga());
+            st.setString(8, obj.getVocabulario());
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            int rowsAffected = st.executeUpdate();
 
-	@Override
-	public void delete(Revisar obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(DELETE);
+            if (rowsAffected < 1) {
+                System.out.println(st);
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			st.setString(1, obj.getVocabulario());
+    @Override
+    public void delete(Revisar obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(DELETE);
 
-			int rowsAffected = st.executeUpdate();
+            st.setString(1, obj.getVocabulario());
 
-			if (rowsAffected < 1) {
-				System.out.println(st.toString());
-				throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-			}
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            int rowsAffected = st.executeUpdate();
 
-	@Override
-	public void delete(String vocabulario) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(DELETE);
+            if (rowsAffected < 1) {
+                System.out.println(st);
+                throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+            }
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			st.setString(1, vocabulario);
+    @Override
+    public void delete(String vocabulario) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(DELETE);
 
-			st.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(st.toString());
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            st.setString(1, vocabulario);
 
-	@Override
-	public Revisar select(String vocabulario, String base) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_FORMA);
-			st.setString(1, vocabulario);
-			st.setString(2, base);
-			rs = st.executeQuery();
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(st.toString());
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
-			if (rs.next()) {
-				return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return null;
-	}
+    @Override
+    public Revisar select(String vocabulario, String base) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_FORMA);
+            st.setString(1, vocabulario);
+            st.setString(2, base);
+            rs = st.executeQuery();
 
-	@Override
-	public Revisar select(String vocabulario) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_PALAVRA);
-			st.setString(1, vocabulario);
-			rs = st.executeQuery();
+            if (rs.next()) {
+                return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
+            }
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return null;
+    }
 
-			if (rs.next()) {
-				return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return new Revisar(vocabulario);
-	}
+    @Override
+    public Revisar select(String vocabulario) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_PALAVRA);
+            st.setString(1, vocabulario);
+            rs = st.executeQuery();
 
-	@Override
-	public List<Revisar> selectAll() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+            if (rs.next()) {
+                return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
+            }
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return new Revisar(vocabulario);
+    }
 
-			st = conn.prepareStatement(SELECT_ALL);
-			rs = st.executeQuery();
+    @Override
+    public List<Revisar> selectAll() throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			List<Revisar> list = new ArrayList<>();
+            st = conn.prepareStatement(SELECT_ALL);
+            rs = st.executeQuery();
 
-			while (rs.next()) {
-				list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
-			}
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            List<Revisar> list = new ArrayList<>();
 
-	@Override
-	public List<Revisar> selectTraduzir(Integer quantidadeRegistros) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+            while (rs.next()) {
+                list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
+            }
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-			st = conn.prepareStatement(SELECT_TRADUZIR + (quantidadeRegistros > 0 ? " LIMIT " + quantidadeRegistros.toString() : " LIMIT 1000"));
-			rs = st.executeQuery();
+    @Override
+    public List<Revisar> selectTraduzir(Integer quantidadeRegistros) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			List<Revisar> list = new ArrayList<>();
+            st = conn.prepareStatement(SELECT_TRADUZIR + (quantidadeRegistros > 0 ? " LIMIT " + quantidadeRegistros : " LIMIT 1000"));
+            rs = st.executeQuery();
 
-			while (rs.next())
-				list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
+            List<Revisar> list = new ArrayList<>();
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            while (rs.next())
+                list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
-	@Override
-	public boolean exist(String vocabulario) {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(EXIST);
-			st.setString(1, vocabulario);
-			rs = st.executeQuery();
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-			if (rs.next())
-				return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return false;
-	}
-	
-	@Override
-	public String isValido(String vocabulario) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean exist(String vocabulario) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(EXIST);
+            st.setString(1, vocabulario);
+            rs = st.executeQuery();
 
-	@Override
-	public List<String> selectFrases(String select) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+            if (rs.next())
+                return true;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return false;
+    }
 
-			st = conn.prepareStatement(select);
-			rs = st.executeQuery();
+    @Override
+    public String isValido(String vocabulario) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-			List<String> list = new ArrayList<>();
+    @Override
+    public List<String> selectFrases(String select) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			while (rs.next())
-				list.add(rs.getString(1));
+            st = conn.prepareStatement(select);
+            rs = st.executeQuery();
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            List<String> list = new ArrayList<>();
 
-	@Override
-	public String selectQuantidadeRestante() throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			st = conn.prepareStatement(SELECT_QUANTIDADE_RESTANTE);
-			rs = st.executeQuery();
+            while (rs.next())
+                list.add(rs.getString(1));
 
-			if (rs.next())
-				return rs.getString("Quantidade");
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return "0";
-	}
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 
-	@Override
-	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+    @Override
+    public String selectQuantidadeRestante() throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_QUANTIDADE_RESTANTE);
+            rs = st.executeQuery();
 
-			if (!pesquisar.trim().isEmpty()) {
-				st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
-				st.setString(1, pesquisar);
-				st.setString(2, pesquisar);
-			} else {
-				String parametro = "1>0";
+            if (rs.next())
+                return rs.getString("Quantidade");
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return "0";
+    }
 
-				if (isAnime && isManga)
-					parametro = "isAnime = true AND isManga = true";
-				else {
-					if (isAnime)
-						parametro = "isAnime = true";
-					else if (isManga)
-						parametro = "isManga = true";
-				}
+    @Override
+    public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-				st = conn.prepareStatement(String.format(SELECT_REVISAR, parametro));
-			}
+            if (!pesquisar.trim().isEmpty()) {
+                st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
+                st.setString(1, pesquisar);
+                st.setString(2, pesquisar);
+            } else {
+                String parametro = "1>0";
 
-			rs = st.executeQuery();
+                if (isAnime && isManga)
+                    parametro = "isAnime = true AND isManga = true";
+                else {
+                    if (isAnime)
+                        parametro = "isAnime = true";
+                    else if (isManga)
+                        parametro = "isManga = true";
+                }
 
-			if (rs.next())
-				return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-		return null;
-	}
+                st = conn.prepareStatement(String.format(SELECT_REVISAR, parametro));
+            }
 
-	@Override
-	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
+            rs = st.executeQuery();
 
-			st = conn.prepareStatement(SELECT_SIMILAR);
-			st.setString(1, vocabulario);
-			st.setString(2, ingles);
-			rs = st.executeQuery();
+            if (rs.next())
+                return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return null;
+    }
 
-			List<Revisar> list = new ArrayList<>();
+    @Override
+    public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
 
-			while (rs.next())
-				list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-						rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
-						rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
+            st = conn.prepareStatement(SELECT_SIMILAR);
+            st.setString(1, vocabulario);
+            st.setString(2, ingles);
+            rs = st.executeQuery();
 
-			return list;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
-		} finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-		}
-	}
+            List<Revisar> list = new ArrayList<>();
 
-	@Override
-	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(INCREMENTA_VEZES_APARECE);
-			st.setString(1, vocabulario);
-			st.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            while (rs.next())
+                list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("portugues"), rs.getString("ingles"), rs.getBoolean("revisado"),
+                        rs.getBoolean("isAnime"), rs.getBoolean("isManga")));
 
-	@Override
-	public void setIsManga(Revisar obj) throws ExcessaoBd {
-		PreparedStatement st = null;
-		try {
-			st = conn.prepareStatement(SET_ISMANGA);
-			st.setBoolean(1, obj.isManga());
-			st.setString(2, obj.getVocabulario());
-			st.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DB.closeStatement(st);
-		}
-	}
+            return list;
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(INCREMENTA_VEZES_APARECE);
+            st.setString(1, vocabulario);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public void setIsManga(Revisar obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(SET_ISMANGA);
+            st.setBoolean(1, obj.isManga());
+            st.setString(2, obj.getVocabulario());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
 
 }

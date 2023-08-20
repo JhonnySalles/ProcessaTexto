@@ -3,7 +3,7 @@ package org.jisho.textosJapones.model.enums;
 public enum Tipo {
 	TEXTO("Texto"), MUSICA("Música"), VOCABULARIO("Vocabulário"), KANJI("Kanji");
 
-	private String modo;
+	private final String modo;
 
 	Tipo(String modo) {
 		this.modo = modo;

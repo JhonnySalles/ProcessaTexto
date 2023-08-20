@@ -15,7 +15,7 @@ public enum Notificacao {
 
 	ALERTA("Alerta"), AVISO("Aviso"), ERRO("Erro"), SUCESSO("Sucesso");
 
-	private String notificacao;
+	private final String notificacao;
 
 	Notificacao(String notificacao) {
 		this.notificacao = notificacao;

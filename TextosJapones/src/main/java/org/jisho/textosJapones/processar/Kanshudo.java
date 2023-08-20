@@ -4,64 +4,70 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
 
 public class Kanshudo {
 
-	//final private static String LINK_WORD = "https://www.kanshudo.com/searchw?q={kanji}";
-	final private static String LINK_NAME = "https://www.kanshudo.com/searchn?q={kanji}";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Kanshudo.class);
 
-	public static String processa(String kanji) {
-		String retorno = getNome(kanji);
+    //final private static String LINK_WORD = "https://www.kanshudo.com/searchw?q={kanji}";
+    final private static String LINK_NAME = "https://www.kanshudo.com/searchn?q={kanji}";
+
+    public static String processa(String kanji) {
+        String retorno = getNome(kanji);
 
 		/*if (retorno.isEmpty())
 			retorno = getSignificado(kanji);*/
 
-		return retorno;
-	}
+        return retorno;
+    }
 
-	final private static String allFlag = ".*";
-	final private static String japanese = "[\u3041-\u9FAF]";
+    final private static String allFlag = ".*";
+    final private static String japanese = "[\u3041-\u9FAF]";
 
-	private static String getNome(String kanji) {
-		try {
-			String url = LINK_NAME.replace("{kanji}", kanji);
+    private static String getNome(String kanji) {
+        try {
+            String url = LINK_NAME.replace("{kanji}", kanji);
 
-			Document pagina = null;
+            Document pagina = null;
 
-			try {
-				pagina = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return "";
-			}
+            try {
+                pagina = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
+            } catch (FileNotFoundException e) {
+                
+                LOGGER.error(e.getMessage(), e);
+                return "";
+            }
 
-			Elements nomes = pagina.getElementsByClass("name_readings");
+            Elements nomes = pagina.getElementsByClass("name_readings");
 
-			if (nomes == null || nomes.size() == 0)
-				return "";
+            if (nomes == null || nomes.size() == 0)
+                return "";
 
-			String resultado = "";
-			for (Element elemento : nomes) {
-				if (!elemento.text().isEmpty())
-					resultado += elemento.text().concat("; ");
-			}
+            String resultado = "";
+            for (Element elemento : nomes) {
+                if (!elemento.text().isEmpty())
+                    resultado += elemento.text().concat("; ");
+            }
 
-			if (!resultado.isEmpty())
-				resultado = resultado.replaceAll("\\(click the name to view details\\)", "")
-						.replaceAll("Common reading:", "").replaceAll("unclassified ", "").trim();
+            if (!resultado.isEmpty())
+                resultado = resultado.replaceAll("\\(click the name to view details\\)", "")
+                        .replaceAll("Common reading:", "").replaceAll("unclassified ", "").trim();
 
-			if (resultado.matches(allFlag + japanese + allFlag))
-				resultado = resultado.replaceAll(japanese, "").trim();
+            if (resultado.matches(allFlag + japanese + allFlag))
+                resultado = resultado.replaceAll(japanese, "").trim();
 
-			return resultado;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
+            return resultado;
+        } catch (Exception e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            return "";
+        }
+    }
 
 	/*private static String getSignificado(String kanji) {
 		try {
@@ -72,7 +78,8 @@ public class Kanshudo {
 			try {
 				pagina = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 				return "";
 			}
 
@@ -100,7 +107,8 @@ public class Kanshudo {
 
 			return "";
 		} catch (Exception e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			return "";
 		}
 	}*/

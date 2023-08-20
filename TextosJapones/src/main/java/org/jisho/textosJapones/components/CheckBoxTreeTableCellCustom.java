@@ -60,7 +60,7 @@ public class CheckBoxTreeTableCellCustom<S, T> extends TreeTableCell<S,T> {
 	        setConverter(converter);
 	    }
 
-	    private ObjectProperty<StringConverter<T>> converter =
+	    private final ObjectProperty<StringConverter<T>> converter =
 	            new SimpleObjectProperty<StringConverter<T>>(this, "converter") {
 	        protected void invalidated() {
 	            updateShowLabel();
@@ -79,7 +79,7 @@ public class CheckBoxTreeTableCellCustom<S, T> extends TreeTableCell<S,T> {
 	        return converterProperty().get();
 	    }
 
-	    private ObjectProperty<Callback<Integer, ObservableValue<Boolean>>>
+	    private final ObjectProperty<Callback<Integer, ObservableValue<Boolean>>>
 	            selectedStateCallback =
 	            new SimpleObjectProperty<Callback<Integer, ObservableValue<Boolean>>>(
 	            this, "selectedStateCallback");

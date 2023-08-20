@@ -5,8 +5,8 @@ import org.jisho.textosJapones.model.entities.VinculoPagina;
 
 public interface VinculoServiceListener {
 
-	public ObservableList<VinculoPagina> getVinculados();
+	ObservableList<VinculoPagina> getVinculados();
 
-	public ObservableList<VinculoPagina> getNaoVinculados();
+	ObservableList<VinculoPagina> getNaoVinculados();
 	
 }

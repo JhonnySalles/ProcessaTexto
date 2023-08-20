@@ -25,9 +25,9 @@ public class LongTextFieldTreeTableCell<S> extends TreeTableCell<S, Long> {
 	     * * Fields * *
 	     **************************************************************************/
 
-	    private HBox hBox = new HBox();
-	    private Label currencyLabel = new Label("");
-	    private TextField textField = new TextField("" + 0l);
+	    private final HBox hBox = new HBox();
+	    private final Label currencyLabel = new Label("");
+	    private final TextField textField = new TextField("" + 0l);
 
 
 	    /***************************************************************************

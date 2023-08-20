@@ -54,6 +54,8 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.util.ListaExecucoes;
 import org.jisho.textosJapones.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,6 +65,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class MangasVincularController implements Initializable, VinculoListener, VinculoServiceListener {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MangasVincularController.class);
 
 	final PseudoClass ON_DRAG_INICIADO = PseudoClass.getPseudoClass("drag-iniciado");
 	final PseudoClass ON_DRAG_SELECIONADO = PseudoClass.getPseudoClass("drag-selecionado");
@@ -179,13 +183,13 @@ public class MangasVincularController implements Initializable, VinculoListener,
 	private Parse parseOriginal;
 	private Parse parseVinculado;
 
-	private VincularServices service = new VincularServices();
+	private final VincularServices service = new VincularServices();
 	private Vinculo vinculo = new Vinculo();
 	private ObservableList<VinculoPagina> vinculado;
 	private ObservableList<VinculoPagina> naoVinculado;
 
-	private Map<String, Integer> capitulosOriginal = new HashMap<String, Integer>();
-	private Map<String, Integer> capitulosVinculado = new HashMap<String, Integer>();
+	private final Map<String, Integer> capitulosOriginal = new HashMap<String, Integer>();
+	private final Map<String, Integer> capitulosVinculado = new HashMap<String, Integer>();
 
 	public VinculoTextoListener refreshListener;
 
@@ -349,7 +353,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 				limpar();
 				Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Arquivo deletado com sucesso.");
 			} catch (ExcessaoBd e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 				AlertasPopup.ErroModal("Erro ao deletar", e.getMessage());
 			}
 
@@ -642,7 +647,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 			new Animacao().abrirPane(this.controller.getStackPane(), newRoot);
 		} catch (IOException e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -928,7 +934,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						
+						LOGGER.error(e.getMessage(), e);
 						error = e.getMessage();
 					}
 
@@ -958,6 +965,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 				@Override
 				protected void failed() {
+					super.failed();
+					LOGGER.warn("Falha ao executar a thread de vincular a legenda: " + super.getMessage());
 					Platform.runLater(() -> {
 						progress.getBarraProgresso().progressProperty().unbind();
 						progress.getLog().textProperty().unbind();
@@ -971,7 +980,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 						EXECUCOES.endProcess();
 					});
-
 				}
 
 			};
@@ -1067,7 +1075,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			image = new Image(imput);
 			dupla = (image.getWidth() / image.getHeight()) > 0.9;
 		} catch (Exception e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		return new Pair<Image, Atributos>(image, new Atributos(dupla, md5, ""));
@@ -1226,7 +1235,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							}
 
 						} catch (Exception e) {
-							e.printStackTrace();
+							
+							LOGGER.error(e.getMessage(), e);
 							error = e.getMessage();
 						}
 						return null;
@@ -1258,6 +1268,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 					@Override
 					protected void failed() {
+						super.failed();
+						LOGGER.warn("Falha ao executar a thread de carregar arquivos: " + super.getMessage());
 						Platform.runLater(() -> {
 							progress.getBarraProgresso().progressProperty().unbind();
 							progress.getLog().textProperty().unbind();
@@ -1396,6 +1408,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 				@Override
 				protected void failed() {
+					super.failed();
+					LOGGER.warn("Falha ao executar a thread de carregamento de dados: " + super.getMessage());
 					Platform.runLater(() -> {
 						progress.getBarraProgresso().progressProperty().unbind();
 						progress.getLog().textProperty().unbind();
@@ -1466,7 +1480,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 				return true;
 			}
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		return false;
@@ -1504,7 +1519,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 					}
 				}
 			} catch (ExcessaoBd e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 
@@ -1526,7 +1542,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			service.salvar(cbBase.getSelectionModel().getSelectedItem(), vinculo);
 			Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.");
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao salvar", e.getMessage());
 		}
 	}
@@ -1545,7 +1562,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		return fileChooser.showOpenDialog(null);
 	}
 
-	private InvalidationListener acMangaOriginal = observable -> {
+	private final InvalidationListener acMangaOriginal = observable -> {
 		if (cbBase.getItems().isEmpty())
 			cbBase.setUnFocusColor(Color.RED);
 
@@ -1558,7 +1575,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			autoCompleteMangaOriginal.show(txtMangaOriginal);
 	};
 
-	private InvalidationListener acMangaVinculado = observable -> {
+	private final InvalidationListener acMangaVinculado = observable -> {
 		if (cbBase.getItems().isEmpty())
 			cbBase.setUnFocusColor(Color.RED);
 
@@ -1603,7 +1620,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		try {
 			service.createTabelas(base);
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			System.out.println("Erro ao consultar as sugestões de mangas.");
 		}
 
@@ -1621,7 +1639,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			autoComplete.getSuggestions().addAll(mangas);
 			manga.setText("");
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			System.out.println("Erro ao consultar as sugestões de mangas.");
 		}
 	}
@@ -1756,7 +1775,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										controller.setDados(getTableRow().getItem());
 										setGraphic(controller.root);
 									} catch (IOException e) {
-										e.printStackTrace();
+										
+										LOGGER.error(e.getMessage(), e);
 										setGraphic(null);
 									}
 								}
@@ -1789,7 +1809,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 										HBox.setHgrow(controller.root, Priority.ALWAYS);
 										setGraphic(controller.root);
 									} catch (IOException e) {
-										e.printStackTrace();
+										
+										LOGGER.error(e.getMessage(), e);
 										setGraphic(null);
 									}
 								}
@@ -1829,7 +1850,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 							try {
 								mLLoader.load();
 							} catch (IOException e) {
-								e.printStackTrace();
+								
+								LOGGER.error(e.getMessage(), e);
 							}
 
 							MangasVincularCelulaPequenaController controller = mLLoader.getController();
@@ -1862,7 +1884,7 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		});
 	}
 
-	private Robot robot = new Robot();
+	private final Robot robot = new Robot();
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		Run.getPrimaryStage().setOnCloseRequest(e -> onClose());
@@ -1871,7 +1893,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		try {
 			cbBase.getItems().setAll(service.getTabelas());
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}
 

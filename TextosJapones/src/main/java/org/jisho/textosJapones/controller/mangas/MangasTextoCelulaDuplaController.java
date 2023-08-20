@@ -52,10 +52,7 @@ public class MangasTextoCelulaDuplaController implements Initializable {
 		} else {
 			esquerdaImagem.setImage(vinculo.getImagemVinculadoEsquerda());
 			direitaImagem.setImage(vinculo.getImagemVinculadoDireita());
-			if (vinculo.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA)
-				direitaRoot.setVisible(true);
-			else
-				direitaRoot.setVisible(false);
+            direitaRoot.setVisible(vinculo.getVinculadoDireitaPagina() != VinculoPagina.PAGINA_VAZIA);
 
 			if (vinculo.getMangaPaginaEsquerda() != null)
 				esquerdaPagina.setText("Pag: " + vinculo.getMangaPaginaEsquerda().getNumero() + " - "

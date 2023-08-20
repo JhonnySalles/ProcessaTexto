@@ -11,5 +11,5 @@ public enum ComicPageType {
 	Preview,
 	BackCover,
 	Other,
-	Deleted;
+	Deleted
 }

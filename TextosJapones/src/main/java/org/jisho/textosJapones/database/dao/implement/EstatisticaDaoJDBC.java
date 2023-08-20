@@ -6,6 +6,8 @@ import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Estatistica;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,7 +16,9 @@ import java.util.UUID;
 
 public class EstatisticaDaoJDBC implements EstatisticaDao {
 
-    private Connection conn;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EstatisticaDaoJDBC.class);
+
+    private final Connection conn;
 
     final private static String INSERT = "INSERT IGNORE INTO estatistica (id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
     final private static String UPDATE = "UPDATE estatistica SET tipo = ?, quantidade = ?, percentual = ?, media = ?, percentual_medio = ?, cor_sequencial = ? WHERE kanji = ? AND leitura = ? ;";
@@ -48,12 +52,13 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st.toString());
+                System.out.println(st);
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             }
         } catch (SQLException e) {
             System.out.println(st.toString());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -77,13 +82,13 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st.toString());
+                System.out.println(st);
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
-            ;
         } catch (SQLException e) {
             System.out.println(st.toString());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -102,12 +107,13 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st.toString());
+                System.out.println(st);
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
         } catch (SQLException e) {
             System.out.println(st.toString());
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -130,7 +136,8 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
                         rs.getFloat("percentual_medio"), rs.getInt("cor_sequencial"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -157,7 +164,8 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             }
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -184,7 +192,8 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             }
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -208,7 +217,8 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
 
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
+            
+            LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);

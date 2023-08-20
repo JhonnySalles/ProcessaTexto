@@ -335,10 +335,7 @@ public class Manga {
 		} else if (!linguagem.equals(other.linguagem))
 			return false;
 		if (manga == null) {
-			if (other.manga != null)
-				return false;
-		} else if (!manga.equals(other.manga))
-			return false;
-		return true;
-	}
+            return other.manga == null;
+		} else return manga.equals(other.manga);
+    }
 }

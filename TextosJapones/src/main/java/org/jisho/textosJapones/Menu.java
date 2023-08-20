@@ -9,8 +9,12 @@ import javafx.stage.Stage;
 import org.jisho.textosJapones.controller.FrasesAnkiController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Tela;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Menu {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
 
 	public static Tela tela = Tela.TEXTO;
 
@@ -31,7 +35,8 @@ public class Menu {
 
 			primaryStage.show(); // Mostra a tela.
 		} catch (Exception e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 }

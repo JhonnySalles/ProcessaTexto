@@ -12,7 +12,7 @@ public class MAL extends BaseLista {
 	public class Registro extends BaseLista {
 		private String nome;
 		private Long id;
-		private MAL parent;
+		private final MAL parent;
 		
 		public String getNome() {
 			return nome;

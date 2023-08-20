@@ -6,7 +6,7 @@ public enum Conexao {
     DECKSUBTITLE("DECKSUBTITLE"),
     TEXTOJAPONES("TEXTO_JAPONES");
 
-    private String value;
+    private final String value;
 
     Conexao(String value) {
         this.value = value;

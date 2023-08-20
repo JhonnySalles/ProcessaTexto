@@ -3,10 +3,10 @@ package org.jisho.textosJapones.model.entities;
 import org.jisho.textosJapones.model.enums.Conexao;
 
 public class DadosConexao {
-    private Long id;
-    private Conexao tipo;
-    private String url;
-    private String base;
+    private final Long id;
+    private final Conexao tipo;
+    private final String url;
+    private final String base;
 
     public Long getId() {
         return id;

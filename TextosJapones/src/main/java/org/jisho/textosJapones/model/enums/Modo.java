@@ -3,7 +3,7 @@ package org.jisho.textosJapones.model.enums;
 public enum Modo {
 	A("A - curto"), B("B - médio"), C("C - longo");
 
-	private String modo;
+	private final String modo;
 
 	Modo(String modo) {
 		this.modo = modo;

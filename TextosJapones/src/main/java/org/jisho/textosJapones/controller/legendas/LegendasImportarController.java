@@ -15,88 +15,93 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LegendasImportarController implements Initializable {
 
-	@FXML
-	private AnchorPane apRoot;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegendasImportarController.class);
 
-	@FXML
-	private JFXButton btnProcessar;
+    @FXML
+    private AnchorPane apRoot;
 
-	@FXML
-	private JFXButton btnPesquisar;
+    @FXML
+    private JFXButton btnProcessar;
 
-	@FXML
-	private JFXTextArea txtAreaPesquisa;
+    @FXML
+    private JFXButton btnPesquisar;
 
-	@FXML
-	private TableView<String> tbFrases;
+    @FXML
+    private JFXTextArea txtAreaPesquisa;
 
-	@FXML
-	private TableColumn<String, String> tcFrase;
+    @FXML
+    private TableView<String> tbFrases;
 
-	private RevisarJaponesServices service = new RevisarJaponesServices();
-	private ProcessarLegendas legendas;
-	private ObservableList<String> frases;
+    @FXML
+    private TableColumn<String, String> tcFrase;
 
-	private LegendasController controller;
+    private final RevisarJaponesServices service = new RevisarJaponesServices();
+    private ProcessarLegendas legendas;
+    private ObservableList<String> frases;
 
-	public void setControllerPai(LegendasController controller) {
-		this.controller = controller;
-	}
+    private LegendasController controller;
 
-	public LegendasController getControllerPai() {
-		return controller;
-	}
+    public void setControllerPai(LegendasController controller) {
+        this.controller = controller;
+    }
 
-	@FXML
-	private void onBtnProcessar() {
-		onBtnPesquisar();
+    public LegendasController getControllerPai() {
+        return controller;
+    }
 
-		if (frases != null && !frases.isEmpty()) {
-			if (legendas == null)
-				legendas = new ProcessarLegendas(this);
+    @FXML
+    private void onBtnProcessar() {
+        onBtnPesquisar();
 
-			MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das legendas...");
-			legendas.processarLegendas(frases);
-		} else
-			AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
-					"A lista se encontra vazia.");
-	}
+        if (frases != null && !frases.isEmpty()) {
+            if (legendas == null)
+                legendas = new ProcessarLegendas(this);
 
-	@FXML
-	private void onBtnPesquisar() {
-		try {
-			if (!txtAreaPesquisa.getText().isEmpty()) {
-				frases = FXCollections.observableArrayList(service.selectFrases(txtAreaPesquisa.getText()));
-				tbFrases.setItems(frases);
-			}
-		} catch (ExcessaoBd e) {
-			e.printStackTrace();
-			AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-					"Erro ao pesquisar as frases.");
-		}
-	}
+            MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das legendas...");
+            legendas.processarLegendas(frases);
+        } else
+            AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Aviso",
+                    "A lista se encontra vazia.");
+    }
 
-	private void editaColunas() {
-		tcFrase.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()));
-	}
+    @FXML
+    private void onBtnPesquisar() {
+        try {
+            if (!txtAreaPesquisa.getText().isEmpty()) {
+                frases = FXCollections.observableArrayList(service.selectFrases(txtAreaPesquisa.getText()));
+                tbFrases.setItems(frases);
+            }
+        } catch (ExcessaoBd e) {
+            
+            LOGGER.error(e.getMessage(), e);
+            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
+                    "Erro ao pesquisar as frases.");
+        }
+    }
 
-	private void linkaCelulas() {
-		editaColunas();
-	}
+    private void editaColunas() {
+        tcFrase.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()));
+    }
 
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		linkaCelulas();
+    private void linkaCelulas() {
+        editaColunas();
+    }
 
-	}
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        linkaCelulas();
 
-	public static URL getFxmlLocate() {
-		return LegendasImportarController.class.getResource("/view/legendas/LegendasImportar.fxml");
-	}
+    }
+
+    public static URL getFxmlLocate() {
+        return LegendasImportarController.class.getResource("/view/legendas/LegendasImportar.fxml");
+    }
 
 }

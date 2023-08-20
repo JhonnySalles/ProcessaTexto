@@ -26,6 +26,8 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.model.entities.comicinfo.MAL;
 import org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro;
 import org.jisho.textosJapones.processar.comicinfo.ProcessaComicInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +36,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MangasComicInfoMalId implements Initializable {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MangasComicInfoMalId.class);
 
 	final private static String STYLE_SHEET = AlertasPopup.class.getResource("/css/Dark_Theme.css").toExternalForm();
 
@@ -46,8 +50,8 @@ public class MangasComicInfoMalId implements Initializable {
 	@FXML
 	public ImageView imagem;
 	
-	private MAL mal = new MAL("", "");
-	private Robot robot = new Robot();
+	private final MAL mal = new MAL("", "");
+	private final Robot robot = new Robot();
 	private Registro consulta = null;
 
 	private static JFXButton btnConfirmar;
@@ -115,7 +119,8 @@ public class MangasComicInfoMalId implements Initializable {
 			nodeBlur.setEffect(blur);
 			dialog.show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -137,7 +142,8 @@ public class MangasComicInfoMalId implements Initializable {
 						txtNome.setText(consulta.getNome());
 						imagem.setImage(consulta.getImagem().getImage());
 					} catch (Exception e) {
-						e.printStackTrace();
+						
+						LOGGER.error(e.getMessage(), e);
 					}
 				}
 			}

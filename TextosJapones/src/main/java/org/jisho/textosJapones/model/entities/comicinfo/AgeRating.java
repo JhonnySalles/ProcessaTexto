@@ -17,7 +17,7 @@ public enum AgeRating {
 	Teen("Teen"),
 	X18("X18+");
 	
-	private String api;
+	private final String api;
 
 	AgeRating(String api) {
 		this.api = api;

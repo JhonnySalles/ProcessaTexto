@@ -69,7 +69,7 @@ public enum Language {
 	CHINESE_SIMPLIFIED("zh-CN"),
 	CHINESE_TRADITIONAL("zh-TW");
 	
-	private String linguagem;
+	private final String linguagem;
 
 	Language(String linguagem){
 		this.linguagem = linguagem;

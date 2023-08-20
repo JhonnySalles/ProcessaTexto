@@ -1,6 +1,8 @@
 package org.jisho.textosJapones.util;
 
 import javafx.fxml.FXMLLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.List;
  * @author Jhonny de Salles Noschang
  */
 public class ListaExecucoes {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListaExecucoes.class);
 
 	List<LambdaFunction> list = new ArrayList<LambdaFunction>();
 
@@ -94,7 +98,8 @@ public class ListaExecucoes {
 				if (!isAwait)
 					endProcess();
 			} catch (Exception e) {
-				e.printStackTrace();
+				
+				LOGGER.error(e.getMessage(), e);
 				isProcessed = false;
 			}
 		} else

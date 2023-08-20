@@ -65,9 +65,9 @@ public interface MangaDao {
 
     void deletarVocabulario(String base) throws ExcessaoBd;
 
-    public void updateProcessado(String base, String tabela, UUID id) throws ExcessaoBd;
+    void updateProcessado(String base, String tabela, UUID id) throws ExcessaoBd;
 
-    public void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
+    void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
                                   Set<MangaVocabulario> vocabulario) throws ExcessaoBd;
 
     List<MangaVolume> selectDadosTransferir(String base, String tabela) throws ExcessaoBd;

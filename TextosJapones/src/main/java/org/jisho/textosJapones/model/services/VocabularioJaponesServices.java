@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class VocabularioJaponesServices {
 
-	private VocabularioDao vocabularioDao = DaoFactory.createVocabularioJaponesDao();
+	private final VocabularioDao vocabularioDao = DaoFactory.createVocabularioJaponesDao();
 
 	public List<Vocabulario> selectAll() throws ExcessaoBd {
 		return vocabularioDao.selectAll();

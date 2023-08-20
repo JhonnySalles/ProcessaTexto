@@ -6,7 +6,7 @@ public enum Site {
 	TANGORIN("Tangorin"), JAPANDICT("JapanDict"), JISHO("Jisho"),
 	KANSHUDO("Kanshudo");
 
-	private String site;
+	private final String site;
 
 	Site(String site) {
 		this.site = site;

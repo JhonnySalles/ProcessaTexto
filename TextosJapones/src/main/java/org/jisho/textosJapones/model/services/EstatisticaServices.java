@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class EstatisticaServices {
 
-	private EstatisticaDao estatisticaDao = DaoFactory.createEstatisticaDao();
+	private final EstatisticaDao estatisticaDao = DaoFactory.createEstatisticaDao();
 
 	public List<Estatistica> selectAll() throws ExcessaoBd {
 		return estatisticaDao.selectAll();

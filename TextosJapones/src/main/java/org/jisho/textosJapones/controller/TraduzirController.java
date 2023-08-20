@@ -26,6 +26,8 @@ import org.jisho.textosJapones.model.services.RevisarJaponesServices;
 import org.jisho.textosJapones.processar.*;
 import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
 import org.jisho.textosJapones.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,6 +37,8 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class TraduzirController implements Initializable {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TraduzirController.class);
 
 	@FXML
 	private AnchorPane apRoot;
@@ -90,8 +94,8 @@ public class TraduzirController implements Initializable {
 	@FXML
 	private TableColumn<Revisar, CheckBox> tcRevisado;
 
-	private RevisarJaponesServices service = new RevisarJaponesServices();
-	private ProcessarPalavra processar = new ProcessarPalavra();
+	private final RevisarJaponesServices service = new RevisarJaponesServices();
+	private final ProcessarPalavra processar = new ProcessarPalavra();
 
 	@FXML
 	private void onBtnSalvar() {
@@ -122,7 +126,8 @@ public class TraduzirController implements Initializable {
 			// VocabularioServices service = new VocabularioServices();
 			// service.insertOrUpdate(salvar);
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro", "Erro ao salvar as atualizações.");
 		} finally {
 			MenuPrincipalController.getController().getLblLog().setText("Salvamento concluido.");
@@ -154,7 +159,8 @@ public class TraduzirController implements Initializable {
 
 			MenuPrincipalController.getController().getLblLog().setText("");
 		} catch (ExcessaoBd e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro", "Erro ao pesquisar as revisões.");
 		}
 	}
@@ -310,7 +316,8 @@ public class TraduzirController implements Initializable {
 											Language.PORTUGUESE.getSigla(), item.getIngles(),
 											MenuPrincipalController.getController().getContaGoogle())));
 								} catch (IOException e) {
-									e.printStackTrace();
+									
+									LOGGER.error(e.getMessage(), e);
 								}
 							}
 
@@ -322,7 +329,8 @@ public class TraduzirController implements Initializable {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					
+					LOGGER.error(e.getMessage(), e);
 				} finally {
 					Platform.runLater(() -> tbVocabulario.setItems(FXCollections.observableArrayList(lista)));
 
@@ -378,7 +386,8 @@ public class TraduzirController implements Initializable {
 
 			tbVocabulario.refresh();
 		} catch (IOException e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 

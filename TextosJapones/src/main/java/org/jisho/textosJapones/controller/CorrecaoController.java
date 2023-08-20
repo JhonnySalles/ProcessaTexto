@@ -26,6 +26,8 @@ import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,189 +37,193 @@ import java.util.ResourceBundle;
 
 public class CorrecaoController implements Initializable {
 
-	final private static String STYLE_SHEET = AlertasPopup.class
-			.getResource("/css/Dark_Theme.css").toExternalForm();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorrecaoController.class);
 
-	@FXML
-	public JFXTextField txtVocabulario;
+    final private static String STYLE_SHEET = AlertasPopup.class.getResource("/css/Dark_Theme.css").toExternalForm();
 
-	@FXML
-	public JFXTextField txtTraducao;
+    @FXML
+    public JFXTextField txtVocabulario;
 
-	public static JFXButton btnVoltar;
-	public static JFXButton btnCancelar;
-	public static JFXButton btnConfirmar;
+    @FXML
+    public JFXTextField txtTraducao;
 
-	private static JFXDialog dialog;
+    public static JFXButton btnVoltar;
+    public static JFXButton btnCancelar;
+    public static JFXButton btnConfirmar;
 
-	private VocabularioJaponesServices vocabServ;
-	private Vocabulario vocabulario;
-	private Robot robot = new Robot();
+    private static JFXDialog dialog;
 
-	private void onBtnCancelar() {
-		limpar();
-	}
+    private VocabularioJaponesServices vocabServ;
+    private Vocabulario vocabulario;
+    private final Robot robot = new Robot();
 
-	private void onBtnConfirmar() {
-		salvar();
-	}
+    private void onBtnCancelar() {
+        limpar();
+    }
 
-	private CorrecaoController servico() {
-		vocabServ = new VocabularioJaponesServices();
-		return this;
-	}
+    private void onBtnConfirmar() {
+        salvar();
+    }
 
-	private CorrecaoController procurar() {
-		if (!txtVocabulario.getText().trim().isEmpty()) {
-			if (vocabServ == null)
-				servico();
+    private CorrecaoController servico() {
+        vocabServ = new VocabularioJaponesServices();
+        return this;
+    }
 
-			try {
-				if (vocabServ.existe(txtVocabulario.getText())) {
-					vocabulario = vocabServ.select(txtVocabulario.getText().trim());
-					carregar();
-				} else {
-					txtVocabulario.setUnFocusColor(Color.RED);
-					Notificacoes.notificacao(Notificacao.ERRO, "Vocabulário informado não encontrado.",
-							txtVocabulario.getText());
-				}
+    private CorrecaoController procurar() {
+        if (!txtVocabulario.getText().trim().isEmpty()) {
+            if (vocabServ == null)
+                servico();
 
-			} catch (ExcessaoBd e) {
-				e.printStackTrace();
-				Notificacoes.notificacao(Notificacao.ERRO, "Erro ao carregar vocabulário.", txtVocabulario.getText());
-				txtVocabulario.setUnFocusColor(Color.RED);
-			}
-		}
-		return this;
-	}
+            try {
+                if (vocabServ.existe(txtVocabulario.getText())) {
+                    vocabulario = vocabServ.select(txtVocabulario.getText().trim());
+                    carregar();
+                } else {
+                    txtVocabulario.setUnFocusColor(Color.RED);
+                    Notificacoes.notificacao(Notificacao.ERRO, "Vocabulário informado não encontrado.",
+                            txtVocabulario.getText());
+                }
 
-	private CorrecaoController salvar() {
-		if (!txtTraducao.getText().trim().isEmpty()) {
-			if (vocabServ == null)
-				servico();
+            } catch (ExcessaoBd e) {
+                
+                LOGGER.error(e.getMessage(), e);
+                Notificacoes.notificacao(Notificacao.ERRO, "Erro ao carregar vocabulário.", txtVocabulario.getText());
+                txtVocabulario.setUnFocusColor(Color.RED);
+            }
+        }
+        return this;
+    }
 
-			try {
-				atualiza();
-				vocabServ.insertOrUpdate(vocabulario);
-				Notificacoes.notificacao(Notificacao.SUCESSO, "Vocabulário salvo com sucesso.",
-						vocabulario.getPortugues());
-				limpar();
-				txtVocabulario.requestFocus();
-			} catch (ExcessaoBd e) {
-				e.printStackTrace();
-				Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar tradução.", txtTraducao.getText());
-			}
-		} else
-			txtVocabulario.setUnFocusColor(Color.RED);
+    private CorrecaoController salvar() {
+        if (!txtTraducao.getText().trim().isEmpty()) {
+            if (vocabServ == null)
+                servico();
 
-		return this;
-	}
+            try {
+                atualiza();
+                vocabServ.insertOrUpdate(vocabulario);
+                Notificacoes.notificacao(Notificacao.SUCESSO, "Vocabulário salvo com sucesso.",
+                        vocabulario.getPortugues());
+                limpar();
+                txtVocabulario.requestFocus();
+            } catch (ExcessaoBd e) {
+                
+                LOGGER.error(e.getMessage(), e);
+                Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar tradução.", txtTraducao.getText());
+            }
+        } else
+            txtVocabulario.setUnFocusColor(Color.RED);
 
-	private CorrecaoController carregar() {
-		txtVocabulario.setText(vocabulario.getVocabulario());
-		txtTraducao.setText(vocabulario.getPortugues());
-		return this;
-	}
+        return this;
+    }
 
-	private CorrecaoController atualiza() {
-		vocabulario.setPortugues(txtTraducao.getText().trim());
-		return this;
-	}
+    private CorrecaoController carregar() {
+        txtVocabulario.setText(vocabulario.getVocabulario());
+        txtTraducao.setText(vocabulario.getPortugues());
+        return this;
+    }
 
-	private CorrecaoController limpar() {
-		txtVocabulario.setText("");
-		txtTraducao.setText("");
-		vocabulario = null;
-		return this;
-	}
+    private CorrecaoController atualiza() {
+        vocabulario.setPortugues(txtTraducao.getText().trim());
+        return this;
+    }
 
-	public static void abreTelaCorrecao(StackPane rootStackPane, Node nodeBlur) {
-		try {
-			BoxBlur blur = new BoxBlur(3, 3, 3);
-			JFXDialogLayout dialogLayout = new JFXDialogLayout();
-			dialog = new JFXDialog(rootStackPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
+    private CorrecaoController limpar() {
+        txtVocabulario.setText("");
+        txtTraducao.setText("");
+        vocabulario = null;
+        return this;
+    }
 
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getFxmlLocate());
-			Parent newAnchorPane = loader.load();
-			CorrecaoController cnt = loader.getController();
+    public static void abreTelaCorrecao(StackPane rootStackPane, Node nodeBlur) {
+        try {
+            BoxBlur blur = new BoxBlur(3, 3, 3);
+            JFXDialogLayout dialogLayout = new JFXDialogLayout();
+            dialog = new JFXDialog(rootStackPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
 
-			Label titulo = new Label("Tela de correção");
-			titulo.setFont(Font.font(20));
-			titulo.setTextFill(Color.web("#ffffff", 0.8));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getFxmlLocate());
+            Parent newAnchorPane = loader.load();
+            CorrecaoController cnt = loader.getController();
 
-			List<JFXButton> botoes = new ArrayList<JFXButton>();
+            Label titulo = new Label("Tela de correção");
+            titulo.setFont(Font.font(20));
+            titulo.setTextFill(Color.web("#ffffff", 0.8));
 
-			btnConfirmar = new JFXButton("Confirmar");
-			btnConfirmar.setOnAction(AE -> cnt.onBtnConfirmar());
-			btnConfirmar.getStyleClass().add("background-Green2");
-			botoes.add(btnConfirmar);
+            List<JFXButton> botoes = new ArrayList<JFXButton>();
 
-			btnCancelar = new JFXButton("Cancelar");
-			btnCancelar.setOnAction(AC -> cnt.onBtnCancelar());
-			btnCancelar.getStyleClass().add("background-Red2");
-			botoes.add(btnCancelar);
+            btnConfirmar = new JFXButton("Confirmar");
+            btnConfirmar.setOnAction(AE -> cnt.onBtnConfirmar());
+            btnConfirmar.getStyleClass().add("background-Green2");
+            botoes.add(btnConfirmar);
 
-			btnVoltar = new JFXButton("Voltar");
-			btnVoltar.setOnAction(AV -> dialog.close());
-			btnVoltar.getStyleClass().add("background-White1");
-			botoes.add(btnVoltar);
+            btnCancelar = new JFXButton("Cancelar");
+            btnCancelar.setOnAction(AC -> cnt.onBtnCancelar());
+            btnCancelar.getStyleClass().add("background-Red2");
+            botoes.add(btnCancelar);
 
-			dialogLayout.setHeading(titulo);
-			dialogLayout.setBody(newAnchorPane);
-			dialogLayout.setActions(botoes);
+            btnVoltar = new JFXButton("Voltar");
+            btnVoltar.setOnAction(AV -> dialog.close());
+            btnVoltar.getStyleClass().add("background-White1");
+            botoes.add(btnVoltar);
 
-			dialog.getStylesheets().add(STYLE_SHEET);
-			dialog.setPadding(new Insets(0, 0, 0, 0));
-			dialog.setOnDialogClosed((JFXDialogEvent event1) -> {
-				nodeBlur.setEffect(null);
-			});
+            dialogLayout.setHeading(titulo);
+            dialogLayout.setBody(newAnchorPane);
+            dialogLayout.setActions(botoes);
 
-			nodeBlur.setEffect(blur);
-			dialog.show();
-		} catch (IOException e) {
+            dialog.getStylesheets().add(STYLE_SHEET);
+            dialog.setPadding(new Insets(0, 0, 0, 0));
+            dialog.setOnDialogClosed((JFXDialogEvent event1) -> {
+                nodeBlur.setEffect(null);
+            });
 
-			e.printStackTrace();
-		}
-	}
+            nodeBlur.setEffect(blur);
+            dialog.show();
+        } catch (IOException e) {
 
-	private void configuraListenert() {
-		txtVocabulario.focusedProperty().addListener((o, oldVal, newVal) -> {
-			if (oldVal) {
-				txtVocabulario.setUnFocusColor(Color.web("#106ebe"));
-				procurar();
-			}
-		});
+            
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 
-		txtTraducao.focusedProperty().addListener((o, oldVal, newVal) -> {
-			if (oldVal)
-				txtTraducao.setUnFocusColor(Color.web("#106ebe"));
-		});
+    private void configuraListenert() {
+        txtVocabulario.focusedProperty().addListener((o, oldVal, newVal) -> {
+            if (oldVal) {
+                txtVocabulario.setUnFocusColor(Color.web("#106ebe"));
+                procurar();
+            }
+        });
 
-		txtVocabulario.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent ke) {
-				if (ke.getCode().equals(KeyCode.ENTER))
-					robot.keyPress(KeyCode.TAB);
-			}
-		});
+        txtTraducao.focusedProperty().addListener((o, oldVal, newVal) -> {
+            if (oldVal)
+                txtTraducao.setUnFocusColor(Color.web("#106ebe"));
+        });
 
-		txtTraducao.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent ke) {
-				if (ke.getCode().equals(KeyCode.ENTER))
-					robot.keyPress(KeyCode.TAB);
-			}
-		});
-	}
+        txtVocabulario.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER))
+                    robot.keyPress(KeyCode.TAB);
+            }
+        });
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		configuraListenert();
-		servico();
-	}
+        txtTraducao.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER))
+                    robot.keyPress(KeyCode.TAB);
+            }
+        });
+    }
 
-	public static URL getFxmlLocate() {
-		return CorrecaoController.class.getResource("/view/Correcao.fxml");
-	}
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        configuraListenert();
+        servico();
+    }
+
+    public static URL getFxmlLocate() {
+        return CorrecaoController.class.getResource("/view/Correcao.fxml");
+    }
 }

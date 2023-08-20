@@ -141,10 +141,7 @@ public class MangaVocabulario {
 		} else if (!palavra.equals(other.palavra))
 			return false;
 		if (portugues == null) {
-			if (other.portugues != null)
-				return false;
-		} else if (!portugues.equals(other.portugues))
-			return false;
-		return true;
+			return other.portugues == null;
+		} else return portugues.equals(other.portugues);
 	}
 }

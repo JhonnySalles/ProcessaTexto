@@ -16,7 +16,7 @@ public class Validadores {
 				if (newPropertyValue) { // Usado para limpar o stilo para que pinte quando entra
 					textField.setUnFocusColor(Color.web("#106ebe"));
 				} else { // Após, na saida faz então a validacao.
-					if (textField.textProperty().get().toString().isEmpty()) {
+					if (textField.textProperty().get().isEmpty()) {
 						textField.setUnFocusColor(Color.RED);
 					} else {
 						textField.setUnFocusColor(Color.web("#106ebe"));
@@ -34,7 +34,7 @@ public class Validadores {
 				if (newPropertyValue) { // Usado para limpar o stilo para que pinte quando entra
 					passwordField.setUnFocusColor(Color.web("#106ebe"));
 				} else { // Após, na saida faz então a validacao.
-					if (passwordField.textProperty().get().toString().isEmpty()) {
+					if (passwordField.textProperty().get().isEmpty()) {
 						passwordField.setUnFocusColor(Color.RED);
 					} else {
 						passwordField.setUnFocusColor(Color.web("#106ebe"));
