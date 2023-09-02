@@ -35,11 +35,10 @@ public class Run extends Application {
 
             PRIMARY_STAGE.setScene(MAIN_SCENE); // Seta a cena principal
             PRIMARY_STAGE.setTitle("Processar textos japonês");
-            PRIMARY_STAGE.getIcons()
-                    .add(new Image(Run.class.getResourceAsStream(MenuPrincipalController.getIconLocate())));
+            PRIMARY_STAGE.getIcons().add(new Image(Run.class.getResourceAsStream(MenuPrincipalController.getIconLocate())));
             PRIMARY_STAGE.initStyle(StageStyle.DECORATED);
-            PRIMARY_STAGE.setMinWidth(850);
-            PRIMARY_STAGE.setMinHeight(600);
+            PRIMARY_STAGE.setMinWidth(900);
+            PRIMARY_STAGE.setMinHeight(700);
             PRIMARY_STAGE.show(); // Mostra a tela.
 
         } catch (Exception e) {

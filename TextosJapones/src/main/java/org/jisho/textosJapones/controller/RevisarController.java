@@ -2,6 +2,8 @@ package org.jisho.textosJapones.controller;
 
 import com.jfoenix.controls.*;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -122,9 +124,13 @@ public class RevisarController implements Initializable {
         if ((revisando == null && corrigindo == null) || txtAreaPortugues.getText().isEmpty())
             return;
 
+        String texto = txtAreaPortugues.getText();
+        if (texto.contains("\n"))
+            texto = texto.replaceAll("\n", " ").trim();
+
         Boolean error = false;
         if (revisando != null) {
-            revisando.setPortugues(txtAreaPortugues.getText());
+            revisando.setPortugues(texto);
             revisando.setIngles(Util.removeDuplicate(revisando.getIngles()));
 
             Vocabulario palavra = Revisar.toVocabulario(revisando);
@@ -147,7 +153,7 @@ public class RevisarController implements Initializable {
             }
 
         } else if (corrigindo != null) {
-            corrigindo.setPortugues(txtAreaPortugues.getText());
+            corrigindo.setPortugues(texto);
 
             try {
                 vocabulario.insertOrUpdate(corrigindo);
@@ -224,6 +230,7 @@ public class RevisarController implements Initializable {
         corrigindo = vocabulario.select(pesquisar);
         if (corrigindo != null && !corrigindo.getPortugues().isEmpty()) {
             limpaTextos();
+            cbCorrecao.setSelected(true);
             if (corrigindo != null) {
                 txtVocabulario.setText(corrigindo.getVocabulario());
                 txtAreaIngles.setText(corrigindo.getIngles());
@@ -239,10 +246,11 @@ public class RevisarController implements Initializable {
         revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected());
         if (revisando != null) {
             limpaTextos();
+            cbCorrecao.setSelected(false);
             if (cbSimilar.isSelected())
                 similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
             else
-                similar = new ArrayList<Revisar>();
+                similar = new ArrayList<>();
 
             txtVocabulario.setText(revisando.getVocabulario());
             txtAreaIngles.setText(revisando.getIngles());
@@ -263,23 +271,27 @@ public class RevisarController implements Initializable {
         String pesquisar = txtPesquisar.getText().trim();
 
         try {
+            cbCorrecao.selectedProperty().removeListener(listenerCorrecao);
+
             if (pesquisar.isEmpty())
                 pesquisaRevisao(pesquisar);
             else if (cbCorrecao.isSelected() && pesquisaCorrecao(pesquisar))
                 return;
             else if (pesquisaRevisao(pesquisar))
                 return;
-            else {
+            else if (pesquisaCorrecao(pesquisar))
+                return;
+
+            if (!pesquisar.isEmpty()) {
                 txtPesquisar.setUnFocusColor(Color.RED);
 
-                if (!cbCorrecao.isSelected())
-                    cbCorrecao.setSelected(true);
-                else
+                if (cbCorrecao.isSelected())
                     limpaCampos();
             }
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
+        } finally {
+            cbCorrecao.selectedProperty().addListener(listenerCorrecao);
         }
     }
 
@@ -367,6 +379,8 @@ public class RevisarController implements Initializable {
     final private String notJapanese = "[A-Za-z0-9 ,;.à-úÀ-ú\\[\\]\\-\\(\\)]";
     private String frasePortugues = "";
 
+    private ChangeListener<Boolean> listenerCorrecao;
+
     public void initialize(URL arg0, ResourceBundle arg1) {
         cbContaGoolge.getItems().addAll(Api.values());
         cbContaGoolge.getSelectionModel().selectLast();
@@ -406,20 +420,19 @@ public class RevisarController implements Initializable {
             }
         });
 
-        txtPesquisar.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                    robot.keyPress(KeyCode.TAB);
-            }
+        txtPesquisar.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB);
         });
 
-        cbCorrecao.selectedProperty().addListener((o, oldVal, newVal) -> {
+        listenerCorrecao = (o, oldVal, newVal) -> {
             if (newVal)
                 pesquisar();
             else
                 limpaCampos();
-        });
+        };
+
+        cbCorrecao.selectedProperty().addListener(listenerCorrecao);
 
         cbSimilar.selectedProperty().addListener((o, oldVal, newVal) -> {
             if (cbSimilar.isSelected())
