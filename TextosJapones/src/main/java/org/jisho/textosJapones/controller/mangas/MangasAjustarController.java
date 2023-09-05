@@ -685,7 +685,6 @@ public class MangasAjustarController implements Initializable {
 		try {
 			cbBase.getItems().setAll(service.getTabelas());
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}

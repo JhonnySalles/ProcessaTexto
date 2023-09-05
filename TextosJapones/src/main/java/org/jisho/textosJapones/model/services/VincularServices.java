@@ -62,7 +62,6 @@ public class VincularServices {
         try {
             return mangaDao.selectVolume(base, manga, volume, linguagem);
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             return null;
         }

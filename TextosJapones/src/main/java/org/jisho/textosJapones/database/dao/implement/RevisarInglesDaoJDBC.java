@@ -54,9 +54,8 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -79,13 +78,12 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -103,13 +101,12 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -126,9 +123,8 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -155,7 +151,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -183,7 +178,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -210,7 +204,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -231,7 +224,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             if (rs.next())
                 return true;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);
@@ -252,7 +244,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             if (rs.next())
                 return vocabulario.toLowerCase();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);
@@ -277,7 +268,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -297,7 +287,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             if (rs.next())
                 return rs.getString("Quantidade");
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -339,7 +328,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
                         rs.getString("leitura"), rs.getString("portugues"), "", rs.getBoolean("revisado"),
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"));
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -362,7 +350,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             st.setString(1, vocabulario);
             st.executeUpdate();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);
@@ -378,7 +365,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             st.setString(2, obj.getVocabulario());
             st.executeUpdate();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);

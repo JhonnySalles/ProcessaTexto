@@ -146,7 +146,6 @@ public class FrasesAnkiController implements Initializable {
             stage.show(); // Mostra a tela.
 
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             System.out.println("Erro ao abrir a tela de estatistica.");
         }
@@ -200,7 +199,6 @@ public class FrasesAnkiController implements Initializable {
                 txtVocabulario.setUnFocusColor(Color.web("#106ebe"));
             }
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Erro pesquisar a palavra.", palavra);
             txtVocabulario.setUnFocusColor(Color.RED);
@@ -337,7 +335,6 @@ public class FrasesAnkiController implements Initializable {
             SudachiTokenizer tokenizer = new SudachiTokenizer();
             tokenizer.processa(this);
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao pesquisar vocabulário excluído.");
         }
@@ -505,7 +502,6 @@ public class FrasesAnkiController implements Initializable {
         try {
             atualizaExclusao();
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
     }

@@ -441,9 +441,16 @@
 	-fx-background-color: #269900;
 }
 
+.tree-table-row-cell:comic-info {
+	-fx-background-color: #000000;
+}
+
+.tree-table-row-cell:comic-info:odd {
+	-fx-background-color: #1a1a1a;
+}
+
 /*  Cor da flecha de nivel */
-.tree-cell>.tree-disclosure-node>.arrow, .tree-table-row-cell>.tree-disclosure-node>.arrow
-	{
+.tree-cell>.tree-disclosure-node>.arrow, .tree-table-row-cell>.tree-disclosure-node>.arrow {
 	-fx-background-color: white;
 	-fx-padding: 0.333333em 0.229em 0.333333em 0.229em;
 	-fx-shape: "M 0 -3.5 L 4 0 L 0 3.5 z";
@@ -485,7 +492,7 @@
 	-fx-background-color: #a6a6a6;
 }
 
-/* Esconder os check box que não seja folha */
+/* Esconder os check box que nï¿½o seja folha */
 .tree-table-row-cell .hide-non-leaf * {
 	/* invisible by default */
 	visibility: hidden;
@@ -543,7 +550,7 @@
 	-fx-background-color: #7b1fa2;
 }
 
-/*---------- Estilo para correção ----------*/
+/*---------- Estilo para correï¿½ï¿½o ----------*/
 .jfx-dialog-layout {
 	-fx-background-color: #212121;
 	-fx-border-color: #005a9e;

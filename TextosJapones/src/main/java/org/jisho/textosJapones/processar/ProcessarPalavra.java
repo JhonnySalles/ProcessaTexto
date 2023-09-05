@@ -28,7 +28,6 @@ public class ProcessarPalavra {
             return processar(palavra);
 
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();
         }

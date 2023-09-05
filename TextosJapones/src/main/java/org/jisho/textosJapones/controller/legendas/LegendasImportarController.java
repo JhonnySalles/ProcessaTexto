@@ -80,7 +80,6 @@ public class LegendasImportarController implements Initializable {
                 tbFrases.setItems(frases);
             }
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao pesquisar as frases.");

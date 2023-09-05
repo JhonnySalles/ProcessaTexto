@@ -200,7 +200,6 @@ public class LegendasGerarVocabularioController implements Initializable {
             onBtnAtualizar();
 
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar as atualizações.");
@@ -226,7 +225,6 @@ public class LegendasGerarVocabularioController implements Initializable {
             tbLista.setItems(FXCollections.observableArrayList(service.select(txtAreaSelect.getText())));
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Concluido....");
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao realizar a pesquisa.");
@@ -247,7 +245,6 @@ public class LegendasGerarVocabularioController implements Initializable {
             service.delete(txtAreaDelete.getText());
 
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar as atualizações.");
@@ -381,7 +378,6 @@ public class LegendasGerarVocabularioController implements Initializable {
                     .insertExclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
             txtAreaVocabulario.setText("");
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar a exclusao.");
@@ -421,7 +417,6 @@ public class LegendasGerarVocabularioController implements Initializable {
             AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
                     "Salvo com sucesso.");
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
                     "Erro ao salvar ao salvar a fila.");

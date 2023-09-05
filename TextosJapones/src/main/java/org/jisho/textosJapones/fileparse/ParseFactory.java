@@ -38,7 +38,6 @@ public class ParseFactory {
         try {
             parse.parse(file);
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             return null;
         }

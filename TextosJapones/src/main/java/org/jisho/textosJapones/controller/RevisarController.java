@@ -209,7 +209,6 @@ public class RevisarController implements Initializable {
         try {
             lblRestantes.setText("Restante " + service.selectQuantidadeRestante() + " palavras.");
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             lblRestantes.setText("Restante 0 palavras.");
         }
@@ -312,7 +311,6 @@ public class RevisarController implements Initializable {
 
             txtAreaPortugues.setText(Util.normalize(texto));
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
     }

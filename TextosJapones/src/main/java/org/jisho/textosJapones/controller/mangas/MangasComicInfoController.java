@@ -13,7 +13,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -23,7 +22,6 @@ import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
@@ -58,7 +56,7 @@ public class MangasComicInfoController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MangasComicInfoController.class);
 
-    final PseudoClass vinculado = PseudoClass.getPseudoClass("vinculado");
+    final PseudoClass comicRoot = PseudoClass.getPseudoClass("comic-info");
 
     @FXML
     private AnchorPane apRoot;
@@ -241,33 +239,25 @@ public class MangasComicInfoController implements Initializable {
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
         progress.getTitulo().setText("ComicInfo");
-        Task<Void> gerarJson = new Task<Void>() {
+        Task<Void> gerarJson = new Task<>() {
 
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 try {
                     updateMessage("Processando itens....");
 
-                    Callback<Integer[], Boolean> callback = new Callback<Integer[], Boolean>() {
-                        @Override
-                        public Boolean call(Integer[] param) {
-                            Platform.runLater(() -> {
-                                updateMessage("Processando itens...." + param[0] + '/' + param[1]);
-                                updateProgress(param[0], param[1]);
-                                if (TaskbarProgressbar.isSupported())
-                                    TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1],
-                                            Type.NORMAL);
-                            });
-                            return null;
-                        }
+                    Callback<Integer[], Boolean> callback = param -> {
+                        Platform.runLater(() -> {
+                            updateMessage("Processando itens...." + param[0] + '/' + param[1]);
+                            updateProgress(param[0], param[1]);
+                            if (TaskbarProgressbar.isSupported())
+                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1], Type.NORMAL);
+                        });
+                        return null;
                     };
 
-                    ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(),
-                            txtCaminho.getText(), txtDescricaoCapitulo.getText(), callback);
-
+                    ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), txtDescricaoCapitulo.getText(), callback);
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-                    
                     LOGGER.error(e.getMessage(), e);
                 }
                 return null;
@@ -279,7 +269,7 @@ public class MangasComicInfoController implements Initializable {
                 Platform.runLater(() -> {
                     ativaCampos();
                     btnProcessar.setAccessibleText("PROCESSAR");
-                    btnProcessar.setText("Processar");
+                    btnProcessar.setText("Processar comic info");
                     progress.getBarraProgresso().progressProperty().unbind();
                     progress.getLog().textProperty().unbind();
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
@@ -293,7 +283,7 @@ public class MangasComicInfoController implements Initializable {
                 super.failed();
                 ativaCampos();
                 btnProcessar.setAccessibleText("PROCESSAR");
-                btnProcessar.setText("Processar");
+                btnProcessar.setText("Processar comic info");
                 LOGGER.warn("Erro na thread ComicInfo: " + super.getMessage());
                 System.out.println("Erro na thread ComicInfo: " + super.getMessage());
             }
@@ -361,8 +351,6 @@ public class MangasComicInfoController implements Initializable {
                             break;
                     }
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-                    
                     LOGGER.error(e.getMessage(), e);
                 }
                 return null;
@@ -438,8 +426,6 @@ public class MangasComicInfoController implements Initializable {
 
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
-                    
-                    LOGGER.error(e.getMessage(), e);
                 }
                 return null;
             }
@@ -450,7 +436,7 @@ public class MangasComicInfoController implements Initializable {
                 Platform.runLater(() -> {
                     ativaCampos();
                     btnValidar.setAccessibleText("VALIDAR");
-                    btnValidar.setText("Validar");
+                    btnValidar.setText("Validar comic info");
                     progress.getBarraProgresso().progressProperty().unbind();
                     progress.getLog().textProperty().unbind();
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
@@ -464,7 +450,7 @@ public class MangasComicInfoController implements Initializable {
                 super.failed();
                 ativaCampos();
                 btnValidar.setAccessibleText("VALIDAR");
-                btnValidar.setText("Validar");
+                btnValidar.setText("Validar comic info");
                 LOGGER.warn("Erro na thread ComicInfo: " + super.getMessage());
                 System.out.println("Erro na thread ComicInfo: " + super.getMessage());
             }
@@ -484,10 +470,8 @@ public class MangasComicInfoController implements Initializable {
         try {
             Desktop.getDesktop().browse(new URI("https://myanimelist.net/manga/" + id));
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } catch (URISyntaxException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -509,8 +493,7 @@ public class MangasComicInfoController implements Initializable {
                 processar.getStyleClass().add("background-White1");
                 processar.setOnAction(event -> {
                     String arquivo = registro.getParent().getArquivo();
-                    if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo,
-                            registro.getId())) {
+                    if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), arquivo, registro.getId())) {
                         REGISTROS.remove(item);
                         itmRoot.getChildren().remove(itmManga);
                         treeTabela.refresh();
@@ -537,15 +520,13 @@ public class MangasComicInfoController implements Initializable {
             DADOS = getTreeData();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            
-            LOGGER.error(e.getMessage(), e);
         }
         treeTabela.setRoot(DADOS);
     }
 
     private void onBtnTrocaId() {
-        if (!REGISTROS.parallelStream()
-                .anyMatch(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
+        if (REGISTROS.parallelStream()
+                .noneMatch(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(BaseLista::isSelecionado))
                 && treeTabela.selectionModelProperty().getValue() != null)
             treeTabela.selectionModelProperty().getValue().getSelectedItem().getValue().setSelecionado(true);
 
@@ -553,8 +534,7 @@ public class MangasComicInfoController implements Initializable {
             @Override
             public Boolean call(Registro param) {
 
-                REGISTROS.parallelStream().filter(
-                                it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(re -> re.isSelecionado()))
+                REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(BaseLista::isSelecionado))
                         .forEach(it -> {
                             if (it.isSelecionado()) {
                                 it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
@@ -595,54 +575,46 @@ public class MangasComicInfoController implements Initializable {
 
     private void editaColunas() {
         // ==== (CHECK-BOX) ===
-        treecMacado.setCellValueFactory(
-                new Callback<TreeTableColumn.CellDataFeatures<BaseLista, Boolean>, ObservableValue<Boolean>>() {
-                    @Override
-                    public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<BaseLista, Boolean> param) {
-                        TreeItem<BaseLista> treeItem = param.getValue();
-                        if (treeItem.getValue() instanceof Registro) {
-                            Registro item = (Registro) treeItem.getValue();
-                            SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isMarcado());
+        treecMacado.setCellValueFactory(param -> {
+                    TreeItem<BaseLista> treeItem = param.getValue();
+                    if (treeItem.getValue() instanceof Registro) {
+                        Registro item = (Registro) treeItem.getValue();
+                        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isMarcado());
 
-                            booleanProp.addListener(new ChangeListener<Boolean>() {
-                                @Override
-                                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-                                                    Boolean newValue) {
-                                    item.setMarcado(newValue);
-                                    if (newValue) {
-                                        MAL parent = item.getParent();
+                        booleanProp.addListener(new ChangeListener<Boolean>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                                                Boolean newValue) {
+                                item.setMarcado(newValue);
+                                if (newValue) {
+                                    MAL parent = item.getParent();
 
-                                        for (Registro aux : parent.getMyanimelist()) {
-                                            if (!aux.getId().equals(item.getId()))
-                                                aux.setMarcado(false);
-                                        }
+                                    for (Registro aux : parent.getMyanimelist()) {
+                                        if (!aux.getId().equals(item.getId()))
+                                            aux.setMarcado(false);
                                     }
-
-                                    treeTabela.refresh();
                                 }
-                            });
 
-                            return booleanProp;
-                        }
-                        return null;
+                                treeTabela.refresh();
+                            }
+                        });
+
+                        return booleanProp;
                     }
+                    return null;
                 });
 
-        treecMacado
-                .setCellFactory(new Callback<TreeTableColumn<BaseLista, Boolean>, TreeTableCell<BaseLista, Boolean>>() {
-                    @Override
-                    public TreeTableCell<BaseLista, Boolean> call(TreeTableColumn<BaseLista, Boolean> p) {
-                        CheckBoxTreeTableCellCustom<BaseLista, Boolean> cell = new CheckBoxTreeTableCellCustom<BaseLista, Boolean>();
-                        cell.setAlignment(Pos.CENTER);
-                        return cell;
-                    }
+        treecMacado.setCellFactory(p -> {
+                    CheckBoxTreeTableCellCustom<BaseLista, Boolean> cell = new CheckBoxTreeTableCellCustom<BaseLista, Boolean>();
+                    cell.setAlignment(Pos.CENTER);
+                    return cell;
                 });
     }
 
     private void limparSelecao() {
         anteriorSelecionado = null;
         REGISTROS.parallelStream()
-                .filter(it -> it.isSelecionado() || it.getMyanimelist().stream().allMatch(re -> re.isSelecionado()))
+                .filter(it -> it.isSelecionado() || it.getMyanimelist().stream().allMatch(BaseLista::isSelecionado))
                 .forEach(it -> {
                     it.setSelecionado(false);
                     it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
@@ -654,8 +626,7 @@ public class MangasComicInfoController implements Initializable {
         if (treeTabela.getSelectionModel().getSelectedItem() != null)
             if (AlertasPopup.ConfirmacaoModal("Aviso", "Deseja remover o registro?")) {
                 TreeItem<BaseLista> parent = treeTabela.getSelectionModel().getSelectedItem()
-                        .getValue() instanceof MAL
-                        ? treeTabela.getSelectionModel().getSelectedItem()
+                        .getValue() instanceof MAL ? treeTabela.getSelectionModel().getSelectedItem()
                         : treeTabela.getSelectionModel().getSelectedItem().getParent();
                 REGISTROS.remove(parent.getValue());
                 parent.getParent().getChildren().remove(parent);
@@ -666,55 +637,52 @@ public class MangasComicInfoController implements Initializable {
     private TreeItem<BaseLista> anteriorSelecionado = null;
 
     private void selecionaRegistros() {
-        treeTabela.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent click) {
-                if (click.getClickCount() > 1) {
-                    if (click.isControlDown()) {
-                        limparSelecao();
-                        return;
-                    } else if (click.isShiftDown()) {
-                        if (anteriorSelecionado != null
-                                && anteriorSelecionado != treeTabela.getSelectionModel().getSelectedItem()) {
-                            BaseLista parentAnterio = anteriorSelecionado.getValue() instanceof MAL
-                                    ? anteriorSelecionado.getValue()
-                                    : anteriorSelecionado.getParent().getValue();
-                            BaseLista parentAtual = treeTabela.getSelectionModel().getSelectedItem()
-                                    .getValue() instanceof MAL
-                                    ? treeTabela.getSelectionModel().getSelectedItem().getValue()
-                                    : treeTabela.getSelectionModel().getSelectedItem().getParent().getValue();
+        treeTabela.setOnMouseClicked(click -> {
+            if (click.getClickCount() > 1) {
+                if (click.isControlDown()) {
+                    limparSelecao();
+                    return;
+                } else if (click.isShiftDown()) {
+                    if (anteriorSelecionado != null
+                            && anteriorSelecionado != treeTabela.getSelectionModel().getSelectedItem()) {
+                        BaseLista parentAnterio = anteriorSelecionado.getValue() instanceof MAL
+                                ? anteriorSelecionado.getValue()
+                                : anteriorSelecionado.getParent().getValue();
+                        BaseLista parentAtual = treeTabela.getSelectionModel().getSelectedItem()
+                                .getValue() instanceof MAL
+                                ? treeTabela.getSelectionModel().getSelectedItem().getValue()
+                                : treeTabela.getSelectionModel().getSelectedItem().getParent().getValue();
 
-                            int index = 0;
-                            int size = 0;
-                            if (REGISTROS.indexOf(parentAnterio) > REGISTROS.indexOf(parentAtual)) {
-                                index = REGISTROS.indexOf(parentAtual);
-                                size = REGISTROS.indexOf(parentAnterio) - 1;
-                            } else {
-                                index = REGISTROS.indexOf(parentAnterio) + 1;
-                                size = REGISTROS.indexOf(parentAtual);
-                            }
-
-                            if (index < 0)
-                                index = 0;
-
-                            if (size > REGISTROS.size())
-                                size = REGISTROS.size();
-
-                            for (int i = index; i <= size; i++)
-                                REGISTROS.get(i).setSelecionado(!REGISTROS.get(i).isSelecionado());
+                        int index = 0;
+                        int size = 0;
+                        if (REGISTROS.indexOf(parentAnterio) > REGISTROS.indexOf(parentAtual)) {
+                            index = REGISTROS.indexOf(parentAtual);
+                            size = REGISTROS.indexOf(parentAnterio) - 1;
+                        } else {
+                            index = REGISTROS.indexOf(parentAnterio) + 1;
+                            size = REGISTROS.indexOf(parentAtual);
                         }
-                    } else {
-                        BaseLista item = treeTabela.getSelectionModel().getSelectedItem().getValue();
-                        if (item != null)
-                            item.setSelecionado(!item.isSelecionado());
+
+                        if (index < 0)
+                            index = 0;
+
+                        if (size > REGISTROS.size())
+                            size = REGISTROS.size();
+
+                        for (int i = index; i <= size; i++)
+                            REGISTROS.get(i).setSelecionado(!REGISTROS.get(i).isSelecionado());
                     }
-                    treeTabela.refresh();
-                    anteriorSelecionado = treeTabela.getSelectionModel().getSelectedItem();
+                } else {
+                    BaseLista item = treeTabela.getSelectionModel().getSelectedItem().getValue();
+                    if (item != null)
+                        item.setSelecionado(!item.isSelecionado());
                 }
+                treeTabela.refresh();
+                anteriorSelecionado = treeTabela.getSelectionModel().getSelectedItem();
             }
         });
 
-        PseudoClass selected = PseudoClass.getPseudoClass("selected");
+
 
         treeTabela.setRowFactory(tv -> {
             ContextMenu menu = new ContextMenu();
@@ -745,49 +713,20 @@ public class MangasComicInfoController implements Initializable {
                     super.updateItem(item, empty);
                     if (item == null) {
                         setStyle("");
-                        pseudoClassStateChanged(selected, false);
+                        pseudoClassStateChanged(comicRoot, false);
                     } else {
                         setContextMenu(menu);
-                        pseudoClassStateChanged(selected, item.isSelecionado());
+                        pseudoClassStateChanged(comicRoot, item instanceof MAL);
                     }
                 }
             };
 
             return row;
         });
-
-		
-		  /*MAL mal = new MAL("teste 1", ""); mal.addRegistro("reg1", 1L, true);
-		  mal.addRegistro("reg2", 2L, false); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 2", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 3", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 4", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 5", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 6", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
-		  mal.addRegistro("reg4", 4L, false); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 7", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); REGISTROS.add(mal);
-		  
-		  mal = new MAL("teste 8", ""); mal.addRegistro("reg1", 1L, false);
-		  mal.addRegistro("reg2", 2L, true); mal.addRegistro("reg3", 3L, false);
-		  mal.addRegistro("reg4", 4L, false); addItem(mal);*/
-
-
     }
 
     private void linkaCelulas() {
-        treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<BaseLista, Boolean>("marcado"));
+        treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<>("marcado"));
         treecManga.setCellValueFactory(new TreeItemPropertyValueFactory<>("descricao"));
         treecNome.setCellValueFactory(new TreeItemPropertyValueFactory<>("nome"));
         treecMalID.setCellValueFactory(new TreeItemPropertyValueFactory<>("idVisual"));
@@ -837,8 +776,7 @@ public class MangasComicInfoController implements Initializable {
                     case PORTUGUESE -> txtDescricaoCapitulo.setText("Capítulo");
                     case ENGLISH -> txtDescricaoCapitulo.setText("Chapter");
                     case JAPANESE -> txtDescricaoCapitulo.setText("第%s話");
-                    default -> {
-                    }
+                    default -> { }
                 }
             }
         });

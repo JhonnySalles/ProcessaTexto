@@ -126,7 +126,6 @@ public class TraduzirController implements Initializable {
 			// VocabularioServices service = new VocabularioServices();
 			// service.insertOrUpdate(salvar);
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro", "Erro ao salvar as atualizações.");
 		} finally {
@@ -159,7 +158,6 @@ public class TraduzirController implements Initializable {
 
 			MenuPrincipalController.getController().getLblLog().setText("");
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro", "Erro ao pesquisar as revisões.");
 		}
@@ -386,7 +384,6 @@ public class TraduzirController implements Initializable {
 
 			tbVocabulario.refresh();
 		} catch (IOException e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 	}

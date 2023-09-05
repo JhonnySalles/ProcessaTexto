@@ -59,7 +59,6 @@ public class Jisho {
                 }
             }
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return retorno;
         }

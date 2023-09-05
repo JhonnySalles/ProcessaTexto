@@ -119,7 +119,6 @@ public class MangasComicInfoMalId implements Initializable {
 			nodeBlur.setEffect(blur);
 			dialog.show();
 		} catch (IOException e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 	}

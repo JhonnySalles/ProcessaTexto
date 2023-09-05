@@ -47,9 +47,8 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -71,13 +70,12 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -95,13 +93,12 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -123,7 +120,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
                         rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -147,7 +143,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
                         rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -174,7 +169,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -196,7 +190,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
                 return true;
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);
@@ -214,9 +207,8 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -238,7 +230,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -260,7 +251,6 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
             if (rs.next())
                 return true;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);

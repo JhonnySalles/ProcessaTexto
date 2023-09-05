@@ -35,7 +35,6 @@ public class Menu {
 
 			primaryStage.show(); // Mostra a tela.
 		} catch (Exception e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 	}

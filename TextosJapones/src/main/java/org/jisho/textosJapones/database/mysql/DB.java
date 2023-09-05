@@ -23,7 +23,6 @@ public class DB {
         try {
             return DriverManager.getConnection(url, props);
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
         return null;
@@ -76,7 +75,6 @@ public class DB {
                 return createConnection(props, url);
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             DB.closeStatement(st);

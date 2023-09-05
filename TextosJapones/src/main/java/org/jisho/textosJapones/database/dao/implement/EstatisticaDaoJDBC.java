@@ -52,13 +52,12 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -82,13 +81,12 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -107,13 +105,12 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -136,7 +133,6 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
                         rs.getFloat("percentual_medio"), rs.getInt("cor_sequencial"));
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -164,7 +160,6 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -192,7 +187,6 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -217,7 +211,6 @@ public class EstatisticaDaoJDBC implements EstatisticaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {

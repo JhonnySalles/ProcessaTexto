@@ -173,7 +173,6 @@ public class Util {
 
 			return md5;
 		} catch (Exception e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			try {

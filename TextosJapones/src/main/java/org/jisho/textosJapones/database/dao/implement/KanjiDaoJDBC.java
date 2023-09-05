@@ -39,8 +39,8 @@ public class KanjiDaoJDBC implements KanjiDao {
                         rs.getString("kanji"), rs.getString("palavra"), rs.getString("significado"));
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);

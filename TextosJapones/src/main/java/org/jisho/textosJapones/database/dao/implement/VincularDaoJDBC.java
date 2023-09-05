@@ -174,7 +174,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 ResultSet rs = st.getGeneratedKeys();
@@ -183,9 +183,8 @@ public class VincularDaoJDBC implements VincularDao {
 
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -215,7 +214,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 ResultSet rs = st.getGeneratedKeys();
@@ -224,9 +223,8 @@ public class VincularDaoJDBC implements VincularDao {
 
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -255,7 +253,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 ResultSet rs = st.getGeneratedKeys();
@@ -279,9 +277,8 @@ public class VincularDaoJDBC implements VincularDao {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             try {
@@ -346,9 +343,8 @@ public class VincularDaoJDBC implements VincularDao {
             }
             return list;
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -371,9 +367,8 @@ public class VincularDaoJDBC implements VincularDao {
 
             return list;
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -412,7 +407,6 @@ public class VincularDaoJDBC implements VincularDao {
             }
 
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -473,7 +467,6 @@ public class VincularDaoJDBC implements VincularDao {
             }
 
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -513,7 +506,6 @@ public class VincularDaoJDBC implements VincularDao {
             }
 
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -553,7 +545,6 @@ public class VincularDaoJDBC implements VincularDao {
             }
 
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -609,7 +600,6 @@ public class VincularDaoJDBC implements VincularDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -628,13 +618,12 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -648,9 +637,8 @@ public class VincularDaoJDBC implements VincularDao {
             st.setString(1, idVinculo.toString());
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
@@ -673,7 +661,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
             }
             conn.commit();
@@ -683,9 +671,8 @@ public class VincularDaoJDBC implements VincularDao {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             try {
@@ -746,7 +733,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             } else {
                 ResultSet rs = st.getGeneratedKeys();
@@ -755,9 +742,8 @@ public class VincularDaoJDBC implements VincularDao {
 
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -790,7 +776,7 @@ public class VincularDaoJDBC implements VincularDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             } else {
                 for (VinculoPagina pagina : obj.getVinculados())
@@ -809,9 +795,8 @@ public class VincularDaoJDBC implements VincularDao {
                 e1.printStackTrace();
             }
 
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             try {
@@ -834,9 +819,8 @@ public class VincularDaoJDBC implements VincularDao {
             rs = st.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -855,9 +839,8 @@ public class VincularDaoJDBC implements VincularDao {
             if (!rs.next())
                 return false;
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -872,9 +855,8 @@ public class VincularDaoJDBC implements VincularDao {
                     BASE_MANGA + nome, nome, BASE_MANGA + nome));
             st.execute();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -887,9 +869,8 @@ public class VincularDaoJDBC implements VincularDao {
                     BASE_MANGA + nome));
             st.execute();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -901,9 +882,8 @@ public class VincularDaoJDBC implements VincularDao {
                     BASE_MANGA + nome, nome, BASE_MANGA + nome));
             st.execute();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -932,7 +912,6 @@ public class VincularDaoJDBC implements VincularDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
@@ -1017,7 +996,6 @@ public class VincularDaoJDBC implements VincularDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {

@@ -42,5 +42,8 @@ public class DaoFactory {
 		return new KanjiDaoJDBC(DB.getLocalConnection());
 	}
 
+	public static ComicInfoDao createComicInfoDao() {
+		return new ComicInfoJDBC(DB.getLocalConnection());
+	}
 
 }

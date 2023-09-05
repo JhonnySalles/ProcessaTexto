@@ -376,7 +376,6 @@ public class MenuPrincipalController implements Initializable {
                     .add(MenuPrincipalController.class.getResource("/css/Dark_PopOver.css").toExternalForm());
 
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
         return this;

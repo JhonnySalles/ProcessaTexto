@@ -17,15 +17,18 @@ import org.jisho.textosJapones.model.entities.comicinfo.ComicInfo;
 import org.jisho.textosJapones.model.entities.comicinfo.Pages;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.comicinfo.ComicPageType;
+import org.jisho.textosJapones.model.services.ComicInfoServices;
 import org.jisho.textosJapones.util.Util;
 import org.jisho.textosJapones.util.configuration.Configuracao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -47,6 +50,8 @@ public class ProcessaComicInfo {
     private static String WINRAR;
     private static final String PATTERN = ".*\\.(zip|cbz|rar|cbr|tar)$";
     private static final String COMICINFO = "ComicInfo.xml";
+    private static final Long IMAGE_WIDTH = 200L;
+    private static final Long IMAGE_HEIGHT = 350L;
     private static JAXBContext JAXBC = null;
     private static Boolean CANCELAR_PROCESSAMENTO = false;
     private static Boolean CANCELAR_VALIDACAO = false;
@@ -55,6 +60,8 @@ public class ProcessaComicInfo {
 
     private static final Boolean CONSULTA_MAL = true;
     private static final Boolean CONSULTA_JIKAN = true;
+
+    private static ComicInfoServices SERVICE = null;
 
     public static void setPai(MangasComicInfoController controller) {
         CONTROLLER = controller;
@@ -74,6 +81,7 @@ public class ProcessaComicInfo {
 
         try {
             JAXBC = JAXBContext.newInstance(ComicInfo.class);
+            SERVICE = new ComicInfoServices();
 
             if (arquivos.isDirectory()) {
                 size[0] = 0;
@@ -86,16 +94,16 @@ public class ProcessaComicInfo {
                     String valido = valida(linguagem, arquivo);
 
                     if (valido.isEmpty()) {
-                        System.out.println(" - OK. ");
+                        LOGGER.info(" - OK. ");
                         gravalog(path, "Validando o manga " + nome + " - OK.\n");
                     } else {
-                        System.out.println(" - Arquivo possui pendências: ");
-                        System.out.println(valido);
+                        LOGGER.info(" - Arquivo possui pendências: ");
+                        LOGGER.info(valido);
                         gravalog(path, "Validando o manga " + nome + " - Arquivo possui pendências: \n");
                         gravalog(path, valido + "\n");
                     }
 
-                    System.out.println("-".repeat(100));
+                    LOGGER.info("-".repeat(100));
                     gravalog(path, "-".repeat(100) + "\n");
 
                     size[0]++;
@@ -114,30 +122,31 @@ public class ProcessaComicInfo {
                 String valido = valida(linguagem, arquivos);
 
                 if (valido.isEmpty()) {
-                    System.out.println(" - OK. ");
+                    LOGGER.info(" - OK. ");
                     gravalog(path, "Validando o manga " + nome + " - OK.\n");
                 } else {
-                    System.out.println(" - Arquivo possui pendências: ");
-                    System.out.println(valido);
+                    LOGGER.info(" - Arquivo possui pendências: ");
+                    LOGGER.info(valido);
                     gravalog(path, "Validando o manga " + nome + " - Arquivo possui pendências: \n");
                     gravalog(path, valido + "\n");
                 }
 
-                System.out.println("-".repeat(100));
+                LOGGER.info("-".repeat(100));
                 gravalog(path, "-".repeat(100) + "\n");
 
                 size[0]++;
                 callback.call(size);
             }
         } catch (JAXBException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             if (JAXBC != null)
                 JAXBC = null;
+
+            if (SERVICE != null)
+                SERVICE = null;
         }
     }
 
@@ -153,6 +162,7 @@ public class ProcessaComicInfo {
 
         try {
             JAXBC = JAXBContext.newInstance(ComicInfo.class);
+            SERVICE = new ComicInfoServices();
 
             if (arquivos.isDirectory()) {
                 size[0] = 0;
@@ -178,14 +188,15 @@ public class ProcessaComicInfo {
                 callback.call(size);
             }
         } catch (JAXBException e) {
-            
             LOGGER.error(e.getMessage(), e);
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             if (JAXBC != null)
                 JAXBC = null;
+
+            if (SERVICE != null)
+                SERVICE = null;
         }
     }
 
@@ -206,11 +217,9 @@ public class ProcessaComicInfo {
 
             processa(linguagem, arquivos, idMal);
         } catch (JAXBException e) {
-            
             LOGGER.error(e.getMessage(), e);
             return false;
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return false;
         } finally {
@@ -261,18 +270,31 @@ public class ProcessaComicInfo {
     private static dev.katsute.mal4j.manga.Manga MANGA = null;
     private static Pair<Long, String> MANGA_CHARACTER;
 
+    private static Long getIdMal(String notas) {
+        Long id = null;
+        if (notas != null) {
+            if (notas.contains(";")) {
+                for (String note : notas.split(";"))
+                    if (note.toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
+                        id = Long.valueOf(note.substring(note.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
+            } else if (notas.toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
+                id = Long.valueOf(notas.substring(notas.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
+        }
+        return id;
+    }
+
     private static void processaMal(String arquivo, String nome, ComicInfo info, Language linguagem, Long idMal) {
         try {
             Long id = idMal;
+            ComicInfo saved = SERVICE.select(info.getComic());
+
+            if (id == null)
+                id = getIdMal(info.getNotes());
 
             if (id == null) {
-                if (info.getNotes() != null) {
-                    if (info.getNotes().contains(";")) {
-                        for (String note : info.getNotes().split(";"))
-                            if (note.toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
-                                id = Long.valueOf(note.substring(note.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
-                    } else if (info.getNotes().toLowerCase().contains(DESCRIPTION_MAL.toLowerCase()))
-                        id = Long.valueOf(info.getNotes().substring(info.getNotes().indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim());
+                if (saved != null) {
+                    id = saved.getIdMal();
+                    info.setId(saved.getId());
                 }
             }
 
@@ -287,13 +309,13 @@ public class ProcessaComicInfo {
                     int max = 5;
                     int page = 0;
                     do {
-                        System.out.println("Realizando a consulta " + page);
+                        LOGGER.info("Realizando a consulta " + page);
                         search = MAL.getManga().withQuery(nome).withLimit(50).withOffset(page).search();
                         if (search != null && !search.isEmpty())
                             for (dev.katsute.mal4j.manga.Manga item : search) {
-                                System.out.println(item.getTitle());
+                                LOGGER.info(item.getTitle());
                                 if (item.getType() == dev.katsute.mal4j.manga.property.MangaType.Manga && title.equalsIgnoreCase(item.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
-                                    System.out.println("Encontrado o manga " + item.getTitle());
+                                    LOGGER.info("Encontrado o manga " + item.getTitle());
                                     MANGA = item;
                                     break;
                                 }
@@ -304,7 +326,26 @@ public class ProcessaComicInfo {
                                 org.jisho.textosJapones.model.entities.comicinfo.MAL mal = new org.jisho.textosJapones.model.entities.comicinfo.MAL(arquivo, nome);
                                 for (dev.katsute.mal4j.manga.Manga item : search) {
                                     org.jisho.textosJapones.model.entities.comicinfo.MAL.Registro registro = mal.addRegistro(item.getTitle(), item.getID(), false);
-                                    registro.setImagem(new ImageView(item.getMainPicture().getMediumURL()));
+                                    if (item.getMainPicture().getMediumURL() != null)
+                                        registro.setImagem(new ImageView(item.getMainPicture().getMediumURL()));
+                                    else if (item.getPictures().length > 0 && item.getPictures()[0].getMediumURL() != null)
+                                        registro.setImagem(new ImageView(item.getPictures()[0].getMediumURL()));
+
+                                    if (registro.getImagem() != null) {
+                                        registro.getImagem().setFitWidth(IMAGE_WIDTH);
+                                        registro.getImagem().setFitHeight(IMAGE_HEIGHT);
+                                        registro.getImagem().setPreserveRatio(true);
+                                    }
+                                }
+
+                                try {
+                                    Parse parse = ParseFactory.create(arquivo);
+                                    mal.setImagem(new ImageView(new Image(parse.getPagina(0))));
+                                    mal.getImagem().setFitHeight(IMAGE_WIDTH);
+                                    mal.getImagem().setFitWidth(IMAGE_HEIGHT);
+                                    mal.getImagem().setPreserveRatio(true);
+                                } catch (Exception e) {
+                                    LOGGER.error(e.getMessage(), e);
                                 }
 
                                 mal.getMyanimelist().get(0).setMarcado(true);
@@ -322,6 +363,14 @@ public class ProcessaComicInfo {
             }
 
             if (MANGA != null) {
+                if (info.getId() == null) {
+                    if (saved != null)
+                        info.setId(saved.getId());
+
+                    info.setIdMal(id);
+                    SERVICE.save(info);
+                }
+
                 for (dev.katsute.mal4j.manga.property.Author author : MANGA.getAuthors()) {
                     if (author.getRole().equalsIgnoreCase("art")) {
                         if (info.getPenciller() == null || info.getPenciller().isEmpty())
@@ -457,19 +506,17 @@ public class ProcessaComicInfo {
 
                                 if (!characters.isEmpty()) {
                                     info.setCharacters(characters.substring(0, characters.lastIndexOf(", ")) + ".");
-                                    MANGA_CHARACTER = new Pair<Long, String>(MANGA.getID(), info.getCharacters());
+                                    MANGA_CHARACTER = new Pair<>(MANGA.getID(), info.getCharacters());
                                 }
                             }
                         } catch (Exception e) {
-                            
                             LOGGER.error(e.getMessage(), e);
-                            System.out.println(MANGA.getID());
+                            LOGGER.info(MANGA.getID().toString());
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -488,13 +535,17 @@ public class ProcessaComicInfo {
                     Unmarshaller unmarshaller = JAXBC.createUnmarshaller();
                     comic = (ComicInfo) unmarshaller.unmarshal(info);
                 } catch (Exception e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                     return;
                 }
 
                 String nome = getNome(arquivo.getName());
-                System.out.println("Processando o manga " + nome);
+                LOGGER.info("Processando o manga " + nome);
+
+                if (nome.contains("-"))
+                    comic.setComic(nome.substring(0, nome.lastIndexOf("-")));
+                else
+                    comic.setComic(nome);
 
                 comic.setManga(org.jisho.textosJapones.model.enums.comicinfo.Manga.Yes);
                 comic.setLanguageISO(linguagem.getSigla());
@@ -534,7 +585,6 @@ public class ProcessaComicInfo {
 
                                         chapter = aux[1].trim();
                                     } catch (Exception e) {
-                                        
                                         LOGGER.error(e.getMessage(), e);
                                     }
                                 }
@@ -632,7 +682,6 @@ public class ProcessaComicInfo {
                                                     titulosCapitulo.remove(titulo.get());
                                                 }
                                             } catch (Exception e) {
-                                                
                                                 LOGGER.error(e.getMessage(), e);
                                             }
                                         }
@@ -646,7 +695,6 @@ public class ProcessaComicInfo {
                                         page.setImageWidth(Double.valueOf(image.getWidth()).intValue());
                                         page.setImageHeight(Double.valueOf(image.getHeight()).intValue());
                                     } catch (IOException e) {
-                                        
                                         LOGGER.error(e.getMessage(), e);
                                     }
                                 }
@@ -670,7 +718,6 @@ public class ProcessaComicInfo {
                     marshaller.marshal(comic, out);
                     out.close();
                 } catch (Exception e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                     return;
                 }
@@ -691,14 +738,14 @@ public class ProcessaComicInfo {
         String comando = "cmd.exe /C cd \"" + WINRAR + "\" &&rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"';
 
         if (!silent)
-            System.out.println("rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"');
+            LOGGER.info("rar e -y " + '"' + arquivo.getPath() + '"' + " " + '"' + Util.getCaminho(arquivo.getPath()) + '"' + " " + '"' + COMICINFO + '"');
 
         try {
             Runtime rt = Runtime.getRuntime();
             proc = rt.exec(comando);
 
             if (!silent)
-                System.out.println("Resultado: " + proc.waitFor());
+                LOGGER.info("Resultado: " + proc.waitFor());
 
             String resultado = "";
 
@@ -709,7 +756,7 @@ public class ProcessaComicInfo {
                 resultado += s + "\n";
 
             if (!silent && !resultado.isEmpty())
-                System.out.println("Output comand:\n" + resultado);
+                LOGGER.info("Output comand:\n" + resultado);
 
             s = null;
             resultado = "";
@@ -719,13 +766,11 @@ public class ProcessaComicInfo {
                 resultado += s + "\n";
 
             if (!resultado.isEmpty()) {
-                System.out.println(
+                LOGGER.info(
                         "Error comand:\n" + resultado + "\nNão foi possível extrair o arquivo " + COMICINFO + ".");
             } else
                 comicInfo = new File(Util.getCaminho(arquivo.getPath()) + '\\' + COMICINFO);
         } catch (Exception e) {
-            System.out.println(e);
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             if (proc != null)
@@ -739,13 +784,13 @@ public class ProcessaComicInfo {
         String comando = "cmd.exe /C cd \"" + WINRAR + "\" &&rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"'
                 + info.getPath() + '"';
 
-        System.out.println("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + info.getPath() + '"');
+        LOGGER.info("rar a -ep " + '"' + arquivo.getPath() + '"' + " " + '"' + info.getPath() + '"');
 
         Process proc = null;
         try {
             Runtime rt = Runtime.getRuntime();
             proc = rt.exec(comando);
-            System.out.println("Resultado: " + proc.waitFor());
+            LOGGER.info("Resultado: " + proc.waitFor());
 
             String resultado = "";
 
@@ -756,7 +801,7 @@ public class ProcessaComicInfo {
                 resultado += s + "\n";
 
             if (!resultado.isEmpty())
-                System.out.println("Output comand:\n" + resultado);
+                LOGGER.info("Output comand:\n" + resultado);
 
             s = null;
             resultado = "";
@@ -768,14 +813,11 @@ public class ProcessaComicInfo {
             if (!resultado.isEmpty()) {
                 info.renameTo(new File(
                         arquivo.getPath() + Util.getNome(arquivo.getName()) + Util.getExtenssao(info.getName())));
-                System.out.println("Error comand:\n" + resultado
-                        + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
+                LOGGER.info("Error comand:\n" + resultado + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
             } else
                 info.delete();
 
         } catch (Exception e) {
-            System.out.println(e);
-            
             LOGGER.error(e.getMessage(), e);
         } finally {
             if (proc != null)
@@ -798,9 +840,28 @@ public class ProcessaComicInfo {
                     Unmarshaller unmarshaller = JAXBC.createUnmarshaller();
                     comic = (ComicInfo) unmarshaller.unmarshal(info);
                 } catch (Exception e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                     return "Não foi possível realizar a extração do Comic info.";
+                }
+
+                if (arquivo.getName().contains("-"))
+                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf("-")));
+                else if (arquivo.getName().contains("."))
+                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf(".")));
+                else
+                    comic.setComic(arquivo.getName());
+
+                try {
+                    ComicInfo saved = SERVICE.select(comic.getComic());
+                    if (saved == null || comic.getIdMal() == null) {
+                        if (saved != null)
+                            comic.setId(saved.getId());
+
+                        comic.setIdMal(getIdMal(comic.getNotes()));
+                        SERVICE.save(comic);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
                 }
 
                 if (comic.getManga() == null)

@@ -152,7 +152,6 @@ public class SudachiTokenizer {
             concluiProgresso(false);
 
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             concluiProgresso(true);
             AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
@@ -208,7 +207,6 @@ public class SudachiTokenizer {
             concluiProgresso(false);
 
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             concluiProgresso(true);
             AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());
@@ -593,7 +591,6 @@ public class SudachiTokenizer {
 
             concluiProgresso(false);
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             concluiProgresso(true);
             AlertasPopup.ErroModal("Erro ao processar textos", e.getMessage());

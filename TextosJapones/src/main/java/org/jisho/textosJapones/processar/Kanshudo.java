@@ -63,7 +63,6 @@ public class Kanshudo {
 
             return resultado;
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return "";
         }
@@ -107,7 +106,6 @@ public class Kanshudo {
 
 			return "";
 		} catch (Exception e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			return "";
 		}

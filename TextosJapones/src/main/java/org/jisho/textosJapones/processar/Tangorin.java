@@ -64,7 +64,6 @@ public class Tangorin {
 
             return retorno;
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return "";
         }
@@ -109,7 +108,6 @@ public class Tangorin {
 
             return retorno;
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return "";
         }

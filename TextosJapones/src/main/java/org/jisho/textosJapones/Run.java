@@ -42,7 +42,6 @@ public class Run extends Application {
             PRIMARY_STAGE.show(); // Mostra a tela.
 
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
 

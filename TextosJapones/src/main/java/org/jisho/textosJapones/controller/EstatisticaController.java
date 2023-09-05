@@ -240,7 +240,6 @@ public class EstatisticaController implements Initializable {
             treePalavras.setRoot(root);
             treePalavras.setShowRoot(false);
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(rootStackPane, root, null, "Erro ao processar vocabulario", e.getMessage());
         }

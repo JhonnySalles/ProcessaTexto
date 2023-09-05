@@ -776,7 +776,6 @@ public class MangasJsonController implements Initializable {
         try {
             cbBase.getItems().setAll(serviceManga.getTabelas());
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
         }

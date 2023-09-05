@@ -647,7 +647,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 			new Animacao().abrirPane(this.controller.getStackPane(), newRoot);
 		} catch (IOException e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
@@ -1075,7 +1074,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			image = new Image(imput);
 			dupla = (image.getWidth() / image.getHeight()) > 0.9;
 		} catch (Exception e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 
@@ -1480,7 +1478,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 				return true;
 			}
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 		}
 
@@ -1542,7 +1539,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			service.salvar(cbBase.getSelectionModel().getSelectedItem(), vinculo);
 			Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.");
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao salvar", e.getMessage());
 		}
@@ -1620,7 +1616,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		try {
 			service.createTabelas(base);
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			System.out.println("Erro ao consultar as sugestões de mangas.");
 		}
@@ -1639,7 +1634,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 			autoComplete.getSuggestions().addAll(mangas);
 			manga.setText("");
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			System.out.println("Erro ao consultar as sugestões de mangas.");
 		}
@@ -1893,7 +1887,6 @@ public class MangasVincularController implements Initializable, VinculoListener,
 		try {
 			cbBase.getItems().setAll(service.getTabelas());
 		} catch (ExcessaoBd e) {
-			
 			LOGGER.error(e.getMessage(), e);
 			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}

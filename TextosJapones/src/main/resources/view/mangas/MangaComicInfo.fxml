@@ -1,74 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.String?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
 <AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
    <children>          
 	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
-            <VBox spacing="10.0">
+            <HBox>
                <children>
-      	          <HBox maxWidth="600.0" spacing="10.0">
-      	             <children>
-                        <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
-                        <JFXTextField fx:id="txtDescricaoCapitulo" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="400.0" promptText="Descrição da marcação do capítulo" styleClass="texto-stilo" unFocusColor="#106ebe" />
-      	             </children>
-      	             <padding>
-      	                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-      	             </padding>
-      	             <opaqueInsets>
-      	                <Insets />
-      	             </opaqueInsets>
-      	          </HBox>
-                  <HBox maxWidth="600.0" prefWidth="600.0" spacing="10.0">
+                  <VBox spacing="10.0">
                      <children>
-                        <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Pasta a processar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
-                        <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminho" prefWidth="35.0">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../images/icoPasta_48.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </JFXButton>
-                        <JFXButton fx:id="btnArquivo" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarArquivo" prefWidth="35.0">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../images/icoArquivo_48.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </JFXButton>
+            	          <HBox maxWidth="600.0" spacing="10.0">
+            	             <children>
+                              <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                              <JFXTextField fx:id="txtDescricaoCapitulo" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="400.0" promptText="Descrição da marcação do capítulo" styleClass="texto-stilo" unFocusColor="#106ebe" />
+            	             </children>
+            	             <padding>
+            	                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            	             </padding>
+            	             <opaqueInsets>
+            	                <Insets />
+            	             </opaqueInsets>
+            	          </HBox>
+                        <HBox maxWidth="600.0" prefWidth="600.0" spacing="10.0">
+                           <children>
+                              <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Pasta a processar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                              <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminho" prefWidth="35.0">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icoPasta_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="btnArquivo" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarArquivo" prefWidth="35.0">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icoArquivo_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
                      </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </HBox>
-      	          <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="ALWAYS">
-      	             <opaqueInsets>
-      	                <Insets />
-      	             </opaqueInsets>
-      	             <children>
-      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar" HBox.hgrow="ALWAYS" />
-                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="140.0" styleClass="background-White1" text="Validar comic info" />
-      	             </children>
-      	          </HBox>
-               </children>
-            </VBox>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <children>
-                  <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="140.0" styleClass="background-White1" text="Processar Marcados" HBox.hgrow="ALWAYS" />
-                  <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="140.0" styleClass="background-White1" text="Limpar lista" />
+                  </VBox>
+                  <VBox prefWidth="350.0" spacing="5.0">
+                     <children>
+            	          <HBox alignment="CENTER_LEFT" spacing="10.0">
+            	             <opaqueInsets>
+            	                <Insets />
+            	             </opaqueInsets>
+            	             <children>
+            	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar comic info" HBox.hgrow="ALWAYS" />
+                              <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="140.0" styleClass="background-White1" text="Validar comic info" />
+            	             </children>
+            	          </HBox>
+                        <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="290.0" styleClass="background-White1" text="Processar Marcados" />
+                        <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="290.0" styleClass="background-White1" text="Limpar lista" />
+                     </children>
+                  </VBox>
                </children>
             </HBox>
             <TreeTableView fx:id="treeTabela" editable="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
@@ -78,9 +85,9 @@
                   <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
                   <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
                   <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
-                  <TreeTableColumn fx:id="treecSite" editable="false" prefWidth="76.5" text="Site" />
-                  <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" text="Processar" />
-                  <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" text="Imagem" />
+                  <TreeTableColumn fx:id="treecSite" editable="false" prefWidth="76.5" sortable="false" text="Site" />
+                  <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" sortable="false" text="Processar" />
+                  <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" sortable="false" text="Imagem" />
               </columns>
             </TreeTableView>
 	       </children>

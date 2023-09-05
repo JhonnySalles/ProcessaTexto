@@ -311,7 +311,6 @@ public class ProcessarMangas {
                 }
             }
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             desmembrado = "";
         }

@@ -53,7 +53,6 @@ public class JapanDict {
 
             return "";
         } catch (Exception e) {
-            
             LOGGER.error(e.getMessage(), e);
             return "";
         }

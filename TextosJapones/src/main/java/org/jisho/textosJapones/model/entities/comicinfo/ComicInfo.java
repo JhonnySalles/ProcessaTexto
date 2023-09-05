@@ -5,10 +5,15 @@ import org.jisho.textosJapones.model.enums.comicinfo.YesNo;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ComicInfo")
 public class ComicInfo {
+
+	private UUID id;
+	private Long idMal;
+	private String comic;
 
 	@XmlElement(name = "Title")
 	private String title;
@@ -97,6 +102,28 @@ public class ComicInfo {
 	private String mainCharacterOrTeam;
 	@XmlElement(name = "Review")
 	private String review;
+
+	public UUID getId() { return id; }
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public Long getIdMal() {
+		return idMal;
+	}
+
+	public void setIdMal(Long idMal) {
+		this.idMal = idMal;
+	}
+
+	public String getComic() {
+		return comic;
+	}
+
+	public void setComic(String comic) {
+		this.comic = comic;
+	}
 
 	public String getTitle() {
 		return title;
@@ -496,6 +523,24 @@ public class ComicInfo {
 		this.scanInformation = scanInformation;
 		this.mainCharacterOrTeam = mainCharacterOrTeam;
 		this.review = review;
+	}
+
+	public ComicInfo(UUID id, Long idMal, String comic, String title, String series, String publisher, String alternateSeries,
+					 String storyArc, String seriesGroup, String imprint, String genre, String languageISO,
+					 AgeRating ageRating) {
+		this.id = id;
+		this.idMal = idMal;
+		this.comic = comic;
+		this.title = title;
+		this.series = series;
+		this.publisher = publisher;
+		this.alternateSeries = alternateSeries;
+		this.storyArc = storyArc;
+		this.seriesGroup = seriesGroup;
+		this.imprint = imprint;
+		this.genre = genre;
+		this.languageISO = languageISO;
+		this.ageRating = ageRating;
 	}
 
 }

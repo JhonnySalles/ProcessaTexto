@@ -40,13 +40,12 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -69,8 +68,8 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -95,13 +94,12 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -126,13 +124,12 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -158,8 +155,8 @@ public class ProcessarDaoJDBC implements ProcessarDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -174,9 +171,8 @@ public class ProcessarDaoJDBC implements ProcessarDao {
             st = conn.prepareStatement(delete, Statement.RETURN_GENERATED_KEYS);
             st.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(st.toString());
-            
             LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);

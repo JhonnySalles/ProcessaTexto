@@ -175,7 +175,6 @@ public class Amagami {
             }
 
         } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-            
             LOGGER.error(e.getMessage(), e);
             return false;
         }

@@ -93,16 +93,13 @@ public class ImportaEstatistica {
             Notificacoes.notificacao(Notificacao.SUCESSO, "Concluido", "Importação concluida com sucesso.");
             br.close();
         } catch (FileNotFoundException e) {
-            
             LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Arquivo não encontrado",
                     "Não foi possível carregar o arquivo para importação.");
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Erro ao procesar o arquivo", e.getMessage());
         } catch (ExcessaoBd e) {
-            
             LOGGER.error(e.getMessage(), e);
             Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar os dados", e.getMessage());
         }

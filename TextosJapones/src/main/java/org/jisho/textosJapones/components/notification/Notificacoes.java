@@ -108,7 +108,6 @@ public class Notificacoes {
             CONTROLLER = loader.getController();
             ROOT_ANCHOR_PANE.getChildren().add(NOTIFICACAO);
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
 

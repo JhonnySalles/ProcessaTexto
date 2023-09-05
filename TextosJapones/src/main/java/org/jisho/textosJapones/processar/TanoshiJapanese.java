@@ -77,7 +77,6 @@ public class TanoshiJapanese {
 
             return getSignificado(CampoSignificado);
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
             return "";
         }
@@ -167,7 +166,6 @@ public class TanoshiJapanese {
                 }
             }
         } catch (IOException e) {
-            
             LOGGER.error(e.getMessage(), e);
         }
 

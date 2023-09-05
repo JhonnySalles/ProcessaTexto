@@ -121,13 +121,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 System.out.println("Nenhum registro atualizado.");
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -156,13 +155,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 System.out.println("Nenhum registro atualizado.");
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -192,13 +190,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 System.out.println("Nenhum registro atualizado.");
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -231,9 +228,8 @@ public class MangaDaoJDBC implements MangaDao {
                 st.executeUpdate();
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -247,9 +243,8 @@ public class MangaDaoJDBC implements MangaDao {
             st.setString(1, id.toString());
             st.executeUpdate();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -279,9 +274,8 @@ public class MangaDaoJDBC implements MangaDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -307,13 +301,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -337,13 +330,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -358,9 +350,8 @@ public class MangaDaoJDBC implements MangaDao {
             st.setString(1, obj.getId().toString());
             st.executeUpdate();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE_CANCEL);
         } finally {
             DB.closeStatement(st);
@@ -388,9 +379,8 @@ public class MangaDaoJDBC implements MangaDao {
                         selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), apenasJapones)));
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -435,9 +425,8 @@ public class MangaDaoJDBC implements MangaDao {
                         selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), capitulo, linguagem, inverterTexto)));
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -471,9 +460,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -509,9 +497,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -557,9 +544,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -590,9 +576,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -622,9 +607,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -654,9 +638,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -687,9 +670,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -715,9 +697,8 @@ public class MangaDaoJDBC implements MangaDao {
                         selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
             return null;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -741,9 +722,8 @@ public class MangaDaoJDBC implements MangaDao {
                         selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
             return null;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -769,9 +749,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return null;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -795,9 +774,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return null;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -836,9 +814,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -865,9 +842,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -915,9 +891,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -1173,16 +1148,15 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 insertVocabulario(base, obj.getId(), null, null, obj.getVocabularios());
                 return obj.getId();
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -1211,16 +1185,15 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 insertVocabulario(base, null, obj.getId(), null, obj.getVocabularios());
                 return obj.getId();
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -1245,16 +1218,15 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 insertVocabulario(base, null, null, obj.getId(), obj.getVocabularios());
                 return obj.getId();
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -1280,14 +1252,13 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else
                 return obj.getId();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
@@ -1315,9 +1286,8 @@ public class MangaDaoJDBC implements MangaDao {
             }
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -1344,9 +1314,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -1361,9 +1330,8 @@ public class MangaDaoJDBC implements MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome, nome));
             st.execute();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -1373,9 +1341,8 @@ public class MangaDaoJDBC implements MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome, nome));
             st.execute();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st);
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -1393,9 +1360,8 @@ public class MangaDaoJDBC implements MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TABELA, nome));
             st.execute();
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
         } finally {
             DB.closeStatement(st);
@@ -1419,13 +1385,12 @@ public class MangaDaoJDBC implements MangaDao {
             int rowsAffected = st.executeUpdate();
 
             if (rowsAffected < 1) {
-                System.out.println(st);
+                LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
             }
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
@@ -1458,9 +1423,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
@@ -1484,9 +1448,8 @@ public class MangaDaoJDBC implements MangaDao {
 
             return list;
         } catch (SQLException e) {
-            
             LOGGER.error(e.getMessage(), e);
-            System.out.println(st.toString());
+            LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
         } finally {
             DB.closeStatement(st);
