@@ -20,7 +20,7 @@ public class ComicInfoJDBC implements ComicInfoDao {
 
     final private static String INSERT = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     final private static String UPDATE = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;";
-    final private static String SELECT = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? ;";
+    final private static String SELECT = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? AND language = ? ;";
 
 
     public ComicInfoJDBC(Connection conn) {
@@ -36,7 +36,10 @@ public class ComicInfoJDBC implements ComicInfoDao {
             int index = 0;
             st.setString(++index, UUID.randomUUID().toString());
             st.setString(++index, obj.getComic());
-            st.setLong(++index, obj.getIdMal());
+            if (obj.getIdMal() == null)
+                st.setNString(++index, null);
+            else
+                st.setLong(++index, obj.getIdMal());
             st.setString(++index, obj.getSeries());
             st.setString(++index, obj.getTitle());
             st.setString(++index, obj.getPublisher());
@@ -71,7 +74,10 @@ public class ComicInfoJDBC implements ComicInfoDao {
 
             int index = 0;
             st.setString(++index, obj.getComic());
-            st.setLong(++index, obj.getIdMal());
+            if (obj.getIdMal() == null)
+                st.setNString(++index, null);
+            else
+                st.setLong(++index, obj.getIdMal());
             st.setString(++index, obj.getSeries());
             st.setString(++index, obj.getTitle());
             st.setString(++index, obj.getPublisher());
@@ -99,12 +105,13 @@ public class ComicInfoJDBC implements ComicInfoDao {
     }
 
     @Override
-    public ComicInfo select(String comic) throws ExcessaoBd {
+    public ComicInfo select(String comic, String linguagem) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
             st = conn.prepareStatement(SELECT);
             st.setString(1, comic);
+            st.setString(2, linguagem);
             rs = st.executeQuery();
 
             if (rs.next()) {

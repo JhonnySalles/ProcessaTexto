@@ -9,6 +9,6 @@ public interface ComicInfoDao {
 
     void update(ComicInfo obj) throws ExcessaoBd;
 
-    ComicInfo select(String comic) throws ExcessaoBd;
+    ComicInfo select(String comic, String linguagem) throws ExcessaoBd;
 
 }

@@ -286,7 +286,7 @@ public class ProcessaComicInfo {
     private static void processaMal(String arquivo, String nome, ComicInfo info, Language linguagem, Long idMal) {
         try {
             Long id = idMal;
-            ComicInfo saved = SERVICE.select(info.getComic());
+            ComicInfo saved = SERVICE.select(info.getComic(), info.getLanguageISO());
 
             if (id == null)
                 id = getIdMal(info.getNotes());
@@ -543,7 +543,9 @@ public class ProcessaComicInfo {
                 LOGGER.info("Processando o manga " + nome);
 
                 if (nome.contains("-"))
-                    comic.setComic(nome.substring(0, nome.lastIndexOf("-")));
+                    comic.setComic(nome.substring(0, nome.lastIndexOf("-")).trim());
+                else if (nome.contains("."))
+                    comic.setComic(nome.substring(0, nome.lastIndexOf(".")).trim());
                 else
                     comic.setComic(nome);
 
@@ -845,14 +847,14 @@ public class ProcessaComicInfo {
                 }
 
                 if (arquivo.getName().contains("-"))
-                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf("-")));
+                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf("-")).trim());
                 else if (arquivo.getName().contains("."))
-                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf(".")));
+                    comic.setComic(arquivo.getName().substring(0, arquivo.getName().lastIndexOf(".")).trim());
                 else
                     comic.setComic(arquivo.getName());
 
                 try {
-                    ComicInfo saved = SERVICE.select(comic.getComic());
+                    ComicInfo saved = SERVICE.select(comic.getComic(), comic.getLanguageISO());
                     if (saved == null || comic.getIdMal() == null) {
                         if (saved != null)
                             comic.setId(saved.getId());

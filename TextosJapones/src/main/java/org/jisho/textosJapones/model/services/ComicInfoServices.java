@@ -11,12 +11,12 @@ public class ComicInfoServices {
 
     private final ComicInfoDao comicInfoDao = DaoFactory.createComicInfoDao();
 
-    public ComicInfo select(String comic) throws ExcessaoBd {
-        return comicInfoDao.select(comic);
+    public ComicInfo select(String comic, String linguagem) throws ExcessaoBd {
+        return comicInfoDao.select(comic, linguagem);
     }
 
     public void save(ComicInfo comic) throws ExcessaoBd {
-        ComicInfo saved = select(comic.getComic());
+        ComicInfo saved = select(comic.getComic(), comic.getLanguageISO());
         if (saved == null || saved.getId() == null)
             comicInfoDao.insert(comic);
         else {
