@@ -200,20 +200,14 @@ public class CorrecaoController implements Initializable {
                 txtTraducao.setUnFocusColor(Color.web("#106ebe"));
         });
 
-        txtVocabulario.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                    robot.keyPress(KeyCode.TAB);
-            }
+        txtVocabulario.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB);
         });
 
-        txtTraducao.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                    robot.keyPress(KeyCode.TAB);
-            }
+        txtTraducao.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB);
         });
     }
 

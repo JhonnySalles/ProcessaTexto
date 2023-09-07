@@ -226,7 +226,7 @@ public class RevisarController implements Initializable {
     }
 
     private Boolean pesquisaCorrecao(String pesquisar) throws ExcessaoBd {
-        corrigindo = vocabulario.select(pesquisar);
+        corrigindo = vocabulario.select(pesquisar, pesquisar);
         if (corrigindo != null && !corrigindo.getPortugues().isEmpty()) {
             limpaTextos();
             cbCorrecao.setSelected(true);
