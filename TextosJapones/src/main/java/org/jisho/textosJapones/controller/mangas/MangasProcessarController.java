@@ -202,7 +202,7 @@ public class MangasProcessarController implements Initializable {
         return barraProgressoPaginas;
     }
 
-    private String BASE_ORIGEM, BASE_DESTINO;
+    private String TABELA_ORIGEM, TABELA_DESTINO;
 
     private Integer I;
     private String error;
@@ -219,34 +219,39 @@ public class MangasProcessarController implements Initializable {
         progress.getLog().setText("Transferindo dados....");
         btnTransferir.setDisable(true);
 
-        BASE_ORIGEM = txtBaseOrigem.getText().trim();
-        BASE_DESTINO = txtBaseDestino.getText().trim();
+        TABELA_ORIGEM = txtBaseOrigem.getText().trim();
+        TABELA_DESTINO = txtBaseDestino.getText().trim();
 
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
 
-        Task<Void> transferir = new Task<Void>() {
+        Task<Void> transferir = new Task<>() {
 
             @Override
             protected Void call() throws Exception {
                 try {
                     error = "";
                     updateMessage("Carregando dados....");
-                    List<String> bases = new ArrayList<>();
+                    List<String> tabelas = new ArrayList<>();
 
-                    String aux = "";
-                    if (BASE_ORIGEM.contains(".*")) {
-                        BASE_ORIGEM = BASE_ORIGEM.replace(".*", "");
-                        BASE_ORIGEM += ".";
-                        aux = "*";
-                    } else
-                        bases.add(BASE_DESTINO);
+                    var isFull = false;
 
-                    BASE_ORIGEM = BASE_ORIGEM.substring(0, BASE_ORIGEM.lastIndexOf(".")).replace(".", "");
-                    bases.addAll(service.getTabelasTransferir(BASE_ORIGEM, aux));
+                    if (TABELA_ORIGEM.contains(".*")) {
+                        isFull = true;
+                        TABELA_ORIGEM = TABELA_ORIGEM.replace(".*", "");
+                        TABELA_ORIGEM += ".";
+                        TABELA_ORIGEM = TABELA_ORIGEM.substring(0, TABELA_ORIGEM.lastIndexOf(".")).replace(".", "");
+                        tabelas.addAll(service.getTabelasTransferir(TABELA_ORIGEM, "*"));
+                    } else if (TABELA_ORIGEM.contains(".")) {
+                        tabelas.add(TABELA_ORIGEM.substring(TABELA_ORIGEM.indexOf(".")));
+                        TABELA_ORIGEM = TABELA_ORIGEM.substring(0, TABELA_ORIGEM.indexOf(".")) + ".";
+                    } else {
+                        tabelas.add(TABELA_ORIGEM);
+                        TABELA_ORIGEM = "";
+                    }
 
-                    for (String tabela : bases) {
-                        List<MangaVolume> lista = service.selectDadosTransferir(BASE_ORIGEM, tabela);
+                    for (String tabela : tabelas) {
+                        List<MangaVolume> lista = service.selectDadosTransferir(TABELA_ORIGEM, tabela);
 
                         if (ckbCriarBase.isSelected()) {
                             updateMessage("Criando a tabela....");
@@ -258,7 +263,11 @@ public class MangasProcessarController implements Initializable {
                         for (MangaVolume volume : lista) {
                             updateMessage("Transferindo dados.... " + volume.getManga());
                             I++;
-                            service.insertDadosTransferir(tabela, volume);
+                            if (isFull)
+                                service.insertDadosTransferir(tabela, volume);
+                            else
+                                service.insertDadosTransferir(TABELA_DESTINO, volume);
+
                             updateProgress(I, lista.size());
 
                             Platform.runLater(() -> {
@@ -269,8 +278,7 @@ public class MangasProcessarController implements Initializable {
                         }
                     }
 
-                } catch (ExcessaoBd e) {
-                    
+                } catch (ExcessaoBd | Error e) {
                     LOGGER.error(e.getMessage(), e);
                     error = e.getMessage();
                 }

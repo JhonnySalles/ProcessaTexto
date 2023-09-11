@@ -438,7 +438,7 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement(String.format(SELECT_CAPITULOS, base + '.' + tabela, "", "1>0"));
+            st = conn.prepareStatement(String.format(SELECT_CAPITULOS, base + tabela, "", "1>0"));
             st.setString(1, idOldVolume);
             rs = st.executeQuery();
 
@@ -558,7 +558,7 @@ public class MangaDaoJDBC implements MangaDao {
         ResultSet rs = null;
         try {
 
-            st = conn.prepareStatement(String.format(SELECT_PAGINAS, base + '.' + tabela, "1>0"));
+            st = conn.prepareStatement(String.format(SELECT_PAGINAS, base + tabela, "1>0"));
             st.setString(1, idOldCapitulo);
             rs = st.executeQuery();
 
@@ -585,8 +585,7 @@ public class MangaDaoJDBC implements MangaDao {
         }
     }
 
-    public List<MangaPagina> selectPaginas(String base, Boolean todos, UUID idCapitulo, Boolean inverterTexto,
-                                           Boolean selectVocabulario) throws ExcessaoBd {
+    public List<MangaPagina> selectPaginas(String base, Boolean todos, UUID idCapitulo, Boolean inverterTexto, Boolean selectVocabulario) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -621,7 +620,7 @@ public class MangaDaoJDBC implements MangaDao {
         ResultSet rs = null;
         try {
 
-            st = conn.prepareStatement(String.format(SELECT_TEXTOS, base + '.' + tabela));
+            st = conn.prepareStatement(String.format(SELECT_TEXTOS, base + tabela));
             st.setString(1, idOldPagina);
             rs = st.executeQuery();
 
@@ -1270,7 +1269,7 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement(String.format(SELECT_VOLUMES, base + '.' + tabela, "", "1>0"));
+            st = conn.prepareStatement(String.format(SELECT_VOLUMES, base + tabela, "", "1>0"));
             rs = st.executeQuery();
 
             List<MangaVolume> list = new ArrayList<>();
