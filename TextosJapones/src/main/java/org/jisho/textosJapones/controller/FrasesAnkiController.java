@@ -344,35 +344,30 @@ public class FrasesAnkiController implements Initializable {
         if (tbVocabulario.getItems().size() > 0) {
             try {
 
-                List<Vocabulario> salvar = tbVocabulario.getItems().stream().filter(e -> !e.getPortugues().isEmpty())
-                        .collect(Collectors.toList());
+                List<Vocabulario> salvar = tbVocabulario.getItems().stream().filter(e -> !e.getPortugues().isEmpty()).collect(Collectors.toList());
 
                 vocabServ.insert(salvar);
 
                 String itensSalvo = "";
                 for (Vocabulario item : salvar) {
-                    txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*",
-                            item.getFormaBasica() + " " + item.getPortugues()));
+                    txtAreaDestino.setText(txtAreaDestino.getText().replaceAll(item.getFormaBasica() + " \\*\\*", item.getFormaBasica() + " - " + item.getPortugues()));
                     itensSalvo += item.toString();
 
                     revisaServ.delete(item.getVocabulario());
                 }
 
                 if (salvar.size() != tbVocabulario.getItems().size())
-                    tbVocabulario.getItems().removeIf(item -> salvar.contains(item));
+                    tbVocabulario.getItems().removeIf(salvar::contains);
                 else {
                     tbVocabulario.getItems().clear();
                     tbVocabulario.getItems().add(new Vocabulario());
                 }
 
                 if (itensSalvo.isEmpty())
-                    Notificacoes.notificacao(Notificacao.AVISO, "Nenhum item encontrado.",
-                            "Nenhum item com tradução encontrada.");
+                    Notificacoes.notificacao(Notificacao.AVISO, "Nenhum item encontrado.", "Nenhum item com tradução encontrada.");
                 else
-                    Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.",
-                            itensSalvo.substring(0, itensSalvo.lastIndexOf(", ")) + ".");
+                    Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.", itensSalvo.substring(0, itensSalvo.lastIndexOf(", ")) + ".");
             } catch (ExcessaoBd e) {
-                
                 LOGGER.error(e.getMessage(), e);
                 Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao salvar os novos vocabulários.");
             }
