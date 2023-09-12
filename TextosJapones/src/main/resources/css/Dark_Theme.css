@@ -446,7 +446,11 @@
 }
 
 .tree-table-row-cell:comic-info:odd {
-	-fx-background-color: #1a1a1a;
+	-fx-background-color: #0d0d0d;
+}
+
+.tree-table-row-cell:comic-info:selected {
+	-fx-background-color: #269900;
 }
 
 /*  Cor da flecha de nivel */

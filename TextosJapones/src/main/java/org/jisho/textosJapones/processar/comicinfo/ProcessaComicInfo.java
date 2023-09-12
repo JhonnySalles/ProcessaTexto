@@ -214,6 +214,7 @@ public class ProcessaComicInfo {
         try {
             if (JAXBC == null)
                 JAXBC = JAXBContext.newInstance(ComicInfo.class);
+            SERVICE = new ComicInfoServices();
 
             processa(linguagem, arquivos, idMal);
         } catch (JAXBException e) {
@@ -225,6 +226,9 @@ public class ProcessaComicInfo {
         } finally {
             if (JAXBC != null)
                 JAXBC = null;
+
+            if (SERVICE != null)
+                SERVICE = null;
         }
         return true;
     }
@@ -266,6 +270,7 @@ public class ProcessaComicInfo {
 
     private static final String API_JIKAN_CHARACTER = "https://api.jikan.moe/v4/manga/%s/characters";
     private static final String TITLE_PATERN = "[^\\w\\s]";
+    private static final String MANGA_PATERN = " - Volume[\\w\\W]*";
     private static final String DESCRIPTION_MAL = "Tagged with MyAnimeList on ";
     private static dev.katsute.mal4j.manga.Manga MANGA = null;
     private static Pair<Long, String> MANGA_CHARACTER;
@@ -298,15 +303,15 @@ public class ProcessaComicInfo {
                 }
             }
 
-            String title = nome.replaceAll(TITLE_PATERN, "").trim();
+            String title = nome.replaceAll(MANGA_PATERN, "").trim();
 
-            if (MANGA == null || !title.equalsIgnoreCase(MANGA.getTitle().replaceAll(TITLE_PATERN, "").trim())) {
+            if (MANGA == null || !title.equalsIgnoreCase(MANGA.getTitle().replaceAll(MANGA_PATERN, "").trim())) {
                 MANGA = null;
                 if (id != null)
                     MANGA = MAL.getManga(id);
                 else {
                     List<dev.katsute.mal4j.manga.Manga> search;
-                    int max = 5;
+                    int max = 3;
                     int page = 0;
                     do {
                         LOGGER.info("Realizando a consulta " + page);

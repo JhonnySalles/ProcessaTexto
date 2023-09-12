@@ -318,12 +318,8 @@ public class MangasComicInfoController implements Initializable {
                     PARAR = false;
                     I = 0;
 
-                    List<MAL> lista = isSelecionado
-                            ? REGISTROS.parallelStream()
-                            .filter(it -> it.isSelecionado()
-                                    || it.getMyanimelist().parallelStream().anyMatch(re -> re.isSelecionado()))
-                            .collect(Collectors.toList())
-                            : REGISTROS.parallelStream().collect(Collectors.toList());
+                    List<MAL> lista = isSelecionado ? REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().parallelStream().anyMatch(BaseLista::isSelecionado))
+                            .collect(Collectors.toList()) : REGISTROS.parallelStream().collect(Collectors.toList());
 
                     for (MAL item : lista) {
                         I++;
@@ -337,12 +333,10 @@ public class MangasComicInfoController implements Initializable {
                                         Type.NORMAL);
                         });
 
-                        Optional<Registro> registro = item.getMyanimelist().stream().filter(it -> it.isMarcado())
-                                .findFirst();
+                        Optional<Registro> registro = item.getMyanimelist().stream().filter(BaseLista::isMarcado).findFirst();
 
                         if (registro.isPresent()) {
-                            if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(),
-                                    registro.get().getParent().getArquivo(), registro.get().getId()))
+                            if (ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), registro.get().getParent().getArquivo(), registro.get().getId()))
                                 REGISTROS.remove(item);
 
                         }
