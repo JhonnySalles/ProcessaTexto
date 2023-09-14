@@ -453,6 +453,14 @@
 	-fx-background-color: #269900;
 }
 
+.tree-table-row-cell:comic-selected {
+	-fx-background-color: #269900;
+}
+
+.tree-table-row-cell:comic-selected:odd {
+	-fx-background-color: #134d00;
+}
+
 /*  Cor da flecha de nivel */
 .tree-cell>.tree-disclosure-node>.arrow, .tree-table-row-cell>.tree-disclosure-node>.arrow {
 	-fx-background-color: white;

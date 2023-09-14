@@ -50,8 +50,8 @@ public class ProcessaComicInfo {
     private static String WINRAR;
     private static final String PATTERN = ".*\\.(zip|cbz|rar|cbr|tar)$";
     private static final String COMICINFO = "ComicInfo.xml";
-    private static final Long IMAGE_WIDTH = 200L;
-    private static final Long IMAGE_HEIGHT = 350L;
+    private static final Long IMAGE_WIDTH = 170L;
+    private static final Long IMAGE_HEIGHT = 300L;
     private static JAXBContext JAXBC = null;
     private static Boolean CANCELAR_PROCESSAMENTO = false;
     private static Boolean CANCELAR_VALIDACAO = false;
@@ -263,6 +263,10 @@ public class ProcessaComicInfo {
             registro.setNome(manga.getTitle());
             registro.setId(manga.getID());
             registro.setImagem(new ImageView(manga.getMainPicture().getMediumURL()));
+            if (registro.getImagem() != null) {
+                registro.getImagem().setFitWidth(IMAGE_WIDTH);
+                registro.getImagem().setFitHeight(IMAGE_HEIGHT);
+            }
             return true;
         } else
             return false;
@@ -297,7 +301,7 @@ public class ProcessaComicInfo {
                 id = getIdMal(info.getNotes());
 
             if (id == null) {
-                if (saved != null) {
+                if (saved != null && saved.getIdMal() > 0) {
                     id = saved.getIdMal();
                     info.setId(saved.getId());
                 }
@@ -311,7 +315,7 @@ public class ProcessaComicInfo {
                     MANGA = MAL.getManga(id);
                 else {
                     List<dev.katsute.mal4j.manga.Manga> search;
-                    int max = 3;
+                    int max = 2;
                     int page = 0;
                     do {
                         LOGGER.info("Realizando a consulta " + page);
@@ -346,8 +350,8 @@ public class ProcessaComicInfo {
                                 try {
                                     Parse parse = ParseFactory.create(arquivo);
                                     mal.setImagem(new ImageView(new Image(parse.getPagina(0))));
-                                    mal.getImagem().setFitHeight(IMAGE_WIDTH);
-                                    mal.getImagem().setFitWidth(IMAGE_HEIGHT);
+                                    mal.getImagem().setFitWidth(IMAGE_WIDTH);
+                                    mal.getImagem().setFitHeight(IMAGE_HEIGHT);
                                     mal.getImagem().setPreserveRatio(true);
                                 } catch (Exception e) {
                                     LOGGER.error(e.getMessage(), e);
@@ -811,15 +815,14 @@ public class ProcessaComicInfo {
                 LOGGER.info("Output comand:\n" + resultado);
 
             s = null;
-            resultado = "";
+            String error = "";
             BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             while ((s = stdError.readLine()) != null)
-                resultado += s + "\n";
+                error += s + "\n";
 
-            if (!resultado.isEmpty()) {
-                info.renameTo(new File(
-                        arquivo.getPath() + Util.getNome(arquivo.getName()) + Util.getExtenssao(info.getName())));
+            if (!resultado.isEmpty() && error.isEmpty()) {
+                info.renameTo(new File(arquivo.getPath() + Util.getNome(arquivo.getName()) + Util.getExtenssao(info.getName())));
                 LOGGER.info("Error comand:\n" + resultado + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
             } else
                 info.delete();

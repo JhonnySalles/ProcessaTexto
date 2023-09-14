@@ -57,6 +57,7 @@ public class MangasComicInfoController implements Initializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MangasComicInfoController.class);
 
     final PseudoClass comicRoot = PseudoClass.getPseudoClass("comic-info");
+    final PseudoClass comicSelecionado = PseudoClass.getPseudoClass("comic-selected");
 
     @FXML
     private AnchorPane apRoot;
@@ -524,44 +525,41 @@ public class MangasComicInfoController implements Initializable {
                 && treeTabela.selectionModelProperty().getValue() != null)
             treeTabela.selectionModelProperty().getValue().getSelectedItem().getValue().setSelecionado(true);
 
-        Callback<Registro, Boolean> callback = new Callback<Registro, Boolean>() {
-            @Override
-            public Boolean call(Registro param) {
+        Callback<Registro, Boolean> callback = param -> {
 
-                REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(BaseLista::isSelecionado))
-                        .forEach(it -> {
-                            if (it.isSelecionado()) {
-                                it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
-                                Registro reg = it.getMyanimelist().get(0);
-                                reg.setMarcado(true);
-                                reg.setId(param.getId());
-                                reg.setNome(param.getNome());
-                                reg.setImagem(param.getImagem());
+            REGISTROS.parallelStream().filter(it -> it.isSelecionado() || it.getMyanimelist().stream().anyMatch(BaseLista::isSelecionado))
+                    .forEach(it -> {
+                        if (it.isSelecionado()) {
+                            it.getMyanimelist().parallelStream().forEach(re -> re.setMarcado(false));
+                            Registro reg = it.getMyanimelist().get(0);
+                            reg.setMarcado(true);
+                            reg.setId(param.getId());
+                            reg.setNome(param.getNome());
+                            reg.setImagem(param.getImagem());
+                        } else {
+                            it.getMyanimelist().forEach(re -> re.setMarcado(false));
+                            Optional<Registro> reg = it.getMyanimelist().parallelStream()
+                                    .filter(re -> re.isSelecionado()).findFirst();
+                            if (reg.isPresent()) {
+                                reg.get().setMarcado(true);
+                                reg.get().setId(param.getId());
+                                reg.get().setNome(param.getNome());
+                                reg.get().setImagem(param.getImagem());
                             } else {
-                                it.getMyanimelist().forEach(re -> re.setMarcado(false));
-                                Optional<Registro> reg = it.getMyanimelist().parallelStream()
-                                        .filter(re -> re.isSelecionado()).findFirst();
-                                if (reg.isPresent()) {
-                                    reg.get().setMarcado(true);
-                                    reg.get().setId(param.getId());
-                                    reg.get().setNome(param.getNome());
-                                    reg.get().setImagem(param.getImagem());
-                                } else {
-                                    Registro aux = it.getMyanimelist().get(0);
-                                    aux.setMarcado(true);
-                                    aux.setId(param.getId());
-                                    aux.setNome(param.getNome());
-                                    aux.setImagem(param.getImagem());
-                                }
+                                Registro aux = it.getMyanimelist().get(0);
+                                aux.setMarcado(true);
+                                aux.setId(param.getId());
+                                aux.setNome(param.getNome());
+                                aux.setImagem(param.getImagem());
                             }
+                        }
 
-                            it.setSelecionado(false);
-                            it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
-                        });
+                        it.setSelecionado(false);
+                        it.getMyanimelist().parallelStream().forEach(re -> re.setSelecionado(false));
+                    });
 
-                treeTabela.refresh();
-                return null;
-            }
+            treeTabela.refresh();
+            return null;
         };
 
         MangasComicInfoMalId.abreTelaCorrecao(controller.getStackPane(), controller.getRoot(), callback);
@@ -708,9 +706,16 @@ public class MangasComicInfoController implements Initializable {
                     if (item == null) {
                         setStyle("");
                         pseudoClassStateChanged(comicRoot, false);
+                        pseudoClassStateChanged(comicSelecionado, false);
                     } else {
                         setContextMenu(menu);
-                        pseudoClassStateChanged(comicRoot, item instanceof MAL);
+                        if (item.isSelecionado()) {
+                            pseudoClassStateChanged(comicSelecionado, true);
+                            pseudoClassStateChanged(comicRoot, false);
+                        } else {
+                            pseudoClassStateChanged(comicSelecionado, false);
+                            pseudoClassStateChanged(comicRoot, item instanceof MAL);
+                        }
                     }
                 }
             };
@@ -734,8 +739,7 @@ public class MangasComicInfoController implements Initializable {
             if (e.getNewValue() != null && !e.getNewValue().isEmpty()) {
                 try {
                     String number = e.getNewValue().replaceAll("/[^0-9]+/g", "");
-                    if (!number.isEmpty() && e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow())
-                            .getValue() instanceof Registro) {
+                    if (!number.isEmpty() && e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue() instanceof Registro) {
                         if (!ProcessaComicInfo.getById(Long.valueOf(number), (Registro) e.getTreeTableView()
                                 .getTreeItem(e.getTreeTablePosition().getRow()).getValue()) && e.getOldValue() != null
                                 && !e.getOldValue().isEmpty())
@@ -745,12 +749,10 @@ public class MangasComicInfoController implements Initializable {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     if (e.getOldValue() != null && !e.getOldValue().isEmpty())
-                        e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
-                                .setId(Long.valueOf(e.getOldValue()));
+                        e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue().setId(Long.valueOf(e.getOldValue()));
                 }
             } else if (e.getOldValue() != null && !e.getOldValue().isEmpty())
-                e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue()
-                        .setId(Long.valueOf(e.getOldValue()));
+                e.getTreeTableView().getTreeItem(e.getTreeTablePosition().getRow()).getValue().setId(Long.valueOf(e.getOldValue()));
             treeTabela.requestFocus();
             treeTabela.refresh();
         });
