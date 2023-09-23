@@ -312,13 +312,7 @@ public class MenuPrincipalController implements Initializable {
         imgExporta.setFitHeight(20);
         imgExporta.setFitWidth(20);
         miBackup.setGraphic(imgExporta);
-        miBackup.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                exportaBackup();
-            }
-        });
+        miBackup.setOnAction(event -> exportaBackup());
 
         MenuItem miRestaurar = new MenuItem("Restaurar");
         ImageView imgImporta = new ImageView(imgAnimaImporta);
@@ -335,18 +329,14 @@ public class MenuPrincipalController implements Initializable {
 
         menuBackup.getItems().addAll(miBackup, miRestaurar);
 
-        btnBackup.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-                Scene scene = btnBanco.getScene();
-                Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
-                Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
-                Point2D nodeCoord = btnBanco.localToScene(0.0, 0.0);
-                double cordenadaX = Math.round(windowCoord.getX() + sceneCoord.getX() + nodeCoord.getX());
-                double cordenadaY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
-                menuBackup.show(btnBackup, cordenadaX + 95, cordenadaY + 30);
-            }
+        btnBackup.setOnMouseClicked(event -> {
+            Scene scene = btnBanco.getScene();
+            Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+            Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
+            Point2D nodeCoord = btnBanco.localToScene(0.0, 0.0);
+            double cordenadaX = Math.round(windowCoord.getX() + sceneCoord.getX() + nodeCoord.getX());
+            double cordenadaY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+            menuBackup.show(btnBackup, cordenadaX + 95, cordenadaY + 30);
         });
 
         tmlImagemBackup = new Timeline(new KeyFrame(Duration.millis(5000), ae -> cancelaBackup()));
@@ -372,8 +362,7 @@ public class MenuPrincipalController implements Initializable {
             pop.setAutoHide(true);
             pop.setOnHidden(e -> cntConfiguracao.salvar());
             pop.setOnShowing(e -> cntConfiguracao.carregar());
-            pop.getRoot().getStylesheets()
-                    .add(MenuPrincipalController.class.getResource("/css/Dark_PopOver.css").toExternalForm());
+            pop.getRoot().getStylesheets().add(MenuPrincipalController.class.getResource("/css/Dark_PopOver.css").toExternalForm());
 
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);

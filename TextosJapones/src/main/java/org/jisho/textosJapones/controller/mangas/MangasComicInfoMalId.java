@@ -171,6 +171,6 @@ public class MangasComicInfoMalId implements Initializable {
 	}
 
 	public static URL getFxmlLocate() {
-		return MangasComicInfoMalId.class.getResource("/view/Mangas/MangaComicInfoMalId.fxml");
+		return MangasComicInfoMalId.class.getResource("/view/mangas/MangaComicInfoMalId.fxml");
 	}
 }

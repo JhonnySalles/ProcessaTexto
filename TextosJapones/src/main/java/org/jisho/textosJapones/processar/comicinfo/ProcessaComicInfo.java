@@ -770,15 +770,14 @@ public class ProcessaComicInfo {
                 LOGGER.info("Output comand:\n" + resultado);
 
             s = null;
-            resultado = "";
+            String error = "";
             BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             while ((s = stdError.readLine()) != null)
-                resultado += s + "\n";
+                error += s + "\n";
 
-            if (!resultado.isEmpty()) {
-                LOGGER.info(
-                        "Error comand:\n" + resultado + "\nNão foi possível extrair o arquivo " + COMICINFO + ".");
+            if (resultado.isEmpty() && !error.isEmpty()) {
+                LOGGER.info( "Error comand:\n" + resultado + "\nNão foi possível extrair o arquivo " + COMICINFO + ".");
             } else
                 comicInfo = new File(Util.getCaminho(arquivo.getPath()) + '\\' + COMICINFO);
         } catch (Exception e) {
@@ -821,7 +820,7 @@ public class ProcessaComicInfo {
             while ((s = stdError.readLine()) != null)
                 error += s + "\n";
 
-            if (!resultado.isEmpty() && error.isEmpty()) {
+            if (resultado.isEmpty() && !error.isEmpty()) {
                 info.renameTo(new File(arquivo.getPath() + Util.getNome(arquivo.getName()) + Util.getExtenssao(info.getName())));
                 LOGGER.info("Error comand:\n" + resultado + "\nNecessário adicionar o rar no path e reiniciar a aplicação.");
             } else
