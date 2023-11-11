@@ -15,6 +15,8 @@ public class NovelCapitulo {
     @Expose
     private Float capitulo;
     @Expose
+    private Integer sequencia;
+    @Expose
     private Language lingua;
     @Expose
     private List<NovelTexto> textos;
@@ -54,6 +56,14 @@ public class NovelCapitulo {
 
     public void setCapitulo(Float capitulo) {
         this.capitulo = capitulo;
+    }
+
+    public Integer getSequencia() {
+        return sequencia;
+    }
+
+    public void setSequencia(Integer sequencia) {
+        this.sequencia = sequencia;
     }
 
     public Language getLingua() {
@@ -110,17 +120,19 @@ public class NovelCapitulo {
         this.novel = "";
         this.volume = 0;
         this.capitulo = 0F;
+        this.sequencia = 0;
         this.lingua = Language.PORTUGUESE;
         this.vocabularios = new HashSet<>();
         this.textos = new ArrayList<>();
         this.processado = false;
     }
 
-    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Language lingua, Boolean raw, Boolean processado) {
+    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean raw, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
         this.capitulo = capitulo;
+        this.sequencia = sequencia;
         this.lingua = lingua;
         this.vocabularios = new HashSet<>();
         this.processado = processado;

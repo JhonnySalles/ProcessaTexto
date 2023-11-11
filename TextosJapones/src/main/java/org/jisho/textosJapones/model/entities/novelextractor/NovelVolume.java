@@ -24,6 +24,8 @@ public class NovelVolume {
     private Integer volume;
     @Expose
     private Language lingua;
+
+    private NovelCapa capa;
     @Expose
     private List<NovelCapitulo> capitulos;
     @Expose
@@ -102,6 +104,14 @@ public class NovelVolume {
         this.lingua = lingua;
     }
 
+    public NovelCapa getCapa() {
+        return capa;
+    }
+
+    public void setCapa(NovelCapa capa) {
+        this.capa = capa;
+    }
+
     public List<NovelCapitulo> getCapitulos() {
         return capitulos;
     }
@@ -146,6 +156,7 @@ public class NovelVolume {
         this.lingua = Language.PORTUGUESE;
         this.arquivo = "";
         this.processado = false;
+        this.capa = null;
         this.vocabularios = new HashSet<>();
         this.capitulos = new ArrayList<>();
     }
@@ -161,12 +172,13 @@ public class NovelVolume {
         this.volume = volume;
         this.lingua = lingua;
         this.processado = processado;
+        this.capa = null;
         this.vocabularios = new HashSet<>();
         this.capitulos = new ArrayList<>();
     }
 
     public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String descricao, String arquivo, String editora, Integer volume, Language lingua,
-                       List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios, Boolean processado) {
+                       NovelCapa capa, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;
@@ -176,6 +188,7 @@ public class NovelVolume {
         this.editora = editora;
         this.volume = volume;
         this.lingua = lingua;
+        this.capa = capa;
         this.capitulos = capitulos;
         this.vocabularios = vocabularios;
         this.processado = processado;

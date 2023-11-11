@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
@@ -19,6 +20,10 @@ import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelCapa;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelCapitulo;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelTexto;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
@@ -30,13 +35,8 @@ import org.jisho.textosJapones.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,7 +79,7 @@ public class ProcessarNovel {
 
     private Boolean error;
 
-    public void processarArquivos(File caminho) {
+    public void processarArquivos(Language linguagem, File caminho) {
         error = false;
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Novels - Processar arquivos");
@@ -108,15 +108,81 @@ public class ProcessarNovel {
                         List<File> arquivos = new ArrayList<>();
 
                         for (File arquivo : caminho.listFiles())
-                            if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.')+1).equalsIgnoreCase("txt"))
+                            if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt"))
                                 arquivos.add(arquivo);
 
                         updateMessage("Iniciando...");
                         desativar = false;
                         for (File arquivo : arquivos) {
 
+                            String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
+                            String nome;
+                            if (arq.toLowerCase().contains("volume"))
+                                nome = arq.substring(0, arq.toLowerCase().lastIndexOf("volume"));
+                            else if (arq.toLowerCase().contains("vol."))
+                                nome = arq.substring(0, arq.toLowerCase().lastIndexOf("vol."));
+                            else
+                                nome = arq.substring(0, arq.lastIndexOf("."));
 
+                            String titulo = "";
+                            if (nome.matches("[a-zA-Z\\d]"))
+                                titulo = nome;
 
+                            Integer volume = 0;
+                            if (arq.toLowerCase().contains("volume"))
+                                volume = Integer.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
+                            else if (arq.toLowerCase().contains("vol."))
+                                volume = Integer.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
+
+                            NovelVolume novel = new NovelVolume(null, nome, "", titulo, "", arquivo.getName(), "", volume, linguagem, false);
+
+                            if (new File(nome + ".jpg").exists()) {
+                                Image imagem = new Image(new FileInputStream(nome + ".jpg"));
+                                novel.setCapa(new NovelCapa(null, novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
+                            }
+
+                            ArrayList<NovelTexto> textos = new ArrayList<>();
+
+                            Boolean index = true;
+                            HashMap<Integer, String> indices = new HashMap<>();
+
+                            FileReader fr = new FileReader(arquivo);
+                            try (BufferedReader br = new BufferedReader(fr)) {
+                                Integer seq = 0;
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    if (line.trim().isEmpty())
+                                        continue;
+                                    seq++;
+                                    textos.add(new NovelTexto(null, line, seq));
+
+                                    if (index && line.contains("*")) {
+                                        indices.put(seq, line.replace("*", "").trim());
+                                        index = line.contains("Índice:") || line.contains("*");
+                                    }
+                                }
+                            }
+
+                            if (!indices.isEmpty()) {
+                                indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
+                                    NovelCapitulo capitulo = new NovelCapitulo(null, novel.getNovel(), novel.getVolume(), 0f, k, novel.getLingua(), false, false);
+                                    for (int i = textos.size(); i >= 0; i--) {
+                                        if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
+                                            break;
+                                        capitulo.addTexto(textos.remove(i));
+                                    }
+                                    novel.addCapitulos(capitulo);
+                                });
+
+                                for (NovelCapitulo capitulo : novel.getCapitulos())
+                                    capitulo.setTextos(capitulo.getTextos().parallelStream().sorted(Comparator.comparing(NovelTexto::getSequencia)).collect(Collectors.toList()));
+
+                                novel.setCapitulos(novel.getCapitulos().parallelStream().sorted(Comparator.comparing(NovelCapitulo::getSequencia)).collect(Collectors.toList()));
+                            } else {
+                                NovelCapitulo capitulo = new NovelCapitulo(null, novel.getNovel(), novel.getVolume(), 0f, 0, novel.getLingua(), false, false);
+                                capitulo.setTextos(textos);
+                                novel.addCapitulos(capitulo);
+                            }
 
                             if (desativar)
                                 break;
@@ -294,12 +360,12 @@ public class ProcessarNovel {
                         }
 
                     } catch (IOException e) {
-                        
+
                         LOGGER.error(e.getMessage(), e);
                         error = false;
                     }
                 } catch (Exception e) {
-                    
+
                     LOGGER.error(e.getMessage(), e);
                     error = false;
                 }
@@ -490,7 +556,7 @@ public class ProcessarNovel {
                                                     Language.PORTUGUESE.getSigla(), revisar.getIngles(),
                                                     MenuPrincipalController.getController().getContaGoogle())));
                                 } catch (IOException e) {
-                                    
+
                                     LOGGER.error(e.getMessage(), e);
                                 }
                             }
@@ -692,7 +758,7 @@ public class ProcessarNovel {
                                                                                             .getController()
                                                                                             .getContaGoogle())));
                                                                 } catch (IOException e) {
-                                                                    
+
                                                                     LOGGER.error(e.getMessage(), e);
                                                                 }
                                                             }
@@ -769,7 +835,7 @@ public class ProcessarNovel {
                     }
 
                 } catch (Exception e) {
-                    
+
                     LOGGER.error(e.getMessage(), e);
                     error = false;
                 }
