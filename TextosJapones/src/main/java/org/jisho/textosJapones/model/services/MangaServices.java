@@ -125,7 +125,7 @@ public class MangaServices {
                                     try {
                                         mangaDao.deleteCapitulo(tabela.getBase(), anterior);
                                     } catch (ExcessaoBd e) {
-                                        
+
                                         LOGGER.error(e.getMessage(), e);
                                     }
                             });
@@ -154,7 +154,7 @@ public class MangaServices {
                                             try {
                                                 mangaDao.deletePagina(tabela.getBase(), anterior);
                                             } catch (ExcessaoBd e) {
-                                                
+
                                                 LOGGER.error(e.getMessage(), e);
                                             }
                                     });
@@ -177,7 +177,7 @@ public class MangaServices {
                                                 try {
                                                     mangaDao.deleteTexto(tabela.getBase(), anterior);
                                                 } catch (ExcessaoBd e) {
-                                                    
+
                                                     LOGGER.error(e.getMessage(), e);
                                                 }
                                         });
