@@ -619,8 +619,15 @@ public class ProcessaComicInfo {
                             if (pasta.contains("]"))
                                 item = pasta.substring(0, pasta.indexOf("]")).replace("[", "");
 
-                            if (!item.isEmpty() && !tradutor.contains(pasta))
-                                tradutor += item + "; ";
+                            if (!item.isEmpty()) {
+                                if (item.contains("&")) {
+                                    String[] itens = item.split("&");
+                                    for (String itm : itens)
+                                        if (!tradutor.contains(itm.trim()))
+                                            tradutor += itm.trim() + "; ";
+                                } else if (!tradutor.contains(item))
+                                        tradutor += item + "; ";
+                            }
                         }
 
                         if (!tradutor.isEmpty()) {
