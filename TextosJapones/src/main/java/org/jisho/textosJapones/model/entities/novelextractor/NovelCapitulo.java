@@ -21,8 +21,6 @@ public class NovelCapitulo {
     @Expose
     private List<NovelTexto> textos;
     @Expose
-    private Boolean raw;
-    @Expose
     private Set<NovelVocabulario> vocabularios;
     private Boolean processado;
 
@@ -74,14 +72,6 @@ public class NovelCapitulo {
         this.lingua = lingua;
     }
 
-    public Boolean isRaw() {
-        return raw;
-    }
-
-    public void setRaw(Boolean raw) {
-        this.raw = raw;
-    }
-
     public List<NovelTexto> getTextos() {
         return textos;
     }
@@ -127,17 +117,29 @@ public class NovelCapitulo {
         this.processado = false;
     }
 
-    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean raw, Boolean processado) {
+    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
         this.capitulo = capitulo;
         this.sequencia = sequencia;
         this.lingua = lingua;
-        this.vocabularios = new HashSet<>();
         this.processado = processado;
+        this.vocabularios = new HashSet<>();
         this.textos = new ArrayList<>();
-        this.raw = raw;
+    }
+
+    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado,
+                         List<NovelTexto> textos, Set<NovelVocabulario> vocabularios) {
+        this.id = id;
+        this.novel = novel;
+        this.volume = volume;
+        this.capitulo = capitulo;
+        this.sequencia = sequencia;
+        this.lingua = lingua;
+        this.processado = processado;
+        this.textos = textos;
+        this.vocabularios = vocabularios;
     }
 
     @Override
@@ -148,17 +150,17 @@ public class NovelCapitulo {
         NovelCapitulo that = (NovelCapitulo) o;
         return Objects.equals(id, that.id) && Objects.equals(novel, that.novel) &&
                 Objects.equals(volume, that.volume) && Objects.equals(capitulo, that.capitulo) &&
-                lingua == that.lingua && Objects.equals(raw, that.raw);
+                lingua == that.lingua;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, novel, volume, capitulo, lingua, raw);
+        return Objects.hash(super.hashCode(), id, novel, volume, capitulo, lingua);
     }
 
     @Override
     public String toString() {
-        return "NovelCapitulo [id=" + id + ", capitulo=" + capitulo + ", lingua=" + lingua + ", textos=" + textos + ", raw=" + raw + "]";
+        return "NovelCapitulo [id=" + id + ", capitulo=" + capitulo + ", lingua=" + lingua + ", textos=" + textos + "]";
     }
 
 }

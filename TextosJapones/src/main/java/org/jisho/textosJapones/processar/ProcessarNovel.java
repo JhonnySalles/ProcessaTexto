@@ -19,7 +19,6 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
@@ -32,6 +31,8 @@ import org.jisho.textosJapones.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,67 +83,67 @@ public class ProcessarNovel {
         if (texto.matches(japanese)) {
             List<Morpheme> m = tokenizer.tokenize(mode, texto);
             if (!m.isEmpty())
-                nome = m.get(0).readingForm().substring(0,1);
+                nome = m.get(0).readingForm().substring(0, 1);
 
             switch (nome) {
-                case "あ" :
-                case "か" :
-                case "さ" :
-                case "た" :
-                case "な" :
-                case "は" :
-                case "ま" :
-                case "や" :
-                case "ら" :
-                case "わ" :
+                case "あ":
+                case "か":
+                case "さ":
+                case "た":
+                case "な":
+                case "は":
+                case "ま":
+                case "や":
+                case "ら":
+                case "わ":
                     tabela = "a";
                     break;
 
-                case "え" :
-                case "け" :
-                case "せ" :
-                case "て" :
-                case "ね" :
-                case "へ" :
-                case "め" :
-                case "れ" :
+                case "え":
+                case "け":
+                case "せ":
+                case "て":
+                case "ね":
+                case "へ":
+                case "め":
+                case "れ":
                     tabela = "e";
                     break;
 
-                case "い" :
-                case "き" :
-                case "し" :
-                case "ち" :
-                case "に" :
-                case "ひ" :
-                case "み" :
-                case "り" :
+                case "い":
+                case "き":
+                case "し":
+                case "ち":
+                case "に":
+                case "ひ":
+                case "み":
+                case "り":
                     tabela = "i";
                     break;
 
-                case "お" :
-                case "こ" :
-                case "そ" :
-                case "と" :
-                case "の" :
-                case "ほ" :
-                case "も" :
-                case "よ" :
-                case "ろ" :
-                case "ん" :
+                case "お":
+                case "こ":
+                case "そ":
+                case "と":
+                case "の":
+                case "ほ":
+                case "も":
+                case "よ":
+                case "ろ":
+                case "ん":
                     tabela = "o";
                     break;
 
-                case "う" :
-                case "く" :
-                case "す" :
-                case "つ" :
-                case "ぬ" :
-                case "ふ" :
-                case "む" :
-                case "ゆ" :
-                case "る" :
-                case "を" :
+                case "う":
+                case "く":
+                case "す":
+                case "つ":
+                case "ぬ":
+                case "ふ":
+                case "む":
+                case "ゆ":
+                case "る":
+                case "を":
                     tabela = "u";
                     break;
             }
@@ -206,11 +207,11 @@ public class ProcessarNovel {
                             else if (arq.toLowerCase().contains("vol."))
                                 volume = Integer.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
 
-                            NovelVolume novel = new NovelVolume(null, nome, "", titulo, "", arquivo.getName(), "", volume, linguagem, false);
+                            NovelVolume novel = new NovelVolume(UUID.randomUUID(), nome, "", titulo, "", arquivo.getName(), "", volume, linguagem, false);
 
                             if (new File(nome + ".jpg").exists()) {
-                                Image imagem = new Image(new FileInputStream(nome + ".jpg"));
-                                novel.setCapa(new NovelCapa(null, novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
+                                BufferedImage imagem = ImageIO.read(new File(nome + ".jpg"));
+                                novel.setCapa(new NovelCapa(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
                             }
 
                             ArrayList<NovelTexto> textos = new ArrayList<>();
@@ -226,7 +227,7 @@ public class ProcessarNovel {
                                     if (line.trim().isEmpty())
                                         continue;
                                     seq++;
-                                    textos.add(new NovelTexto(null, line, seq));
+                                    textos.add(new NovelTexto(UUID.randomUUID(), line, seq));
 
                                     if (index && line.contains("*")) {
                                         indices.put(seq, line.replace("*", "").trim());
@@ -237,7 +238,7 @@ public class ProcessarNovel {
 
                             if (!indices.isEmpty()) {
                                 indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
-                                    NovelCapitulo capitulo = new NovelCapitulo(null, novel.getNovel(), novel.getVolume(), 0f, k, novel.getLingua(), false, false);
+                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), 0f, k, novel.getLingua(), false);
                                     for (int i = textos.size(); i >= 0; i--) {
                                         capitulo.addTexto(textos.remove(i));
                                         if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
@@ -257,7 +258,7 @@ public class ProcessarNovel {
 
                                 novel.setCapitulos(novel.getCapitulos().parallelStream().sorted(Comparator.comparing(NovelCapitulo::getSequencia)).collect(Collectors.toList()));
                             } else {
-                                NovelCapitulo capitulo = new NovelCapitulo(null, novel.getNovel(), novel.getVolume(), 0f, 0, novel.getLingua(), false, false);
+                                NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), 0f, 0, novel.getLingua(), false);
                                 capitulo.setTextos(textos);
                                 novel.addCapitulos(capitulo);
                             }
@@ -647,10 +648,7 @@ public class ProcessarNovel {
                                                 if (traducoes > 3000) {
                                                     traducoes = 0;
                                                     MenuPrincipalController.getController()
-                                                            .setContaGoogle(Util
-                                                                    .next(MenuPrincipalController
-                                                                            .getController()
-                                                                            .getContaGoogle()));
+                                                            .setContaGoogle(Util.next(MenuPrincipalController.getController().getContaGoogle()));
                                                 }
 
                                                 Platform.runLater(() -> MenuPrincipalController

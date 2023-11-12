@@ -21,22 +21,20 @@ public class NovelServices {
 
     private final NovelDao mangaDao = DaoFactory.createNovelDao();
 
-    public List<String> getTabelas() throws ExcessaoBd {
-        return mangaDao.getTabelas();
-    }
-
     public void createTabela(String base) throws ExcessaoBd {
         mangaDao.createTabela(base);
     }
 
-    public String findTabela(String base) throws ExcessaoBd {
-        return mangaDao.getTabelas().stream().findFirst().orElse("");
+    public Boolean existTabela(String tabela) throws ExcessaoBd {
+        String base = mangaDao.selectTabela(tabela);
+        return base != null && base.equalsIgnoreCase(tabela);
     }
 
+    public void salvarVolume(String tabela, NovelVolume volume) throws ExcessaoBd {
+        if (!existTabela(tabela))
+            createTabela(tabela);
 
-    public void salvarVolume(String base, NovelVolume volume) throws ExcessaoBd {
-        //insertVocabularios(base, volume.getId(), null, null, volume.getVocabularios());
-        //mangaDao.updateProcessado(base, "volumes", volume.getId());
+        mangaDao.insertVolume(tabela, volume);
     }
 
 }

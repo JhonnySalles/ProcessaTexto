@@ -178,7 +178,7 @@ public class NovelVolume {
     }
 
     public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String descricao, String arquivo, String editora, Integer volume, Language lingua,
-                       NovelCapa capa, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios, Boolean processado) {
+                       NovelCapa capa, Boolean processado, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios) {
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;

@@ -3,6 +3,8 @@ package org.jisho.textosJapones.model.entities.novelextractor;
 import javafx.scene.image.Image;
 import org.jisho.textosJapones.model.enums.Language;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.util.UUID;
 
 public class NovelCapa {
@@ -11,7 +13,7 @@ public class NovelCapa {
     private String novel;
     private Integer volume;
     private Language lingua;
-    private Image imagem;
+    private BufferedImage imagem;
 
     public UUID getId() {
         return id;
@@ -45,11 +47,11 @@ public class NovelCapa {
         this.lingua = lingua;
     }
 
-    public Image getImagem() {
+    public BufferedImage getImagem() {
         return imagem;
     }
 
-    public void setImagem(Image imagem) {
+    public void setImagem(BufferedImage imagem) {
         this.imagem = imagem;
     }
 
@@ -61,7 +63,7 @@ public class NovelCapa {
         this.imagem = null;
     }
 
-    public NovelCapa(UUID id, String novel, Integer volume, Language lingua, Image imagem) {
+    public NovelCapa(UUID id, String novel, Integer volume, Language lingua, BufferedImage imagem) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
