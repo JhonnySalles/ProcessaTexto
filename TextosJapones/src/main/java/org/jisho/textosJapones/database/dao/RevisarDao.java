@@ -38,4 +38,6 @@ public interface RevisarDao {
 	void incrementaVezesAparece(String vocabulario) throws ExcessaoBd;
 
 	void setIsManga(Revisar obj) throws ExcessaoBd;
+
+	void setIsNovel(Revisar obj) throws ExcessaoBd;
 }

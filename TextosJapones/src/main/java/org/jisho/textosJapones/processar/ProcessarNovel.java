@@ -20,10 +20,7 @@ import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
-import org.jisho.textosJapones.model.entities.novelextractor.NovelCapa;
-import org.jisho.textosJapones.model.entities.novelextractor.NovelCapitulo;
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTexto;
-import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
+import org.jisho.textosJapones.model.entities.novelextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
@@ -50,12 +47,12 @@ public class ProcessarNovel {
     private final RevisarInglesServices serviceInglesRevisar = new RevisarInglesServices();
 
     private final MangasProcessarController controller;
-    private final MangaServices serviceManga = new MangaServices();
+    private final NovelServices serviceNovel = new NovelServices();
     private final ProcessarPalavra desmembra = new ProcessarPalavra();
     private Site siteDicionario;
     private Boolean desativar = false;
     private Integer traducoes = 0;
-    private final Set<MangaVocabulario> vocabHistorico = new HashSet<>();
+    private final Set<NovelVocabulario> vocabHistorico = new HashSet<>();
     private final Set<String> validaHistorico = new HashSet<>();
 
     public ProcessarNovel(MangasProcessarController controller) {
@@ -67,9 +64,8 @@ public class ProcessarNovel {
     }
 
     private Integer V, C, Progress, Size;
-    private final Set<MangaVocabulario> vocabVolume = new HashSet<>();
-    private final Set<MangaVocabulario> vocabCapitulo = new HashSet<>();
-    private final Set<MangaVocabulario> vocabPagina = new HashSet<>();
+    private final Set<NovelVocabulario> vocabVolume = new HashSet<>();
+    private final Set<NovelVocabulario> vocabCapitulo = new HashSet<>();
     private final Set<String> vocabValida = new HashSet<>();
 
     private final DoubleProperty propTexto = new SimpleDoubleProperty(.0);
@@ -78,8 +74,85 @@ public class ProcessarNovel {
     private final DoubleProperty propTabela = new SimpleDoubleProperty(.0);
 
     private Boolean error;
+    final private String japanese = "[\u3041-\u9FAF]";
 
-    public void processarArquivos(Language linguagem, File caminho) {
+    private String getTabela(String texto) {
+        String tabela = "temp";
+        String nome = "";
+        if (texto.matches(japanese)) {
+            List<Morpheme> m = tokenizer.tokenize(mode, texto);
+            if (!m.isEmpty())
+                nome = m.get(0).readingForm().substring(0,1);
+
+            switch (nome) {
+                case "あ" :
+                case "か" :
+                case "さ" :
+                case "た" :
+                case "な" :
+                case "は" :
+                case "ま" :
+                case "や" :
+                case "ら" :
+                case "わ" :
+                    tabela = "a";
+                    break;
+
+                case "え" :
+                case "け" :
+                case "せ" :
+                case "て" :
+                case "ね" :
+                case "へ" :
+                case "め" :
+                case "れ" :
+                    tabela = "e";
+                    break;
+
+                case "い" :
+                case "き" :
+                case "し" :
+                case "ち" :
+                case "に" :
+                case "ひ" :
+                case "み" :
+                case "り" :
+                    tabela = "i";
+                    break;
+
+                case "お" :
+                case "こ" :
+                case "そ" :
+                case "と" :
+                case "の" :
+                case "ほ" :
+                case "も" :
+                case "よ" :
+                case "ろ" :
+                case "ん" :
+                    tabela = "o";
+                    break;
+
+                case "う" :
+                case "く" :
+                case "す" :
+                case "つ" :
+                case "ぬ" :
+                case "ふ" :
+                case "む" :
+                case "ゆ" :
+                case "る" :
+                case "を" :
+                    tabela = "u";
+                    break;
+            }
+        } else
+            tabela = nome.substring(0, 1);
+
+        return tabela;
+    }
+
+    public void processarArquivos(String tabela, Language linguagem, File caminho) {
         error = false;
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Novels - Processar arquivos");
@@ -111,10 +184,9 @@ public class ProcessarNovel {
                             if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt"))
                                 arquivos.add(arquivo);
 
-                        updateMessage("Iniciando...");
                         desativar = false;
                         for (File arquivo : arquivos) {
-
+                            updateMessage("Importando texto do arquivo " + arquivo.getName() + "...");
                             String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
                             String nome;
                             if (arq.toLowerCase().contains("volume"))
@@ -167,12 +239,18 @@ public class ProcessarNovel {
                                 indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
                                     NovelCapitulo capitulo = new NovelCapitulo(null, novel.getNovel(), novel.getVolume(), 0f, k, novel.getLingua(), false, false);
                                     for (int i = textos.size(); i >= 0; i--) {
+                                        capitulo.addTexto(textos.remove(i));
                                         if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
                                             break;
-                                        capitulo.addTexto(textos.remove(i));
                                     }
                                     novel.addCapitulos(capitulo);
                                 });
+
+                                if (!textos.isEmpty()) {
+                                    NovelCapitulo capitulo = novel.getCapitulos().get(novel.getCapitulos().size());
+                                    for (int i = textos.size(); i >= 0; i--)
+                                        capitulo.addTexto(textos.remove(i));
+                                }
 
                                 for (NovelCapitulo capitulo : novel.getCapitulos())
                                     capitulo.setTextos(capitulo.getTextos().parallelStream().sorted(Comparator.comparing(NovelTexto::getSequencia)).collect(Collectors.toList()));
@@ -184,17 +262,44 @@ public class ProcessarNovel {
                                 novel.addCapitulos(capitulo);
                             }
 
+                            NovelTabela obj;
+                            if (!tabela.isEmpty())
+                                obj = new NovelTabela(tabela, new ArrayList<>());
+                            else
+                                obj = new NovelTabela(getTabela(nome), new ArrayList<>());
+
+                            obj.addVolume(novel);
+
+                            if (desativar)
+                                break;
+
+                            updateMessage("Processando textos do arquivo " + arquivo.getName() + "...");
+
+                            switch (linguagem) {
+                                case JAPANESE:
+                                    processarJapones(obj);
+                                    break;
+                                case ENGLISH:
+                                    processarIngles(obj);
+                                    break;
+                            }
+
+                            if (desativar)
+                                break;
+
+                            updateMessage("Salvando textos do arquivo " + arquivo.getName() + "...");
+                            for (NovelVolume vol : obj.getVolumes())
+                                serviceNovel.salvarVolume(obj.getBase(), vol);
+
                             if (desativar)
                                 break;
                         }
 
                     } catch (IOException e) {
-
                         LOGGER.error(e.getMessage(), e);
                         error = false;
                     }
                 } catch (Exception e) {
-
                     LOGGER.error(e.getMessage(), e);
                     error = false;
                 }
@@ -237,184 +342,56 @@ public class ProcessarNovel {
         t.start();
     }
 
-    public void processarTabelasJapones(List<MangaTabela> tabelas) {
-        error = false;
-        GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
-        progress.getTitulo().setText("Mangas - Processar vocabulário");
-        // Criacao da thread para que esteja validando a conexao e nao trave a tela.
-        Task<Void> processarTabela = new Task<Void>() {
+    private void processarJapones(NovelTabela tabela) throws ExcessaoBd {
+        try (Dictionary dict = new DictionaryFactory().create("",
+                SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer
+                        .getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
+            tokenizer = dict.create();
+            mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
+            siteDicionario = MenuPrincipalController.getController().getSite();
 
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    try (Dictionary dict = new DictionaryFactory().create("",
-                            SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer
-                                    .getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
-                        tokenizer = dict.create();
-                        mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
-                        siteDicionario = MenuPrincipalController.getController().getSite();
+            validaHistorico.clear();
+            desativar = false;
 
-                        validaHistorico.clear();
-                        propTabela.set(.0);
-                        propVolume.set(.0);
-                        propCapitulo.set(.0);
+            V = 0;
+            for (NovelVolume volume : tabela.getVolumes()) {
+                V++;
 
-                        updateMessage("Calculando tempo necessário...");
-                        Progress = 0;
-                        Size = 0;
-                        tabelas.stream().filter(t -> t.isProcessar()).collect(Collectors.toList())
-                                .forEach(tabela -> tabela.getVolumes().stream().filter(v -> v.isProcessar())
-                                        .collect(Collectors.toList())
-                                        .forEach(volume -> volume.getCapitulos().stream().filter(c -> c.isProcessar())
-                                                .collect(Collectors.toList())
-                                                .forEach(capitulo -> capitulo.getPaginas().stream()
-                                                        .filter(p -> p.isProcessar()).collect(Collectors.toList())
-                                                        .forEach(pagina -> pagina.getTextos().forEach(texto -> {
-                                                            if (texto.isProcessar())
-                                                                Size++;
-                                                        })))));
-                        updateMessage("Iniciando...");
-                        desativar = false;
-                        for (MangaTabela tabela : tabelas) {
-                            if (!tabela.isProcessar())
-                                continue;
+                vocabVolume.clear();
+                C = 0;
+                for (NovelCapitulo capitulo : volume.getCapitulos()) {
+                    C++;
 
-                            V = 0;
-                            for (MangaVolume volume : tabela.getVolumes()) {
-                                V++;
+                    vocabCapitulo.clear();
+                    vocabValida.clear();
+                    for (NovelTexto texto : capitulo.getTextos())
+                        gerarVocabulario(texto.getTexto());
 
-                                if (!volume.isProcessar() || !volume.getLingua().equals(Language.JAPANESE)) {
-                                    propVolume.set((double) V / tabela.getVolumes().size());
+                    capitulo.setVocabularios(vocabCapitulo);
+                    capitulo.setProcessado(true);
+                    propCapitulo.set((double) C / volume.getCapitulos().size());
 
-                                    if (!volume.isProcessar())
-                                        updateMessage("IGNORADO - Manga: " + volume.getManga());
-                                    else
-                                        updateMessage("IGNORADO - Linguagem: " + volume.getLingua());
-
-                                    continue;
-                                }
-
-                                vocabVolume.clear();
-                                C = 0;
-                                for (MangaCapitulo capitulo : volume.getCapitulos()) {
-                                    C++;
-
-                                    if (!capitulo.isProcessar()) {
-                                        updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
-                                                + capitulo.getCapitulo());
-                                        propCapitulo.set((double) C / volume.getCapitulos().size());
-                                        continue;
-                                    }
-
-                                    vocabCapitulo.clear();
-                                    int p = 0;
-                                    for (MangaPagina pagina : capitulo.getPaginas()) {
-                                        p++;
-                                        updateProgress(p, capitulo.getPaginas().size());
-
-                                        if (!pagina.isProcessar()) {
-                                            updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo: "
-                                                    + capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
-                                            continue;
-                                        }
-
-                                        updateMessage("Processando " + V + " de " + tabela.getVolumes().size()
-                                                + " volumes." + " Manga: " + volume.getManga() + " - Capitulo: "
-                                                + capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
-
-                                        vocabPagina.clear();
-                                        vocabValida.clear();
-                                        for (MangaTexto texto : pagina.getTextos())
-                                            gerarVocabulario(texto.getTexto());
-
-                                        pagina.setVocabularios(vocabPagina);
-                                        pagina.setProcessado(true);
-                                        serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
-
-                                        if (desativar)
-                                            break;
-                                    }
-                                    capitulo.setVocabularios(vocabCapitulo);
-                                    capitulo.setProcessado(true);
-                                    serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
-                                    propCapitulo.set((double) C / volume.getCapitulos().size());
-
-                                    if (desativar)
-                                        break;
-                                }
-                                volume.setVocabularios(vocabVolume);
-                                volume.setProcessado(true);
-                                serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
-                                propVolume.set((double) V / tabela.getVolumes().size());
-
-                                if (desativar) {
-                                    updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga()
-                                            + " - Volume: " + volume.getVolume().toString());
-                                    serviceManga.updateCancel(tabela.getBase(), volume);
-                                    break;
-                                }
-                            }
-
-                            if (desativar)
-                                break;
-                        }
-
-                    } catch (IOException e) {
-
-                        LOGGER.error(e.getMessage(), e);
-                        error = false;
-                    }
-                } catch (Exception e) {
-
-                    LOGGER.error(e.getMessage(), e);
-                    error = false;
+                    if (desativar)
+                        break;
                 }
-
-                return null;
+                volume.setVocabularios(vocabVolume);
+                volume.setProcessado(true);
+                propVolume.set((double) V / tabela.getVolumes().size());
             }
 
-            @Override
-            protected void succeeded() {
-                super.failed();
-                if (error)
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Erro", "Erro ao processar a lista.");
-                else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Aviso", "Mangas processadas com sucesso.");
+        } catch (IOException e) {
 
-                progress.getBarraProgresso().progressProperty().unbind();
-                controller.getBarraProgressoVolumes().progressProperty().unbind();
-                controller.getBarraProgressoCapitulos().progressProperty().unbind();
-                controller.getBarraProgressoPaginas().progressProperty().unbind();
-                progress.getLog().textProperty().unbind();
-                controller.habilitar();
+            LOGGER.error(e.getMessage(), e);
+            error = false;
+        }
 
-                MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
-            }
-
-            @Override
-            protected void failed() {
-                super.failed();
-                LOGGER.warn("Erro na thread de processamento da tabela: " + super.getMessage());
-                System.out.print("Erro na thread de processamento da tabela: " + super.getMessage());
-            }
-        };
-        progress.getBarraProgresso().progressProperty().bind(propTabela);
-        controller.getBarraProgressoVolumes().progressProperty().bind(propVolume);
-        controller.getBarraProgressoCapitulos().progressProperty().bind(propCapitulo);
-        controller.getBarraProgressoPaginas().progressProperty().bind(processarTabela.progressProperty());
-        progress.getLog().textProperty().bind(processarTabela.messageProperty());
-        Thread t = new Thread(processarTabela);
-        t.start();
     }
 
     private String getSignificado(String kanji) {
         if (kanji.trim().isEmpty())
             return "";
 
-        Platform.runLater(
-                () -> MenuPrincipalController.getController().getLblLog().setText(kanji + " : Obtendo significado."));
+        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(kanji + " : Obtendo significado."));
         String resultado = "";
         switch (siteDicionario) {
             case TODOS:
@@ -480,7 +457,6 @@ public class ProcessarNovel {
     }
 
     final private String pattern = ".*[\u4E00-\u9FAF].*";
-    final private String japanese = ".*[\u3041-\u9FAF].*";
     private Tokenizer tokenizer;
     private SplitMode mode;
 
@@ -488,11 +464,10 @@ public class ProcessarNovel {
         for (Morpheme m : tokenizer.tokenize(mode, frase)) {
             if (m.surface().matches(pattern)) {
                 if (validaHistorico.contains(m.dictionaryForm())) {
-                    MangaVocabulario vocabulario = vocabHistorico.stream()
+                    NovelVocabulario vocabulario = vocabHistorico.stream()
                             .filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getPalavra())).findFirst()
                             .orElse(null);
                     if (vocabulario != null) {
-                        vocabPagina.add(vocabulario);
                         vocabCapitulo.add(vocabulario);
                         vocabVolume.add(vocabulario);
                         continue;
@@ -503,12 +478,12 @@ public class ProcessarNovel {
                     Vocabulario palavra = vocabularioJaponesService.select(m.surface(), m.dictionaryForm());
 
                     if (palavra != null) {
-                        MangaVocabulario vocabulario = null;
+                        NovelVocabulario vocabulario = null;
                         if (palavra.getPortugues().substring(0, 2).matches(japanese))
-                            vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
+                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(),
                                     palavra.getIngles(), m.readingForm());
                         else
-                            vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
+                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(),
                                     palavra.getIngles(), m.readingForm());
 
                         // Usado apenas para correção em formas em branco.
@@ -522,13 +497,12 @@ public class ProcessarNovel {
                         vocabHistorico.add(vocabulario);
 
                         vocabValida.add(m.dictionaryForm());
-                        vocabPagina.add(vocabulario);
                         vocabCapitulo.add(vocabulario);
                         vocabVolume.add(vocabulario);
                     } else {
                         Revisar revisar = serviceJaponesRevisar.select(m.surface(), m.dictionaryForm());
                         if (revisar == null) {
-                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true);
+                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, false, true);
                             Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
                                     .setText(m.surface() + " : Vocabulário novo."));
                             revisar.setIngles(getSignificado(revisar.getVocabulario()));
@@ -563,22 +537,21 @@ public class ProcessarNovel {
                             serviceJaponesRevisar.insert(revisar);
                             Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(""));
                         } else {
-                            if (!revisar.isManga()) {
-                                revisar.setManga(true);
-                                serviceJaponesRevisar.setIsManga(revisar);
+                            if (!revisar.isNovel()) {
+                                revisar.setNovel(true);
+                                serviceJaponesRevisar.setIsNovel(revisar);
                             }
 
                             serviceJaponesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                         }
 
-                        MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getPortugues(),
+                        NovelVocabulario vocabulario = new NovelVocabulario(m.dictionaryForm(), revisar.getPortugues(),
                                 revisar.getIngles(), m.readingForm(), false);
 
                         validaHistorico.add(m.dictionaryForm());
                         vocabHistorico.add(vocabulario);
 
                         vocabValida.add(m.dictionaryForm());
-                        vocabPagina.add(vocabulario);
                         vocabCapitulo.add(vocabulario);
                         vocabVolume.add(vocabulario);
                     }
@@ -595,288 +568,158 @@ public class ProcessarNovel {
 
     private final Set<String> palavraValida = new HashSet<>();
 
-    public void processarTabelasIngles(List<MangaTabela> tabelas) {
-        error = false;
-        GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
-        progress.getTitulo().setText("Mangas - Processar vocabulário");
-        // Criacao da thread para que esteja validando a conexao e nao trave a tela.
-        Task<Void> processarTabela = new Task<Void>() {
+    public void processarIngles(NovelTabela tabela) throws ExcessaoBd {
+        propTabela.set(.0);
+        propVolume.set(.0);
+        propCapitulo.set(.0);
+        validaHistorico.clear();
 
-            @Override
-            protected Void call() throws Exception {
-                try {
+        palavraValida.clear();
 
-                    propTabela.set(.0);
-                    propVolume.set(.0);
-                    propCapitulo.set(.0);
-                    validaHistorico.clear();
+        V = 0;
+        for (NovelVolume volume : tabela.getVolumes()) {
+            V++;
 
-                    updateMessage("Calculando tempo necessário...");
-                    Progress = 0;
-                    Size = 0;
-                    tabelas.stream().filter(t -> t.isProcessar()).collect(Collectors.toList())
-                            .forEach(tabela -> tabela.getVolumes().stream().filter(v -> v.isProcessar())
-                                    .collect(Collectors.toList())
-                                    .forEach(volume -> volume.getCapitulos().stream().filter(c -> c.isProcessar())
-                                            .collect(Collectors.toList())
-                                            .forEach(capitulo -> capitulo.getPaginas().stream()
-                                                    .filter(p -> p.isProcessar()).collect(Collectors.toList())
-                                                    .forEach(pagina -> pagina.getTextos().forEach(texto -> {
-                                                        if (texto.isProcessar())
-                                                            Size++;
-                                                    })))));
-                    updateMessage("Iniciando...");
-                    desativar = false;
-                    for (MangaTabela tabela : tabelas) {
-                        if (!tabela.isProcessar())
-                            continue;
+            vocabVolume.clear();
+            C = 0;
+            for (NovelCapitulo capitulo : volume.getCapitulos()) {
+                C++;
 
-                        palavraValida.clear();
+                vocabCapitulo.clear();
+                vocabValida.clear();
+                for (NovelTexto texto : capitulo.getTextos()) {
+                    if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
+                        Set<String> palavras = Stream.of(texto.getTexto().split(" "))
+                                .map(txt -> txt.replaceAll("\\W", ""))
+                                .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
+                                .collect(Collectors.toSet());
 
-                        V = 0;
-                        for (MangaVolume volume : tabela.getVolumes()) {
-                            V++;
+                        for (String palavra : palavras) {
 
-                            if (!volume.isProcessar() || !volume.getLingua().equals(Language.ENGLISH)) {
-                                propVolume.set((double) V / tabela.getVolumes().size());
-
-                                if (!volume.isProcessar())
-                                    updateMessage("IGNORADO - Manga: " + volume.getManga());
-                                else
-                                    updateMessage("IGNORADO - Linguagem: " + volume.getLingua());
-
+                            if (palavra.matches("[\\d|\\W]"))
                                 continue;
-                            }
 
-                            vocabVolume.clear();
-                            C = 0;
-                            for (MangaCapitulo capitulo : volume.getCapitulos()) {
-                                C++;
-
-                                if (!capitulo.isProcessar()) {
-                                    updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
-                                            + capitulo.getCapitulo());
-                                    propCapitulo.set((double) C / volume.getCapitulos().size());
+                            if (validaHistorico.contains(palavra)) {
+                                NovelVocabulario vocabulario = vocabHistorico.stream().filter(
+                                                vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
+                                        .findFirst().orElse(null);
+                                if (vocabulario != null) {
+                                    vocabCapitulo.add(vocabulario);
+                                    vocabVolume.add(vocabulario);
                                     continue;
                                 }
+                            }
 
-                                vocabCapitulo.clear();
-                                int p = 0;
-                                for (MangaPagina pagina : capitulo.getPaginas()) {
-                                    p++;
-                                    updateProgress(p, capitulo.getPaginas().size());
+                            if (!vocabValida.contains(palavra)) {
+                                Vocabulario salvo = vocabularioInglesService.select(palavra);
 
-                                    if (!pagina.isProcessar()) {
-                                        updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo: "
-                                                + capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
-                                        continue;
+                                if (salvo != null) {
+                                    NovelVocabulario vocabulario = new NovelVocabulario(palavra, salvo.getPortugues());
+
+                                    validaHistorico.add(palavra);
+                                    vocabHistorico.add(vocabulario);
+
+                                    vocabValida.add(palavra);
+                                    vocabCapitulo.add(vocabulario);
+                                    vocabVolume.add(vocabulario);
+                                } else {
+
+                                    if (!palavraValida.contains(palavra.toLowerCase())) {
+                                        String valido = serviceInglesRevisar.isValido(palavra);
+
+                                        if (valido == null)
+                                            continue;
+
+                                        palavraValida.add(valido);
                                     }
 
-                                    updateMessage("Processando " + V + " de " + tabela.getVolumes().size() + " volumes."
-                                            + " Manga: " + volume.getManga() + " - Capitulo: " + capitulo.getCapitulo()
-                                            + " - Página: " + pagina.getNomePagina());
+                                    Revisar revisar = serviceInglesRevisar.select(palavra);
+                                    if (revisar == null) {
+                                        revisar = new Revisar(palavra, false, false, false, true);
+                                        Platform.runLater(() -> MenuPrincipalController
+                                                .getController().getLblLog()
+                                                .setText(palavra + " : Vocabulário novo."));
 
-                                    vocabPagina.clear();
-                                    vocabValida.clear();
-                                    for (MangaTexto texto : pagina.getTextos()) {
-                                        if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
-                                            Set<String> palavras = Stream.of(texto.getTexto().split(" "))
-                                                    .map(txt -> txt.replaceAll("\\W", ""))
-                                                    .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
-                                                    .collect(Collectors.toSet());
+                                        if (!revisar.getVocabulario().isEmpty()) {
+                                            try {
+                                                traducoes++;
 
-                                            for (String palavra : palavras) {
-
-                                                if (palavra.matches("[\\d|\\W]"))
-                                                    continue;
-
-                                                if (validaHistorico.contains(palavra)) {
-                                                    MangaVocabulario vocabulario = vocabHistorico.stream().filter(
-                                                                    vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
-                                                            .findFirst().orElse(null);
-                                                    if (vocabulario != null) {
-                                                        vocabPagina.add(vocabulario);
-                                                        vocabCapitulo.add(vocabulario);
-                                                        vocabVolume.add(vocabulario);
-                                                        continue;
-                                                    }
+                                                if (traducoes > 3000) {
+                                                    traducoes = 0;
+                                                    MenuPrincipalController.getController()
+                                                            .setContaGoogle(Util
+                                                                    .next(MenuPrincipalController
+                                                                            .getController()
+                                                                            .getContaGoogle()));
                                                 }
 
-                                                if (!vocabValida.contains(palavra)) {
-                                                    Vocabulario salvo = vocabularioInglesService.select(palavra);
-
-                                                    if (salvo != null) {
-                                                        MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-                                                                salvo.getPortugues());
-
-                                                        validaHistorico.add(palavra);
-                                                        vocabHistorico.add(vocabulario);
-
-                                                        vocabValida.add(palavra);
-                                                        vocabPagina.add(vocabulario);
-                                                        vocabCapitulo.add(vocabulario);
-                                                        vocabVolume.add(vocabulario);
-                                                    } else {
-
-                                                        if (!palavraValida.contains(palavra.toLowerCase())) {
-                                                            String valido = serviceInglesRevisar.isValido(palavra);
-
-                                                            if (valido == null)
-                                                                continue;
-
-                                                            palavraValida.add(valido);
-                                                        }
-
-                                                        Revisar revisar = serviceInglesRevisar.select(palavra);
-                                                        if (revisar == null) {
-                                                            revisar = new Revisar(palavra, false, false, true);
-                                                            Platform.runLater(() -> MenuPrincipalController
-                                                                    .getController().getLblLog()
-                                                                    .setText(palavra + " : Vocabulário novo."));
-
-                                                            if (!revisar.getVocabulario().isEmpty()) {
-                                                                try {
-                                                                    traducoes++;
-
-                                                                    if (traducoes > 3000) {
-                                                                        traducoes = 0;
-                                                                        MenuPrincipalController.getController()
-                                                                                .setContaGoogle(Util
-                                                                                        .next(MenuPrincipalController
-                                                                                                .getController()
-                                                                                                .getContaGoogle()));
-                                                                    }
-
-                                                                    Platform.runLater(() -> MenuPrincipalController
-                                                                            .getController().getLblLog()
-                                                                            .setText(palavra + " : Obtendo tradução."));
-                                                                    revisar.setPortugues(Util.normalize(ScriptGoogle
-                                                                            .translate(Language.ENGLISH.getSigla(),
-                                                                                    Language.PORTUGUESE.getSigla(),
-                                                                                    revisar.getVocabulario(),
-                                                                                    MenuPrincipalController
-                                                                                            .getController()
-                                                                                            .getContaGoogle())));
-                                                                } catch (IOException e) {
-
-                                                                    LOGGER.error(e.getMessage(), e);
-                                                                }
-                                                            }
-
-                                                            serviceInglesRevisar.insert(revisar);
-                                                            Platform.runLater(() -> MenuPrincipalController
-                                                                    .getController().getLblLog().setText(""));
-                                                        } else {
-                                                            if (!revisar.isManga()) {
-                                                                revisar.setManga(true);
-                                                                serviceInglesRevisar.setIsManga(revisar);
-                                                            }
-
-                                                            serviceInglesRevisar
-                                                                    .incrementaVezesAparece(revisar.getVocabulario());
-                                                        }
-
-                                                        MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-                                                                revisar.getPortugues(), "", "", false);
-
-                                                        validaHistorico.add(palavra);
-                                                        vocabHistorico.add(vocabulario);
-
-                                                        vocabValida.add(palavra);
-                                                        vocabPagina.add(vocabulario);
-                                                        vocabCapitulo.add(vocabulario);
-                                                        vocabVolume.add(vocabulario);
-                                                    }
-                                                }
-
+                                                Platform.runLater(() -> MenuPrincipalController
+                                                        .getController().getLblLog()
+                                                        .setText(palavra + " : Obtendo tradução."));
+                                                revisar.setPortugues(Util.normalize(ScriptGoogle
+                                                        .translate(Language.ENGLISH.getSigla(),
+                                                                Language.PORTUGUESE.getSigla(),
+                                                                revisar.getVocabulario(),
+                                                                MenuPrincipalController
+                                                                        .getController()
+                                                                        .getContaGoogle())));
+                                            } catch (IOException e) {
+                                                LOGGER.error(e.getMessage(), e);
                                             }
-
                                         }
 
-                                        Progress++;
-                                        propTabela.set((double) Progress / Size);
-                                        Platform.runLater(() -> {
-                                            if (TaskbarProgressbar.isSupported())
-                                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress,
-                                                        Size, Type.NORMAL);
-                                        });
+                                        serviceInglesRevisar.insert(revisar);
+                                        Platform.runLater(() -> MenuPrincipalController
+                                                .getController().getLblLog().setText(""));
+                                    } else {
+                                        if (!revisar.isNovel()) {
+                                            revisar.setNovel(true);
+                                            serviceInglesRevisar.setIsNovel(revisar);
+                                        }
+
+                                        serviceInglesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                                     }
 
-                                    pagina.setVocabularios(vocabPagina);
-                                    pagina.setProcessado(true);
-                                    serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
+                                    NovelVocabulario vocabulario = new NovelVocabulario(palavra, revisar.getPortugues(), "", "", false);
 
-                                    if (desativar)
-                                        break;
+                                    validaHistorico.add(palavra);
+                                    vocabHistorico.add(vocabulario);
+
+                                    vocabValida.add(palavra);
+                                    vocabCapitulo.add(vocabulario);
+                                    vocabVolume.add(vocabulario);
                                 }
-                                capitulo.setVocabularios(vocabCapitulo);
-                                capitulo.setProcessado(true);
-                                serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
-                                propCapitulo.set((double) C / volume.getCapitulos().size());
-
-                                if (desativar)
-                                    break;
                             }
-                            volume.setVocabularios(vocabVolume);
-                            volume.setProcessado(true);
-                            serviceManga.updateVocabularioVolume(tabela.getBase(), volume);
-                            propVolume.set((double) V / tabela.getVolumes().size());
 
-                            if (desativar) {
-                                updateMessage("Revertendo a ultima alteração do Manga: " + volume.getManga()
-                                        + " - Volume: " + volume.getVolume().toString());
-                                serviceManga.updateCancel(tabela.getBase(), volume);
-                                break;
-                            }
                         }
 
-                        if (desativar)
-                            break;
                     }
 
-                } catch (Exception e) {
-
-                    LOGGER.error(e.getMessage(), e);
-                    error = false;
+                    Progress++;
+                    propTabela.set((double) Progress / Size);
+                    Platform.runLater(() -> {
+                        if (TaskbarProgressbar.isSupported())
+                            TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress,
+                                    Size, Type.NORMAL);
+                    });
                 }
 
-                return null;
+                capitulo.setVocabularios(vocabCapitulo);
+                capitulo.setProcessado(true);
+                propCapitulo.set((double) C / volume.getCapitulos().size());
+
+                if (desativar)
+                    break;
             }
+            volume.setVocabularios(vocabVolume);
+            volume.setProcessado(true);
+            propVolume.set((double) V / tabela.getVolumes().size());
 
-            @Override
-            protected void succeeded() {
-                super.failed();
-                if (error)
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Erro", "Erro ao processar a lista.");
-                else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Aviso", "Mangas processadas com sucesso.");
-
-                progress.getBarraProgresso().progressProperty().unbind();
-                controller.getBarraProgressoVolumes().progressProperty().unbind();
-                controller.getBarraProgressoCapitulos().progressProperty().unbind();
-                controller.getBarraProgressoPaginas().progressProperty().unbind();
-                progress.getLog().textProperty().unbind();
-                controller.habilitar();
-
-                MenuPrincipalController.getController().destroiBarraProgresso(progress, "");
+            if (desativar) {
+                break;
             }
+        }
 
-            @Override
-            protected void failed() {
-                super.failed();
-                LOGGER.warn("Erro na thread de processamento da tabela: " + super.getMessage());
-                System.out.print("Erro na thread de processamento da tabela: " + super.getMessage());
-            }
-        };
-        progress.getBarraProgresso().progressProperty().bind(propTabela);
-        controller.getBarraProgressoVolumes().progressProperty().bind(propVolume);
-        controller.getBarraProgressoCapitulos().progressProperty().bind(propCapitulo);
-        controller.getBarraProgressoPaginas().progressProperty().bind(processarTabela.progressProperty());
-        progress.getLog().textProperty().bind(processarTabela.messageProperty());
-        Thread t = new Thread(processarTabela);
-        t.start();
     }
 
 }

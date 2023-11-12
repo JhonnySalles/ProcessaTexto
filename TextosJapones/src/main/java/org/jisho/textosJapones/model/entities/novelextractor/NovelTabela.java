@@ -7,7 +7,6 @@ public class NovelTabela {
 
     private String base;
     private List<NovelVolume> volumes;
-    private Integer quantidade;
 
     public String getBase() {
         return base;
@@ -25,23 +24,17 @@ public class NovelTabela {
         this.volumes = volumes;
     }
 
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
+    public void addVolume(NovelVolume volume) {
+        this.volumes.add(volume);
     }
 
     public NovelTabela() {
         this.base = "";
-        this.quantidade = 0;
         this.volumes = new ArrayList<>();
     }
 
-    public NovelTabela(String base, Integer quantidade, List<NovelVolume> volumes) {
+    public NovelTabela(String base, List<NovelVolume> volumes) {
         this.base = base;
-        this.quantidade = quantidade;
         this.volumes = volumes;
     }
 

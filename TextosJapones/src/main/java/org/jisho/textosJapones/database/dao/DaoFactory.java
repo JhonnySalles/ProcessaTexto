@@ -33,6 +33,10 @@ public class DaoFactory {
 	public static MangaDao createMangaDao() {
 		return new MangaDaoJDBC(DB.getConnection(Conexao.MANGAEXTRACTOR), DB.getDados(Conexao.MANGAEXTRACTOR).getBase());
 	}
+
+	public static NovelDao createNovelDao() {
+		return new NovelDaoJDBC(DB.getConnection(Conexao.NOVELEXTRACTOR), DB.getDados(Conexao.NOVELEXTRACTOR).getBase());
+	}
 	
 	public static VincularDao createVincularDao() {
 		return new VincularDaoJDBC(DB.getConnection(Conexao.MANGAEXTRACTOR));

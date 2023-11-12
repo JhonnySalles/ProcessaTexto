@@ -16,6 +16,7 @@ public class Revisar {
     private String ingles;
     private Boolean anime;
     private Boolean manga;
+    private Boolean novel;
 
     final private CheckBox revisado = new CheckBox();
 
@@ -87,6 +88,15 @@ public class Revisar {
         this.manga = manga;
     }
 
+    public Boolean isNovel() {
+        return novel;
+    }
+
+    public void setNovel(Boolean novel) {
+        this.novel = novel;
+    }
+
+
     public Revisar() {
         this.id = null;
         this.vocabulario = "";
@@ -96,6 +106,7 @@ public class Revisar {
         this.ingles = "";
         this.anime = false;
         this.manga = false;
+        this.novel = false;
         this.revisado.setSelected(false);
     }
 
@@ -108,6 +119,7 @@ public class Revisar {
         this.ingles = "";
         this.anime = false;
         this.manga = false;
+        this.novel = false;
         this.revisado.setSelected(false);
     }
 
@@ -120,10 +132,11 @@ public class Revisar {
         this.ingles = "";
         this.anime = false;
         this.manga = false;
+        this.novel = false;
         this.revisado.setSelected(false);
     }
 
-    public Revisar(String vocabulario, Boolean revisado, Boolean isAnime, Boolean isManga) {
+    public Revisar(String vocabulario, Boolean revisado, Boolean isAnime, Boolean isManga, Boolean isNovel) {
         this.id = null;
         this.vocabulario = vocabulario;
         this.leitura = "";
@@ -132,11 +145,11 @@ public class Revisar {
         this.ingles = "";
         this.anime = isAnime;
         this.manga = isManga;
+        this.novel = isNovel;
         this.revisado.setSelected(revisado);
     }
 
-    public Revisar(String vocabulario, String formaBasica, String leitura, Boolean revisado, Boolean isAnime,
-                   Boolean isManga) {
+    public Revisar(String vocabulario, String formaBasica, String leitura, Boolean revisado, Boolean isAnime, Boolean isManga, Boolean isNovel) {
         this.id = null;
         this.vocabulario = vocabulario;
         this.leitura = leitura;
@@ -145,6 +158,7 @@ public class Revisar {
         this.ingles = "";
         this.anime = isAnime;
         this.manga = isManga;
+        this.novel = isNovel;
         this.revisado.setSelected(revisado);
     }
 
@@ -157,11 +171,12 @@ public class Revisar {
         this.ingles = ingles;
         this.anime = false;
         this.manga = false;
+        this.novel = false;
         this.revisado.setSelected(false);
     }
 
     public Revisar(UUID id, String vocabulario, String formaBasica, String leitura, String portugues, String ingles,
-                   Boolean revisado, Boolean anime, Boolean manga) {
+                   Boolean revisado, Boolean anime, Boolean manga, Boolean novel) {
         this.id = id;
         this.vocabulario = vocabulario;
         this.formaBasica = formaBasica;
@@ -170,6 +185,7 @@ public class Revisar {
         this.ingles = ingles;
         this.anime = anime;
         this.manga = manga;
+        this.novel = novel;
         this.revisado.setSelected(revisado);
     }
 

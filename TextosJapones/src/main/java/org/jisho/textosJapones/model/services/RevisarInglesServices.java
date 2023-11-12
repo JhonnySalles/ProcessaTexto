@@ -99,4 +99,8 @@ public class RevisarInglesServices {
 	public void setIsManga(Revisar obj) throws ExcessaoBd {
 		revisarDao.setIsManga(obj);
 	}
+
+	public void setIsNovel(Revisar obj) throws ExcessaoBd {
+		revisarDao.setIsNovel(obj);
+	}
 }
