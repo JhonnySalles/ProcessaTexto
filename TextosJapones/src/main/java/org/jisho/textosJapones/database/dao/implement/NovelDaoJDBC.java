@@ -601,7 +601,9 @@ public class NovelDaoJDBC implements NovelDao {
                 LOGGER.info(st.toString());
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
-                insertCapa(base, obj.getId(), obj.getCapa());
+                if (obj.getCapa() != null)
+                    obj.getCapa().setId(insertCapa(base, obj.getId(), obj.getCapa()));
+
                 insertVocabulario(base, obj.getId(), null, obj.getVocabularios());
                 return obj.getId();
             }

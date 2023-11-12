@@ -12,6 +12,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
+import javafx.util.Callback;
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
@@ -215,10 +216,6 @@ public class ProcessarNovel {
                             }
 
                             ArrayList<NovelTexto> textos = new ArrayList<>();
-
-                            Boolean index = true;
-                            HashMap<Integer, String> indices = new HashMap<>();
-
                             FileReader fr = new FileReader(arquivo);
                             try (BufferedReader br = new BufferedReader(fr)) {
                                 Integer seq = 0;
@@ -228,12 +225,15 @@ public class ProcessarNovel {
                                         continue;
                                     seq++;
                                     textos.add(new NovelTexto(UUID.randomUUID(), line, seq));
-
-                                    if (index && line.contains("*")) {
-                                        indices.put(seq, line.replace("*", "").trim());
-                                        index = line.contains("Índice:") || line.contains("*");
-                                    }
                                 }
+                            }
+
+                            HashMap<Integer, String> indices = new HashMap<>();
+                            for (NovelTexto texto : textos) {
+                                if (texto.getTexto().contains("*") || texto.getTexto().toLowerCase().contains("índice:"))
+                                    indices.put(texto.getSequencia(), texto.getTexto());
+                                else
+                                    break;
                             }
 
                             if (!indices.isEmpty()) {
@@ -276,13 +276,17 @@ public class ProcessarNovel {
 
                             updateMessage("Processando textos do arquivo " + arquivo.getName() + "...");
 
+                            Callback<Integer[], Boolean> callback = param -> {
+                                Platform.runLater(() -> {
+                                    updateMessage("Processando itens...." + param[0] + '/' + param[1]);
+                                    updateProgress(param[0], param[1]);
+                                });
+                                return null;
+                            };
+
                             switch (linguagem) {
-                                case JAPANESE:
-                                    processarJapones(obj);
-                                    break;
-                                case ENGLISH:
-                                    processarIngles(obj);
-                                    break;
+                                case JAPANESE -> processarJapones(obj, callback);
+                                case ENGLISH -> processarIngles(obj, callback);
                             }
 
                             if (desativar)
@@ -343,10 +347,9 @@ public class ProcessarNovel {
         t.start();
     }
 
-    private void processarJapones(NovelTabela tabela) throws ExcessaoBd {
+    private void processarJapones(NovelTabela tabela, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
         try (Dictionary dict = new DictionaryFactory().create("",
-                SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer
-                        .getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
+                SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
             tokenizer = dict.create();
             mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
             siteDicionario = MenuPrincipalController.getController().getSite();
@@ -354,12 +357,15 @@ public class ProcessarNovel {
             validaHistorico.clear();
             desativar = false;
 
+            Integer[] size = new Integer[2];
+
             V = 0;
             for (NovelVolume volume : tabela.getVolumes()) {
                 V++;
 
                 vocabVolume.clear();
                 C = 0;
+                size[1] = volume.getCapitulos().size();
                 for (NovelCapitulo capitulo : volume.getCapitulos()) {
                     C++;
 
@@ -368,6 +374,8 @@ public class ProcessarNovel {
                     for (NovelTexto texto : capitulo.getTextos())
                         gerarVocabulario(texto.getTexto());
 
+                    size[0] = C;
+                    callback.call(size);
                     capitulo.setVocabularios(vocabCapitulo);
                     capitulo.setProcessado(true);
                     propCapitulo.set((double) C / volume.getCapitulos().size());
@@ -381,7 +389,6 @@ public class ProcessarNovel {
             }
 
         } catch (IOException e) {
-
             LOGGER.error(e.getMessage(), e);
             error = false;
         }
@@ -569,7 +576,7 @@ public class ProcessarNovel {
 
     private final Set<String> palavraValida = new HashSet<>();
 
-    public void processarIngles(NovelTabela tabela) throws ExcessaoBd {
+    public void processarIngles(NovelTabela tabela, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
         propTabela.set(.0);
         propVolume.set(.0);
         propCapitulo.set(.0);
@@ -577,17 +584,22 @@ public class ProcessarNovel {
 
         palavraValida.clear();
 
+        Integer[] size = new Integer[2];
+
         V = 0;
         for (NovelVolume volume : tabela.getVolumes()) {
             V++;
 
             vocabVolume.clear();
+            size[1] = volume.getCapitulos().size();
             C = 0;
             for (NovelCapitulo capitulo : volume.getCapitulos()) {
                 C++;
 
                 vocabCapitulo.clear();
                 vocabValida.clear();
+                size[0] = C;
+                callback.call(size);
                 for (NovelTexto texto : capitulo.getTextos()) {
                     if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
                         Set<String> palavras = Stream.of(texto.getTexto().split(" "))

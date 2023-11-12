@@ -403,18 +403,15 @@ public class MangasComicInfoController implements Initializable {
                 try {
                     updateMessage("Validando itens....");
 
-                    Callback<Integer[], Boolean> callback = new Callback<Integer[], Boolean>() {
-                        @Override
-                        public Boolean call(Integer[] param) {
-                            Platform.runLater(() -> {
-                                updateMessage("Validando itens...." + param[0] + '/' + param[1]);
-                                updateProgress(param[0], param[1]);
-                                if (TaskbarProgressbar.isSupported())
-                                    TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1],
-                                            Type.NORMAL);
-                            });
-                            return null;
-                        }
+                    Callback<Integer[], Boolean> callback = param -> {
+                        Platform.runLater(() -> {
+                            updateMessage("Validando itens...." + param[0] + '/' + param[1]);
+                            updateProgress(param[0], param[1]);
+                            if (TaskbarProgressbar.isSupported())
+                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1],
+                                        Type.NORMAL);
+                        });
+                        return null;
                     };
 
                     ProcessaComicInfo.validar(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), callback);
