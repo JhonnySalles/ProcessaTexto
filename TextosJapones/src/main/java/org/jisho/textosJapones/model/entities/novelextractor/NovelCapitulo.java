@@ -11,7 +11,7 @@ public class NovelCapitulo {
     @Expose
     private String novel;
     @Expose
-    private Integer volume;
+    private Float volume;
     @Expose
     private Float capitulo;
     @Expose
@@ -40,11 +40,11 @@ public class NovelCapitulo {
         this.novel = novel;
     }
 
-    public Integer getVolume() {
+    public Float getVolume() {
         return volume;
     }
 
-    public void setVolume(Integer volume) {
+    public void setVolume(Float volume) {
         this.volume = volume;
     }
 
@@ -105,10 +105,9 @@ public class NovelCapitulo {
     }
 
     public NovelCapitulo() {
-        super();
         this.id = null;
         this.novel = "";
-        this.volume = 0;
+        this.volume = 0f;
         this.capitulo = 0F;
         this.sequencia = 0;
         this.lingua = Language.PORTUGUESE;
@@ -117,7 +116,7 @@ public class NovelCapitulo {
         this.processado = false;
     }
 
-    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado) {
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
@@ -129,7 +128,7 @@ public class NovelCapitulo {
         this.textos = new ArrayList<>();
     }
 
-    public NovelCapitulo(UUID id, String novel, Integer volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado,
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado,
                          List<NovelTexto> textos, Set<NovelVocabulario> vocabularios) {
         this.id = id;
         this.novel = novel;

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.novels.NovelsProcessarController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.novels.NovelsProcessarController">
    <children>          
 	  <VBox alignment="TOP_CENTER" spacing="15.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		   <children>
@@ -72,7 +72,7 @@
          </padding>
 		</VBox>
       <ProgressBar fx:id="barraProgressoArquivos" layoutX="10.0" layoutY="10.0" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <ProgressBar fx:id="barraProgressoCapitulos" layoutX="10.0" layoutY="10.0" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />                
+      <ProgressBar fx:id="barraProgressoTextos" layoutX="20.0" layoutY="20.0" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />                
    </children>
    <styleClass>
       <String fx:value="background-Black2" />

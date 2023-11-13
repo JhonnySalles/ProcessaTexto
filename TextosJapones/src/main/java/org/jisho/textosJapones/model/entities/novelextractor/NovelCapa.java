@@ -11,7 +11,7 @@ public class NovelCapa {
 
     private UUID id;
     private String novel;
-    private Integer volume;
+    private Float volume;
     private Language lingua;
     private BufferedImage imagem;
 
@@ -31,11 +31,11 @@ public class NovelCapa {
         this.novel = novel;
     }
 
-    public Integer getVolume() {
+    public Float getVolume() {
         return volume;
     }
 
-    public void setVolume(Integer volume) {
+    public void setVolume(Float volume) {
         this.volume = volume;
     }
 
@@ -63,7 +63,7 @@ public class NovelCapa {
         this.imagem = null;
     }
 
-    public NovelCapa(UUID id, String novel, Integer volume, Language lingua, BufferedImage imagem) {
+    public NovelCapa(UUID id, String novel, Float volume, Language lingua, BufferedImage imagem) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;

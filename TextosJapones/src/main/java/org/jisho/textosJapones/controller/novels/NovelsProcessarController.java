@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -16,7 +17,9 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.NovelServices;
+import org.jisho.textosJapones.processar.ProcessarMangas;
 import org.jisho.textosJapones.processar.ProcessarNovels;
+import org.jisho.textosJapones.util.constraints.Validadores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +62,7 @@ public class NovelsProcessarController implements Initializable {
     private ProgressBar barraProgressoArquivos;
 
     @FXML
-    private ProgressBar barraProgressoCapitulos;
+    private ProgressBar barraProgressoTextos;
 
     private ProcessarNovels novels;
 
@@ -77,11 +80,40 @@ public class NovelsProcessarController implements Initializable {
 
     @FXML
     private void onBtnProcessar() {
-        if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSANDO")) {
-            //mangas.setDesativar(true);
+        if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSANDO") && novels != null) {
+            novels.setDesativar(true);
             return;
         }
 
+        if (!valida())
+            return;
+
+        desabilitar();
+
+        if (novels == null)
+            novels = new ProcessarNovels(this);
+
+        MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das novels...");
+
+        novels.processarArquivos(new File(txtCaminho.getText()), cbBase.getValue(), cbLinguagem.getSelectionModel().getSelectedItem(), ckbFavorito.isSelected());
+    }
+
+    public boolean valida() {
+        if (txtCaminho.getText().isEmpty()) {
+            txtCaminho.setUnFocusColor(Color.RED);
+            return false;
+        }
+
+        File caminho = new File(txtCaminho.getText());
+        if (!caminho.exists()) {
+            txtCaminho.setUnFocusColor(Color.RED);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void desabilitar() {
         btnProcessar.setAccessibleText("PROCESSANDO");
         btnProcessar.setText("Pausar");
     }
@@ -92,16 +124,18 @@ public class NovelsProcessarController implements Initializable {
         btnProcessar.setText("Processar");
         TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
         getBarraProgressoArquivos().setProgress(0);
-        getBarraProgressoCapitulos().setProgress(0);
+        getBarraProgressoTextos().setProgress(0);
     }
 
     @FXML
     private void onBtnCarregarCaminho() {
+        txtCaminho.setUnFocusColor(Color.web("#106ebe"));
         txtCaminho.setText(selecionaPasta(txtCaminho.getText(), false));
     }
 
     @FXML
     private void onBtnCarregarArquivo() {
+        txtCaminho.setUnFocusColor(Color.web("#106ebe"));
         txtCaminho.setText(selecionaPasta(txtCaminho.getText(), true));
     }
 
@@ -153,8 +187,8 @@ public class NovelsProcessarController implements Initializable {
         return barraProgressoArquivos;
     }
 
-    public ProgressBar getBarraProgressoCapitulos() {
-        return barraProgressoCapitulos;
+    public ProgressBar getBarraProgressoTextos() {
+        return barraProgressoTextos;
     }
 
     private final Robot robot = new Robot();
@@ -195,6 +229,10 @@ public class NovelsProcessarController implements Initializable {
             if (ke.getCode().equals(KeyCode.ENTER))
                 robot.keyPress(KeyCode.TAB);
         });
+
+        Validadores.setTextFieldNotEmpty(txtCaminho);
+
+        txtCaminho.setText("C:\\Users\\Jhonny\\Desktop\\Nova pasta\\-リゼロカラハジメルイセカイセイカツタンペンシュウ002.txt");
     }
 
     public static URL getFxmlLocate() {

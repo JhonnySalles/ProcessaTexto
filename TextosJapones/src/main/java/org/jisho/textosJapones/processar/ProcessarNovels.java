@@ -17,6 +17,7 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
+import org.jisho.textosJapones.controller.novels.NovelsProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
@@ -30,8 +31,14 @@ import org.jisho.textosJapones.tokenizers.SudachiTokenizer;
 import org.jisho.textosJapones.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import javax.imageio.ImageIO;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -47,7 +54,7 @@ public class ProcessarNovels {
     private final RevisarJaponesServices serviceJaponesRevisar = new RevisarJaponesServices();
     private final RevisarInglesServices serviceInglesRevisar = new RevisarInglesServices();
 
-    private final MangasProcessarController controller;
+    private final NovelsProcessarController controller;
     private final NovelServices serviceNovel = new NovelServices();
     private final ProcessarPalavra desmembra = new ProcessarPalavra();
     private Site siteDicionario;
@@ -56,7 +63,7 @@ public class ProcessarNovels {
     private final Set<NovelVocabulario> vocabHistorico = new HashSet<>();
     private final Set<String> validaHistorico = new HashSet<>();
 
-    public ProcessarNovels(MangasProcessarController controller) {
+    public ProcessarNovels(NovelsProcessarController controller) {
         this.controller = controller;
     }
 
@@ -64,20 +71,17 @@ public class ProcessarNovels {
         this.desativar = desativar;
     }
 
-    private Integer V, C, Progress, Size;
+    private Integer Progress, Size;
     private final Set<NovelVocabulario> vocabVolume = new HashSet<>();
     private final Set<NovelVocabulario> vocabCapitulo = new HashSet<>();
     private final Set<String> vocabValida = new HashSet<>();
 
     private final DoubleProperty propTexto = new SimpleDoubleProperty(.0);
-    private final DoubleProperty propCapitulo = new SimpleDoubleProperty(.0);
-    private final DoubleProperty propVolume = new SimpleDoubleProperty(.0);
-    private final DoubleProperty propTabela = new SimpleDoubleProperty(.0);
 
     private Boolean error;
     final private String japanese = "[\u3041-\u9FAF]";
 
-    private String getTabela(String texto) {
+    private String getBase(String texto) {
         String tabela = "temp";
         String nome = "";
         if (texto.matches(japanese)) {
@@ -153,147 +157,226 @@ public class ProcessarNovels {
         return tabela;
     }
 
-    public void processarArquivos(String tabela, Language linguagem, File caminho) {
+    private NovelTabela getTabela(File arquivo, Language linguagem, Boolean favorito) throws IOException {
+        File jpg = new File(arquivo.getPath().substring(0, arquivo.getPath().lastIndexOf(".")) + ".jpg");
+        File opf = new File(arquivo.getPath().substring(0, arquivo.getPath().lastIndexOf(".")) + ".opf");
+        String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
+        String nome;
+        if (arq.toLowerCase().contains("volume"))
+            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("volume"));
+        else if (arq.toLowerCase().contains("vol."))
+            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("vol."));
+        else
+            nome = arq;
+
+        String titulo = "";
+        if (nome.matches("[a-zA-Z\\d]"))
+            titulo = nome;
+
+        Float volume = 0F;
+        if (arq.toLowerCase().contains("volume"))
+            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
+        else if (arq.toLowerCase().contains("vol."))
+            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
+
+        NovelVolume novel = new NovelVolume(UUID.randomUUID(), nome, titulo, "", "", "", arquivo.getName(), "", "", volume, linguagem, favorito, false);
+
+        if (jpg.exists()) {
+            BufferedImage imagem = ImageIO.read(jpg);
+            novel.setCapa(new NovelCapa(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
+        }
+
+        if (opf.exists()) {
+            try {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+                // parse XML file
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(opf);
+
+                NodeList title = doc.getElementsByTagName("dc:title");
+                if (title != null && title.getLength() > 0)
+                    novel.setTitulo(title.item(0).getTextContent());
+
+                String autor = "";
+                NodeList creator = doc.getElementsByTagName("dc:creator");
+                if (creator != null && creator.getLength() > 0){
+                    for (int i = 0; i < creator.getLength(); i++)
+                        autor += creator.item(i).getTextContent() + "; ";
+
+                    if (creator.item(0).hasAttributes())
+                        autor += " (" + creator.item(0).getAttributes().getNamedItem("opf:file-as").getTextContent() + "); ";
+
+                    autor = autor.substring(0, autor.lastIndexOf("; "));
+                }
+
+                novel.setAutor(autor);
+
+                NodeList publisher = doc.getElementsByTagName("dc:publisher");
+                if (publisher != null && publisher.getLength() > 0)
+                    novel.setEditora(publisher.item(0).getTextContent());
+
+                NodeList sort = doc.getElementsByTagName("calibre:title_sort");
+                if (sort != null && sort.getLength() > 0)
+                    novel.setTituloAlternativo(sort.item(0).getTextContent());
+
+                NodeList description = doc.getElementsByTagName("dc:description");
+                if (description != null && description.getLength() > 0)
+                    novel.setDescricao(description.item(0).getTextContent());
+
+                NodeList series = doc.getElementsByTagName("calibre:serie");
+                if (series != null && series.getLength() > 0)
+                    novel.setSerie(series.item(0).getTextContent());
+
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            } finally {
+
+            }
+        }
+
+        ArrayList<NovelVolume> list = new ArrayList<>();
+        list.add(novel);
+        return new NovelTabela(getBase(nome), list);
+    }
+
+    public void processarArquivos(File caminho, String tabela, Language linguagem, Boolean favorito) {
         error = false;
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Novels - Processar arquivos");
-        // Criacao da thread para que esteja validando a conexao e nao trave a tela.
-        Task<Void> processarArquivos = new Task<Void>() {
 
+        Task<Void> processarArquivos = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 try {
                     try (Dictionary dict = new DictionaryFactory().create("",
-                            SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer
-                                    .getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
+                            SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
                         tokenizer = dict.create();
                         mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
                         siteDicionario = MenuPrincipalController.getController().getSite();
 
                         validaHistorico.clear();
-                        propVolume.set(.0);
-                        propCapitulo.set(.0);
                         propTexto.set(.0);
 
-                        updateMessage("Calculando tempo necessário...");
+                        updateMessage("Preparando arquivos...");
+
+                        List<NovelTabela> novels = new ArrayList<>();
+
+                        if (caminho.isDirectory()) {
+                            for (File arquivo : caminho.listFiles())
+                                if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt")) {
+                                    NovelTabela obj;
+                                    if (tabela != null && !tabela.isEmpty())
+                                        obj = new NovelTabela(tabela, new ArrayList<>());
+                                    else
+                                        obj = getTabela(arquivo, linguagem, favorito);
+
+                                    Optional<NovelTabela> tab = novels.stream().filter(i-> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
+                                    if (tab.isPresent())
+                                        tab.get().getVolumes().addAll(obj.getVolumes());
+                                    else
+                                        novels.add(obj);
+                                }
+                        } else {
+                            if (tabela != null && !tabela.isEmpty())
+                                novels.add(new NovelTabela(tabela, new ArrayList<>()));
+                            else
+                                novels.add(getTabela(caminho, linguagem, favorito));
+                        }
+
+
                         Progress = 0;
                         Size = 0;
 
-                        List<File> arquivos = new ArrayList<>();
-
-                        for (File arquivo : caminho.listFiles())
-                            if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt"))
-                                arquivos.add(arquivo);
+                        novels.forEach(t -> Size += t.getVolumes().size());
+                        Size = Size * 3;
 
                         desativar = false;
-                        for (File arquivo : arquivos) {
-                            updateMessage("Importando texto do arquivo " + arquivo.getName() + "...");
-                            String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
-                            String nome;
-                            if (arq.toLowerCase().contains("volume"))
-                                nome = arq.substring(0, arq.toLowerCase().lastIndexOf("volume"));
-                            else if (arq.toLowerCase().contains("vol."))
-                                nome = arq.substring(0, arq.toLowerCase().lastIndexOf("vol."));
-                            else
-                                nome = arq.substring(0, arq.lastIndexOf("."));
+                        for (NovelTabela novel : novels) {
+                            for (NovelVolume volume : novel.getVolumes()) {
+                                propTexto.set(.0);
+                                updateMessage("Importando texto do arquivo " + volume.getArquivo() + "...");
+                                updateProgress(++Progress, Size);
 
-                            String titulo = "";
-                            if (nome.matches("[a-zA-Z\\d]"))
-                                titulo = nome;
+                                ArrayList<NovelTexto> textos = new ArrayList<>();
+                                FileReader fr = new FileReader(volume.getArquivo());
+                                try (BufferedReader br = new BufferedReader(fr)) {
+                                    Integer seq = 0;
+                                    Long lines = br.lines().count();
+                                    String line;
+                                    while ((line = br.readLine()) != null) {
+                                        if (line.trim().isEmpty())
+                                            continue;
+                                        seq++;
+                                        textos.add(new NovelTexto(UUID.randomUUID(), line, seq));
 
-                            Integer volume = 0;
-                            if (arq.toLowerCase().contains("volume"))
-                                volume = Integer.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
-                            else if (arq.toLowerCase().contains("vol."))
-                                volume = Integer.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
-
-                            NovelVolume novel = new NovelVolume(UUID.randomUUID(), nome, "", titulo, "", arquivo.getName(), "", volume, linguagem, false);
-
-                            if (new File(nome + ".jpg").exists()) {
-                                BufferedImage imagem = ImageIO.read(new File(nome + ".jpg"));
-                                novel.setCapa(new NovelCapa(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
-                            }
-
-                            ArrayList<NovelTexto> textos = new ArrayList<>();
-                            FileReader fr = new FileReader(arquivo);
-                            try (BufferedReader br = new BufferedReader(fr)) {
-                                Integer seq = 0;
-                                String line;
-                                while ((line = br.readLine()) != null) {
-                                    if (line.trim().isEmpty())
-                                        continue;
-                                    seq++;
-                                    textos.add(new NovelTexto(UUID.randomUUID(), line, seq));
-                                }
-                            }
-
-                            HashMap<Integer, String> indices = new HashMap<>();
-                            for (NovelTexto texto : textos) {
-                                if (texto.getTexto().contains("*") || texto.getTexto().toLowerCase().contains("índice:"))
-                                    indices.put(texto.getSequencia(), texto.getTexto());
-                                else
-                                    break;
-                            }
-
-                            if (!indices.isEmpty()) {
-                                indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
-                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), 0f, k, novel.getLingua(), false);
-                                    for (int i = textos.size(); i >= 0; i--) {
-                                        capitulo.addTexto(textos.remove(i));
-                                        if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
-                                            break;
+                                        propTexto.set((double) seq / lines);
                                     }
-                                    novel.addCapitulos(capitulo);
-                                });
-
-                                if (!textos.isEmpty()) {
-                                    NovelCapitulo capitulo = novel.getCapitulos().get(novel.getCapitulos().size());
-                                    for (int i = textos.size(); i >= 0; i--)
-                                        capitulo.addTexto(textos.remove(i));
                                 }
 
-                                for (NovelCapitulo capitulo : novel.getCapitulos())
-                                    capitulo.setTextos(capitulo.getTextos().parallelStream().sorted(Comparator.comparing(NovelTexto::getSequencia)).collect(Collectors.toList()));
+                                propTexto.set(.0);
+                                HashMap<Integer, String> indices = new HashMap<>();
+                                for (NovelTexto texto : textos) {
+                                    if (texto.getTexto().contains("*") || texto.getTexto().toLowerCase().contains("índice:"))
+                                        indices.put(texto.getSequencia(), texto.getTexto());
+                                    else
+                                        break;
+                                }
 
-                                novel.setCapitulos(novel.getCapitulos().parallelStream().sorted(Comparator.comparing(NovelCapitulo::getSequencia)).collect(Collectors.toList()));
-                            } else {
-                                NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), 0f, 0, novel.getLingua(), false);
-                                capitulo.setTextos(textos);
-                                novel.addCapitulos(capitulo);
+                                if (!indices.isEmpty()) {
+                                    indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
+                                        NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, k, volume.getLingua(), false);
+                                        for (int i = textos.size(); i >= 0; i--) {
+                                            capitulo.addTexto(textos.remove(i));
+                                            if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
+                                                break;
+                                        }
+                                        volume.addCapitulos(capitulo);
+                                    });
+
+                                    if (!textos.isEmpty()) {
+                                        NovelCapitulo capitulo = volume.getCapitulos().get(volume.getCapitulos().size());
+                                        for (int i = textos.size(); i >= 0; i--)
+                                            capitulo.addTexto(textos.remove(i));
+                                    }
+
+                                    for (NovelCapitulo capitulo : volume.getCapitulos())
+                                        capitulo.setTextos(capitulo.getTextos().parallelStream().sorted(Comparator.comparing(NovelTexto::getSequencia)).collect(Collectors.toList()));
+
+                                    volume.setCapitulos(volume.getCapitulos().parallelStream().sorted(Comparator.comparing(NovelCapitulo::getSequencia)).collect(Collectors.toList()));
+                                } else {
+                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, 0, volume.getLingua(), false);
+                                    capitulo.setTextos(textos);
+                                    volume.addCapitulos(capitulo);
+                                }
+
+                                if (desativar)
+                                    break;
+
+                                updateMessage("Processando textos do arquivo " + volume.getArquivo() + "...");
+                                updateProgress(++Progress, Size);
+
+                                Callback<Integer[], Boolean> callback = param -> {
+                                    Platform.runLater(() -> {
+                                        updateMessage("Processando itens...." + param[0] + '/' + param[1]);
+                                        propTexto.set((double) param[0] / param[1]);
+                                    });
+                                    return null;
+                                };
+
+                                switch (linguagem) {
+                                    case JAPANESE -> processarJapones(volume, callback);
+                                    case ENGLISH -> processarIngles(volume, callback);
+                                }
+
+                                if (desativar)
+                                    break;
+
+                                updateMessage("Salvando textos do arquivo " + volume.getArquivo() + "...");
+                                updateProgress(++Progress, Size);
+                                serviceNovel.salvarVolume(novel.getBase(), volume);
                             }
-
-                            NovelTabela obj;
-                            if (!tabela.isEmpty())
-                                obj = new NovelTabela(tabela, new ArrayList<>());
-                            else
-                                obj = new NovelTabela(getTabela(nome), new ArrayList<>());
-
-                            obj.addVolume(novel);
-
-                            if (desativar)
-                                break;
-
-                            updateMessage("Processando textos do arquivo " + arquivo.getName() + "...");
-
-                            Callback<Integer[], Boolean> callback = param -> {
-                                Platform.runLater(() -> {
-                                    updateMessage("Processando itens...." + param[0] + '/' + param[1]);
-                                    updateProgress(param[0], param[1]);
-                                });
-                                return null;
-                            };
-
-                            switch (linguagem) {
-                                case JAPANESE -> processarJapones(obj, callback);
-                                case ENGLISH -> processarIngles(obj, callback);
-                            }
-
-                            if (desativar)
-                                break;
-
-                            updateMessage("Salvando textos do arquivo " + arquivo.getName() + "...");
-                            for (NovelVolume vol : obj.getVolumes())
-                                serviceNovel.salvarVolume(obj.getBase(), vol);
 
                             if (desativar)
                                 break;
@@ -315,16 +398,13 @@ public class ProcessarNovels {
             protected void succeeded() {
                 super.failed();
                 if (error)
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Erro", "Erro ao processar a lista.");
+                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Erro", "Erro ao processar a lista.");
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Aviso", "Mangas processadas com sucesso.");
+                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Aviso", "Novels processadas com sucesso.");
 
                 progress.getBarraProgresso().progressProperty().unbind();
-                controller.getBarraProgressoVolumes().progressProperty().unbind();
-                controller.getBarraProgressoCapitulos().progressProperty().unbind();
-                controller.getBarraProgressoPaginas().progressProperty().unbind();
+                controller.getBarraProgressoArquivos().progressProperty().unbind();
+                controller.getBarraProgressoTextos().progressProperty().unbind();
                 progress.getLog().textProperty().unbind();
                 controller.habilitar();
 
@@ -334,19 +414,19 @@ public class ProcessarNovels {
             @Override
             protected void failed() {
                 super.failed();
-                LOGGER.warn("Erro na thread de processamento da tabela: " + super.getMessage());
-                System.out.print("Erro na thread de processamento da tabela: " + super.getMessage());
+                LOGGER.warn("Erro na thread de processamento da novel: " + super.getMessage());
+                System.out.print("Erro na thread de processamento da novel: " + super.getMessage());
             }
         };
-        progress.getBarraProgresso().progressProperty().bind(propVolume);
-        controller.getBarraProgressoVolumes().progressProperty().bind(propCapitulo);
-        controller.getBarraProgressoPaginas().progressProperty().bind(processarArquivos.progressProperty());
+        progress.getBarraProgresso().progressProperty().bind(processarArquivos.progressProperty());
+        controller.getBarraProgressoTextos().progressProperty().bind(propTexto);
+        controller.getBarraProgressoArquivos().progressProperty().bind(processarArquivos.progressProperty());
         progress.getLog().textProperty().bind(processarArquivos.messageProperty());
         Thread t = new Thread(processarArquivos);
         t.start();
     }
 
-    private void processarJapones(NovelTabela tabela, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
+    private void processarJapones(NovelVolume volume, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
         try (Dictionary dict = new DictionaryFactory().create("",
                 SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
             tokenizer = dict.create();
@@ -358,40 +438,32 @@ public class ProcessarNovels {
 
             Integer[] size = new Integer[2];
 
-            V = 0;
-            for (NovelVolume volume : tabela.getVolumes()) {
-                V++;
+            vocabVolume.clear();
+            size[0] = 0;
+            size[1] = 0;
+            volume.getCapitulos().forEach(c -> size[1] = c.getTextos().size());
 
-                vocabVolume.clear();
-                C = 0;
-                size[1] = volume.getCapitulos().size();
-                for (NovelCapitulo capitulo : volume.getCapitulos()) {
-                    C++;
-
-                    vocabCapitulo.clear();
-                    vocabValida.clear();
-                    for (NovelTexto texto : capitulo.getTextos())
-                        gerarVocabulario(texto.getTexto());
-
-                    size[0] = C;
+            for (NovelCapitulo capitulo : volume.getCapitulos()) {
+                vocabCapitulo.clear();
+                vocabValida.clear();
+                for (NovelTexto texto : capitulo.getTextos()) {
+                    size[0]++;
                     callback.call(size);
-                    capitulo.setVocabularios(vocabCapitulo);
-                    capitulo.setProcessado(true);
-                    propCapitulo.set((double) C / volume.getCapitulos().size());
-
-                    if (desativar)
-                        break;
+                    gerarVocabulario(texto.getTexto());
                 }
-                volume.setVocabularios(vocabVolume);
-                volume.setProcessado(true);
-                propVolume.set((double) V / tabela.getVolumes().size());
-            }
 
+                capitulo.setVocabularios(vocabCapitulo);
+                capitulo.setProcessado(true);
+
+                if (desativar)
+                    break;
+            }
+            volume.setVocabularios(vocabVolume);
+            volume.setProcessado(true);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             error = false;
         }
-
     }
 
     private String getSignificado(String kanji) {
@@ -565,170 +637,137 @@ public class ProcessarNovels {
                 }
             }
         }
-        Progress++;
-        propTabela.set((double) Progress / Size);
-        Platform.runLater(() -> {
-            if (TaskbarProgressbar.isSupported())
-                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
-        });
     }
 
     private final Set<String> palavraValida = new HashSet<>();
 
-    public void processarIngles(NovelTabela tabela, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
-        propTabela.set(.0);
-        propVolume.set(.0);
-        propCapitulo.set(.0);
+    public void processarIngles(NovelVolume volume, Callback<Integer[], Boolean> callback) throws ExcessaoBd {
         validaHistorico.clear();
-
+        vocabVolume.clear();
         palavraValida.clear();
 
         Integer[] size = new Integer[2];
-
-        V = 0;
-        for (NovelVolume volume : tabela.getVolumes()) {
-            V++;
-
-            vocabVolume.clear();
-            size[1] = volume.getCapitulos().size();
-            C = 0;
-            for (NovelCapitulo capitulo : volume.getCapitulos()) {
-                C++;
-
-                vocabCapitulo.clear();
-                vocabValida.clear();
-                size[0] = C;
+        size[0] = 0;
+        size[1] = 0;
+        volume.getCapitulos().forEach(c -> size[1] = c.getTextos().size());
+        for (NovelCapitulo capitulo : volume.getCapitulos()) {
+            vocabCapitulo.clear();
+            vocabValida.clear();
+            for (NovelTexto texto : capitulo.getTextos()) {
+                size[0]++;
                 callback.call(size);
-                for (NovelTexto texto : capitulo.getTextos()) {
-                    if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
-                        Set<String> palavras = Stream.of(texto.getTexto().split(" "))
-                                .map(txt -> txt.replaceAll("\\W", ""))
-                                .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
-                                .collect(Collectors.toSet());
 
-                        for (String palavra : palavras) {
+                if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
+                    Set<String> palavras = Stream.of(texto.getTexto().split(" "))
+                            .map(txt -> txt.replaceAll("\\W", ""))
+                            .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
+                            .collect(Collectors.toSet());
 
-                            if (palavra.matches("[\\d|\\W]"))
+                    for (String palavra : palavras) {
+
+                        if (palavra.matches("[\\d|\\W]"))
+                            continue;
+
+                        if (validaHistorico.contains(palavra)) {
+                            NovelVocabulario vocabulario = vocabHistorico.stream().filter(
+                                            vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
+                                    .findFirst().orElse(null);
+                            if (vocabulario != null) {
+                                vocabCapitulo.add(vocabulario);
+                                vocabVolume.add(vocabulario);
                                 continue;
-
-                            if (validaHistorico.contains(palavra)) {
-                                NovelVocabulario vocabulario = vocabHistorico.stream().filter(
-                                                vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
-                                        .findFirst().orElse(null);
-                                if (vocabulario != null) {
-                                    vocabCapitulo.add(vocabulario);
-                                    vocabVolume.add(vocabulario);
-                                    continue;
-                                }
                             }
+                        }
 
-                            if (!vocabValida.contains(palavra)) {
-                                Vocabulario salvo = vocabularioInglesService.select(palavra);
+                        if (!vocabValida.contains(palavra)) {
+                            Vocabulario salvo = vocabularioInglesService.select(palavra);
 
-                                if (salvo != null) {
-                                    NovelVocabulario vocabulario = new NovelVocabulario(palavra, salvo.getPortugues());
+                            if (salvo != null) {
+                                NovelVocabulario vocabulario = new NovelVocabulario(palavra, salvo.getPortugues());
 
-                                    validaHistorico.add(palavra);
-                                    vocabHistorico.add(vocabulario);
+                                validaHistorico.add(palavra);
+                                vocabHistorico.add(vocabulario);
 
-                                    vocabValida.add(palavra);
-                                    vocabCapitulo.add(vocabulario);
-                                    vocabVolume.add(vocabulario);
-                                } else {
+                                vocabValida.add(palavra);
+                                vocabCapitulo.add(vocabulario);
+                                vocabVolume.add(vocabulario);
+                            } else {
 
-                                    if (!palavraValida.contains(palavra.toLowerCase())) {
-                                        String valido = serviceInglesRevisar.isValido(palavra);
+                                if (!palavraValida.contains(palavra.toLowerCase())) {
+                                    String valido = serviceInglesRevisar.isValido(palavra);
 
-                                        if (valido == null)
-                                            continue;
+                                    if (valido == null)
+                                        continue;
 
-                                        palavraValida.add(valido);
-                                    }
+                                    palavraValida.add(valido);
+                                }
 
-                                    Revisar revisar = serviceInglesRevisar.select(palavra);
-                                    if (revisar == null) {
-                                        revisar = new Revisar(palavra, false, false, false, true);
-                                        Platform.runLater(() -> MenuPrincipalController
-                                                .getController().getLblLog()
-                                                .setText(palavra + " : Vocabulário novo."));
+                                Revisar revisar = serviceInglesRevisar.select(palavra);
+                                if (revisar == null) {
+                                    revisar = new Revisar(palavra, false, false, false, true);
+                                    Platform.runLater(() -> MenuPrincipalController
+                                            .getController().getLblLog()
+                                            .setText(palavra + " : Vocabulário novo."));
 
-                                        if (!revisar.getVocabulario().isEmpty()) {
-                                            try {
-                                                traducoes++;
+                                    if (!revisar.getVocabulario().isEmpty()) {
+                                        try {
+                                            traducoes++;
 
-                                                if (traducoes > 3000) {
-                                                    traducoes = 0;
-                                                    MenuPrincipalController.getController()
-                                                            .setContaGoogle(Util.next(MenuPrincipalController.getController().getContaGoogle()));
-                                                }
-
-                                                Platform.runLater(() -> MenuPrincipalController
-                                                        .getController().getLblLog()
-                                                        .setText(palavra + " : Obtendo tradução."));
-                                                revisar.setPortugues(Util.normalize(ScriptGoogle
-                                                        .translate(Language.ENGLISH.getSigla(),
-                                                                Language.PORTUGUESE.getSigla(),
-                                                                revisar.getVocabulario(),
-                                                                MenuPrincipalController
-                                                                        .getController()
-                                                                        .getContaGoogle())));
-                                            } catch (IOException e) {
-                                                LOGGER.error(e.getMessage(), e);
+                                            if (traducoes > 3000) {
+                                                traducoes = 0;
+                                                MenuPrincipalController.getController()
+                                                        .setContaGoogle(Util.next(MenuPrincipalController.getController().getContaGoogle()));
                                             }
-                                        }
 
-                                        serviceInglesRevisar.insert(revisar);
-                                        Platform.runLater(() -> MenuPrincipalController
-                                                .getController().getLblLog().setText(""));
-                                    } else {
-                                        if (!revisar.isNovel()) {
-                                            revisar.setNovel(true);
-                                            serviceInglesRevisar.setIsNovel(revisar);
+                                            Platform.runLater(() -> MenuPrincipalController
+                                                    .getController().getLblLog()
+                                                    .setText(palavra + " : Obtendo tradução."));
+                                            revisar.setPortugues(Util.normalize(ScriptGoogle
+                                                    .translate(Language.ENGLISH.getSigla(),
+                                                            Language.PORTUGUESE.getSigla(),
+                                                            revisar.getVocabulario(),
+                                                            MenuPrincipalController
+                                                                    .getController()
+                                                                    .getContaGoogle())));
+                                        } catch (IOException e) {
+                                            LOGGER.error(e.getMessage(), e);
                                         }
-
-                                        serviceInglesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                                     }
 
-                                    NovelVocabulario vocabulario = new NovelVocabulario(palavra, revisar.getPortugues(), "", "", false);
+                                    serviceInglesRevisar.insert(revisar);
+                                    Platform.runLater(() -> MenuPrincipalController
+                                            .getController().getLblLog().setText(""));
+                                } else {
+                                    if (!revisar.isNovel()) {
+                                        revisar.setNovel(true);
+                                        serviceInglesRevisar.setIsNovel(revisar);
+                                    }
 
-                                    validaHistorico.add(palavra);
-                                    vocabHistorico.add(vocabulario);
-
-                                    vocabValida.add(palavra);
-                                    vocabCapitulo.add(vocabulario);
-                                    vocabVolume.add(vocabulario);
+                                    serviceInglesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                                 }
-                            }
 
+                                NovelVocabulario vocabulario = new NovelVocabulario(palavra, revisar.getPortugues(), "", "", false);
+
+                                validaHistorico.add(palavra);
+                                vocabHistorico.add(vocabulario);
+
+                                vocabValida.add(palavra);
+                                vocabCapitulo.add(vocabulario);
+                                vocabVolume.add(vocabulario);
+                            }
                         }
 
                     }
-
-                    Progress++;
-                    propTabela.set((double) Progress / Size);
-                    Platform.runLater(() -> {
-                        if (TaskbarProgressbar.isSupported())
-                            TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress,
-                                    Size, Type.NORMAL);
-                    });
                 }
-
-                capitulo.setVocabularios(vocabCapitulo);
-                capitulo.setProcessado(true);
-                propCapitulo.set((double) C / volume.getCapitulos().size());
-
-                if (desativar)
-                    break;
             }
-            volume.setVocabularios(vocabVolume);
-            volume.setProcessado(true);
-            propVolume.set((double) V / tabela.getVolumes().size());
 
-            if (desativar) {
+            capitulo.setVocabularios(vocabCapitulo);
+            capitulo.setProcessado(true);
+            if (desativar)
                 break;
-            }
         }
-
+        volume.setVocabularios(vocabVolume);
+        volume.setProcessado(true);
     }
 
 }

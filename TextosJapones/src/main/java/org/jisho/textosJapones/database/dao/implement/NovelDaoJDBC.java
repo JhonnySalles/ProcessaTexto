@@ -53,15 +53,15 @@ public class NovelDaoJDBC implements NovelDao {
     final private String DELETE_CAPITULOS = "DELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
     final private String DELETE_TEXTOS = "DELETE t FROM %s_textos AS t INNER JOIN %s_capitulos AS c ON c.id = t.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
 
-    final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.titulo_alternativo, VOL.descricao, VOL.editora, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume";
+    final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor,VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume";
     final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.is_processado "
             + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume";
     final private String SELECT_TEXTOS = "SELECT id, sequencia, texto FROM %s_textos WHERE id_capitulo = ? ";
 
     final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, capa FROM %s_capas WHERE id_volume = ? ";
 
-    final private String FIND_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.titulo_alternativo, VOL.descricao, VOL.editora, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
-    final private String SELECT_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.titulo_alternativo, VOL.descricao, VOL.editora, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
+    final private String FIND_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
+    final private String SELECT_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
     final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.is_processado FROM %s_capitulos CAP WHERE id = ?";
 
     final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
@@ -191,8 +191,9 @@ public class NovelDaoJDBC implements NovelDao {
 
             while (rs.next())
                 list.add(new NovelVolume(UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("descricao"),
-                        rs.getString("arquivo"), rs.getString("editora"), rs.getInt("volume"), Language.getEnum(rs.getString("linguagem")),
+                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
+                        rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getBoolean("is_favorito"),
                         selectCapa(base, UUID.fromString(rs.getString("id"))), rs.getBoolean("is_processado"),
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), linguagem),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"')));
@@ -229,7 +230,7 @@ public class NovelDaoJDBC implements NovelDao {
             List<NovelCapitulo> list = new ArrayList<>();
 
             while (rs.next())
-                list.add(new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getInt("volume"),
+                list.add(new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
                         rs.getFloat("capitulo"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
                         rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
                         selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"')));
@@ -279,7 +280,7 @@ public class NovelDaoJDBC implements NovelDao {
 
             if (rs.next())
                 return new NovelCapa(UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getInt("volume"), Language.getEnum(rs.getString("linguagem")), null);
+                        rs.getFloat("volume"), Language.getEnum(rs.getString("linguagem")), null);
             else
                 return null;
         } catch (SQLException e) {
@@ -305,8 +306,9 @@ public class NovelDaoJDBC implements NovelDao {
 
             if (rs.next())
                 return new NovelVolume(UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("descricao"),
-                        rs.getString("arquivo"), rs.getString("editora"), rs.getInt("volume"), Language.getEnum(rs.getString("linguagem")),
+                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
+                        rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getBoolean("is_favorito"),
                         selectCapa(base, UUID.fromString(rs.getString("id"))), rs.getBoolean("is_processado"),
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), getLinguagem(linguagem)),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
@@ -332,8 +334,9 @@ public class NovelDaoJDBC implements NovelDao {
 
             if (rs.next())
                 return new NovelVolume(UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("descricao"),
-                        rs.getString("arquivo"), rs.getString("editora"), rs.getInt("volume"), Language.getEnum(rs.getString("linguagem")),
+                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
+                        rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getBoolean("is_favorito"),
                         selectCapa(base, UUID.fromString(rs.getString("id"))), rs.getBoolean("is_processado"),
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), null),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
@@ -358,7 +361,7 @@ public class NovelDaoJDBC implements NovelDao {
             rs = st.executeQuery();
 
             if (rs.next())
-                return new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getInt("volume"),
+                return new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
                         rs.getFloat("capitulo"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
                         rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
                         selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
@@ -462,7 +465,7 @@ public class NovelDaoJDBC implements NovelDao {
             if (obj.getId() != null)
                 where += " v.id = " + obj.getId().toString();
             else
-                where += " v.novel = '" + obj.getNovel() + "' AND v.volume = " + obj.getVolume().toString()
+                where += " v.novel = '" + obj.getNovel() + "' AND v.volume = " + String.format("%.2f", obj.getVolume())
                         + " AND v.linguagem = '" + obj.getLingua().getSigla() + "'";
 
             String caminhoBase = base;
@@ -590,7 +593,7 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getTituloAlternativo());
             st.setString(++index, obj.getDescricao());
             st.setString(++index, obj.getEditora());
-            st.setInt(++index, obj.getVolume());
+            st.setFloat(++index, obj.getVolume());
             st.setString(++index, obj.getLingua().getSigla());
             st.setString(++index, obj.getArquivo());
             st.setBoolean(++index, obj.getProcessado());
@@ -626,7 +629,7 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getId().toString());
             st.setString(++index, idVolume.toString());
             st.setString(++index, obj.getNovel());
-            st.setInt(++index, obj.getVolume());
+            st.setFloat(++index, obj.getVolume());
             st.setFloat(++index, obj.getCapitulo());
             st.setString(++index, obj.getLingua().getSigla());
             st.setBoolean(++index, obj.getProcessado());
@@ -686,7 +689,7 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getId().toString());
             st.setString(++index, idVolume.toString());
             st.setString(++index, obj.getNovel());
-            st.setInt(++index, obj.getVolume());
+            st.setFloat(++index, obj.getVolume());
             st.setString(++index, obj.getLingua().getSigla());
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

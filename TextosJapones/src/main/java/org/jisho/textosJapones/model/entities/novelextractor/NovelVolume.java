@@ -15,17 +15,22 @@ public class NovelVolume {
     @Expose
     private String tituloAlternativo;
     @Expose
+    private String serie;
+    @Expose
     private String descricao;
     @Expose
     private String arquivo;
     @Expose
     private String editora;
     @Expose
-    private Integer volume;
+    private String autor;
+    @Expose
+    private Float volume;
     @Expose
     private Language lingua;
 
     private NovelCapa capa;
+    private Boolean favorito;
     @Expose
     private List<NovelCapitulo> capitulos;
     @Expose
@@ -64,6 +69,14 @@ public class NovelVolume {
         this.tituloAlternativo = tituloAlternativo;
     }
 
+    public String getSerie() {
+        return serie;
+    }
+
+    public void setSerie(String serie) {
+        this.serie = serie;
+    }
+
     public String getDescricao() {
         return descricao;
     }
@@ -88,11 +101,19 @@ public class NovelVolume {
         this.editora = editora;
     }
 
-    public Integer getVolume() {
+    public String getAutor() {
+        return autor;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public Float getVolume() {
         return volume;
     }
 
-    public void setVolume(Integer volume) {
+    public void setVolume(Float volume) {
         this.volume = volume;
     }
 
@@ -102,6 +123,14 @@ public class NovelVolume {
 
     public void setLingua(Language lingua) {
         this.lingua = lingua;
+    }
+
+    public void setFavorito(Boolean favorito) {
+        this.favorito = favorito;
+    }
+
+    public Boolean isFavorito() {
+        return favorito;
     }
 
     public NovelCapa getCapa() {
@@ -145,49 +174,57 @@ public class NovelVolume {
     }
 
     public NovelVolume() {
-        super();
         this.id = null;
         this.novel = "";
         this.titulo = "";
         this.tituloAlternativo = "";
+        this.serie = "";
         this.descricao = "";
         this.editora = "";
-        this.volume = 0;
+        this.autor = "";
+        this.volume = 0f;
         this.lingua = Language.PORTUGUESE;
         this.arquivo = "";
         this.processado = false;
+        this.favorito = false;
         this.capa = null;
         this.vocabularios = new HashSet<>();
         this.capitulos = new ArrayList<>();
     }
 
-    public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String descricao, String arquivo, String editora, Integer volume, Language lingua, Boolean processado) {
+    public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String serie, String descricao, String arquivo, String editora, String autor, Float volume, Language lingua, Boolean favorito, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;
         this.tituloAlternativo = tituloAlternativo;
+        this.serie = serie;
         this.descricao = descricao;
         this.arquivo = arquivo;
         this.editora = editora;
+        this.autor = autor;
         this.volume = volume;
         this.lingua = lingua;
         this.processado = processado;
+        this.favorito = favorito;
         this.capa = null;
         this.vocabularios = new HashSet<>();
         this.capitulos = new ArrayList<>();
     }
 
-    public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String descricao, String arquivo, String editora, Integer volume, Language lingua,
-                       NovelCapa capa, Boolean processado, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios) {
+    public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String serie, String descricao, String arquivo, String editora, String autor, Float volume, Language lingua,
+                       Boolean favorito, NovelCapa capa, Boolean processado, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios) {
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;
         this.tituloAlternativo = tituloAlternativo;
+        this.serie = serie;
         this.descricao = descricao;
         this.arquivo = arquivo;
         this.editora = editora;
+        this.autor = autor;
         this.volume = volume;
         this.lingua = lingua;
+        this.favorito = favorito;
         this.capa = capa;
         this.capitulos = capitulos;
         this.vocabularios = vocabularios;
