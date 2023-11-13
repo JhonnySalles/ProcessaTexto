@@ -791,8 +791,7 @@ public class NovelDaoJDBC implements NovelDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement(
-                    String.format(SELECT_LISTA_TABELAS, schema, "1 > 0"));
+            st = conn.prepareStatement(String.format(SELECT_LISTA_TABELAS, schema, "1 > 0"));
             rs = st.executeQuery();
 
             List<String> list = new ArrayList<>();

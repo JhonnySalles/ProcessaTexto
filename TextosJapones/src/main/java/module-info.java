@@ -7,6 +7,7 @@ module TextosJapones {
     exports org.jisho.textosJapones.controller;
     exports org.jisho.textosJapones.controller.legendas;
     exports org.jisho.textosJapones.controller.mangas;
+    exports org.jisho.textosJapones.controller.novels;
     exports org.jisho.textosJapones.database.dao;
     exports org.jisho.textosJapones.database.dao.implement;
     exports org.jisho.textosJapones.database.mysql;
@@ -53,6 +54,7 @@ module TextosJapones {
     opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;
+    opens org.jisho.textosJapones.controller.novels to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
     opens org.jisho.textosJapones.processar to com.google.gson;
     exports org.jisho.textosJapones.model.entities.mangaextractor;

@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
-import javafx.scene.image.Image;
 import javafx.util.Callback;
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
@@ -39,9 +38,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ProcessarNovel {
+public class ProcessarNovels {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessarNovel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessarNovels.class);
 
     private final VocabularioJaponesServices vocabularioJaponesService = new VocabularioJaponesServices();
     private final VocabularioInglesServices vocabularioInglesService = new VocabularioInglesServices();
@@ -57,7 +56,7 @@ public class ProcessarNovel {
     private final Set<NovelVocabulario> vocabHistorico = new HashSet<>();
     private final Set<String> validaHistorico = new HashSet<>();
 
-    public ProcessarNovel(MangasProcessarController controller) {
+    public ProcessarNovels(MangasProcessarController controller) {
         this.controller = controller;
     }
 
