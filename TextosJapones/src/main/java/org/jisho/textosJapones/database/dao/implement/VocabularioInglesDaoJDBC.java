@@ -118,7 +118,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
             if (rs.next()) {
                 return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-                        rs.getString("leitura"), "", rs.getString("portugues"));
+                        rs.getString("leitura"), "", "", rs.getString("portugues"));
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);

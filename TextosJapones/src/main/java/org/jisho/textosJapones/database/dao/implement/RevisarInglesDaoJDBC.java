@@ -148,7 +148,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             if (rs.next()) {
                 return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-                        rs.getString("leitura"), rs.getString("portugues"), "", rs.getBoolean("revisado"),
+                        rs.getString("leitura"),"", rs.getString("portugues"), "", rs.getBoolean("revisado"),
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel"));
             }
         } catch (SQLException e) {
@@ -174,7 +174,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             while (rs.next()) {
                 list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-                        rs.getString("leitura"), rs.getString("portugues"), "", rs.getBoolean("revisado"),
+                        rs.getString("leitura"), "", rs.getString("portugues"), "", rs.getBoolean("revisado"),
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")));
             }
             return list;
@@ -200,7 +200,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             while (rs.next())
                 list.add(new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-                        rs.getString("leitura"), rs.getString("portugues"), "", rs.getBoolean("revisado"),
+                        rs.getString("leitura"),"", rs.getString("portugues"), "", rs.getBoolean("revisado"),
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")));
 
             return list;
@@ -326,7 +326,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
             if (rs.next())
                 return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-                        rs.getString("leitura"), rs.getString("portugues"), "", rs.getBoolean("revisado"),
+                        rs.getString("leitura"), "", rs.getString("portugues"), "", rs.getBoolean("revisado"),
                         rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel"));
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);

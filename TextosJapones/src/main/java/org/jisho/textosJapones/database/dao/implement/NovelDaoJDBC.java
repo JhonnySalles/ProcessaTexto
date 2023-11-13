@@ -45,24 +45,26 @@ public class NovelDaoJDBC implements NovelDao {
 
 
     final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, descricao, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-    final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, linguagem, is_processado) VALUES (?,?,?,?,?,?,?)";
+    final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem, is_processado) VALUES (?,?,?,?,?,?,?,?,?)";
     final private String INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)";
     final private String INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, capa) VALUES (?,?,?,?,?,?)";
 
-    final private String DELETE_VOLUMES = "DELETE v FROM %s_volumes AS v %s";
-    final private String DELETE_CAPITULOS = "DELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
-    final private String DELETE_TEXTOS = "DELETE t FROM %s_textos AS t INNER JOIN %s_capitulos AS c ON c.id = t.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
+    final private String DELETE_VOLUMES = "CALL delete_volume('%s', '%s');";
 
-    final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor,VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume";
-    final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.is_processado "
+    final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor,VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado" +
+            " FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume";
+    final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem, CAP.is_processado "
             + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume";
     final private String SELECT_TEXTOS = "SELECT id, sequencia, texto FROM %s_textos WHERE id_capitulo = ? ";
 
     final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, capa FROM %s_capas WHERE id_volume = ? ";
 
-    final private String FIND_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
-    final private String SELECT_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
-    final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.is_processado FROM %s_capitulos CAP WHERE id = ?";
+    final private String FIND = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL";
+    final private String FIND_VOLUME = FIND + " WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
+    final private String FIND_ARQUIVO = FIND + " WHERE arquivo = ? AND linguagem = ? LIMIT 1";
+
+    final private String SELECT_VOLUME =  "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
+    final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem, CAP.is_processado FROM %s_capitulos CAP WHERE id = ?";
 
     final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
             + "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
@@ -72,8 +74,7 @@ public class NovelDaoJDBC implements NovelDao {
             + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
             + " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ";
     final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ?;";
-    final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabularios (%s, palavra, portugues, ingles, leitura, revisado) "
-            + " VALUES (?,?,?,?,?,?);";
+    final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabularios (%s, palavra, portugues, ingles, leitura, revisado) VALUES (?,?,?,?,?,?);";
     final private String SELECT_VOCABUALARIO = "SELECT id, palavra, portugues, ingles, leitura, revisado FROM %s_vocabularios WHERE %s ";
 
     public NovelDaoJDBC(Connection conn, String base) {
@@ -231,7 +232,7 @@ public class NovelDaoJDBC implements NovelDao {
 
             while (rs.next())
                 list.add(new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
-                        rs.getFloat("capitulo"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
+                        rs.getFloat("capitulo"), rs.getString("descricao"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
                         rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
                         selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"')));
 
@@ -324,6 +325,33 @@ public class NovelDaoJDBC implements NovelDao {
     }
 
     @Override
+    public NovelVolume selectVolume(String base, String arquivo, Language linguagem) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(String.format(FIND_ARQUIVO, base));
+            st.setString(1, arquivo);
+            st.setString(2, linguagem.getSigla());
+            rs = st.executeQuery();
+
+            if (rs.next())
+                return new NovelVolume(UUID.fromString(rs.getString("id")), rs.getString("novel"),
+                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
+                        rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getBoolean("is_favorito"),
+                        null, rs.getBoolean("is_processado"), null, null);
+            return null;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
     public NovelVolume selectVolume(String base, UUID id) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -362,7 +390,7 @@ public class NovelDaoJDBC implements NovelDao {
 
             if (rs.next())
                 return new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
-                        rs.getFloat("capitulo"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
+                        rs.getFloat("capitulo"), rs.getString("descricao"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
                         rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
                         selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
 
@@ -458,125 +486,16 @@ public class NovelDaoJDBC implements NovelDao {
     @Override
     public void deleteVolume(String base, NovelVolume obj) throws ExcessaoBd {
         PreparedStatement stVolume = null;
-        PreparedStatement stCapitulo = null;
-        PreparedStatement stTexto = null;
         try {
-            String where = "WHERE ";
-            if (obj.getId() != null)
-                where += " v.id = " + obj.getId().toString();
-            else
-                where += " v.novel = '" + obj.getNovel() + "' AND v.volume = " + String.format("%.2f", obj.getVolume())
-                        + " AND v.linguagem = '" + obj.getLingua().getSigla() + "'";
-
-            String caminhoBase = base;
-
-            stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
-            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, caminhoBase, caminhoBase, where));
-            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, caminhoBase, where));
-
-            conn.setAutoCommit(false);
-            conn.beginRequest();
-            stTexto.executeUpdate();
-            stCapitulo.executeUpdate();
+            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, base, '"' + obj.getId().toString() + '"'));
             stVolume.executeUpdate();
-            conn.commit();
         } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            System.out.println(stTexto.toString());
-            System.out.println(stCapitulo.toString());
             System.out.println(stVolume.toString());
-
             LOGGER.error(e.getMessage(), e);
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-            DB.closeStatement(stTexto);
-            DB.closeStatement(stCapitulo);
             DB.closeStatement(stVolume);
         }
-    }
-
-    @Override
-    public void deleteCapitulo(String base, NovelCapitulo obj) throws ExcessaoBd {
-        PreparedStatement stCapitulo = null;
-        PreparedStatement stTexto = null;
-        try {
-            String where = "WHERE c.id = " + obj.getId().toString();
-            String caminhoBase = base;
-
-            stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
-            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, caminhoBase, caminhoBase, where));
-
-            conn.setAutoCommit(false);
-            conn.beginRequest();
-            stTexto.executeUpdate();
-            stCapitulo.executeUpdate();
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            System.out.println(stTexto.toString());
-            System.out.println(stCapitulo.toString());
-
-            LOGGER.error(e.getMessage(), e);
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-        } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-
-                LOGGER.error(e.getMessage(), e);
-            }
-            DB.closeStatement(stTexto);
-            DB.closeStatement(stCapitulo);
-        }
-
-    }
-
-    @Override
-    public void deleteTexto(String base, NovelTexto obj) throws ExcessaoBd {
-        PreparedStatement stTexto = null;
-        try {
-            String where = "WHERE t.id = " + obj.getId().toString();
-            String caminhoBase = base;
-
-            stTexto = conn.prepareStatement(
-                    String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
-            conn.setAutoCommit(false);
-            conn.beginRequest();
-            stTexto.executeUpdate();
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            System.out.println(stTexto.toString());
-
-            LOGGER.error(e.getMessage(), e);
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-        } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-
-                LOGGER.error(e.getMessage(), e);
-            }
-            DB.closeStatement(stTexto);
-        }
-
     }
 
     @Override
@@ -608,6 +527,10 @@ public class NovelDaoJDBC implements NovelDao {
                     obj.getCapa().setId(insertCapa(base, obj.getId(), obj.getCapa()));
 
                 insertVocabulario(base, obj.getId(), null, obj.getVocabularios());
+
+                for (NovelCapitulo capitulo : obj.getCapitulos())
+                    insertCapitulo(base, obj.getId(), capitulo);
+
                 return obj.getId();
             }
         } catch (SQLException e) {
@@ -631,6 +554,8 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getNovel());
             st.setFloat(++index, obj.getVolume());
             st.setFloat(++index, obj.getCapitulo());
+            st.setString(++index, obj.getDescricao());
+            st.setInt(++index, obj.getSequencia());
             st.setString(++index, obj.getLingua().getSigla());
             st.setBoolean(++index, obj.getProcessado());
 
@@ -641,6 +566,10 @@ public class NovelDaoJDBC implements NovelDao {
                 throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             } else {
                 insertVocabulario(base, null, obj.getId(), obj.getVocabularios());
+
+                for (NovelTexto texto : obj.getTextos())
+                    insertTexto(base, obj.getId(), texto);
+
                 return obj.getId();
             }
         } catch (SQLException e) {

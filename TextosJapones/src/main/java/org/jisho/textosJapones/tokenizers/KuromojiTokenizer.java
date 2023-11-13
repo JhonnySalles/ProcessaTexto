@@ -115,9 +115,7 @@ public class KuromojiTokenizer {
                                                     if (existe.size() < 1) {
                                                         // naoEncontrado += tokens.get(i + x).getSurface() + " \n";
 
-                                                        vocabNovo.add(new Vocabulario(tokens.get(i + x).getSurface(),
-                                                                tokens.get(i + x).getBaseForm(),
-                                                                tokens.get(i + x).getReading()));
+                                                        vocabNovo.add(new Vocabulario(tokens.get(i + x).getSurface(), tokens.get(i + x).getBaseForm(), tokens.get(i + x).getReading(), ""));
                                                     }
                                                 }
                                                 repetido.add(tokens.get(i + x).getBaseForm());
@@ -147,8 +145,7 @@ public class KuromojiTokenizer {
                                         if (existe.size() < 1) {
                                             // naoEncontrado += tokens.get(i).getSurface() + " \n";
 
-                                            vocabNovo.add(new Vocabulario(tokens.get(i).getSurface(),
-                                                    tokens.get(i).getBaseForm(), tokens.get(i).getReading()));
+                                            vocabNovo.add(new Vocabulario(tokens.get(i).getSurface(), tokens.get(i).getBaseForm(),  tokens.get(i).getReading(), ""));
                                         }
                                     }
                                     repetido.add(tokens.get(i).getBaseForm());

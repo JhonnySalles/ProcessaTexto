@@ -3,6 +3,7 @@ package org.jisho.textosJapones.model.services;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.NovelDao;
 import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,14 @@ public class NovelServices {
         if (!existTabela(tabela))
             createTabela(tabela);
 
+        deleteExistingFile(tabela, volume.getArquivo(), volume.getLingua());
         novelDao.insertVolume(tabela, volume);
+    }
+
+    public void deleteExistingFile(String tabela, String arquivo, Language linguagem) throws ExcessaoBd {
+        NovelVolume saved = novelDao.selectVolume(tabela, arquivo, linguagem);
+        if (saved != null)
+            novelDao.deleteVolume(tabela, saved);
     }
 
 }

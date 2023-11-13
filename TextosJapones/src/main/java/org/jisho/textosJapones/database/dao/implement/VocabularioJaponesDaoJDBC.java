@@ -17,13 +17,13 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
     private final Connection conn;
 
-    final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, portugues, ingles) VALUES (?, ?,?,?,?,?);";
-    final private String UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
+    final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles) VALUES (?,?,?,?,?,?,?);";
+    final private String UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, leitura_novel = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;";
     final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
-    final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR forma_basica = ?;";
-    final private String SELECT_PALAVRA = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
+    final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE vocabulario = ? OR forma_basica = ?;";
+    final private String SELECT_PALAVRA = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE vocabulario = ?;";
     final private String EXIST = "SELECT vocabulario FROM vocabulario WHERE vocabulario = ?;";
-    final private String SELECT_ALL = "SELECT id, vocabulario, forma_basica, leitura, portugues, ingles FROM vocabulario WHERE forma_basica = '' OR leitura = '';";
+    final private String SELECT_ALL = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE forma_basica = '' OR leitura = '';";
     final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
     final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
     final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
@@ -38,12 +38,14 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
 
-            st.setString(1, obj.getId().toString());
-            st.setString(2, obj.getVocabulario());
-            st.setString(3, obj.getFormaBasica());
-            st.setString(4, obj.getLeitura());
-            st.setString(5, obj.getPortugues());
-            st.setString(6, obj.getIngles());
+            int index = 0;
+            st.setString(++index, obj.getId().toString());
+            st.setString(++index, obj.getVocabulario());
+            st.setString(++index, obj.getFormaBasica());
+            st.setString(++index, obj.getLeitura());
+            st.setString(++index, obj.getLeituraNovel());
+            st.setString(++index, obj.getPortugues());
+            st.setString(++index, obj.getIngles());
 
             st.executeUpdate();
         } catch (SQLException e) {
@@ -61,11 +63,13 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
 
-            st.setString(1, obj.getFormaBasica());
-            st.setString(2, obj.getLeitura());
-            st.setString(3, obj.getPortugues());
-            st.setString(4, obj.getIngles());
-            st.setString(5, obj.getVocabulario());
+            int index = 0;
+            st.setString(++index, obj.getFormaBasica());
+            st.setString(++index, obj.getLeitura());
+            st.setString(++index, obj.getLeituraNovel());
+            st.setString(++index, obj.getPortugues());
+            st.setString(++index, obj.getIngles());
+            st.setString(++index, obj.getVocabulario());
 
             int rowsAffected = st.executeUpdate();
 
@@ -117,7 +121,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             if (rs.next()) {
                 return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
+                        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues"));
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -140,7 +144,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             if (rs.next()) {
                 return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues"));
+                        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues"));
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -165,7 +169,7 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
 
             while (rs.next()) {
                 list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-                        rs.getString("leitura"), rs.getString("ingles"), rs.getString("portugues")));
+                        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues")));
             }
             return list;
         } catch (SQLException e) {

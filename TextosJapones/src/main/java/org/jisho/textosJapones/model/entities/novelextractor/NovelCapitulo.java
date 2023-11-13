@@ -15,6 +15,8 @@ public class NovelCapitulo {
     @Expose
     private Float capitulo;
     @Expose
+    private String descricao;
+    @Expose
     private Integer sequencia;
     @Expose
     private Language lingua;
@@ -54,6 +56,14 @@ public class NovelCapitulo {
 
     public void setCapitulo(Float capitulo) {
         this.capitulo = capitulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public Integer getSequencia() {
@@ -109,6 +119,7 @@ public class NovelCapitulo {
         this.novel = "";
         this.volume = 0f;
         this.capitulo = 0F;
+        this.descricao = "";
         this.sequencia = 0;
         this.lingua = Language.PORTUGUESE;
         this.vocabularios = new HashSet<>();
@@ -116,11 +127,12 @@ public class NovelCapitulo {
         this.processado = false;
     }
 
-    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado) {
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua, Boolean processado) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
         this.capitulo = capitulo;
+        this.descricao = descricao;
         this.sequencia = sequencia;
         this.lingua = lingua;
         this.processado = processado;
@@ -128,12 +140,13 @@ public class NovelCapitulo {
         this.textos = new ArrayList<>();
     }
 
-    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, Integer sequencia, Language lingua, Boolean processado,
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua, Boolean processado,
                          List<NovelTexto> textos, Set<NovelVocabulario> vocabularios) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
         this.capitulo = capitulo;
+        this.descricao = descricao;
         this.sequencia = sequencia;
         this.lingua = lingua;
         this.processado = processado;

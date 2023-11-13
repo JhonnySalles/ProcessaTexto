@@ -1,7 +1,5 @@
 package org.jisho.textosJapones.processar;
 
-import com.nativejavafx.taskbar.TaskbarProgressbar;
-import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
@@ -12,11 +10,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.util.Callback;
-import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
-import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.controller.novels.NovelsProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
@@ -38,10 +34,11 @@ import javax.imageio.ImageIO;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,80 +76,174 @@ public class ProcessarNovels {
     private final DoubleProperty propTexto = new SimpleDoubleProperty(.0);
 
     private Boolean error;
-    final private String japanese = "[\u3041-\u9FAF]";
+
+    private String toAlfabeto(String texto) {
+        String tabela = "temp";
+        switch (texto) {
+            case "あ":
+            case "ア":
+                tabela = "a";
+                break;
+
+            case "え":
+            case "エ":
+                tabela = "e";
+                break;
+
+            case "い":
+            case "イ":
+                tabela = "i";
+                break;
+
+            case "お":
+            case "オ":
+                tabela = "o";
+                break;
+
+            case "う":
+            case "ウ":
+                tabela = "u";
+                break;
+
+            case "ち":
+            case "チ":
+                tabela = "c";
+                break;
+
+            case "ふ":
+            case "フ":
+                tabela = "f";
+                break;
+
+            case "は":
+            case "へ":
+            case "ひ":
+            case "ほ":
+
+            case "ハ":
+            case "ヘ":
+            case "ヒ":
+            case "ホ":
+                tabela = "h";
+                break;
+
+            case "か":
+            case "け":
+            case "き":
+            case "こ":
+            case "く":
+
+            case "カ":
+            case "ケ":
+            case "キ":
+            case "コ":
+            case "ク":
+                tabela = "k";
+                break;
+
+            case "ま":
+            case "め":
+            case "み":
+            case "も":
+            case "む":
+
+            case "マ":
+            case "メ":
+            case "ミ":
+            case "モ":
+            case "ム":
+                tabela = "m";
+                break;
+
+            case "な":
+            case "ね":
+            case "に":
+            case "の":
+            case "ぬ":
+            case "ん":
+
+            case "ナ":
+            case "ネ":
+            case "ニ":
+            case "ノ":
+            case "ヌ":
+            case "ン":
+                tabela = "n";
+                break;
+
+            case "ら":
+            case "れ":
+            case "り":
+            case "ろ":
+            case "る":
+
+            case "ラ":
+            case "レ":
+            case "リ":
+            case "ロ":
+            case "ル":
+                tabela = "r";
+                break;
+
+            case "さ":
+            case "せ":
+            case "し":
+            case "そ":
+            case "す":
+
+            case "サ":
+            case "セ":
+            case "シ":
+            case "ソ":
+            case "ス":
+                tabela = "s";
+                break;
+
+            case "た":
+            case "て":
+            case "と":
+            case "つ":
+
+            case "タ":
+            case "テ":
+            case "ト":
+            case "ツ":
+                tabela = "t";
+                break;
+
+            case "や":
+            case "よ":
+            case "ゆ":
+            case "を":
+
+            case "ヤ":
+            case "ヨ":
+            case "ユ":
+            case "ヲ":
+                tabela = "y";
+                break;
+        }
+
+        return tabela;
+    }
 
     private String getBase(String texto) {
-        String tabela = "temp";
+        String tabela;
         String nome = "";
-        if (texto.matches(japanese)) {
-            List<Morpheme> m = tokenizer.tokenize(mode, texto);
-            if (!m.isEmpty())
-                nome = m.get(0).readingForm().substring(0, 1);
+        Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
+        if (matcher.find()) {
+            String item = matcher.group(0);
+            if (item.trim().substring(0, 1).matches("[ぁ-んァ-ン]"))
+                tabela = toAlfabeto(item.trim().substring(0, 1));
+            else {
+                List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
+                if (!m.isEmpty())
+                    nome = m.get(0).readingForm().substring(0, 1);
 
-            switch (nome) {
-                case "あ":
-                case "か":
-                case "さ":
-                case "た":
-                case "な":
-                case "は":
-                case "ま":
-                case "や":
-                case "ら":
-                case "わ":
-                    tabela = "a";
-                    break;
-
-                case "え":
-                case "け":
-                case "せ":
-                case "て":
-                case "ね":
-                case "へ":
-                case "め":
-                case "れ":
-                    tabela = "e";
-                    break;
-
-                case "い":
-                case "き":
-                case "し":
-                case "ち":
-                case "に":
-                case "ひ":
-                case "み":
-                case "り":
-                    tabela = "i";
-                    break;
-
-                case "お":
-                case "こ":
-                case "そ":
-                case "と":
-                case "の":
-                case "ほ":
-                case "も":
-                case "よ":
-                case "ろ":
-                case "ん":
-                    tabela = "o";
-                    break;
-
-                case "う":
-                case "く":
-                case "す":
-                case "つ":
-                case "ぬ":
-                case "ふ":
-                case "む":
-                case "ゆ":
-                case "る":
-                case "を":
-                    tabela = "u";
-                    break;
+                tabela = toAlfabeto(nome);
             }
         } else
-            tabela = nome.substring(0, 1);
+            tabela = texto.substring(0, 1);
 
         return tabela;
     }
@@ -201,7 +292,7 @@ public class ProcessarNovels {
 
                 String autor = "";
                 NodeList creator = doc.getElementsByTagName("dc:creator");
-                if (creator != null && creator.getLength() > 0){
+                if (creator != null && creator.getLength() > 0) {
                     for (int i = 0; i < creator.getLength(); i++)
                         autor += creator.item(i).getTextContent() + "; ";
 
@@ -231,8 +322,6 @@ public class ProcessarNovels {
 
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
-            } finally {
-
             }
         }
 
@@ -261,6 +350,7 @@ public class ProcessarNovels {
 
                         updateMessage("Preparando arquivos...");
 
+                        HashMap<String, File> arquivos = new HashMap<>();
                         List<NovelTabela> novels = new ArrayList<>();
 
                         if (caminho.isDirectory()) {
@@ -272,19 +362,22 @@ public class ProcessarNovels {
                                     else
                                         obj = getTabela(arquivo, linguagem, favorito);
 
-                                    Optional<NovelTabela> tab = novels.stream().filter(i-> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
+                                    Optional<NovelTabela> tab = novels.stream().filter(i -> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
                                     if (tab.isPresent())
                                         tab.get().getVolumes().addAll(obj.getVolumes());
                                     else
                                         novels.add(obj);
+
+                                    arquivos.put(arquivo.getName(), arquivo);
                                 }
                         } else {
                             if (tabela != null && !tabela.isEmpty())
                                 novels.add(new NovelTabela(tabela, new ArrayList<>()));
                             else
                                 novels.add(getTabela(caminho, linguagem, favorito));
-                        }
 
+                            arquivos.put(caminho.getName(), caminho);
+                        }
 
                         Progress = 0;
                         Size = 0;
@@ -300,53 +393,65 @@ public class ProcessarNovels {
                                 updateProgress(++Progress, Size);
 
                                 ArrayList<NovelTexto> textos = new ArrayList<>();
-                                FileReader fr = new FileReader(volume.getArquivo());
+                                FileReader fr = new FileReader(arquivos.get(volume.getArquivo()));
                                 try (BufferedReader br = new BufferedReader(fr)) {
                                     Integer seq = 0;
-                                    Long lines = br.lines().count();
                                     String line;
                                     while ((line = br.readLine()) != null) {
                                         if (line.trim().isEmpty())
                                             continue;
                                         seq++;
                                         textos.add(new NovelTexto(UUID.randomUUID(), line, seq));
-
-                                        propTexto.set((double) seq / lines);
                                     }
                                 }
 
-                                propTexto.set(.0);
                                 HashMap<Integer, String> indices = new HashMap<>();
                                 for (NovelTexto texto : textos) {
-                                    if (texto.getTexto().contains("*") || texto.getTexto().toLowerCase().contains("índice:"))
-                                        indices.put(texto.getSequencia(), texto.getTexto());
+                                    if (texto.getTexto().contains("*"))
+                                        indices.put(texto.getSequencia(), texto.getTexto().replaceAll("\\* ", "").trim());
+                                    else if (texto.getTexto().toLowerCase().contains("índice:"))
+                                        continue;
                                     else
                                         break;
                                 }
 
                                 if (!indices.isEmpty()) {
-                                    indices.keySet().stream().sorted(Comparator.reverseOrder()).forEach(k -> {
-                                        NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, k, volume.getLingua(), false);
-                                        for (int i = textos.size(); i >= 0; i--) {
-                                            capitulo.addTexto(textos.remove(i));
-                                            if (textos.get(i).getTexto().compareToIgnoreCase(indices.get(k)) == 0)
+                                    indices.keySet().stream().forEach(k -> {
+                                        String ind = indices.get(k);
+                                        NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, ind, k, volume.getLingua(), false);
+                                        int pi = 0, pos = -1;
+                                        for (int i = pi; i < textos.size(); i++) {
+                                            pi = i;
+                                            if (textos.get(i).getTexto().trim().compareToIgnoreCase(ind) == 0) {
+                                                pi = i + 1;
+                                                pos = i;
                                                 break;
+                                            }
                                         }
+
+                                        for (int i = pi; i < textos.size(); i++) {
+                                            if (textos.get(i).getTexto().trim().compareToIgnoreCase(ind) == 0) {
+                                                pos = i;
+                                                break;
+                                            }
+                                        }
+
+                                        if (pos >= 0) {
+                                            capitulo.setSequencia(textos.get(0).getSequencia());
+                                            for (int i = 0; i <= pos; i++)
+                                                capitulo.addTexto(textos.remove(0));
+                                        }
+
                                         volume.addCapitulos(capitulo);
                                     });
 
                                     if (!textos.isEmpty()) {
-                                        NovelCapitulo capitulo = volume.getCapitulos().get(volume.getCapitulos().size());
-                                        for (int i = textos.size(); i >= 0; i--)
+                                        NovelCapitulo capitulo = volume.getCapitulos().get(volume.getCapitulos().size() - 1);
+                                        for (int i = 0; i < textos.size(); i++)
                                             capitulo.addTexto(textos.remove(i));
                                     }
-
-                                    for (NovelCapitulo capitulo : volume.getCapitulos())
-                                        capitulo.setTextos(capitulo.getTextos().parallelStream().sorted(Comparator.comparing(NovelTexto::getSequencia)).collect(Collectors.toList()));
-
-                                    volume.setCapitulos(volume.getCapitulos().parallelStream().sorted(Comparator.comparing(NovelCapitulo::getSequencia)).collect(Collectors.toList()));
                                 } else {
-                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, 0, volume.getLingua(), false);
+                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, "", 0, volume.getLingua(), false);
                                     capitulo.setTextos(textos);
                                     volume.addCapitulos(capitulo);
                                 }
@@ -536,11 +641,29 @@ public class ProcessarNovels {
     }
 
     final private String pattern = ".*[\u4E00-\u9FAF].*";
+    final private String japanese = "[\u3041-\u9FAF]";
     private Tokenizer tokenizer;
     private SplitMode mode;
 
     private void gerarVocabulario(String frase) throws ExcessaoBd {
-        for (Morpheme m : tokenizer.tokenize(mode, frase)) {
+        String texto = frase;
+
+        HashMap<String, String> furigana = new HashMap<>();
+        if (texto.toLowerCase().contains("[ruby]")) {
+            Matcher matcher = Pattern.compile("(\\[ruby\\][^\\ruby]*\\[\\\\ruby\\])").matcher(texto);
+            if (matcher.find()) {
+                for (int i = 0; i < matcher.groupCount(); i++) {
+                    String palavra = matcher.group(i).replaceAll("\\[\\\\?ruby\\]", "");
+                    String kanji = palavra.replaceAll("\\[rt\\][ぁ-龯]*\\[\\\\rt\\]", "");
+                    String furi = palavra.replaceAll("[ぁ-龯]*\\[rt\\]", "").replaceAll("\\[\\\\rt\\]", "");
+                    if (!furigana.containsKey(kanji))
+                        furigana.put(kanji, furi);
+                }
+            }
+            texto = texto.replaceAll("\\[rt\\][ぁ-龯]*\\[\\\\rt\\]", "").replaceAll("\\[\\\\?ruby\\]", "");
+        }
+
+        for (Morpheme m : tokenizer.tokenize(mode, texto)) {
             if (m.surface().matches(pattern)) {
                 if (validaHistorico.contains(m.dictionaryForm())) {
                     NovelVocabulario vocabulario = vocabHistorico.stream()
@@ -556,19 +679,27 @@ public class ProcessarNovels {
                 if (!vocabValida.contains(m.dictionaryForm())) {
                     Vocabulario palavra = vocabularioJaponesService.select(m.surface(), m.dictionaryForm());
 
+                    String kanji = texto.substring(m.begin(), m.end());
+                    String leitura = "";
+                    if (furigana.containsKey(kanji))
+                        leitura = furigana.get(kanji);
+
                     if (palavra != null) {
                         NovelVocabulario vocabulario = null;
                         if (palavra.getPortugues().substring(0, 2).matches(japanese))
-                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-                                    palavra.getIngles(), m.readingForm());
+                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(), palavra.getIngles(), m.readingForm());
                         else
-                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-                                    palavra.getIngles(), m.readingForm());
+                            vocabulario = new NovelVocabulario(m.dictionaryForm(), palavra.getPortugues(), palavra.getIngles(), m.readingForm());
 
                         // Usado apenas para correção em formas em branco.
                         if (palavra.getFormaBasica().isEmpty()) {
                             palavra.setFormaBasica(m.dictionaryForm());
                             palavra.setLeitura(m.readingForm());
+                            vocabularioJaponesService.update(palavra);
+                        }
+
+                        if (!leitura.isEmpty() && !palavra.getLeituraNovel().equalsIgnoreCase(leitura)) {
+                            palavra.setLeituraNovel(leitura);
                             vocabularioJaponesService.update(palavra);
                         }
 
@@ -581,9 +712,8 @@ public class ProcessarNovels {
                     } else {
                         Revisar revisar = serviceJaponesRevisar.select(m.surface(), m.dictionaryForm());
                         if (revisar == null) {
-                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, false, true);
-                            Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
-                                    .setText(m.surface() + " : Vocabulário novo."));
+                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), leitura, false, false, false, true);
+                            Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(m.surface() + " : Vocabulário novo."));
                             revisar.setIngles(getSignificado(revisar.getVocabulario()));
 
                             if (revisar.getIngles().isEmpty())
@@ -598,18 +728,15 @@ public class ProcessarNovels {
 
                                     if (traducoes > 3000) {
                                         traducoes = 0;
-                                        MenuPrincipalController.getController().setContaGoogle(
-                                                Util.next(MenuPrincipalController.getController().getContaGoogle()));
+                                        MenuPrincipalController.getController().setContaGoogle(Util.next(MenuPrincipalController.getController().getContaGoogle()));
                                     }
 
-                                    Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
-                                            .setText(m.surface() + " : Obtendo tradução."));
+                                    Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(m.surface() + " : Obtendo tradução."));
                                     revisar.setPortugues(
                                             Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
                                                     Language.PORTUGUESE.getSigla(), revisar.getIngles(),
                                                     MenuPrincipalController.getController().getContaGoogle())));
                                 } catch (IOException e) {
-
                                     LOGGER.error(e.getMessage(), e);
                                 }
                             }
@@ -621,11 +748,15 @@ public class ProcessarNovels {
                                 serviceJaponesRevisar.setIsNovel(revisar);
                             }
 
+                            if (!leitura.isEmpty() && !revisar.getLeituraNovel().equalsIgnoreCase(leitura)) {
+                                revisar.setLeituraNovel(leitura);
+                                serviceJaponesRevisar.update(revisar);
+                            }
+
                             serviceJaponesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                         }
 
-                        NovelVocabulario vocabulario = new NovelVocabulario(m.dictionaryForm(), revisar.getPortugues(),
-                                revisar.getIngles(), m.readingForm(), false);
+                        NovelVocabulario vocabulario = new NovelVocabulario(m.dictionaryForm(), revisar.getPortugues(), revisar.getIngles(), m.readingForm(), false);
 
                         validaHistorico.add(m.dictionaryForm());
                         vocabHistorico.add(vocabulario);

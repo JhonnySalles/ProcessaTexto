@@ -12,6 +12,7 @@ public class Revisar {
     private String vocabulario;
     private String formaBasica;
     private String leitura;
+    private String leituraNovel;
     private String portugues;
     private String ingles;
     private Boolean anime;
@@ -50,6 +51,14 @@ public class Revisar {
 
     public void setLeitura(String leitura) {
         this.leitura = leitura;
+    }
+
+    public String getLeituraNovel() {
+        return leituraNovel;
+    }
+
+    public void setLeituraNovel(String leituraNovel) {
+        this.leituraNovel = leituraNovel;
     }
 
     public String getPortugues() {
@@ -102,6 +111,7 @@ public class Revisar {
         this.vocabulario = "";
         this.formaBasica = "";
         this.leitura = "";
+        this.leituraNovel = "";
         this.portugues = "";
         this.ingles = "";
         this.anime = false;
@@ -115,6 +125,7 @@ public class Revisar {
         this.vocabulario = vocabulario;
         this.formaBasica = "";
         this.leitura = "";
+        this.leituraNovel = "";
         this.portugues = "";
         this.ingles = "";
         this.anime = false;
@@ -123,11 +134,12 @@ public class Revisar {
         this.revisado.setSelected(false);
     }
 
-    public Revisar(String vocabulario, String formaBasica, String leitura) {
+    public Revisar(String vocabulario, String formaBasica, String leitura, String leituraNovel) {
         this.id = null;
         this.vocabulario = vocabulario;
         this.leitura = leitura;
         this.formaBasica = formaBasica;
+        this.leituraNovel = leituraNovel;
         this.portugues = "";
         this.ingles = "";
         this.anime = false;
@@ -140,6 +152,7 @@ public class Revisar {
         this.id = null;
         this.vocabulario = vocabulario;
         this.leitura = "";
+        this.leituraNovel = "";
         this.formaBasica = "";
         this.portugues = "";
         this.ingles = "";
@@ -149,10 +162,11 @@ public class Revisar {
         this.revisado.setSelected(revisado);
     }
 
-    public Revisar(String vocabulario, String formaBasica, String leitura, Boolean revisado, Boolean isAnime, Boolean isManga, Boolean isNovel) {
+    public Revisar(String vocabulario, String formaBasica, String leitura, String leituraNovel, Boolean revisado, Boolean isAnime, Boolean isManga, Boolean isNovel) {
         this.id = null;
         this.vocabulario = vocabulario;
         this.leitura = leitura;
+        this.leituraNovel = leituraNovel;
         this.formaBasica = formaBasica;
         this.portugues = "";
         this.ingles = "";
@@ -162,11 +176,12 @@ public class Revisar {
         this.revisado.setSelected(revisado);
     }
 
-    public Revisar(String vocabulario, String formaBasica, String leitura, String portugues, String ingles) {
+    public Revisar(String vocabulario, String formaBasica, String leitura, String leituraNovel, String portugues, String ingles) {
         this.id = null;
         this.vocabulario = vocabulario;
         this.formaBasica = formaBasica;
         this.leitura = leitura;
+        this.leituraNovel = leituraNovel;
         this.portugues = portugues;
         this.ingles = ingles;
         this.anime = false;
@@ -175,12 +190,13 @@ public class Revisar {
         this.revisado.setSelected(false);
     }
 
-    public Revisar(UUID id, String vocabulario, String formaBasica, String leitura, String portugues, String ingles,
+    public Revisar(UUID id, String vocabulario, String formaBasica, String leitura, String leituraNovel, String portugues, String ingles,
                    Boolean revisado, Boolean anime, Boolean manga, Boolean novel) {
         this.id = id;
         this.vocabulario = vocabulario;
         this.formaBasica = formaBasica;
         this.leitura = leitura;
+        this.leituraNovel = leituraNovel;
         this.portugues = portugues;
         this.ingles = ingles;
         this.anime = anime;
@@ -195,8 +211,7 @@ public class Revisar {
     }
 
     public static Vocabulario toVocabulario(Revisar revisar) {
-        return new Vocabulario(null, revisar.getVocabulario(), revisar.getFormaBasica(), revisar.getLeitura(),
-                revisar.getIngles(), revisar.getPortugues());
+        return new Vocabulario(null, revisar.getVocabulario(), revisar.getFormaBasica(), revisar.getLeitura(), revisar.getLeituraNovel(), revisar.getIngles(), revisar.getPortugues());
     }
 
     public static List<Vocabulario> toVocabulario(List<Revisar> revisar) {

@@ -957,7 +957,7 @@ public class MangaDaoJDBC implements MangaDao {
         try {
             String where = "WHERE ";
             if (obj.getId() != null)
-                where += " v.id = " + obj.getId().toString();
+                where += " v.id = " + '"' + obj.getId().toString() + '"';
             else
                 where += " v.manga = '" + obj.getManga() + "' AND v.volume = " + obj.getVolume().toString()
                         + " AND v.linguagem = '" + obj.getLingua().getSigla() + "'";

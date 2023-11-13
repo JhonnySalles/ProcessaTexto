@@ -508,7 +508,7 @@ public class SudachiTokenizer {
                 } else {
                     processado += m.dictionaryForm() + " ** ";
                     if (!vocabNovo.stream().map(e -> e.getVocabulario()).anyMatch(m.surface()::equalsIgnoreCase))
-                        vocabNovo.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm()));
+                        vocabNovo.add(new Vocabulario(m.surface(), m.dictionaryForm(), m.readingForm(), ""));
                 }
             }
         }
@@ -654,11 +654,8 @@ public class SudachiTokenizer {
                             if (!signficado.isEmpty()) {
                                 try {
                                     item.setIngles(signficado);
-                                    item.setPortugues(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-                                            Language.PORTUGUESE.getSigla(), signficado, google));
-
-                                    service.insert(new Revisar(item.getVocabulario(), item.getFormaBasica(),
-                                            item.getLeitura(), item.getPortugues(), signficado));
+                                    item.setPortugues(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), signficado, google));
+                                    service.insert(new Revisar(item.getVocabulario(), item.getFormaBasica(), item.getLeitura(), "", item.getPortugues(), signficado));
                                 } catch (IOException io) {
                                     item.setPortugues(signficado);
                                     io.printStackTrace();

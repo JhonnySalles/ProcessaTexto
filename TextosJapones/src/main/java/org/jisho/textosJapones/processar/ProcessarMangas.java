@@ -367,7 +367,7 @@ public class ProcessarMangas {
                     } else {
                         Revisar revisar = serviceJaponesRevisar.select(m.surface(), m.dictionaryForm());
                         if (revisar == null) {
-                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), false, false, true, false);
+                            revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), "", false, false, true, false);
                             Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
                                     .setText(m.surface() + " : Vocabulário novo."));
                             revisar.setIngles(getSignificado(revisar.getVocabulario()));

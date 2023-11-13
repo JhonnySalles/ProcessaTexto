@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface NovelDao {
 
     NovelVolume selectVolume(String base, String novel, Integer volume, Language linguagem) throws ExcessaoBd;
+    NovelVolume selectVolume(String base, String arquivo, Language linguagem) throws ExcessaoBd;
 
     NovelVolume selectVolume(String base, UUID id) throws ExcessaoBd;
 
@@ -27,10 +28,6 @@ public interface NovelDao {
     UUID insertTexto(String base, UUID idPagina, NovelTexto obj) throws ExcessaoBd;
 
     void deleteVolume(String base, NovelVolume obj) throws ExcessaoBd;
-
-    void deleteCapitulo(String base, NovelCapitulo obj) throws ExcessaoBd;
-
-    void deleteTexto(String base, NovelTexto obj) throws ExcessaoBd;
 
     void deleteVocabulario(String base) throws ExcessaoBd;
 
