@@ -298,7 +298,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
     }
 
     @Override
-    public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
+    public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga, Boolean isNovel) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -308,16 +308,21 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
                 st.setString(1, pesquisar);
                 st.setString(2, pesquisar);
             } else {
-                String parametro = "1>0";
+                String parametro = "";
 
-                if (isAnime && isManga)
-                    parametro = "isAnime = true AND isManga = true";
-                else {
-                    if (isAnime)
-                        parametro = "isAnime = true";
-                    else if (isManga)
-                        parametro = "isManga = true";
-                }
+                if (isAnime)
+                    parametro += "isAnime = true AND ";
+
+                if (isManga)
+                    parametro += "isManga = true AND ";
+
+                if (isNovel)
+                    parametro += "isNovel = true AND ";
+
+                if (parametro.isEmpty())
+                    parametro = "1>0";
+                else
+                    parametro = parametro.substring(0, parametro.length()-4);
 
                 st = conn.prepareStatement(String.format(SELECT_REVISAR, parametro));
             }

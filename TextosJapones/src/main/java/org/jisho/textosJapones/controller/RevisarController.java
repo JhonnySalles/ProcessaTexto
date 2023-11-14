@@ -74,6 +74,9 @@ public class RevisarController implements Initializable {
     private JFXCheckBox cbManga;
 
     @FXML
+    private JFXCheckBox cbNovel;
+
+    @FXML
     private JFXTextField txtVocabulario;
 
     @FXML
@@ -242,7 +245,7 @@ public class RevisarController implements Initializable {
     }
 
     private Boolean pesquisaRevisao(String pesquisar) throws ExcessaoBd {
-        revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected());
+        revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected(), cbNovel.isSelected());
         if (revisando != null) {
             limpaTextos();
             cbCorrecao.setSelected(false);
@@ -372,6 +375,10 @@ public class RevisarController implements Initializable {
         cbManga.setSelected(ativo);
     }
 
+    public void setNovel(Boolean ativo) {
+        cbNovel.setSelected(ativo);
+    }
+
     final private String allFlag = ".*";
     final private String japanese = "[\u3041-\u9FAF]";
     final private String notJapanese = "[A-Za-z0-9 ,;.à-úÀ-ú\\[\\]\\-\\(\\)]";
@@ -446,6 +453,10 @@ public class RevisarController implements Initializable {
         });
 
         cbManga.selectedProperty().addListener((o, oldVal, newVal) -> {
+            pesquisar();
+        });
+
+        cbNovel.selectedProperty().addListener((o, oldVal, newVal) -> {
             pesquisar();
         });
 

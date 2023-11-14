@@ -88,8 +88,8 @@ public class RevisarInglesServices {
 		return revisarDao.selectQuantidadeRestante();
 	}
 
-	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd {
-		return revisarDao.selectRevisar(pesquisar, isAnime, isManga);
+	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga, Boolean isNovel) throws ExcessaoBd {
+		return revisarDao.selectRevisar(pesquisar, isAnime, isManga, isNovel);
 	}
 
 	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {

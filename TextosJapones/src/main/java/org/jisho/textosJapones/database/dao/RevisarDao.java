@@ -31,7 +31,7 @@ public interface RevisarDao {
 
 	String selectQuantidadeRestante() throws ExcessaoBd;
 
-	Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga) throws ExcessaoBd;
+	Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga, Boolean isNovel) throws ExcessaoBd;
 
 	List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd;
 
