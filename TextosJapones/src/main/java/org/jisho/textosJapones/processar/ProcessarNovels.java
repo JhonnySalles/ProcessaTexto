@@ -1,5 +1,6 @@
 package org.jisho.textosJapones.processar;
 
+import com.github.junrar.volume.Volume;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
@@ -227,28 +228,133 @@ public class ProcessarNovels {
         return tabela;
     }
 
-    private String getBase(String texto) {
+    private Integer getBase(String texto, Integer inicio) {
+        Integer base = 1;
+        for (int n = inicio; n < texto.length(); n++) {
+            switch (texto.substring(n, n + 1)) {
+                case "十":
+                    if (base < 10)
+                        base = 10;
+                    break;
+
+                case "百":
+                    if (base < 100)
+                        base = 100;
+                    break;
+
+                case "千":
+                    if (base < 1000)
+                        base = 1000;
+                    break;
+
+                case "万":
+                    base = base * 10000;
+                    break;
+
+                case "億":
+                    base = base * 100000000;
+                    break;
+            }
+        }
+
+        return base;
+    }
+
+    private Float toNumero(String texto, Float original) {
+        Float numero = original;
+
+        if (!texto.isEmpty()) {
+            if (texto.matches("([０-９])*"))
+                numero = Float.valueOf(texto.replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
+                        .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
+                        .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+            else {
+                Float num = 0f;
+                Integer base = 1;
+                for (int n = texto.length() -1; n >= 0; n--) {
+                    switch (texto.substring(n, n + 1)) {
+                        case "零":
+                            num = (0f * base) + num;
+                            break;
+
+                        case "一":
+                            num = (1f * base) + num;
+                            break;
+
+                        case "二":
+                            num = (2f * base) + num;
+                            break;
+
+                        case "三":
+                            num = (3f * base) + num;
+                            break;
+
+                        case "四":
+                            num = (4f * base) + num;
+                            break;
+
+                        case "五":
+                            num = (5f * base) + num;
+                            break;
+
+                        case "六":
+                            num = (6f * base) + num;
+                            break;
+
+                        case "七":
+                            num = (7f * base) + num;
+                            break;
+
+                        case "八":
+                            num = (8f * base) + num;
+                            break;
+
+                        case "九":
+                            num = (9f * base) + num;
+                            break;
+
+                        case "十":
+                        case "百":
+                        case "千":
+                        case "万":
+                        case "億":
+                            base = getBase(texto, n);
+                            break;
+                    }
+                }
+
+                if (num > numero)
+                    numero = num;
+            }
+        }
+        return numero;
+    }
+
+    private String getBase(Language linguagem, String texto) {
         String tabela;
         String nome = "";
-        Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
-        if (matcher.find()) {
-            String item = matcher.group(0);
-            if (item.trim().substring(0, 1).matches("[ぁ-んァ-ン]"))
-                tabela = toAlfabeto(item.trim().substring(0, 1));
-            else {
-                List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
-                if (!m.isEmpty())
-                    nome = m.get(0).readingForm().substring(0, 1);
+        if (linguagem.compareTo(Language.JAPANESE) == 0) {
+            Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
+            if (matcher.find()) {
+                String item = matcher.group(0);
+                if (item.trim().substring(0, 1).matches("[ぁ-んァ-ン]"))
+                    tabela = toAlfabeto(item.trim().substring(0, 1));
+                else {
+                    List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
+                    if (!m.isEmpty())
+                        nome = m.get(0).readingForm().substring(0, 1);
 
-                tabela = toAlfabeto(nome);
-            }
+                    tabela = toAlfabeto(nome);
+                }
+            } else
+                tabela = texto.substring(0, 1);
         } else
             tabela = texto.substring(0, 1);
 
         return tabela;
     }
 
-    private NovelTabela getTabela(File arquivo, Language linguagem, Boolean favorito) throws IOException {
+    private NovelVolume getVolume(File arquivo, Language linguagem, Boolean favorito) throws IOException {
         File jpg = new File(arquivo.getPath().substring(0, arquivo.getPath().lastIndexOf(".")) + ".jpg");
         File opf = new File(arquivo.getPath().substring(0, arquivo.getPath().lastIndexOf(".")) + ".opf");
         String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
@@ -269,6 +375,11 @@ public class ProcessarNovels {
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
         else if (arq.toLowerCase().contains("vol."))
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
+        else {
+            Matcher matcher = Pattern.compile("[0-9]*$").matcher(arq.trim());
+            if (matcher.find())
+                volume = Float.valueOf(matcher.group(0));
+        }
 
         NovelVolume novel = new NovelVolume(UUID.randomUUID(), nome, titulo, "", "", "", arquivo.getName(), "", "", volume, linguagem, favorito, false);
 
@@ -325,9 +436,96 @@ public class ProcessarNovels {
             }
         }
 
+        return novel;
+    }
+
+    private NovelTabela getTabela(String tabela, File arquivo, Language linguagem, Boolean favorito) throws IOException {
         ArrayList<NovelVolume> list = new ArrayList<>();
-        list.add(novel);
-        return new NovelTabela(getBase(nome), list);
+        NovelVolume vol = getVolume(arquivo, linguagem, favorito);
+        list.add(vol);
+
+        if (tabela != null && !tabela.isEmpty())
+            return new NovelTabela(tabela, list);
+        else
+            return new NovelTabela(getBase(linguagem, vol.getNovel()), list);
+    }
+
+    private void getIndices(NovelVolume volume, ArrayList<NovelTexto> textos, Language linguagem) {
+        HashMap<Integer, String> indices = new HashMap<>();
+        for (NovelTexto texto : textos) {
+            if (texto.getTexto().contains("*"))
+                indices.put(texto.getSequencia(), texto.getTexto().replaceAll("\\* ", "").trim());
+            else if (texto.getTexto().toLowerCase().contains("índice:"))
+                continue;
+            else
+                break;
+        }
+
+        if (!indices.isEmpty()) {
+            Float lastCap = 0f;
+
+            for (Integer k : indices.keySet()) {
+                String indice = indices.get(k);
+                Float cap = lastCap;
+
+                if (linguagem.compareTo(Language.JAPANESE) == 0) {
+                    Matcher matcher = Pattern.compile("((第)?([\\d０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*(話|譜|章))").matcher(indice);
+                    if (matcher.find()) {
+                        String aux = matcher.group(0).replaceAll("(第|話|譜|章)","");
+                        if (aux.matches("([０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*"))
+                            cap = toNumero(aux, cap);
+                        else if (aux.matches("([\\d])*"))
+                            cap = Float.valueOf(aux);
+                    }
+                } else if (linguagem.compareTo(Language.ENGLISH) == 0) {
+                    Matcher matcher = Pattern.compile("(ch?[a-z ]+)[\\d]*").matcher(indice.toLowerCase());
+                    if (matcher.find())
+                        cap = Float.valueOf(matcher.group(0).replaceAll("[\\D]",""));
+                    else {
+                        matcher = Pattern.compile("^([0-9]+)").matcher(indice.toLowerCase());
+                        if (matcher.find())
+                            cap = Float.valueOf(matcher.group(0));
+                    }
+                }
+
+                NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), cap, indice, k, volume.getLingua(), false);
+                int pi = 0, pos = -1;
+                for (int i = pi; i < textos.size(); i++) {
+                    pi = i;
+                    if (textos.get(i).getTexto().trim().compareToIgnoreCase(indice) == 0) {
+                        pi = i + 1;
+                        pos = i;
+                        break;
+                    }
+                }
+
+                for (int i = pi; i < textos.size(); i++) {
+                    if (textos.get(i).getTexto().trim().compareToIgnoreCase(indice) == 0) {
+                        pos = i;
+                        break;
+                    }
+                }
+
+                if (pos >= 0) {
+                    capitulo.setSequencia(textos.get(0).getSequencia());
+                    for (int i = 0; i <= pos; i++)
+                        capitulo.addTexto(textos.remove(0));
+                }
+
+                lastCap = cap;
+                volume.addCapitulos(capitulo);
+            }
+
+            if (!textos.isEmpty()) {
+                NovelCapitulo capitulo = volume.getCapitulos().get(volume.getCapitulos().size() - 1);
+                for (int i = 0; i < textos.size(); i++)
+                    capitulo.addTexto(textos.remove(i));
+            }
+        } else {
+            NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, "", 0, volume.getLingua(), false);
+            capitulo.setTextos(textos);
+            volume.addCapitulos(capitulo);
+        }
     }
 
     public void processarArquivos(File caminho, String tabela, Language linguagem, Boolean favorito) {
@@ -356,12 +554,7 @@ public class ProcessarNovels {
                         if (caminho.isDirectory()) {
                             for (File arquivo : caminho.listFiles())
                                 if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt")) {
-                                    NovelTabela obj;
-                                    if (tabela != null && !tabela.isEmpty())
-                                        obj = new NovelTabela(tabela, new ArrayList<>());
-                                    else
-                                        obj = getTabela(arquivo, linguagem, favorito);
-
+                                    NovelTabela obj = getTabela(tabela, arquivo, linguagem, favorito);
                                     Optional<NovelTabela> tab = novels.stream().filter(i -> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
                                     if (tab.isPresent())
                                         tab.get().getVolumes().addAll(obj.getVolumes());
@@ -371,11 +564,7 @@ public class ProcessarNovels {
                                     arquivos.put(arquivo.getName(), arquivo);
                                 }
                         } else {
-                            if (tabela != null && !tabela.isEmpty())
-                                novels.add(new NovelTabela(tabela, new ArrayList<>()));
-                            else
-                                novels.add(getTabela(caminho, linguagem, favorito));
-
+                            novels.add(getTabela(tabela, caminho, linguagem, favorito));
                             arquivos.put(caminho.getName(), caminho);
                         }
 
@@ -405,56 +594,7 @@ public class ProcessarNovels {
                                     }
                                 }
 
-                                HashMap<Integer, String> indices = new HashMap<>();
-                                for (NovelTexto texto : textos) {
-                                    if (texto.getTexto().contains("*"))
-                                        indices.put(texto.getSequencia(), texto.getTexto().replaceAll("\\* ", "").trim());
-                                    else if (texto.getTexto().toLowerCase().contains("índice:"))
-                                        continue;
-                                    else
-                                        break;
-                                }
-
-                                if (!indices.isEmpty()) {
-                                    indices.keySet().stream().forEach(k -> {
-                                        String ind = indices.get(k);
-                                        NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, ind, k, volume.getLingua(), false);
-                                        int pi = 0, pos = -1;
-                                        for (int i = pi; i < textos.size(); i++) {
-                                            pi = i;
-                                            if (textos.get(i).getTexto().trim().compareToIgnoreCase(ind) == 0) {
-                                                pi = i + 1;
-                                                pos = i;
-                                                break;
-                                            }
-                                        }
-
-                                        for (int i = pi; i < textos.size(); i++) {
-                                            if (textos.get(i).getTexto().trim().compareToIgnoreCase(ind) == 0) {
-                                                pos = i;
-                                                break;
-                                            }
-                                        }
-
-                                        if (pos >= 0) {
-                                            capitulo.setSequencia(textos.get(0).getSequencia());
-                                            for (int i = 0; i <= pos; i++)
-                                                capitulo.addTexto(textos.remove(0));
-                                        }
-
-                                        volume.addCapitulos(capitulo);
-                                    });
-
-                                    if (!textos.isEmpty()) {
-                                        NovelCapitulo capitulo = volume.getCapitulos().get(volume.getCapitulos().size() - 1);
-                                        for (int i = 0; i < textos.size(); i++)
-                                            capitulo.addTexto(textos.remove(i));
-                                    }
-                                } else {
-                                    NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), 0f, "", 0, volume.getLingua(), false);
-                                    capitulo.setTextos(textos);
-                                    volume.addCapitulos(capitulo);
-                                }
+                                getIndices(volume, textos, linguagem);
 
                                 if (desativar)
                                     break;
