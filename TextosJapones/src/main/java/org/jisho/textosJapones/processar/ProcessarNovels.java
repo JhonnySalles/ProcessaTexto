@@ -335,14 +335,18 @@ public class ProcessarNovels {
         String nome = "";
         if (linguagem.compareTo(Language.JAPANESE) == 0) {
             Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
-            if (matcher.find()) {
+            if (matcher.find() && !matcher.group(0).isEmpty()) {
                 String item = matcher.group(0);
                 if (item.trim().substring(0, 1).matches("[ぁ-んァ-ン]"))
                     tabela = toAlfabeto(item.trim().substring(0, 1));
                 else {
                     List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
-                    if (!m.isEmpty())
-                        nome = m.get(0).readingForm().substring(0, 1);
+                    if (!m.isEmpty()) {
+                        if (!m.get(0).readingForm().isEmpty())
+                            nome = m.get(0).readingForm().substring(0, 1);
+                        else if (!m.get(0).surface().isEmpty())
+                            nome = m.get(0).surface().substring(0, 1);
+                    }
 
                     tabela = toAlfabeto(nome);
                 }
@@ -360,9 +364,9 @@ public class ProcessarNovels {
         String arq = arquivo.getName().substring(0, arquivo.getName().lastIndexOf("."));
         String nome;
         if (arq.toLowerCase().contains("volume"))
-            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("volume"));
+            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("volume")).trim();
         else if (arq.toLowerCase().contains("vol."))
-            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("vol."));
+            nome = arq.substring(0, arq.toLowerCase().lastIndexOf("vol.")).trim();
         else
             nome = arq;
 
@@ -377,8 +381,15 @@ public class ProcessarNovels {
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
         else {
             Matcher matcher = Pattern.compile("[0-9]*$").matcher(arq.trim());
-            if (matcher.find())
+            if (matcher.find() && !matcher.group(0).isEmpty())
                 volume = Float.valueOf(matcher.group(0));
+            else {
+                matcher = Pattern.compile("[\uFF10-\uFF19]*$").matcher(arq.trim());
+                if (matcher.find() && !matcher.group(0).isEmpty())
+                    volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
+                            .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
+                            .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+            }
         }
 
         NovelVolume novel = new NovelVolume(UUID.randomUUID(), nome, titulo, "", "", "", arquivo.getName(), "", "", volume, linguagem, favorito, false);
@@ -470,7 +481,7 @@ public class ProcessarNovels {
 
                 if (linguagem.compareTo(Language.JAPANESE) == 0) {
                     Matcher matcher = Pattern.compile("((第)?([\\d０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*(話|譜|章))").matcher(indice);
-                    if (matcher.find()) {
+                    if (matcher.find() && !matcher.group(0).isEmpty()) {
                         String aux = matcher.group(0).replaceAll("(第|話|譜|章)","");
                         if (aux.matches("([０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*"))
                             cap = toNumero(aux, cap);
@@ -479,11 +490,11 @@ public class ProcessarNovels {
                     }
                 } else if (linguagem.compareTo(Language.ENGLISH) == 0) {
                     Matcher matcher = Pattern.compile("(ch?[a-z ]+)[\\d]*").matcher(indice.toLowerCase());
-                    if (matcher.find())
+                    if (matcher.find() && !matcher.group(0).isEmpty())
                         cap = Float.valueOf(matcher.group(0).replaceAll("[\\D]",""));
                     else {
                         matcher = Pattern.compile("^([0-9]+)").matcher(indice.toLowerCase());
-                        if (matcher.find())
+                        if (matcher.find() && !matcher.group(0).isEmpty())
                             cap = Float.valueOf(matcher.group(0));
                     }
                 }

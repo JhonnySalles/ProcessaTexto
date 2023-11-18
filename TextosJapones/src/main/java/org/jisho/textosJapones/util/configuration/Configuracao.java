@@ -88,7 +88,6 @@ public class Configuracao {
             props.store(os, "");
         } catch (IOException e) {
             Alertas.Tela_Alerta("Erro ao salvar o properties", e.getMessage());
-            
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -106,7 +105,6 @@ public class Configuracao {
             return props;
         } catch (IOException e) {
             Alertas.Tela_Alerta("Erro ao carregar o properties", e.getMessage());
-            
             LOGGER.error(e.getMessage(), e);
         }
         return null;

@@ -12,6 +12,7 @@ import javafx.scene.robot.Robot;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.jisho.textosJapones.Run;
+import org.jisho.textosJapones.components.notification.Alertas;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.enums.Language;
@@ -19,12 +20,14 @@ import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.NovelServices;
 import org.jisho.textosJapones.processar.ProcessarMangas;
 import org.jisho.textosJapones.processar.ProcessarNovels;
+import org.jisho.textosJapones.util.configuration.Configuracao;
 import org.jisho.textosJapones.util.constraints.Validadores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class NovelsProcessarController implements Initializable {
@@ -89,6 +92,7 @@ public class NovelsProcessarController implements Initializable {
             return;
 
         desabilitar();
+        saveConfig();
 
         if (novels == null)
             novels = new ProcessarNovels(this);
@@ -179,6 +183,57 @@ public class NovelsProcessarController implements Initializable {
         return pasta;
     }
 
+    private static String CONFIG = "processa.config";
+    public void saveConfig() {
+        if (txtCaminho.getText() == null || txtCaminho.getText().trim().isEmpty())
+            return;
+
+        File caminho = new File(txtCaminho.getText());
+        if (!caminho.exists())
+            return;
+
+        File pasta = null;
+
+        if (caminho.isFile())
+            pasta = new File((caminho.getParentFile() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
+        else
+            pasta = new File((caminho.getPath() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
+
+
+        Properties props = new Properties();
+        try (OutputStream os = new FileOutputStream(pasta)) {
+            props.clear();
+            props.setProperty("base", cbBase.getEditor().getText());
+            props.setProperty("linguagem", cbLinguagem.getSelectionModel().getSelectedItem().toString());
+            props.setProperty("favorito", ckbFavorito.isSelected() ? "sim" : "nao");
+            props.setProperty("novel", txtNovel.getText());
+            props.store(os, "");
+        } catch (IOException e) {
+            Alertas.Tela_Alerta("Erro ao salvar o properties de configuração", e.getMessage());
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    public void loadConfig() {
+        if (txtCaminho.getText() == null || txtCaminho.getText().trim().isEmpty() || !new File(txtCaminho.getText()).exists())
+            return;
+
+        File config = new File((txtCaminho.getText() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
+        if (config.exists()) {
+            Properties props = new Properties();
+            try (FileInputStream fs = new FileInputStream(config)) {
+                props.load(fs);
+                cbBase.getEditor().setText(props.getProperty("base"));
+                cbLinguagem.getSelectionModel().select(Language.valueOf(props.getProperty("linguagem")));
+                ckbFavorito.setSelected(props.getProperty("favorito").equalsIgnoreCase("sim"));
+                txtNovel.setText(props.getProperty("novel"));
+            } catch (IOException e) {
+                Alertas.Tela_Alerta("Erro ao carregar o properties de configuração", e.getMessage());
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+    }
+
     public AnchorPane getRoot() {
         return apRoot;
     }
@@ -225,14 +280,25 @@ public class NovelsProcessarController implements Initializable {
                 robot.keyPress(KeyCode.TAB);
         });
 
+        cbBase.focusedProperty().addListener((options, oldValue, newValue) -> {
+            if (oldValue) {
+                String base = cbBase.getEditor().getText();
+                if (base != null && base.contains(" "))
+                    cbBase.getEditor().setText(base.replaceAll(" ", "_"));
+            }
+        });
+
         txtNovel.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER))
                 robot.keyPress(KeyCode.TAB);
         });
 
-        Validadores.setTextFieldNotEmpty(txtCaminho);
+        txtCaminho.focusedProperty().addListener((options, oldValue, newValue) -> {
+            if (oldValue)
+                loadConfig();
+        });
 
-        txtCaminho.setText("C:\\Users\\Jhonny\\Desktop\\Nova pasta\\-リゼロカラハジメルイセカイセイカツタンペンシュウ002.txt");
+        Validadores.setTextFieldNotEmpty(txtCaminho);
     }
 
     public static URL getFxmlLocate() {
