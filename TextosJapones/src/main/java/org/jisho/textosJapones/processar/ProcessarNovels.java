@@ -379,6 +379,8 @@ public class ProcessarNovels {
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
         else if (arq.toLowerCase().contains("vol."))
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
+        else if (arq.toLowerCase().contains("vol "))
+            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol ") + 4).trim());
         else {
             Matcher matcher = Pattern.compile("[0-9]*$").matcher(arq.trim());
             if (matcher.find() && !matcher.group(0).isEmpty())
