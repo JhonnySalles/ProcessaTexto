@@ -227,6 +227,7 @@ public class NovelsProcessarController implements Initializable {
                 cbLinguagem.getSelectionModel().select(Language.valueOf(props.getProperty("linguagem")));
                 ckbFavorito.setSelected(props.getProperty("favorito").equalsIgnoreCase("sim"));
                 txtNovel.setText(props.getProperty("novel"));
+                cbBase.requestFocus();
             } catch (IOException e) {
                 Alertas.Tela_Alerta("Erro ao carregar o properties de configuração", e.getMessage());
                 LOGGER.error(e.getMessage(), e);

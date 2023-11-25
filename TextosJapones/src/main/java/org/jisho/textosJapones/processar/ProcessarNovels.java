@@ -15,6 +15,7 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.novels.NovelsProcessarController;
+import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
@@ -36,7 +37,10 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.image.BufferedImage;
+import java.beans.Expression;
 import java.io.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -541,6 +545,8 @@ public class ProcessarNovels {
         }
     }
 
+    private static String LOGFILE = "log.txt";
+    private File LOG;
     public void processarArquivos(File caminho, String tabela, Language linguagem, Boolean favorito) {
         error = false;
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
@@ -549,6 +555,11 @@ public class ProcessarNovels {
         Task<Void> processarArquivos = new Task<>() {
             @Override
             protected Void call() throws Exception {
+                if (caminho.isDirectory())
+                    LOG = new File(caminho + "\\" + LOGFILE);
+                else
+                    LOG = new File(caminho.getPath().substring(0, caminho.getPath().lastIndexOf("\\")) + "\\" + LOGFILE);
+
                 try {
                     try (Dictionary dict = new DictionaryFactory().create("",
                             SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
@@ -561,12 +572,18 @@ public class ProcessarNovels {
 
                         updateMessage("Preparando arquivos...");
 
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                            writer.append("Preparando arquivos...");
+                            writer.newLine();
+                            writer.flush();
+                        }
+
                         HashMap<String, File> arquivos = new HashMap<>();
                         List<NovelTabela> novels = new ArrayList<>();
 
                         if (caminho.isDirectory()) {
                             for (File arquivo : caminho.listFiles())
-                                if (arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt")) {
+                                if (!arquivo.getName().equalsIgnoreCase(LOGFILE) && arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt")) {
                                     NovelTabela obj = getTabela(tabela, arquivo, linguagem, favorito);
                                     Optional<NovelTabela> tab = novels.stream().filter(i -> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
                                     if (tab.isPresent())
@@ -594,6 +611,14 @@ public class ProcessarNovels {
                                 updateMessage("Importando texto do arquivo " + volume.getArquivo() + "...");
                                 updateProgress(++Progress, Size);
 
+                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                                    writer.append("Importando texto do arquivo: ").append(volume.getArquivo());
+                                    writer.newLine();
+                                    writer.append("Inicio do processo: ").append(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                                    writer.newLine();
+                                    writer.flush();
+                                }
+
                                 ArrayList<NovelTexto> textos = new ArrayList<>();
                                 FileReader fr = new FileReader(arquivos.get(volume.getArquivo()));
                                 try (BufferedReader br = new BufferedReader(fr)) {
@@ -612,8 +637,14 @@ public class ProcessarNovels {
                                 if (desativar)
                                     break;
 
-                                updateMessage("Processando textos do arquivo " + volume.getArquivo() + "...");
+                                updateMessage("Processando textos... ");
                                 updateProgress(++Progress, Size);
+
+                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                                    writer.append("Processando textos... ");
+                                    writer.newLine();
+                                    writer.flush();
+                                }
 
                                 Callback<Integer[], Boolean> callback = param -> {
                                     Platform.runLater(() -> {
@@ -631,9 +662,24 @@ public class ProcessarNovels {
                                 if (desativar)
                                     break;
 
-                                updateMessage("Salvando textos do arquivo " + volume.getArquivo() + "...");
+                                updateMessage("Salvando textos...");
                                 updateProgress(++Progress, Size);
+                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                                    writer.append("Salvando textos...");
+                                    writer.newLine();
+                                    writer.flush();
+                                }
+
                                 serviceNovel.salvarVolume(novel.getBase(), volume);
+
+                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                                    writer.append("Concluído processamento do arquivo ").append(volume.getArquivo()).append(".");
+                                    writer.newLine();
+                                    writer.append("-".repeat(30));
+                                    writer.newLine();
+                                    writer.newLine();
+                                    writer.flush();
+                                }
                             }
 
                             if (desativar)
@@ -643,10 +689,22 @@ public class ProcessarNovels {
                     } catch (IOException e) {
                         LOGGER.error(e.getMessage(), e);
                         error = false;
+
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                            writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
+                            writer.newLine();
+                            writer.flush();
+                        }
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                     error = false;
+
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                        writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
+                        writer.newLine();
+                        writer.flush();
+                    }
                 }
 
                 return null;
@@ -729,6 +787,16 @@ public class ProcessarNovels {
             return "";
 
         Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(kanji + " : Obtendo significado."));
+
+        if (LOG != null && LOG.exists())
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                writer.append(kanji + " : Obtendo significado.");
+                writer.newLine();
+                writer.flush();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+
         String resultado = "";
         switch (siteDicionario) {
             case TODOS:
@@ -867,6 +935,8 @@ public class ProcessarNovels {
                         if (revisar == null) {
                             revisar = new Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), leitura, false, false, false, true);
                             Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(m.surface() + " : Vocabulário novo."));
+                            serviceJaponesRevisar.insert(revisar);
+
                             revisar.setIngles(getSignificado(revisar.getVocabulario()));
 
                             if (revisar.getIngles().isEmpty())
@@ -893,7 +963,8 @@ public class ProcessarNovels {
                                     LOGGER.error(e.getMessage(), e);
                                 }
                             }
-                            serviceJaponesRevisar.insert(revisar);
+
+                            serviceJaponesRevisar.update(revisar);
                             Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(""));
                         } else {
                             if (!revisar.isNovel()) {
