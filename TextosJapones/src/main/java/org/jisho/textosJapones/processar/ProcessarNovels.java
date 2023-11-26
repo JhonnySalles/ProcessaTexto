@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.processar;
 
 import com.github.junrar.volume.Volume;
+import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
@@ -11,6 +12,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.util.Callback;
+import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
@@ -680,11 +682,21 @@ public class ProcessarNovels {
                                     writer.newLine();
                                     writer.flush();
                                 }
+
+                                Platform.runLater(() -> {
+                                    if (TaskbarProgressbar.isSupported())
+                                        TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, TaskbarProgressbar.Type.NORMAL);
+                                });
                             }
 
                             if (desativar)
                                 break;
                         }
+
+                        Platform.runLater(() -> {
+                            if (TaskbarProgressbar.isSupported())
+                                TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+                        });
 
                     } catch (IOException e) {
                         LOGGER.error(e.getMessage(), e);
@@ -695,6 +707,11 @@ public class ProcessarNovels {
                             writer.newLine();
                             writer.flush();
                         }
+
+                        Platform.runLater(() -> {
+                            if (TaskbarProgressbar.isSupported())
+                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, TaskbarProgressbar.Type.ERROR);
+                        });
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
@@ -705,6 +722,11 @@ public class ProcessarNovels {
                         writer.newLine();
                         writer.flush();
                     }
+
+                    Platform.runLater(() -> {
+                        if (TaskbarProgressbar.isSupported())
+                            TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, TaskbarProgressbar.Type.ERROR);
+                    });
                 }
 
                 return null;
