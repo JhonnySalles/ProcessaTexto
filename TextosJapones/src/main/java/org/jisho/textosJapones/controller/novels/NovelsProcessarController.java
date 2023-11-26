@@ -284,8 +284,12 @@ public class NovelsProcessarController implements Initializable {
         cbBase.focusedProperty().addListener((options, oldValue, newValue) -> {
             if (oldValue) {
                 String base = cbBase.getEditor().getText();
-                if (base != null && base.contains(" "))
-                    cbBase.getEditor().setText(base.replaceAll(" ", "_"));
+                if (base != null) {
+                    if (base.contains(" "))
+                        cbBase.getEditor().setText(base.replaceAll(" ", "_").toLowerCase());
+                    else
+                        cbBase.getEditor().setText(base.toLowerCase());
+                }
             }
         });
 

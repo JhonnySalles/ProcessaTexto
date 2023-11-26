@@ -1,1 +1,1 @@
-java -Dfile.encoding=utf-8 --add-opens java.base/java.lang.reflect=ALL-UNNAMED -jar TextosJapones-0.1.1-SNAPSHOT-jar-with-dependencies.jar 
+java -Dfile.encoding=utf-8 --add-opens java.base/java.lang.reflect=ALL-UNNAMED -jar TextosJapones-0.1.2-SNAPSHOT-jar-with-dependencies.jar 
