@@ -388,15 +388,29 @@ public class ProcessarNovels {
         else if (arq.toLowerCase().contains("vol "))
             volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol ") + 4).trim());
         else {
-            Matcher matcher = Pattern.compile("[0-9]*$").matcher(arq.trim());
-            if (matcher.find() && !matcher.group(0).isEmpty())
+            Matcher matcher = Pattern.compile("([0-9]+?.[0-9]+$)").matcher(arq.trim());
+            if (matcher.find() && !matcher.group(0).isEmpty()) {
                 volume = Float.valueOf(matcher.group(0));
-            else {
-                matcher = Pattern.compile("[\uFF10-\uFF19]*$").matcher(arq.trim());
+                if (nome.matches("[a-zA-Z\\d]") && nome.contains(matcher.group(0)))
+                    titulo = nome.substring(0, nome.lastIndexOf(matcher.group(0)));
+            } else {
+                matcher = Pattern.compile("([0-9]+?.[0-9]+)").matcher(arq.trim());
                 if (matcher.find() && !matcher.group(0).isEmpty())
-                    volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
-                            .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
-                            .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+                    volume = Float.valueOf(matcher.group(0));
+                else {
+                    matcher = Pattern.compile("([\uFF10-\uFF19]+?.[\uFF10-\uFF19]+$)").matcher(arq.trim());
+                    if (matcher.find() && !matcher.group(0).isEmpty())
+                        volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
+                                .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
+                                .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+                    else {
+                        matcher = Pattern.compile("([\uFF10-\uFF19]+?.[\uFF10-\uFF19]+)").matcher(arq.trim());
+                        if (matcher.find() && !matcher.group(0).isEmpty())
+                            volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
+                                    .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
+                                    .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+                    }
+                }
             }
         }
 
@@ -779,7 +793,7 @@ public class ProcessarNovels {
             vocabVolume.clear();
             size[0] = 0;
             size[1] = 0;
-            volume.getCapitulos().forEach(c -> size[1] = c.getTextos().size());
+            volume.getCapitulos().forEach(c -> size[1] += c.getTextos().size());
 
             for (NovelCapitulo capitulo : volume.getCapitulos()) {
                 vocabCapitulo.clear();
@@ -1026,7 +1040,7 @@ public class ProcessarNovels {
         Integer[] size = new Integer[2];
         size[0] = 0;
         size[1] = 0;
-        volume.getCapitulos().forEach(c -> size[1] = c.getTextos().size());
+        volume.getCapitulos().forEach(c -> size[1] += c.getTextos().size());
         for (NovelCapitulo capitulo : volume.getCapitulos()) {
             vocabCapitulo.clear();
             vocabValida.clear();
