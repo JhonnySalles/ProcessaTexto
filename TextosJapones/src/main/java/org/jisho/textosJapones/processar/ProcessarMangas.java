@@ -199,12 +199,10 @@ public class ProcessarMangas {
                         }
 
                     } catch (IOException e) {
-                        
                         LOGGER.error(e.getMessage(), e);
                         error = false;
                     }
                 } catch (Exception e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                     error = false;
                 }
@@ -636,8 +634,7 @@ public class ProcessarMangas {
                                         propTabela.set((double) Progress / Size);
                                         Platform.runLater(() -> {
                                             if (TaskbarProgressbar.isSupported())
-                                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress,
-                                                        Size, Type.NORMAL);
+                                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL);
                                         });
                                     }
 

@@ -61,7 +61,6 @@ public class ProcessarLegendas {
                     }
 
                 } catch (IOException e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                     AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
                             controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
