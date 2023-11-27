@@ -13,6 +13,9 @@ public class NovelCapa {
     private String novel;
     private Float volume;
     private Language lingua;
+
+    private String arquivo;
+    private String extenssao;
     private BufferedImage imagem;
 
     public UUID getId() {
@@ -47,6 +50,22 @@ public class NovelCapa {
         this.lingua = lingua;
     }
 
+    public String getArquivo() {
+        return arquivo;
+    }
+
+    public void setArquivo(String arquivo) {
+        this.arquivo = arquivo;
+    }
+
+    public String getExtenssao() {
+        return extenssao;
+    }
+
+    public void setExtenssao(String extenssao) {
+        this.extenssao = extenssao;
+    }
+
     public BufferedImage getImagem() {
         return imagem;
     }
@@ -57,17 +76,21 @@ public class NovelCapa {
 
     public NovelCapa() {
         this.id = null;
-        this.novel = null;
-        this.volume = null;
+        this.novel = "";
+        this.volume = 0f;
         this.lingua = null;
         this.imagem = null;
+        this.arquivo = "";
+        this.extenssao = "";
     }
 
-    public NovelCapa(UUID id, String novel, Float volume, Language lingua, BufferedImage imagem) {
+    public NovelCapa(UUID id, String novel, Float volume, Language lingua, String arquivo, String extenssao, BufferedImage imagem) {
         this.id = id;
         this.novel = novel;
         this.volume = volume;
         this.lingua = lingua;
         this.imagem = imagem;
+        this.arquivo = arquivo;
+        this.extenssao = extenssao;
     }
 }

@@ -48,7 +48,7 @@ public class NovelDaoJDBC implements NovelDao {
     final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, descricao, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)";
     final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem, is_processado) VALUES (?,?,?,?,?,?,?,?,?)";
     final private String INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)";
-    final private String INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, capa) VALUES (?,?,?,?,?,?)";
+    final private String INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)";
 
     final private String DELETE_VOLUMES = "CALL delete_volume('%s', '%s');";
 
@@ -58,7 +58,7 @@ public class NovelDaoJDBC implements NovelDao {
             + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume";
     final private String SELECT_TEXTOS = "SELECT id, sequencia, texto FROM %s_textos WHERE id_capitulo = ? ";
 
-    final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, capa FROM %s_capas WHERE id_volume = ? ";
+    final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, arquivo, extensao capa FROM %s_capas WHERE id_volume = ? ";
 
     final private String FIND = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL";
     final private String FIND_VOLUME = FIND + " WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
@@ -282,7 +282,8 @@ public class NovelDaoJDBC implements NovelDao {
 
             if (rs.next())
                 return new NovelCapa(UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getFloat("volume"), Language.getEnum(rs.getString("linguagem")), null);
+                        rs.getFloat("volume"), Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
+                        rs.getString("extensao"), null);
             else
                 return null;
         } catch (SQLException e) {
@@ -621,6 +622,8 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getNovel());
             st.setFloat(++index, obj.getVolume());
             st.setString(++index, obj.getLingua().getSigla());
+            st.setString(++index, obj.getArquivo());
+            st.setString(++index, obj.getExtenssao());
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(obj.getImagem(), "jpg", baos);

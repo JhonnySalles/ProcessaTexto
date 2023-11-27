@@ -62,6 +62,9 @@ public class NovelsProcessarController implements Initializable {
     private JFXButton btnArquivo;
 
     @FXML
+    private JFXTextArea txtLog;
+
+    @FXML
     private ProgressBar barraProgressoArquivos;
 
     @FXML
@@ -233,6 +236,10 @@ public class NovelsProcessarController implements Initializable {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+    }
+
+    public void addLog(String text) {
+        txtLog.appendText(text + "\n");
     }
 
     public AnchorPane getRoot() {

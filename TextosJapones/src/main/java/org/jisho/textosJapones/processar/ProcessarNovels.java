@@ -80,6 +80,8 @@ public class ProcessarNovels {
     private final Set<NovelVocabulario> vocabCapitulo = new HashSet<>();
     private final Set<String> vocabValida = new HashSet<>();
 
+    private final HashMap<String, Integer> vocabErros = new HashMap<>();
+
     private final DoubleProperty propTexto = new SimpleDoubleProperty(.0);
 
     private Boolean error;
@@ -418,7 +420,7 @@ public class ProcessarNovels {
 
         if (jpg.exists()) {
             BufferedImage imagem = ImageIO.read(jpg);
-            novel.setCapa(new NovelCapa(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), novel.getLingua(), imagem));
+            novel.setCapa(new NovelCapa(UUID.randomUUID(), novel.getNovel(), novel.getVolume(), novel.getLingua(), jpg.getName(), "jpg", imagem));
         }
 
         if (opf.exists()) {
@@ -561,6 +563,19 @@ public class ProcessarNovels {
         }
     }
 
+    private void addLog(String texto) {
+        Platform.runLater(() -> controller.addLog(texto));
+
+        if (LOG != null && LOG.exists())
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
+                writer.append(texto);
+                writer.newLine();
+                writer.flush();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+    }
+
     private static String LOGFILE = "log.txt";
     private File LOG;
     public void processarArquivos(File caminho, String tabela, Language linguagem, Boolean favorito) {
@@ -586,13 +601,7 @@ public class ProcessarNovels {
                         validaHistorico.clear();
                         propTexto.set(.0);
 
-                        updateMessage("Preparando arquivos...");
-
-                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                            writer.append("Preparando arquivos...");
-                            writer.newLine();
-                            writer.flush();
-                        }
+                        addLog("Preparando arquivos...");
 
                         HashMap<String, File> arquivos = new HashMap<>();
                         List<NovelTabela> novels = new ArrayList<>();
@@ -627,13 +636,8 @@ public class ProcessarNovels {
                                 updateMessage("Importando texto do arquivo " + volume.getArquivo() + "...");
                                 updateProgress(++Progress, Size);
 
-                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                                    writer.append("Importando texto do arquivo: ").append(volume.getArquivo());
-                                    writer.newLine();
-                                    writer.append("Inicio do processo: ").append(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                                    writer.newLine();
-                                    writer.flush();
-                                }
+                                addLog("Importando texto do arquivo " + volume.getArquivo() + "...");
+                                addLog("Inicio do processo: " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
 
                                 ArrayList<NovelTexto> textos = new ArrayList<>();
                                 FileReader fr = new FileReader(arquivos.get(volume.getArquivo()));
@@ -653,14 +657,9 @@ public class ProcessarNovels {
                                 if (desativar)
                                     break;
 
+                                addLog("Processando textos... ");
                                 updateMessage("Processando textos... ");
                                 updateProgress(++Progress, Size);
-
-                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                                    writer.append("Processando textos... ");
-                                    writer.newLine();
-                                    writer.flush();
-                                }
 
                                 Callback<Integer[], Boolean> callback = param -> {
                                     Platform.runLater(() -> {
@@ -680,22 +679,13 @@ public class ProcessarNovels {
 
                                 updateMessage("Salvando textos...");
                                 updateProgress(++Progress, Size);
-                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                                    writer.append("Salvando textos...");
-                                    writer.newLine();
-                                    writer.flush();
-                                }
+                                addLog("Salvando textos...");
 
                                 serviceNovel.salvarVolume(novel.getBase(), volume);
 
-                                try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                                    writer.append("Concluído processamento do arquivo ").append(volume.getArquivo()).append(".");
-                                    writer.newLine();
-                                    writer.append("-".repeat(30));
-                                    writer.newLine();
-                                    writer.newLine();
-                                    writer.flush();
-                                }
+                                addLog("Concluído processamento do arquivo " + volume.getArquivo() + ".");
+                                addLog("-".repeat(30));
+                                addLog("");
 
                                 Platform.runLater(() -> {
                                     if (TaskbarProgressbar.isSupported())
@@ -716,11 +706,8 @@ public class ProcessarNovels {
                         LOGGER.error(e.getMessage(), e);
                         error = true;
 
-                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                            writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
-                            writer.newLine();
-                            writer.flush();
-                        }
+                        addLog("Erro ao processar o arquivo.");
+                        addLog(e.getMessage());
 
                         Platform.runLater(() -> {
                             if (TaskbarProgressbar.isSupported())
@@ -731,11 +718,8 @@ public class ProcessarNovels {
                     LOGGER.error(e.getMessage(), e);
                     error = true;
 
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                        writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
-                        writer.newLine();
-                        writer.flush();
-                    }
+                    addLog("Erro ao processar o arquivo.");
+                    addLog(e.getMessage());
 
                     Platform.runLater(() -> {
                         if (TaskbarProgressbar.isSupported())
@@ -754,6 +738,11 @@ public class ProcessarNovels {
                 else if (!desativar)
                     AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Aviso", "Novels processadas com sucesso.");
 
+                if (error)
+                    addLog("Erro ao processar as novels.");
+                else if (!desativar)
+                    addLog("Novels processadas com sucesso.");
+
                 progress.getBarraProgresso().progressProperty().unbind();
                 controller.getBarraProgressoArquivos().progressProperty().unbind();
                 controller.getBarraProgressoTextos().progressProperty().unbind();
@@ -767,7 +756,7 @@ public class ProcessarNovels {
             protected void failed() {
                 super.failed();
                 LOGGER.warn("Erro na thread de processamento da novel: " + super.getMessage());
-                System.out.print("Erro na thread de processamento da novel: " + super.getMessage());
+                addLog("Erro na thread de processamento da novel: " + super.getMessage());
             }
         };
         progress.getBarraProgresso().progressProperty().bind(processarArquivos.progressProperty());
@@ -825,16 +814,7 @@ public class ProcessarNovels {
         if (kanji.trim().isEmpty())
             return "";
 
-        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(kanji + " : Obtendo significado."));
-
-        if (LOG != null && LOG.exists())
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
-                writer.append(kanji + " : Obtendo significado.");
-                writer.newLine();
-                writer.flush();
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+        addLog(kanji + " : Obtendo significado.");
 
         String resultado = "";
         switch (siteDicionario) {
@@ -864,15 +844,11 @@ public class ProcessarNovels {
 
     private String getDesmembrado(String palavra) {
         String resultado = "";
-        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
-                .setText(palavra + " : Desmembrando a palavra."));
-        resultado = processaPalavras(
-                desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B),
-                Modo.B);
+        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(palavra + " : Desmembrando a palavra."));
+        resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B), Modo.B);
 
         if (resultado.isEmpty())
-            resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
-                    MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
+            resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
 
         return resultado;
     }
@@ -886,8 +862,7 @@ public class ProcessarNovels {
                 if (!resultado.trim().isEmpty())
                     desmembrado += palavra + " - " + resultado + "; ";
                 else if (modo.equals(Modo.B)) {
-                    resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
-                            MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
+                    resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
                     if (!resultado.trim().isEmpty())
                         desmembrado += resultado;
                 }
@@ -935,6 +910,9 @@ public class ProcessarNovels {
                         continue;
                     }
                 }
+
+                if (vocabErros.containsKey(m.dictionaryForm()) && vocabErros.get(m.dictionaryForm()) > 3)
+                    continue;
 
                 if (!vocabValida.contains(m.dictionaryForm())) {
                     Vocabulario palavra = vocabularioJaponesService.select(m.surface(), m.dictionaryForm());
@@ -994,13 +972,21 @@ public class ProcessarNovels {
                                     }
 
                                     Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(m.surface() + " : Obtendo tradução."));
-                                    revisar.setPortugues(
-                                            Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-                                                    Language.PORTUGUESE.getSigla(), revisar.getIngles(),
-                                                    MenuPrincipalController.getController().getContaGoogle())));
+                                    revisar.setPortugues(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
+                                                    Language.PORTUGUESE.getSigla(), revisar.getIngles(), MenuPrincipalController.getController().getContaGoogle())));
                                 } catch (IOException e) {
                                     LOGGER.error(e.getMessage(), e);
+
+                                    if (vocabErros.containsKey(m.dictionaryForm()))
+                                        vocabErros.put(m.dictionaryForm(), vocabErros.get(m.dictionaryForm()) +1);
+                                    else
+                                        vocabErros.put(m.dictionaryForm(), 1);
                                 }
+                            } else {
+                                if (vocabErros.containsKey(m.dictionaryForm()))
+                                    vocabErros.put(m.dictionaryForm(), vocabErros.get(m.dictionaryForm()) +1);
+                                else
+                                    vocabErros.put(m.dictionaryForm(), 1);
                             }
 
                             serviceJaponesRevisar.update(revisar);
@@ -1099,9 +1085,8 @@ public class ProcessarNovels {
                                 Revisar revisar = serviceInglesRevisar.select(palavra);
                                 if (revisar == null) {
                                     revisar = new Revisar(palavra, false, false, false, true);
-                                    Platform.runLater(() -> MenuPrincipalController
-                                            .getController().getLblLog()
-                                            .setText(palavra + " : Vocabulário novo."));
+                                    Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(palavra + " : Vocabulário novo."));
+                                    addLog(palavra + " : Vocabulário novo.");
 
                                     if (!revisar.getVocabulario().isEmpty()) {
                                         try {
@@ -1113,16 +1098,10 @@ public class ProcessarNovels {
                                                         .setContaGoogle(Util.next(MenuPrincipalController.getController().getContaGoogle()));
                                             }
 
-                                            Platform.runLater(() -> MenuPrincipalController
-                                                    .getController().getLblLog()
-                                                    .setText(palavra + " : Obtendo tradução."));
-                                            revisar.setPortugues(Util.normalize(ScriptGoogle
-                                                    .translate(Language.ENGLISH.getSigla(),
-                                                            Language.PORTUGUESE.getSigla(),
-                                                            revisar.getVocabulario(),
-                                                            MenuPrincipalController
-                                                                    .getController()
-                                                                    .getContaGoogle())));
+                                            Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(palavra + " : Obtendo tradução."));
+                                            addLog(palavra + " : Obtendo tradução.");
+                                            revisar.setPortugues(Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(),
+                                                            revisar.getVocabulario(), MenuPrincipalController.getController().getContaGoogle())));
                                         } catch (IOException e) {
                                             LOGGER.error(e.getMessage(), e);
                                         }
@@ -1150,7 +1129,6 @@ public class ProcessarNovels {
                                 vocabVolume.add(vocabulario);
                             }
                         }
-
                     }
                 }
 
