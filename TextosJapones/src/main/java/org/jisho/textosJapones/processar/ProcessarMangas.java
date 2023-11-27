@@ -200,11 +200,11 @@ public class ProcessarMangas {
 
                     } catch (IOException e) {
                         LOGGER.error(e.getMessage(), e);
-                        error = false;
+                        error = true;
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
-                    error = false;
+                    error = true;
                 }
 
                 return null;
@@ -214,11 +214,9 @@ public class ProcessarMangas {
             protected void succeeded() {
                 super.failed();
                 if (error)
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Erro", "Erro ao processar a lista.");
+                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Erro", "Erro ao processar os mangas.");
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Aviso", "Mangas processadas com sucesso.");
+                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Aviso", "Mangas processadas com sucesso.");
 
                 progress.getBarraProgresso().progressProperty().unbind();
                 controller.getBarraProgressoVolumes().progressProperty().unbind();
@@ -673,7 +671,7 @@ public class ProcessarMangas {
                 } catch (Exception e) {
                     
                     LOGGER.error(e.getMessage(), e);
-                    error = false;
+                    error = true;
                 }
 
                 return null;
@@ -684,7 +682,7 @@ public class ProcessarMangas {
                 super.failed();
                 if (error)
                     AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
-                            "Erro", "Erro ao processar a lista.");
+                            "Erro", "Erro ao processar os mangas.");
                 else if (!desativar)
                     AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null,
                             "Aviso", "Mangas processadas com sucesso.");

@@ -25,6 +25,7 @@ public class MangaDaoJDBC implements MangaDao {
     final private String TABELA_PAGINA = "_paginas";
     final private String TABELA_TEXTO = "_textos";
     final private String TABELA_VOCABULARIO = "_vocabularios";
+    final private String TABELA_CAPA = "_capas";
 
     final private String CREATE_TRIGGER_INSERT =
             "CREATE TRIGGER tr_%s_insert BEFORE INSERT ON %s" +
@@ -1371,6 +1372,7 @@ public class MangaDaoJDBC implements MangaDao {
         createTriggers(nome + TABELA_PAGINA);
         createTriggers(nome + TABELA_TEXTO);
         createTriggers(nome + TABELA_VOCABULARIO);
+        createTriggers(nome + TABELA_CAPA);
     }
 
     @Override

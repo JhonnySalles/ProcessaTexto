@@ -667,7 +667,7 @@ public class ProcessarNovels {
                                         updateMessage("Processando itens...." + param[0] + '/' + param[1]);
                                         propTexto.set((double) param[0] / param[1]);
                                     });
-                                    return null;
+                                    return true;
                                 };
 
                                 switch (linguagem) {
@@ -714,7 +714,7 @@ public class ProcessarNovels {
 
                     } catch (IOException e) {
                         LOGGER.error(e.getMessage(), e);
-                        error = false;
+                        error = true;
 
                         try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
                             writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
@@ -729,7 +729,7 @@ public class ProcessarNovels {
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
-                    error = false;
+                    error = true;
 
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG, true))) {
                         writer.append("Erro ao processar o arquivo.\n").append(e.getMessage());
@@ -750,7 +750,7 @@ public class ProcessarNovels {
             protected void succeeded() {
                 super.failed();
                 if (error)
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Erro", "Erro ao processar a lista.");
+                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Erro", "Erro ao processar as novels.");
                 else if (!desativar)
                     AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(), controller.getRoot(), null, "Aviso", "Novels processadas com sucesso.");
 
@@ -802,6 +802,9 @@ public class ProcessarNovels {
                     size[0]++;
                     callback.call(size);
                     gerarVocabulario(texto.getTexto());
+
+                    if (desativar)
+                        break;
                 }
 
                 capitulo.setVocabularios(vocabCapitulo);
@@ -955,7 +958,7 @@ public class ProcessarNovels {
                             vocabularioJaponesService.update(palavra);
                         }
 
-                        if (!leitura.isEmpty() && !palavra.getLeituraNovel().equalsIgnoreCase(leitura)) {
+                        if (!leitura.isEmpty() && (palavra.getLeituraNovel() == null || !palavra.getLeituraNovel().equalsIgnoreCase(leitura))) {
                             palavra.setLeituraNovel(leitura);
                             vocabularioJaponesService.update(palavra);
                         }
@@ -1008,7 +1011,7 @@ public class ProcessarNovels {
                                 serviceJaponesRevisar.setIsNovel(revisar);
                             }
 
-                            if (!leitura.isEmpty() && !revisar.getLeituraNovel().equalsIgnoreCase(leitura)) {
+                            if (!leitura.isEmpty() && (revisar.getLeituraNovel() == null || !revisar.getLeituraNovel().equalsIgnoreCase(leitura))) {
                                 revisar.setLeituraNovel(leitura);
                                 serviceJaponesRevisar.update(revisar);
                             }
@@ -1150,6 +1153,9 @@ public class ProcessarNovels {
 
                     }
                 }
+
+                if (desativar)
+                    break;
             }
 
             capitulo.setVocabularios(vocabCapitulo);

@@ -99,7 +99,7 @@ public class NovelsProcessarController implements Initializable {
 
         MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das novels...");
 
-        novels.processarArquivos(new File(txtCaminho.getText()), cbBase.getValue(), cbLinguagem.getSelectionModel().getSelectedItem(), ckbFavorito.isSelected());
+        novels.processarArquivos(new File(txtCaminho.getText()), cbBase.getEditor().getText(), cbLinguagem.getSelectionModel().getSelectedItem(), ckbFavorito.isSelected());
     }
 
     public boolean valida() {

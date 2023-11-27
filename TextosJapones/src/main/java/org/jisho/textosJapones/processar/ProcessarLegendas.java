@@ -39,7 +39,9 @@ public class ProcessarLegendas {
         this.controller = controller;
     }
 
+    private Boolean error;
     public void processarLegendas(List<String> frases) {
+        error = false;
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Legendas - Processar");
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
@@ -62,8 +64,7 @@ public class ProcessarLegendas {
 
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage(), e);
-                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
-                            controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
+                    error = true;
                 }
 
                 return null;
@@ -72,8 +73,13 @@ public class ProcessarLegendas {
             @Override
             protected void succeeded() {
                 super.succeeded();
-                AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
-                        controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
+                if (error)
+                    AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
+                            controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
+                else
+                    AlertasPopup.AvisoModal(controller.getControllerPai().getStackPane(),
+                            controller.getControllerPai().getRoot(), null, "Aviso", "Lista processada com sucesso.");
+
                 progress.getBarraProgresso().progressProperty().unbind();
                 progress.getLog().textProperty().unbind();
             }
