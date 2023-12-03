@@ -1,6 +1,7 @@
 package org.jisho.textosJapones.controller.mangas;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
@@ -88,6 +89,9 @@ public class MangasComicInfoController implements Initializable {
 
     @FXML
     private JFXButton btnLimparLista;
+
+    @FXML
+    private JFXCheckBox cbIgnorarVinculoSalvo;
 
     @FXML
     private TreeTableView<BaseLista> treeTabela;
@@ -257,7 +261,7 @@ public class MangasComicInfoController implements Initializable {
                         return null;
                     };
 
-                    ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), txtDescricaoCapitulo.getText(), callback);
+                    ProcessaComicInfo.processa(Configuracao.getCaminhoWinrar(), cbLinguagem.getValue(), txtCaminho.getText(), txtDescricaoCapitulo.getText(), cbIgnorarVinculoSalvo.isSelected(), callback);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 }

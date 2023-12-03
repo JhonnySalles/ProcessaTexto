@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.mangas.MangasComicInfoController">
    <children>          
 	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
@@ -59,20 +60,14 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </HBox>
+                        <JFXCheckBox fx:id="cbIgnorarVinculoSalvo" checkedColor="#71afe5" text="Ignorar vinculo salvo" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </VBox>
                   <VBox prefWidth="350.0" spacing="5.0">
                      <children>
-            	          <HBox alignment="CENTER_LEFT" spacing="10.0">
-            	             <opaqueInsets>
-            	                <Insets />
-            	             </opaqueInsets>
-            	             <children>
-            	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar comic info" HBox.hgrow="ALWAYS" />
-                              <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="140.0" styleClass="background-White1" text="Validar comic info" />
-            	             </children>
-            	          </HBox>
+      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="290.0" styleClass="background-White1" text="Processar comic info" />
                         <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="290.0" styleClass="background-White1" text="Processar Marcados" />
+                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="290.0" styleClass="background-White1" text="Validar comic info" />
                         <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="290.0" styleClass="background-White1" text="Limpar lista" />
                      </children>
                   </VBox>

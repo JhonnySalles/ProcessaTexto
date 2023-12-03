@@ -1,5 +1,6 @@
 package org.jisho.textosJapones.database.dao;
 
+import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -20,6 +21,8 @@ public interface MangaDao {
 
     void updateTexto(String base, MangaTexto obj) throws ExcessaoBd;
 
+    void updateCapa(String base, MangaCapa obj) throws ExcessaoBd;
+
     MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) throws ExcessaoBd;
 
     MangaVolume selectVolume(String base, UUID id) throws ExcessaoBd;
@@ -28,10 +31,11 @@ public interface MangaDao {
 
     MangaPagina selectPagina(String base, UUID id) throws ExcessaoBd;
 
+    MangaCapa selectCapa(String base, UUID id) throws ExcessaoBd;
+
     List<MangaTabela> selectAll(String base) throws ExcessaoBd;
 
-    List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
-            throws ExcessaoBd;
+    List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem) throws ExcessaoBd;
 
     List<MangaTabela> selectTabelas(Boolean todos) throws ExcessaoBd;
 
@@ -39,11 +43,9 @@ public interface MangaDao {
 
     List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume) throws ExcessaoBd;
 
-    List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume, Float capitulo)
-            throws ExcessaoBd;
+    List<MangaTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga, Integer volume, Float capitulo) throws ExcessaoBd;
 
-    List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto)
-            throws ExcessaoBd;
+    List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto) throws ExcessaoBd;
 
     void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
 
@@ -55,6 +57,8 @@ public interface MangaDao {
 
     UUID insertTexto(String base, UUID idPagina, MangaTexto obj) throws ExcessaoBd;
 
+    UUID insertCapa(String base, UUID idVolume, MangaCapa obj) throws ExcessaoBd;
+
     void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
     void deleteCapitulo(String base, MangaCapitulo obj) throws ExcessaoBd;
@@ -62,6 +66,8 @@ public interface MangaDao {
     void deletePagina(String base, MangaPagina obj) throws ExcessaoBd;
 
     void deleteTexto(String base, MangaTexto obj) throws ExcessaoBd;
+
+    void deleteCapa(String base, MangaCapa obj) throws ExcessaoBd;
 
     void deletarVocabulario(String base) throws ExcessaoBd;
 

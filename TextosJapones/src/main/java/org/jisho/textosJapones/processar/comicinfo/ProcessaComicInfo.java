@@ -57,6 +57,7 @@ public class ProcessaComicInfo {
     private static Boolean CANCELAR_VALIDACAO = false;
     private static MangasComicInfoController CONTROLLER;
     private static String MARCACAPITULO;
+    private static Boolean IGNORAR_VINCULO_SALVO;
 
     private static final Boolean CONSULTA_MAL = true;
     private static final Boolean CONSULTA_JIKAN = true;
@@ -150,10 +151,11 @@ public class ProcessaComicInfo {
         }
     }
 
-    public static void processa(String winrar, Language linguagem, String path, String marcaCapitulo, Callback<Integer[], Boolean> callback) {
+    public static void processa(String winrar, Language linguagem, String path, String marcaCapitulo, Boolean ignorarVinculoSalvo, Callback<Integer[], Boolean> callback) {
         WINRAR = winrar;
         CANCELAR_PROCESSAMENTO = false;
         MARCACAPITULO = marcaCapitulo == null ? "" : marcaCapitulo;
+        IGNORAR_VINCULO_SALVO = ignorarVinculoSalvo;
 
         MAL = MyAnimeList.withClientID(Configuracao.getMyAnimeListClient());
 
@@ -295,7 +297,10 @@ public class ProcessaComicInfo {
     private static void processaMal(String arquivo, String nome, ComicInfo info, Language linguagem, Long idMal) {
         try {
             Long id = idMal;
-            ComicInfo saved = SERVICE.select(info.getComic(), info.getLanguageISO());
+            ComicInfo saved = null;
+
+            if (IGNORAR_VINCULO_SALVO)
+                saved = SERVICE.select(info.getComic(), info.getLanguageISO());
 
             if (id == null)
                 id = getIdMal(info.getNotes());

@@ -121,14 +121,6 @@
                                        </children></AnchorPane>
                                  </content>
                               </Tab>
-                              <Tab closable="false" text="Mangas">
-                                 <content>
-                                    <AnchorPane>
-                                       <children>
-                                          <fx:include source="mangas/Manga.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                       </children></AnchorPane>
-                                 </content>
-                              </Tab>
                               <Tab text="Novels">
                                 <content>
                                    <AnchorPane>
@@ -136,6 +128,14 @@
                                          <fx:include source="novels/Novel.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                       </children></AnchorPane>
                                 </content>
+                              </Tab>
+                              <Tab closable="false" text="Mangas">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <fx:include source="mangas/Manga.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children></AnchorPane>
+                                 </content>
                               </Tab>
                            </tabs>
                         </JFXTabPane>

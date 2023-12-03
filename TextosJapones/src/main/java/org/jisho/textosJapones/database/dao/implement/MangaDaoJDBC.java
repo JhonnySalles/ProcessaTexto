@@ -9,6 +9,12 @@ import org.jisho.textosJapones.model.message.Mensagens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
@@ -46,12 +52,14 @@ public class MangaDaoJDBC implements MangaDao {
     final private String UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = ?, manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ?, is_processado = ? WHERE id = ?";
     final private String UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ?, is_processado = ? WHERE id = ?";
     final private String UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?";
+    final private String UPDATE_CAPA = "UPDATE %s_capas SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, extensao = ?, capa = ? WHERE id = ?";
     final private String UPDATE_PAGINAS_CANCEL = "UPDATE %s_paginas SET is_processado = 0 WHERE id = ?";
 
     final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (id, manga, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?)";
     final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)";
     final private String INSERT_PAGINAS = "INSERT INTO %s_paginas (id, id_capitulo, nome, numero, hash_pagina, is_processado) VALUES (?,?,?,?,?,?)";
     final private String INSERT_TEXTO = "INSERT INTO %s_textos (id, id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?,?)";
+    final private String INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, manga, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)";
 
     final private String DELETE_VOLUMES = "DELETE v FROM %s_volumes AS v %s";
     final private String DELETE_CAPITULOS = "DELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
@@ -60,17 +68,21 @@ public class MangaDaoJDBC implements MangaDao {
     final private String DELETE_TEXTOS = "DELETE t FROM %s_textos AS t INNER JOIN %s_paginas AS p ON p.id = t.id_pagina "
             + "INNER JOIN %s_capitulos AS c ON c.id = p.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
 
+    final private String DELETE_CAPAS = "DELETE c FROM %s_capas AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s";
+
     final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL %s WHERE %s GROUP BY VOL.id ORDER BY VOL.manga, VOL.linguagem, VOL.volume";
     final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw, CAP.is_processado "
             + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume, CAP.is_extra, CAP.capitulo";
     final private String SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina, is_processado FROM %s_paginas WHERE id_capitulo = ? AND %s ";
     final private String SELECT_TEXTOS = "SELECT id, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2 FROM %s_textos WHERE id_pagina = ? ";
+    final private String SELECT_CAPAS = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id_volume = ? ";
 
     final private String FIND_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE manga = ? AND volume = ? AND linguagem = ? LIMIT 1";
     final private String SELECT_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
     final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw, CAP.is_processado "
             + "FROM %s_capitulos CAP WHERE id = ?";
     final private String SELECT_PAGINA = "SELECT id, nome, numero, hash_pagina, is_processado FROM %s_paginas WHERE id = ?";
+    final private String SELECT_CAPA = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id = ? ";
 
     final private String INNER_CAPITULOS = "INNER JOIN %s_paginas PAG ON CAP.id = PAG.id_capitulo AND PAG.is_processado = 0";
     final private String INNER_VOLUMES = "INNER JOIN %s_capitulos CAP ON VOL.id = CAP.id_volume "
@@ -344,6 +356,43 @@ public class MangaDaoJDBC implements MangaDao {
     }
 
     @Override
+    public void updateCapa(String base, MangaCapa obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(String.format(UPDATE_CAPA, base), Statement.RETURN_GENERATED_KEYS);
+
+            Integer index = 0;
+            st.setString(++index, obj.getManga());
+            st.setInt(++index, obj.getVolume());
+            st.setString(++index, obj.getLingua().getSigla());
+            st.setString(++index, obj.getArquivo());
+            st.setString(++index, obj.getExtenssao());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(obj.getImagem(), obj.getExtenssao(), baos);
+
+            st.setBinaryStream(++index, new ByteArrayInputStream(baos.toByteArray()));
+            st.setString(++index, obj.getId().toString());
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            };
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
     public void updateCancel(String base, MangaPagina obj) throws ExcessaoBd {
         PreparedStatement st = null;
         try {
@@ -377,7 +426,8 @@ public class MangaDaoJDBC implements MangaDao {
                 list.add(new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                         Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
-                        selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), apenasJapones)));
+                        selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), apenasJapones),
+                        selectCapas(base, UUID.fromString(rs.getString("id")))));
             return list;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -389,8 +439,7 @@ public class MangaDaoJDBC implements MangaDao {
         }
     }
 
-    public List<MangaVolume> selectVolumes(String base, Boolean todos, String manga, Integer volume, Float capitulo,
-                                           List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
+    public List<MangaVolume> selectVolumes(String base, Boolean todos, String manga, Integer volume, Float capitulo, List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -423,7 +472,8 @@ public class MangaDaoJDBC implements MangaDao {
                 list.add(new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                         Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
-                        selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), capitulo, linguagem, inverterTexto)));
+                        selectCapitulos(base, todos, UUID.fromString(rs.getString("id")), capitulo, linguagem, inverterTexto),
+                        selectCapas(base, UUID.fromString(rs.getString("id")))));
             return list;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -508,8 +558,7 @@ public class MangaDaoJDBC implements MangaDao {
     }
 
 
-    public List<MangaCapitulo> selectCapitulos(String base, Boolean todos, UUID idVolume, Float capitulo,
-                                               List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
+    public List<MangaCapitulo> selectCapitulos(String base, Boolean todos, UUID idVolume, Float capitulo, List<Language> linguagem, Boolean inverterTexto) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -647,7 +696,7 @@ public class MangaDaoJDBC implements MangaDao {
         }
     }
 
-    public List<MangaTexto> selectTextos(String base, UUID idPagina, Boolean inverterTexto) throws ExcessaoBd {
+    private List<MangaTexto> selectTextos(String base, UUID idPagina, Boolean inverterTexto) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -679,6 +728,36 @@ public class MangaDaoJDBC implements MangaDao {
         }
     }
 
+    private MangaCapa selectCapas(String base, UUID idVolume) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(String.format(SELECT_CAPAS, base));
+            st.setString(1, idVolume.toString());
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                InputStream is = new ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes());
+                BufferedImage image = ImageIO.read(is);
+                return new MangaCapa(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"), rs.getString("extenssao"),
+                        image);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
     @Override
     public MangaVolume selectVolume(String base, String manga, Integer volume, Language linguagem) throws ExcessaoBd {
         PreparedStatement st = null;
@@ -688,13 +767,15 @@ public class MangaDaoJDBC implements MangaDao {
             st.setString(1, manga);
             st.setInt(2, volume);
             st.setString(3, linguagem.getSigla());
+            LOGGER.info(st.toString());
             rs = st.executeQuery();
 
             if (rs.next())
                 return new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                         Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
-                        selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
+                        selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false),
+                        selectCapas(base, UUID.fromString(rs.getString("id"))));
             return null;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -719,7 +800,8 @@ public class MangaDaoJDBC implements MangaDao {
                 return new MangaVolume(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                         Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"', false),
-                        selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false));
+                        selectCapitulos(base, true, UUID.fromString(rs.getString("id")), false),
+                        selectCapas(base, UUID.fromString(rs.getString("id"))));
             return null;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -784,13 +866,43 @@ public class MangaDaoJDBC implements MangaDao {
     }
 
     @Override
+    public MangaCapa selectCapa(String base, UUID id) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(String.format(SELECT_CAPA, base));
+            st.setString(1, id.toString());
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                InputStream is = new ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes());
+                BufferedImage image = ImageIO.read(is);
+                return new MangaCapa(UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
+                        Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"), rs.getString("extenssao"),
+                        image);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
     public List<MangaTabela> selectAll(String base) throws ExcessaoBd {
         return selectAll(base, "", 0, 0F, null);
     }
 
     @Override
-    public List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
-            throws ExcessaoBd {
+    public List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -952,6 +1064,7 @@ public class MangaDaoJDBC implements MangaDao {
     @Override
     public void deleteVolume(String base, MangaVolume obj) throws ExcessaoBd {
         PreparedStatement stVolume = null;
+        PreparedStatement stCapa = null;
         PreparedStatement stCapitulo = null;
         PreparedStatement stPagina = null;
         PreparedStatement stTexto = null;
@@ -963,20 +1076,20 @@ public class MangaDaoJDBC implements MangaDao {
                 where += " v.manga = '" + obj.getManga() + "' AND v.volume = " + obj.getVolume().toString()
                         + " AND v.linguagem = '" + obj.getLingua().getSigla() + "'";
 
-            String caminhoBase = base;
-
             stTexto = conn.prepareStatement(
-                    String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
+                    String.format(DELETE_TEXTOS, base, base, base, base, where));
             stPagina = conn
-                    .prepareStatement(String.format(DELETE_PAGINAS, caminhoBase, caminhoBase, caminhoBase, where));
-            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, caminhoBase, caminhoBase, where));
-            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, caminhoBase, where));
+                    .prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where));
+            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, base, base, where));
+            stCapa = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, where));
+            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, base, where));
 
             conn.setAutoCommit(false);
             conn.beginRequest();
             stTexto.executeUpdate();
             stPagina.executeUpdate();
             stCapitulo.executeUpdate();
+            stCapa.executeUpdate();
             stVolume.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
@@ -988,8 +1101,9 @@ public class MangaDaoJDBC implements MangaDao {
             System.out.println(stTexto.toString());
             System.out.println(stPagina.toString());
             System.out.println(stCapitulo.toString());
+            System.out.println(stCapa.toString());
             System.out.println(stVolume.toString());
-            
+
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
@@ -1002,6 +1116,7 @@ public class MangaDaoJDBC implements MangaDao {
             DB.closeStatement(stTexto);
             DB.closeStatement(stPagina);
             DB.closeStatement(stCapitulo);
+            DB.closeStatement(stCapa);
             DB.closeStatement(stVolume);
         }
     }
@@ -1013,13 +1128,10 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement stTexto = null;
         try {
             String where = "WHERE c.id = " + obj.getId().toString();
-            String caminhoBase = base;
 
-            stTexto = conn.prepareStatement(
-                    String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
-            stPagina = conn
-                    .prepareStatement(String.format(DELETE_PAGINAS, caminhoBase, caminhoBase, caminhoBase, where));
-            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, caminhoBase, caminhoBase, where));
+            stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
+            stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where));
+            stCapitulo = conn.prepareStatement(String.format(DELETE_CAPITULOS, base, base, where));
 
             conn.setAutoCommit(false);
             conn.beginRequest();
@@ -1059,12 +1171,9 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement stTexto = null;
         try {
             String where = "WHERE p.id = " + obj.getId().toString();
-            String caminhoBase = base;
 
-            stTexto = conn.prepareStatement(
-                    String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
-            stPagina = conn
-                    .prepareStatement(String.format(DELETE_PAGINAS, caminhoBase, caminhoBase, caminhoBase, where));
+            stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
+            stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where));
 
             conn.setAutoCommit(false);
             conn.beginRequest();
@@ -1100,10 +1209,8 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement stTexto = null;
         try {
             String where = "WHERE t.id = " + obj.getId().toString();
-            String caminhoBase = base;
 
-            stTexto = conn.prepareStatement(
-                    String.format(DELETE_TEXTOS, caminhoBase, caminhoBase, caminhoBase, caminhoBase, where));
+            stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
             conn.setAutoCommit(false);
             conn.beginRequest();
             stTexto.executeUpdate();
@@ -1128,6 +1235,38 @@ public class MangaDaoJDBC implements MangaDao {
             DB.closeStatement(stTexto);
         }
 
+    }
+
+    @Override
+    public void deleteCapa(String base, MangaCapa obj) throws ExcessaoBd {
+        PreparedStatement stCapa = null;
+        try {
+            String where = "WHERE c.id = " + obj.getId().toString();
+
+            stCapa = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, where));
+            conn.setAutoCommit(false);
+            conn.beginRequest();
+            stCapa.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            System.out.println(stCapa.toString());
+
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+
+                LOGGER.error(e.getMessage(), e);
+            }
+            DB.closeStatement(stCapa);
+        }
     }
 
     @Override
@@ -1260,6 +1399,45 @@ public class MangaDaoJDBC implements MangaDao {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public UUID insertCapa(String base, UUID idVolume, MangaCapa obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(String.format(INSERT_CAPA, base), Statement.RETURN_GENERATED_KEYS);
+
+            Integer index = 0;
+            st.setString(++index, obj.getId().toString());
+            st.setString(++index, idVolume.toString());
+            st.setString(++index, obj.getManga());
+            st.setInt(++index, obj.getVolume());
+            st.setString(++index, obj.getLingua().getSigla());
+            st.setString(++index, obj.getArquivo());
+            st.setString(++index, obj.getExtenssao());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(obj.getImagem(), obj.getExtenssao(), baos);
+
+            st.setBinaryStream(++index, new ByteArrayInputStream(baos.toByteArray()));
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            } else
+                return obj.getId();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         } finally {
             DB.closeStatement(st);
         }
