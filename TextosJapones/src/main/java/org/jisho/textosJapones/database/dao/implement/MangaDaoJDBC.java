@@ -1127,7 +1127,7 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement stPagina = null;
         PreparedStatement stTexto = null;
         try {
-            String where = "WHERE c.id = " + obj.getId().toString();
+            String where = "WHERE c.id = '" + obj.getId().toString() + "'";
 
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
             stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where));
@@ -1170,7 +1170,7 @@ public class MangaDaoJDBC implements MangaDao {
         PreparedStatement stPagina = null;
         PreparedStatement stTexto = null;
         try {
-            String where = "WHERE p.id = " + obj.getId().toString();
+            String where = "WHERE p.id = '" + obj.getId().toString() + "'";
 
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
             stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where));
@@ -1208,7 +1208,7 @@ public class MangaDaoJDBC implements MangaDao {
     public void deleteTexto(String base, MangaTexto obj) throws ExcessaoBd {
         PreparedStatement stTexto = null;
         try {
-            String where = "WHERE t.id = " + obj.getId().toString();
+            String where = "WHERE t.id = '" + obj.getId().toString() + "'";
 
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where));
             conn.setAutoCommit(false);
@@ -1241,7 +1241,7 @@ public class MangaDaoJDBC implements MangaDao {
     public void deleteCapa(String base, MangaCapa obj) throws ExcessaoBd {
         PreparedStatement stCapa = null;
         try {
-            String where = "WHERE c.id = " + obj.getId().toString();
+            String where = "WHERE c.id = '" + obj.getId().toString() + "'";
 
             stCapa = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, where));
             conn.setAutoCommit(false);
@@ -1408,6 +1408,14 @@ public class MangaDaoJDBC implements MangaDao {
     public UUID insertCapa(String base, UUID idVolume, MangaCapa obj) throws ExcessaoBd {
         PreparedStatement st = null;
         try {
+
+
+            st = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, "WHERE c.id_volume = '" + idVolume.toString() + "'"));
+            conn.setAutoCommit(false);
+            conn.beginRequest();
+            st.executeUpdate();
+            conn.commit();
+
             st = conn.prepareStatement(String.format(INSERT_CAPA, base), Statement.RETURN_GENERATED_KEYS);
 
             Integer index = 0;

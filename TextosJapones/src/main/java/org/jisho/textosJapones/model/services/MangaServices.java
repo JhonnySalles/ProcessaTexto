@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelCapa;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.slf4j.Logger;
@@ -70,6 +71,8 @@ public class MangaServices {
                     mangaDao.insertTexto(base, idPagina, texto);
             }
         }
+        if (volume.getCapa() != null)
+            mangaDao.insertCapa(base, idVolume, volume.getCapa());
     }
 
     public void updateVocabularioVolume(String base, MangaVolume volume) throws ExcessaoBd {
@@ -87,8 +90,7 @@ public class MangaServices {
         mangaDao.updateProcessado(base, "paginas", pagina.getId());
     }
 
-    public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
-                                   Set<MangaVocabulario> vocabularios) throws ExcessaoBd {
+    public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, UUID idPagina, Set<MangaVocabulario> vocabularios) throws ExcessaoBd {
         mangaDao.insertVocabulario(base, idVolume, idCapitulo, idPagina, vocabularios);
     }
 
@@ -186,6 +188,8 @@ public class MangaServices {
 
                             mangaDao.updateCapitulo(tabela.getBase(), volume.getId(), capitulo);
                         }
+
+
             }
     }
 
@@ -194,4 +198,8 @@ public class MangaServices {
         insertDadosTransferir(base, volume);
     }
 
+    public MangaVolume getManga(String base, String manga, Language linguagem, Integer volume) throws ExcessaoBd {
+        return mangaDao.selectVolume(base, manga, volume, linguagem);
+    }
+    
 }
