@@ -383,30 +383,32 @@ public class ProcessarNovels {
             titulo = nome;
 
         Float volume = 0F;
-        if (arq.toLowerCase().contains("volume"))
-            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("volume") + 6).trim());
-        else if (arq.toLowerCase().contains("vol."))
-            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol.") + 4).trim());
-        else if (arq.toLowerCase().contains("vol "))
-            volume = Float.valueOf(arq.substring(arq.toLowerCase().lastIndexOf("vol ") + 4).trim());
-        else {
-            Matcher matcher = Pattern.compile("([0-9]+?.[0-9]+$)").matcher(arq.trim());
+
+        Matcher matcher = Pattern.compile("((volume |vol. |vol )?([\\d]+.)?[\\d]+)").matcher(arq.toLowerCase());
+        if (matcher.find() && !matcher.group(0).isEmpty()) {
+            String aux = matcher.group(0).toLowerCase().replace("volume", "").replace("vol.", "").replace("vol","").trim();
+            if (aux.matches("[\\d.]+"))
+                volume = Float.valueOf(aux);
+        }
+
+        if (volume <= 0f) {
+            matcher = Pattern.compile("(([0-9]+.)?[0-9]+$)").matcher(arq.trim());
             if (matcher.find() && !matcher.group(0).isEmpty()) {
                 volume = Float.valueOf(matcher.group(0));
                 if (nome.matches("[a-zA-Z\\d]") && nome.contains(matcher.group(0)))
                     titulo = nome.substring(0, nome.lastIndexOf(matcher.group(0)));
             } else {
-                matcher = Pattern.compile("([0-9]+?.[0-9]+)").matcher(arq.trim());
+                matcher = Pattern.compile("(([0-9]+.)?[0-9]+)").matcher(arq.trim());
                 if (matcher.find() && !matcher.group(0).isEmpty())
                     volume = Float.valueOf(matcher.group(0));
                 else {
-                    matcher = Pattern.compile("([\uFF10-\uFF19]+?.[\uFF10-\uFF19]+$)").matcher(arq.trim());
+                    matcher = Pattern.compile("(([\uFF10-\uFF19]+.)?[\uFF10-\uFF19]+$)").matcher(arq.trim());
                     if (matcher.find() && !matcher.group(0).isEmpty())
                         volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
                                 .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
                                 .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
                     else {
-                        matcher = Pattern.compile("([\uFF10-\uFF19]+?.[\uFF10-\uFF19]+)").matcher(arq.trim());
+                        matcher = Pattern.compile("(([\uFF10-\uFF19]+.)?[\uFF10-\uFF19]+)").matcher(arq.trim());
                         if (matcher.find() && !matcher.group(0).isEmpty())
                             volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
                                     .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
@@ -504,7 +506,7 @@ public class ProcessarNovels {
                 Float cap = lastCap;
 
                 if (linguagem.compareTo(Language.JAPANESE) == 0) {
-                    Matcher matcher = Pattern.compile("((第)?([\\d０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*(話|譜|章))").matcher(indice);
+                    Matcher matcher = Pattern.compile("((第)?([\\d]|[０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*(話|譜|章))").matcher(indice);
                     if (matcher.find() && !matcher.group(0).isEmpty()) {
                         String aux = matcher.group(0).replaceAll("(第|話|譜|章)","");
                         if (aux.matches("([０-９]|零|一|二|三|四|五|六|七|八|九|十|千|万|百|億|兆)*"))
@@ -513,14 +515,22 @@ public class ProcessarNovels {
                             cap = Float.valueOf(aux);
                     }
                 } else if (linguagem.compareTo(Language.ENGLISH) == 0) {
-                    Matcher matcher = Pattern.compile("(ch?[a-z ]+)[\\d]*").matcher(indice.toLowerCase());
-                    if (matcher.find() && !matcher.group(0).isEmpty())
-                        cap = Float.valueOf(matcher.group(0).replaceAll("[\\D]",""));
-                    else {
-                        matcher = Pattern.compile("^([0-9]+)").matcher(indice.toLowerCase());
-                        if (matcher.find() && !matcher.group(0).isEmpty())
-                            cap = Float.valueOf(matcher.group(0));
+                    Matcher matcher = Pattern.compile("((capítulo |capitulo |cap. |cap )?([\\d.]+)?[\\d.]+)").matcher(indice.toLowerCase());
+                    if (matcher.find() && !matcher.group(0).isEmpty()) {
+                        String aux = matcher.group(0).toLowerCase()
+                                .replace("capítulo", "")
+                                .replace("capitulo", "")
+                                .replace("cap.", "")
+                                .replace("cap","").trim();
+                        if (aux.matches("[\\d.]+"))
+                            cap = Float.valueOf(aux);
                     }
+                }
+
+                if (cap == lastCap) {
+                    Matcher matcher = Pattern.compile("^(([\\d.]+)?[\\d.]+)").matcher(indice.toLowerCase());
+                    if (matcher.find() && !matcher.group(0).isEmpty())
+                        cap = Float.valueOf(matcher.group(0));
                 }
 
                 NovelCapitulo capitulo = new NovelCapitulo(UUID.randomUUID(), volume.getNovel(), volume.getVolume(), cap, indice, k, volume.getLingua(), false);

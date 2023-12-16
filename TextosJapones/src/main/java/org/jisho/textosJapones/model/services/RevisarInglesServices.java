@@ -6,6 +6,7 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RevisarInglesServices {
 
@@ -40,6 +41,8 @@ public class RevisarInglesServices {
 	}
 
 	public RevisarInglesServices insert(Revisar obj) throws ExcessaoBd {
+		if (obj.getId() == null)
+			obj.setId(UUID.randomUUID());
 		revisarDao.insert(obj);
 		return this;
 	}
