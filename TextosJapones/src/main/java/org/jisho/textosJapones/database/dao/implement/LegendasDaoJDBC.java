@@ -55,6 +55,7 @@ public class LegendasDaoJDBC implements LegendasDao {
     final private static String INSERT = "INSERT INTO %s (Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?);";
     final private static String UPDATE = "UPDATE %s SET Episodio = ?, Linguagem = ?, TempoInicial = ?, TempoFinal = ?, Texto = ?, Traducao = ?, Vocabulario = ? WHERE id = ?;";
     final private static String SELECT = "SELECT id, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario FROM %s WHERE 1 > 0 ;";
+    final private static String DELETE = "DELETE FROM %s WHERE Episodio = ? AND Linguagem = ?;";
 
 
 
@@ -123,6 +124,25 @@ public class LegendasDaoJDBC implements LegendasDao {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public void delete(String tabela, Legenda obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = connDeckSubtitle.prepareStatement(String.format(DELETE, tabela));
+
+            Integer index = 0;
+            st.setInt(++index, obj.getEpisodio());
+            st.setString(++index, obj.getLinguagem().getSigla().toUpperCase());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
         }

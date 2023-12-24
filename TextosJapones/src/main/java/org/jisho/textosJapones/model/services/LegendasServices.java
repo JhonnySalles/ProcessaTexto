@@ -32,6 +32,7 @@ public class LegendasServices {
 	public void salvar(String base, List<Legenda> legendas) throws ExcessaoBd {
 		criarTabela(base);
 
+		processarDao.delete(base, legendas.get(0));
 		for (Legenda legenda : legendas) {
 			if (legenda.getId() == null)
 				processarDao.insert(base, legenda);

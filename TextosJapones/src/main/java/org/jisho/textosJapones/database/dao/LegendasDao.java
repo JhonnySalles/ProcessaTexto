@@ -14,6 +14,7 @@ public interface LegendasDao {
 
 	void createTabela(String base) throws ExcessaoBd;
 
+	void delete(String tabela, Legenda obj) throws ExcessaoBd;
 	void insert(String tabela, Legenda obj) throws ExcessaoBd;
 	void update(String tabela, Legenda obj) throws ExcessaoBd;
 

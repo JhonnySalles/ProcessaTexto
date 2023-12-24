@@ -278,10 +278,10 @@ public class LegendasImportarController implements Initializable {
                                     writer.newLine();
                                 }
 
-                                if (isVocab) {
-                                    updateMessage("Processando arquivo " + i + " de " + ARQUIVOS.size() + " - Salvando legendas");
-                                    services.salvar(base, legendas);
+                                updateMessage("Processando arquivo " + i + " de " + ARQUIVOS.size() + " - Salvando legendas");
+                                services.salvar(base, legendas);
 
+                                if (isVocab) {
                                     String schema = services.getSchema();
                                     String select = "SELECT id, texto FROM " + schema + "." + base + "  WHERE linguagem = " + '"' + lingua.getSigla().toUpperCase() + '"' + " AND vocabulario IS NOT NULL;";
                                     String update = "UPDATE " + schema + "." + base + " SET Vocabulario = ? WHERE id = ?;";
