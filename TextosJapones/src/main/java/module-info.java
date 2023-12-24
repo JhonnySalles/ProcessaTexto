@@ -12,13 +12,15 @@ module TextosJapones {
     exports org.jisho.textosJapones.database.dao.implement;
     exports org.jisho.textosJapones.database.mysql;
     exports org.jisho.textosJapones.components.animation;
+    exports org.jisho.textosJapones.model.entities.mangaextractor;
+    exports org.jisho.textosJapones.model.entities.subtitle;
+    exports org.jisho.textosJapones.model.entities.comicinfo;
     exports org.jisho.textosJapones.model.services;
     exports org.jisho.textosJapones.model.enums;
+    exports org.jisho.textosJapones.model.enums.comicinfo;
     exports org.jisho.textosJapones.model.entities;
     exports org.jisho.textosJapones.components.listener;
     exports org.jisho.textosJapones.fileparse;
-    exports org.jisho.textosJapones.model.enums.comicinfo;
-    exports org.jisho.textosJapones.model.entities.comicinfo;
     exports org.jisho.textosJapones.logback;
 
     requires transitive java.sql;
@@ -48,15 +50,16 @@ module TextosJapones {
     requires org.slf4j;
     requires logback.classic;
     requires logback.core;
+    requires mp3agic;
 
+    opens org.jisho.textosJapones.model.entities.mangaextractor to com.google.gson, javafx.base;
     opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
+    opens org.jisho.textosJapones.model.entities.subtitle to javafx.base;
+    opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
     opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.novels to javafx.fxml, javafx.graphics;
-    opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
     opens org.jisho.textosJapones.processar to com.google.gson;
-    exports org.jisho.textosJapones.model.entities.mangaextractor;
-    opens org.jisho.textosJapones.model.entities.mangaextractor to com.google.gson, javafx.base;
 }

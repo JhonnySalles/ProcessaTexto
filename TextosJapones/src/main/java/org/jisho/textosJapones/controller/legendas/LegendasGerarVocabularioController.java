@@ -27,7 +27,7 @@ import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.model.services.ProcessarServices;
+import org.jisho.textosJapones.model.services.LegendasServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 import org.jisho.textosJapones.util.Prop;
@@ -112,7 +112,7 @@ public class LegendasGerarVocabularioController implements Initializable {
     @FXML
     private TableColumn<Processar, String> tcVocabulario;
 
-    private final ProcessarServices service = new ProcessarServices();
+    private final LegendasServices service = new LegendasServices();
     private final VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
     private final ProcessarLegendas processar = new ProcessarLegendas(null);
 
@@ -189,11 +189,11 @@ public class LegendasGerarVocabularioController implements Initializable {
 
             if (!txtAreaDelete.getText().isEmpty() && !txtAreaDelete.getText()
                     .equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL"))
-                service.delete(txtAreaDelete.getText());
+                service.comandoDelete(txtAreaDelete.getText());
 
             List<Processar> update = tbLista.getItems().stream()
                     .filter(revisar -> !revisar.getVocabulario().trim().isEmpty()).collect(Collectors.toList());
-            service.update(txtAreaUpdate.getText(), update);
+            service.comandoUpdate(txtAreaUpdate.getText(), update);
 
             AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
                     "Salvo com sucesso.");
@@ -222,7 +222,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         try {
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Atualizando....");
-            tbLista.setItems(FXCollections.observableArrayList(service.select(txtAreaSelect.getText())));
+            tbLista.setItems(FXCollections.observableArrayList(service.comandoSelect(txtAreaSelect.getText())));
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Concluido....");
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
@@ -242,7 +242,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         try {
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Iniciando o delete....");
-            service.delete(txtAreaDelete.getText());
+            service.comandoDelete(txtAreaDelete.getText());
 
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
@@ -504,10 +504,10 @@ public class LegendasGerarVocabularioController implements Initializable {
 
                         try {
                             updateMessage("Limpando....");
-                            service.delete(select.getDelete());
+                            service.comandoDelete(select.getDelete());
 
                             updateMessage("Pesquisando....");
-                            lista = service.select(select.getSelect());
+                            lista = service.comandoSelect(select.getSelect());
                             i = 0;
                             for (Processar item : lista) {
                                 i++;
@@ -531,7 +531,7 @@ public class LegendasGerarVocabularioController implements Initializable {
                                 break;
 
                             updateMessage("Salvando....");
-                            service.update(select.getUpdate(), lista);
+                            service.comandoUpdate(select.getUpdate(), lista);
 
                             select.setVocabulario(processar.vocabulario.stream().collect(Collectors.joining("\n")));
                             service.insertOrUpdateFila(select);
@@ -548,7 +548,7 @@ public class LegendasGerarVocabularioController implements Initializable {
                             lista = new ArrayList<>();
 
                             for (FilaSQL item : select)
-                                lista.addAll(service.select(item.getSelect()));
+                                lista.addAll(service.comandoSelect(item.getSelect()));
 
                             if (arquivo.exists())
                                 arquivo.delete();
@@ -569,7 +569,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 
                         updateMessage("Executando a limpeza.");
                         for (FilaSQL item: fila.stream().filter(FilaSQL::isLimpeza).collect(Collectors.toList()))
-                            service.delete(item.getDelete());
+                            service.comandoDelete(item.getDelete());
 
                         Properties props = Prop.loadProperties();
                         if (props.containsKey("ultimo_caminho_salvo"))

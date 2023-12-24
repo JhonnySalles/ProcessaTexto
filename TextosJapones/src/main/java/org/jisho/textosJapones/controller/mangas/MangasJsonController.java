@@ -706,29 +706,25 @@ public class MangasJsonController implements Initializable {
     private void editaColunas() {
         // ==== (CHECK-BOX) ===
         treecMacado.setCellValueFactory(
-                new Callback<TreeTableColumn.CellDataFeatures<Manga, Boolean>, ObservableValue<Boolean>>() {
+                param -> {
+                    TreeItem<Manga> treeItem = param.getValue();
+                    Manga item = treeItem.getValue();
+                    SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isProcessar());
 
-                    @Override
-                    public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<Manga, Boolean> param) {
-                        TreeItem<Manga> treeItem = param.getValue();
-                        Manga item = treeItem.getValue();
-                        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isProcessar());
+                    booleanProp.addListener(new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                                            Boolean newValue) {
+                            item.setProcessar(newValue);
+                            marcarTodosFilhos(treeItem, newValue);
+                            if (newValue) // Somente ativa caso seja true, pois ao menos um nó precisa estar ativo
+                                ativaTodosPai(treeItem, newValue);
 
-                        booleanProp.addListener(new ChangeListener<Boolean>() {
-                            @Override
-                            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-                                                Boolean newValue) {
-                                item.setProcessar(newValue);
-                                marcarTodosFilhos(treeItem, newValue);
-                                if (newValue) // Somente ativa caso seja true, pois ao menos um nó precisa estar ativo
-                                    ativaTodosPai(treeItem, newValue);
+                            treeBases.refresh();
+                        }
+                    });
 
-                                treeBases.refresh();
-                            }
-                        });
-
-                        return booleanProp;
-                    }
+                    return booleanProp;
                 });
 
         treecMacado.setCellFactory(new Callback<TreeTableColumn<Manga, Boolean>, TreeTableCell<Manga, Boolean>>() {

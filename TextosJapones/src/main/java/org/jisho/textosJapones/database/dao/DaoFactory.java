@@ -26,8 +26,8 @@ public class DaoFactory {
 		return new RevisarInglesDaoJDBC(DB.getConnection(Conexao.TEXTOINGLES));
 	}
 
-	public static ProcessarDao createProcessarDao() {
-		return new ProcessarDaoJDBC(DB.getLocalConnection());
+	public static LegendasDao createLegendasDao() {
+		return new LegendasDaoJDBC(DB.getLocalConnection(), DB.getConnection(Conexao.DECKSUBTITLE), DB.getDados(Conexao.DECKSUBTITLE).getBase());
 	}
 
 	public static MangaDao createMangaDao() {
