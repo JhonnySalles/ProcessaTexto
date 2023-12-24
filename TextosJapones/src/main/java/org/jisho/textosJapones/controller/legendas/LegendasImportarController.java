@@ -158,6 +158,7 @@ public class LegendasImportarController implements Initializable {
 
         String pipe = txtPipe.getText() == null || txtPipe.getText().trim().isEmpty() ? "\t" : txtPipe.getText();
         String nome = txtNome.getText().trim();
+        String caminho = txtCaminho.getText().trim();
         Language lingua = cbLinguagem.getValue();
         String base  = cbBase.getEditor().getText();
         String prefix  = txtPrefixoSom.getText().trim();
@@ -336,6 +337,26 @@ public class LegendasImportarController implements Initializable {
                         arquivo.setProcessar(false);
                     }
 
+                    updateMessage("Processando arquivo - Gerando deck full ");
+                    File tmp = new File(caminho, "deckfull.tsv");
+                    if (tmp.exists())
+                        tmp.delete();
+
+                    tmp.createNewFile();
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(tmp))) {
+                        for (Arquivo arquivo : ARQUIVOS) {
+                            try (BufferedReader reader = new BufferedReader(new FileReader(arquivo.getArquivo(), StandardCharsets.UTF_8))) {
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    if (line.trim().isEmpty())
+                                        continue;
+                                    writer.append(line);
+                                    writer.newLine();
+                                }
+                            }
+                        }
+                        writer.flush();
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Erro ao processar as legendas", e);
                     error = true;
