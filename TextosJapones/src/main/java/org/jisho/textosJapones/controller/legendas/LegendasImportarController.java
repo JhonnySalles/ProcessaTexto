@@ -265,12 +265,14 @@ public class LegendasImportarController implements Initializable {
                                         String chave = som.replace("[sound:", "").replace("]", "");
                                         String novo = nome + " - Episódio " + String.format("%02d", arquivo.getEpisodio()) + (!prefix.isEmpty() ?  " " + prefix : "")  + " - " + tempo.replace(":", ".") + chave.substring(chave.lastIndexOf("."));
                                         renomear.put(chave, novo);
+                                        som = "[sound:" + novo + "]";
                                     }
 
                                     if (!imagem.isEmpty()) {
                                         String chave = imagem.replace("<img src=\"", "").replace("\">", "");
                                         String novo = nome + " - Episódio " + String.format("%02d", arquivo.getEpisodio()) + " - " + tempo.replace(":", ".") + chave.substring(chave.lastIndexOf("."));
                                         renomear.put(chave, novo);
+                                        imagem = "<img src=\"" + novo + "\">";
                                     }
 
                                     idAnki = nome + " - Episódio " + String.format("%02d", arquivo.getEpisodio()) + " - " + tempo;
