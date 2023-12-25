@@ -498,7 +498,7 @@ public class SudachiTokenizer {
 
                 Vocabulario palavra = vocabServ.select(m.surface(), m.dictionaryForm());
                 if (palavra != null) {
-                    processado += m.dictionaryForm() + " " + palavra.getPortugues() + " ";
+                    processado += m.dictionaryForm() + " - " + palavra.getPortugues() + " ";
 
                     if (palavra.getFormaBasica().isEmpty() || palavra.getLeitura().isEmpty()) {
                         palavra.setFormaBasica(m.dictionaryForm());
