@@ -522,7 +522,8 @@ public class ProcessarNovels {
                                 .replace("capitulo", "")
                                 .replace("cap.", "")
                                 .replace("cap","").trim();
-                        if (aux.matches("(\\d*\\.?\\d+)"))
+                        matcher = Pattern.compile("(\\d*\\.?\\d+)").matcher(aux);
+                        if (matcher.find() && !matcher.group(0).isEmpty())
                             cap = Float.valueOf(matcher.group(0));
                     }
                 }
