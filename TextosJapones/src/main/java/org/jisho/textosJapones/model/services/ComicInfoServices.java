@@ -2,8 +2,6 @@ package org.jisho.textosJapones.model.services;
 
 import org.jisho.textosJapones.database.dao.ComicInfoDao;
 import org.jisho.textosJapones.database.dao.DaoFactory;
-import org.jisho.textosJapones.database.dao.KanjiDao;
-import org.jisho.textosJapones.model.entities.Kanji;
 import org.jisho.textosJapones.model.entities.comicinfo.ComicInfo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 

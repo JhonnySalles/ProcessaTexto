@@ -8,10 +8,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
-import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 

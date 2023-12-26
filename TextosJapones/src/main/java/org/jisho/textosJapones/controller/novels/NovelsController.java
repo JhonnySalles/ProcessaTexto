@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import org.jisho.textosJapones.controller.mangas.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

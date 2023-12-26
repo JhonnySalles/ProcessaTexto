@@ -6,7 +6,6 @@ import org.jisho.textosJapones.model.entities.subtitle.Legenda;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface LegendasDao {
 

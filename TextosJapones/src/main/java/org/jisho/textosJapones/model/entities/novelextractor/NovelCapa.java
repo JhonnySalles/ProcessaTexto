@@ -1,9 +1,7 @@
 package org.jisho.textosJapones.model.entities.novelextractor;
 
-import javafx.scene.image.Image;
 import org.jisho.textosJapones.model.enums.Language;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 

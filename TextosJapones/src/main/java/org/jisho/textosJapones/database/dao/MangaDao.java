@@ -1,6 +1,5 @@
 package org.jisho.textosJapones.database.dao;
 
-import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;

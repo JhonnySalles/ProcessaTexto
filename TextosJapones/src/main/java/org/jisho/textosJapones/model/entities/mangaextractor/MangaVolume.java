@@ -3,7 +3,6 @@ package org.jisho.textosJapones.model.entities.mangaextractor;
 import com.google.gson.annotations.Expose;
 import org.jisho.textosJapones.model.entities.Manga;
 import org.jisho.textosJapones.model.enums.Language;
-import org.json.JSONPropertyIgnore;
 
 import java.util.*;
 

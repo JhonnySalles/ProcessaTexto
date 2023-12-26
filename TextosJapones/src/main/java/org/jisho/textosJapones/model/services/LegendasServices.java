@@ -10,7 +10,6 @@ import org.jisho.textosJapones.model.enums.Conexao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
-import java.util.UUID;
 
 public class LegendasServices {
 

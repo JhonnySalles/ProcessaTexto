@@ -4,7 +4,6 @@ import javafx.collections.ObservableList;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
-import org.jisho.textosJapones.model.entities.novelextractor.NovelCapa;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.slf4j.Logger;

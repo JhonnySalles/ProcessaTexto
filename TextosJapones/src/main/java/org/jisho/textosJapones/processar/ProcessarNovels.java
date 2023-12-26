@@ -1,6 +1,5 @@
 package org.jisho.textosJapones.processar;
 
-import com.github.junrar.volume.Volume;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
@@ -17,7 +16,6 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.novels.NovelsProcessarController;
-import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
@@ -39,7 +37,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.image.BufferedImage;
-import java.beans.Expression;
 import java.io.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

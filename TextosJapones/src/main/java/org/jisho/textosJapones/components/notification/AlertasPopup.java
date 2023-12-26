@@ -11,7 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
