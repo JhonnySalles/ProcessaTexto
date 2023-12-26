@@ -1,26 +1,23 @@
 package org.jisho.textosJapones.controller.legendas;
 
 import com.jfoenix.controls.*;
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v24Tag;
+import com.mpatric.mp3agic.Mp3File;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
@@ -28,13 +25,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.CheckBoxTableCellCustom;
-import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.controller.GrupoBarraProgressoController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.FilaSQL;
-import org.jisho.textosJapones.model.entities.comicinfo.BaseLista;
-import org.jisho.textosJapones.model.entities.comicinfo.MAL;
 import org.jisho.textosJapones.model.entities.subtitle.Arquivo;
 import org.jisho.textosJapones.model.entities.subtitle.Legenda;
 import org.jisho.textosJapones.model.enums.Dicionario;
@@ -139,6 +133,8 @@ public class LegendasImportarController implements Initializable {
         tbTabela.refresh();
     }
 
+    private static String ARQUIVO_FULL = "processados.tsv";
+
     @FXML
     private void onBtnProcessar() {
         if (btnProcessar.getAccessibleText().equalsIgnoreCase("PROCESSANDO")) {
@@ -176,6 +172,12 @@ public class LegendasImportarController implements Initializable {
             @Override
             public Void call() {
                 try {
+
+                    File processados = new File(caminho, ARQUIVO_FULL);
+                    if (processados.exists())
+                        processados.delete();
+                    processados.createNewFile();
+
                     for (Arquivo arquivo : ARQUIVOS) {
                         i++;
                         updateMessage("Processando arquivo " + i + " de " + ARQUIVOS.size());
@@ -332,20 +334,8 @@ public class LegendasImportarController implements Initializable {
                             writer.flush();
                         }
 
-                        arquivo.getArquivo().delete();
-                        tmp.renameTo(arquivo.getArquivo());
-                        arquivo.setProcessar(false);
-                    }
-
-                    updateMessage("Processando arquivo - Gerando deck full ");
-                    File tmp = new File(caminho, "deckfull.tsv");
-                    if (tmp.exists())
-                        tmp.delete();
-
-                    tmp.createNewFile();
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(tmp))) {
-                        for (Arquivo arquivo : ARQUIVOS) {
-                            try (BufferedReader reader = new BufferedReader(new FileReader(arquivo.getArquivo(), StandardCharsets.UTF_8))) {
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(processados,true))) {
+                            try (BufferedReader reader = new BufferedReader(new FileReader(tmp, StandardCharsets.UTF_8))) {
                                 String line;
                                 while ((line = reader.readLine()) != null) {
                                     if (line.trim().isEmpty())
@@ -354,8 +344,12 @@ public class LegendasImportarController implements Initializable {
                                     writer.newLine();
                                 }
                             }
+                            writer.flush();
                         }
-                        writer.flush();
+
+                        arquivo.getArquivo().delete();
+                        tmp.renameTo(arquivo.getArquivo());
+                        arquivo.setProcessar(false);
                     }
                 } catch (Exception e) {
                     LOGGER.error("Erro ao processar as legendas", e);
@@ -527,10 +521,11 @@ public class LegendasImportarController implements Initializable {
 
             if (pasta.isDirectory()) {
                 for (File arq : pasta.listFiles())
-                    if (arq.getName().endsWith(".tsv"))
+                    if (arq.getName().endsWith(".tsv") && !arq.getName().equalsIgnoreCase(ARQUIVO_FULL))
                         arquivos.add(getArquivo(arq));
             } else
-                arquivos.add(getArquivo(pasta));
+                if (pasta.getName().endsWith(".tsv") && !pasta.getName().equalsIgnoreCase(ARQUIVO_FULL))
+                    arquivos.add(getArquivo(pasta));
         } finally {
             ARQUIVOS = FXCollections.observableArrayList(arquivos);
             tbTabela.setItems(ARQUIVOS);
@@ -580,6 +575,13 @@ public class LegendasImportarController implements Initializable {
         Validadores.setComboBoxNotEmpty(cbLinguagem, false);
         Validadores.setComboBoxNotEmpty(cbBase, true);
         Validadores.setTextFieldNotEmpty(txtNome);
+
+        txtNome.focusedProperty().addListener((arg01, oldPropertyValue, newPropertyValue) -> {
+            if (oldPropertyValue)
+                if (txtNome.getText().contains("\\"))
+                    txtNome.setText(txtNome.getText().replaceAll("\\\\", " "));
+        });
+
         txtCaminho.focusedProperty().addListener((arg01, oldPropertyValue, newPropertyValue) -> {
             if (oldPropertyValue)
                 carregaArquivos();
