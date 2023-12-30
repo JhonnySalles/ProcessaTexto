@@ -7,18 +7,9 @@ import java.util.List;
 
 public class MangaTabela extends Manga {
 
-	private String base;
 	private List<MangaVolume> volumes;
 	private List<MangaVinculo> vinculados;
 	private Integer quantidade;
-
-	public String getBase() {
-		return base;
-	}
-
-	public void setBase(String base) {
-		this.base = base;
-	}
 
 	public List<MangaVolume> getVolumes() {
 		return volumes;

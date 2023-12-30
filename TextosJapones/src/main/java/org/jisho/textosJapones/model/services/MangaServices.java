@@ -3,6 +3,7 @@ package org.jisho.textosJapones.model.services;
 import javafx.collections.ObservableList;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.MangaDao;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -27,8 +28,7 @@ public class MangaServices {
         return mangaDao.selectTabelas(todos);
     }
 
-    public List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem)
-            throws ExcessaoBd {
+    public List<MangaTabela> selectAll(String base, String manga, Integer volume, Float capitulo, Language linguagem) throws ExcessaoBd {
         return mangaDao.selectAll(base, manga, volume, capitulo, linguagem);
     }
 
@@ -55,9 +55,7 @@ public class MangaServices {
     }
 
     public void updateCancel(String base, MangaVolume obj) throws ExcessaoBd {
-        for (MangaCapitulo capitulo : obj.getCapitulos())
-            for (MangaPagina pagina : capitulo.getPaginas())
-                mangaDao.updateCancel(base, pagina);
+        mangaDao.updateCancel(base, obj);
     }
 
     public void insertDadosTransferir(String base, MangaVolume volume) throws ExcessaoBd {
@@ -76,20 +74,18 @@ public class MangaServices {
 
     public void updateVocabularioVolume(String base, MangaVolume volume) throws ExcessaoBd {
         insertVocabularios(base, volume.getId(), null, null, volume.getVocabularios());
-        mangaDao.updateProcessado(base, "volumes", volume.getId());
+        mangaDao.updateProcessado(base, volume.getId());
     }
 
     public void updateVocabularioCapitulo(String base, MangaCapitulo capitulo) throws ExcessaoBd {
         insertVocabularios(base, null, capitulo.getId(), null, capitulo.getVocabularios());
-        mangaDao.updateProcessado(base, "capitulos", capitulo.getId());
     }
 
     public void updateVocabularioPagina(String base, MangaPagina pagina) throws ExcessaoBd {
         insertVocabularios(base, null, null, pagina.getId(), pagina.getVocabularios());
-        mangaDao.updateProcessado(base, "paginas", pagina.getId());
     }
 
-    public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, UUID idPagina, Set<MangaVocabulario> vocabularios) throws ExcessaoBd {
+    public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, UUID idPagina, Set<VocabularioExterno> vocabularios) throws ExcessaoBd {
         mangaDao.insertVocabulario(base, idVolume, idCapitulo, idPagina, vocabularios);
     }
 

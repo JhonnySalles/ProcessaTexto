@@ -211,7 +211,7 @@ public class Revisar {
     }
 
     public static Vocabulario toVocabulario(Revisar revisar) {
-        return new Vocabulario(null, revisar.getVocabulario(), revisar.getFormaBasica(), revisar.getLeitura(), revisar.getLeituraNovel(), revisar.getIngles(), revisar.getPortugues());
+        return new Vocabulario(revisar.getId(), revisar.getVocabulario(), revisar.getFormaBasica(), revisar.getLeitura(), revisar.getLeituraNovel(), revisar.getIngles(), revisar.getPortugues());
     }
 
     public static List<Vocabulario> toVocabulario(List<Revisar> revisar) {

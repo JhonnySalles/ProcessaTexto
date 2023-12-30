@@ -1,6 +1,8 @@
 package org.jisho.textosJapones.database.dao;
 
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
@@ -46,7 +48,7 @@ public interface MangaDao {
 
     List<MangaTabela> selectTabelasJson(String base, String manga, Integer volume, Float capitulo, Language linguagem, Boolean inverterTexto) throws ExcessaoBd;
 
-    void updateCancel(String base, MangaPagina obj) throws ExcessaoBd;
+    void updateCancel(String base, MangaVolume obj) throws ExcessaoBd;
 
     UUID insertVolume(String base, MangaVolume obj) throws ExcessaoBd;
 
@@ -70,10 +72,9 @@ public interface MangaDao {
 
     void deletarVocabulario(String base) throws ExcessaoBd;
 
-    void updateProcessado(String base, String tabela, UUID id) throws ExcessaoBd;
+    void updateProcessado(String base, UUID id) throws ExcessaoBd;
 
-    void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, UUID idPagina,
-                                  Set<MangaVocabulario> vocabulario) throws ExcessaoBd;
+    void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, UUID idPagina, Set<VocabularioExterno> vocabulario) throws ExcessaoBd;
 
     List<MangaVolume> selectDadosTransferir(String base, String tabela) throws ExcessaoBd;
     List<String> getTabelasTransferir(String base, String tabela) throws ExcessaoBd;

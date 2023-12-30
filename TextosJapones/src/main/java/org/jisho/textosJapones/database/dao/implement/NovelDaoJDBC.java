@@ -1,7 +1,13 @@
 package org.jisho.textosJapones.database.dao.implement;
 
 import org.jisho.textosJapones.database.dao.NovelDao;
+import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.database.mysql.DB;
+import org.jisho.textosJapones.model.entities.Novel;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaTabela;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -10,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
@@ -21,6 +29,7 @@ public class NovelDaoJDBC implements NovelDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(NovelDaoJDBC.class);
 
     private final Connection conn;
+    private final VocabularioDao vocab;
     private final String schema;
 
     final private String CREATE_TABELA = "CALL create_table('%s');";
@@ -46,7 +55,7 @@ public class NovelDaoJDBC implements NovelDao {
 
 
     final private String INSERT_VOLUMES = "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, descricao, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-    final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem, is_processado) VALUES (?,?,?,?,?,?,?,?,?)";
+    final private String INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem) VALUES (?,?,?,?,?,?,?,?)";
     final private String INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)";
     final private String INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)";
 
@@ -54,18 +63,20 @@ public class NovelDaoJDBC implements NovelDao {
 
     final private String SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor,VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado" +
             " FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume";
-    final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem, CAP.is_processado "
-            + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume";
+    final private String SELECT_CAPITULOS = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem "
+            + "FROM %s_capitulos CAP WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume";
     final private String SELECT_TEXTOS = "SELECT id, sequencia, texto FROM %s_textos WHERE id_capitulo = ? ";
 
-    final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, arquivo, extensao capa FROM %s_capas WHERE id_volume = ? ";
+    final private String SELECT_CAPA = "SELECT id, novel, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id_volume = ? ";
 
     final private String FIND = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL";
     final private String FIND_VOLUME = FIND + " WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1";
     final private String FIND_ARQUIVO = FIND + " WHERE arquivo = ? AND linguagem = ? LIMIT 1";
 
     final private String SELECT_VOLUME =  "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?";
-    final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem, CAP.is_processado FROM %s_capitulos CAP WHERE id = ?";
+    final private String SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem FROM %s_capitulos CAP WHERE id = ?";
+
+    final private String UPDATE_VOLUMES_CANCEL = "UPDATE %s_volumes SET is_processado = 0 WHERE id = ?";
 
     final private String SELECT_TABELAS = "SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
             + "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
@@ -75,12 +86,16 @@ public class NovelDaoJDBC implements NovelDao {
             + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
             + " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ";
     final private String DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ?;";
-    final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabularios (%s, palavra, portugues, ingles, leitura, revisado) VALUES (?,?,?,?,?,?);";
-    final private String SELECT_VOCABUALARIO = "SELECT id, palavra, portugues, ingles, leitura, revisado FROM %s_vocabularios WHERE %s ";
+    final private String INSERT_VOCABULARIO = "INSERT INTO %s_vocabularios (%s, id_vocabulario) "
+            + " VALUES (?,?);";
+    final private String SELECT_VOCABUALARIO = "SELECT id_vocabulario FROM %s_vocabularios WHERE %s ";
+
+    final private String UPDATE_PROCESSADO = "UPDATE %s_volumes SET is_processado = 1 WHERE id = ?";
 
     public NovelDaoJDBC(Connection conn, String base) {
         this.conn = conn;
         this.schema = base;
+        this.vocab = new VocabularioExternoDaoJDBC(conn);
     }
 
     private List<Language> getLinguagem(Language... linguagem) {
@@ -93,7 +108,7 @@ public class NovelDaoJDBC implements NovelDao {
     }
 
     @Override
-    public void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, Set<NovelVocabulario> vocabulario) throws ExcessaoBd {
+    public void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, Set<VocabularioExterno> vocabulario) throws ExcessaoBd {
         PreparedStatement st = null;
         try {
             if (idVolume == null && idCapitulo == null)
@@ -103,16 +118,11 @@ public class NovelDaoJDBC implements NovelDao {
             UUID id = idVolume != null ? idVolume : idCapitulo;
             clearVocabulario(base, campo, id);
 
-            for (NovelVocabulario vocab : vocabulario) {
+            for (VocabularioExterno vocab : vocabulario) {
+                insertNotExists(vocab);
                 st = conn.prepareStatement(String.format(INSERT_VOCABULARIO, base, campo), Statement.RETURN_GENERATED_KEYS);
-
                 st.setString(1, id.toString());
-                st.setString(2, vocab.getPalavra());
-                st.setString(3, vocab.getPortugues());
-                st.setString(4, vocab.getIngles());
-                st.setString(5, vocab.getLeitura());
-                st.setBoolean(6, vocab.getRevisado());
-
+                st.setString(2, vocab.getId().toString());
                 st.executeUpdate();
             }
         } catch (SQLException e) {
@@ -121,6 +131,41 @@ public class NovelDaoJDBC implements NovelDao {
             throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public List<NovelTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String novel) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            String condicao = "1>0 ";
+
+            if (base != null && !base.trim().isEmpty()) {
+                if (isLike)
+                    condicao += " AND Table_Name LIKE '%" + base.trim() + "%'";
+                else
+                    condicao += " AND Table_Name LIKE '" + base.trim() + "_volumes'";
+            }
+
+            st = conn.prepareStatement(String.format(SELECT_TABELAS, schema, condicao));
+            rs = st.executeQuery();
+
+            List<NovelTabela> list = new ArrayList<>();
+
+            while (rs.next()) {
+                List<NovelVolume> volumes = selectVolumes(rs.getString("Tabela"), todos, novel, 0, getLinguagem(linguagem));
+                if (volumes.size() > 0)
+                    list.add(new NovelTabela(rs.getString("Tabela"), volumes));
+            }
+            return list;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
         }
     }
 
@@ -139,22 +184,23 @@ public class NovelDaoJDBC implements NovelDao {
         }
     }
 
-    private Set<NovelVocabulario> selectVocabulario(String base, String where) throws ExcessaoBd {
+    private void insertNotExists(VocabularioExterno vocabulario) throws ExcessaoBd {
+        if (!vocab.exist(vocabulario.getId().toString()))
+            vocab.insert(vocabulario);
+    }
+
+    private Set<VocabularioExterno> selectVocabulario(String base, String where) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
             st = conn.prepareStatement(String.format(SELECT_VOCABUALARIO, base, where));
             rs = st.executeQuery();
 
-            Set<NovelVocabulario> list = new HashSet<>();
+            Set<VocabularioExterno> list = new HashSet<>();
 
-            while (rs.next()) {
-                // Ignora os kanji solto.
-                if (rs.getString("palavra").length() <= 1)
-                    continue;
-                list.add(new NovelVocabulario(UUID.fromString(rs.getString("id")), rs.getString("palavra"), rs.getString("portugues"),
-                        rs.getString("ingles"), rs.getString("leitura"), rs.getBoolean("revisado")));
-            }
+            while (rs.next())
+                list.add((VocabularioExterno) vocab.select(rs.getString("id_vocabulario")));
+
             return list;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -166,12 +212,11 @@ public class NovelDaoJDBC implements NovelDao {
         }
     }
 
-    public List<NovelVolume> selectVolumes(String base, String novel, Integer volume, List<Language> linguagem) throws ExcessaoBd {
+    public List<NovelVolume> selectVolumes(String base, Boolean todos, String novel, Integer volume, List<Language> linguagem) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
             String condicao = " 1>0 ";
-
             if (linguagem != null && !linguagem.isEmpty()) {
                 String lang = "";
                 for (Language lg : linguagem)
@@ -179,6 +224,9 @@ public class NovelDaoJDBC implements NovelDao {
 
                 condicao += " AND (" + lang.substring(0, lang.lastIndexOf(" OR ")) + ")";
             }
+
+            if (!todos)
+                condicao += " AND VOL.is_processado = 0 ";
 
             if (novel != null && !novel.trim().isEmpty())
                 condicao += " AND VOL.novel LIKE " + '"' + novel.trim() + '"';
@@ -214,7 +262,6 @@ public class NovelDaoJDBC implements NovelDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String inner = "";
             String condicao = " 1>0 ";
 
             if (linguagem != null && !linguagem.isEmpty()) {
@@ -225,7 +272,7 @@ public class NovelDaoJDBC implements NovelDao {
                 condicao += " AND (" + lang.substring(0, lang.lastIndexOf(" OR ")) + ")";
             }
 
-            st = conn.prepareStatement(String.format(SELECT_CAPITULOS, base, inner, condicao));
+            st = conn.prepareStatement(String.format(SELECT_CAPITULOS, base, condicao));
             st.setString(1, idVolume.toString());
             rs = st.executeQuery();
 
@@ -234,8 +281,7 @@ public class NovelDaoJDBC implements NovelDao {
             while (rs.next())
                 list.add(new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
                         rs.getFloat("capitulo"), rs.getString("descricao"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
-                        rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
-                        selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"')));
+                        selectTextos(base, UUID.fromString(rs.getString("id"))), selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"')));
 
             return list;
         } catch (SQLException e) {
@@ -280,16 +326,22 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(1, idNovel.toString());
             rs = st.executeQuery();
 
-            if (rs.next())
+            if (rs.next()) {
+                InputStream is = new ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes());
+                BufferedImage image = ImageIO.read(is);
+
                 return new NovelCapa(UUID.fromString(rs.getString("id")), rs.getString("novel"),
                         rs.getFloat("volume"), Language.getEnum(rs.getString("linguagem")), rs.getString("arquivo"),
-                        rs.getString("extensao"), null);
-            else
+                        rs.getString("extensao"), image);
+            } else
                 return null;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         } finally {
             DB.closeStatement(st);
             DB.closeResultSet(rs);
@@ -341,7 +393,7 @@ public class NovelDaoJDBC implements NovelDao {
                         rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
                         rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
                         Language.getEnum(rs.getString("linguagem")), rs.getBoolean("is_favorito"),
-                        null, rs.getBoolean("is_processado"), null, null);
+                        selectCapa(base, UUID.fromString(rs.getString("id"))), rs.getBoolean("is_processado"), null, null);
             return null;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -393,8 +445,7 @@ public class NovelDaoJDBC implements NovelDao {
             if (rs.next())
                 return new NovelCapitulo(UUID.fromString(rs.getString("id")), rs.getString("novel"), rs.getFloat("volume"),
                         rs.getFloat("capitulo"), rs.getString("descricao"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem")),
-                        rs.getBoolean("is_processado"), selectTextos(base, UUID.fromString(rs.getString("id"))),
-                        selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
+                        selectTextos(base, UUID.fromString(rs.getString("id"))), selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"'));
 
             return null;
         } catch (SQLException e) {
@@ -429,7 +480,7 @@ public class NovelDaoJDBC implements NovelDao {
             List<NovelTabela> list = new ArrayList<>();
 
             while (rs.next()) {
-                List<NovelVolume> volumes = selectVolumes(rs.getString("Tabela"), novel, volume, getLinguagem(linguagem));
+                List<NovelVolume> volumes = selectVolumes(rs.getString("Tabela"), true, novel, volume, getLinguagem(linguagem));
                 if (volumes.size() > 0)
                     list.add(new NovelTabela(rs.getString("Tabela"), volumes));
             }
@@ -448,17 +499,14 @@ public class NovelDaoJDBC implements NovelDao {
     @Override
     public void deleteVocabulario(String base) throws ExcessaoBd {
         PreparedStatement stVolume = null;
-        PreparedStatement stCapitulo = null;
         PreparedStatement stVocabulario = null;
         try {
             stVocabulario = conn.prepareStatement(String.format("DELETE FROM %s_vocabulario", base));
-            stCapitulo = conn.prepareStatement(String.format("UPDATE %s_capitulos SET is_processado = 0", base));
             stVolume = conn.prepareStatement(String.format("UPDATE %s_volumes SET is_processado = 0", base));
 
             conn.setAutoCommit(false);
             conn.beginRequest();
             stVocabulario.executeUpdate();
-            stCapitulo.executeUpdate();
             stVolume.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
@@ -468,7 +516,6 @@ public class NovelDaoJDBC implements NovelDao {
                 e1.printStackTrace();
             }
             System.out.println(stVocabulario.toString());
-            System.out.println(stCapitulo.toString());
             System.out.println(stVolume.toString());
 
             LOGGER.error(e.getMessage(), e);
@@ -480,8 +527,23 @@ public class NovelDaoJDBC implements NovelDao {
                 LOGGER.error(e.getMessage(), e);
             }
             DB.closeStatement(stVocabulario);
-            DB.closeStatement(stCapitulo);
             DB.closeStatement(stVolume);
+        }
+    }
+
+    @Override
+    public void updateCancel(String base, NovelVolume obj) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(String.format(UPDATE_VOLUMES_CANCEL, base));
+            st.setString(1, obj.getId().toString());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE_CANCEL);
+        } finally {
+            DB.closeStatement(st);
         }
     }
 
@@ -504,8 +566,7 @@ public class NovelDaoJDBC implements NovelDao {
     public UUID insertVolume(String base, NovelVolume obj) throws ExcessaoBd {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement(String.format(INSERT_VOLUMES, base),
-                    Statement.RETURN_GENERATED_KEYS);
+            st = conn.prepareStatement(String.format(INSERT_VOLUMES, base), Statement.RETURN_GENERATED_KEYS);
 
             Integer index = 0;
             st.setString(++index, obj.getId().toString());
@@ -559,7 +620,6 @@ public class NovelDaoJDBC implements NovelDao {
             st.setString(++index, obj.getDescricao());
             st.setInt(++index, obj.getSequencia());
             st.setString(++index, obj.getLingua().getSigla());
-            st.setBoolean(++index, obj.getProcessado());
 
             int rowsAffected = st.executeUpdate();
 
@@ -696,8 +756,40 @@ public class NovelDaoJDBC implements NovelDao {
         createTriggers(nome + TABELA_VOLUME);
         createTriggers(nome + TABELA_CAPITULO);
         createTriggers(nome + TABELA_TEXTO);
-        createTriggers(nome + TABELA_VOCABULARIO);
         createTriggers(nome + TABELA_CAPA);
+
+        try {
+            st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome + TABELA_VOCABULARIO, nome + TABELA_VOCABULARIO));
+            st.execute();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_CREATE_DATABASE);
+        } finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public void updateProcessado(String base, UUID id) throws ExcessaoBd {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, base), Statement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, id.toString());
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(st.toString());
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override

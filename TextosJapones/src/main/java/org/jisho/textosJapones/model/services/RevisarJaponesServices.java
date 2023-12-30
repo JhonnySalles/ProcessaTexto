@@ -2,7 +2,9 @@ package org.jisho.textosJapones.model.services;
 
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.RevisarDao;
+import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
@@ -11,6 +13,13 @@ import java.util.UUID;
 public class RevisarJaponesServices {
 
 	private final RevisarDao revisarDao = DaoFactory.createRevisarJaponesDao();
+	private final List<VocabularioDao> externos = DaoFactory.getVocabularioExternos();
+
+	private void updateExterno(Revisar revisar) throws ExcessaoBd {
+		VocabularioExterno vocabulario = new VocabularioExterno(revisar.getId(), revisar.getVocabulario(), revisar.getPortugues(), revisar.getIngles(), revisar.getLeitura(), revisar.getLeituraNovel(), revisar.getRevisado().isSelected());
+		for (VocabularioDao dao : externos)
+			dao.update(vocabulario);
+	}
 
 	public List<Revisar> selectAll() throws ExcessaoBd {
 		return revisarDao.selectAll();
@@ -33,6 +42,7 @@ public class RevisarJaponesServices {
 		else
 			insert(obj);
 
+		updateExterno(obj);
 		return this;
 	}
 
@@ -52,6 +62,7 @@ public class RevisarJaponesServices {
 
 	public void update(Revisar obj) throws ExcessaoBd {
 		revisarDao.update(obj);
+		updateExterno(obj);
 	}
 
 	public void delete(Revisar obj) throws ExcessaoBd {

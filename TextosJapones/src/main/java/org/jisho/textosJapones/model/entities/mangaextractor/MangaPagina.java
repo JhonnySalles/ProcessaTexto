@@ -2,6 +2,7 @@ package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
 import org.jisho.textosJapones.model.entities.Manga;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 
 import java.util.*;
 
@@ -17,9 +18,7 @@ public class MangaPagina extends Manga {
 	@Expose
 	private List<MangaTexto> textos;
 	@Expose
-	private Set<MangaVocabulario> vocabularios;
-	private Boolean processado;
-
+	private Set<VocabularioExterno> vocabularios;
 	@Expose
 	private Integer sequencia;
 
@@ -75,20 +74,12 @@ public class MangaPagina extends Manga {
 		this.textos.add(texto);
 	}
 
-	public Set<MangaVocabulario> getVocabularios() {
+	public Set<VocabularioExterno> getVocabularios() {
 		return vocabularios;
 	}
 
-	public void setVocabularios(Set<MangaVocabulario> vocabularios) {
+	public void setVocabularios(Set<VocabularioExterno> vocabularios) {
 		this.vocabularios = vocabularios;
-	}
-
-	public Boolean getProcessado() {
-		return processado;
-	}
-
-	public void setProcessado(Boolean processado) {
-		this.processado = processado;
 	}
 
 	public String getDescricao() {
@@ -100,43 +91,37 @@ public class MangaPagina extends Manga {
 		this.nomePagina = "";
 		this.numero = 0;
 		this.hash = "";
-		this.processado = false;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.textos = new ArrayList<MangaTexto>();
+		this.vocabularios = new HashSet<>();
+		this.textos = new ArrayList<>();
 	}
 
-	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado) {
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = processado;
-		this.textos = new ArrayList<MangaTexto>();
+		this.vocabularios = new HashSet<>();
+		this.textos = new ArrayList<>();
 	}
 
-	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado,
-			List<MangaTexto> textos) {
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, List<MangaTexto> textos) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = processado;
+		this.vocabularios = new HashSet<>();
 		this.textos = textos;
 	}
 
-	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, Boolean processado,
-			List<MangaTexto> textos, Set<MangaVocabulario> vocabularios) {
+	public MangaPagina(UUID id, String nomePagina, Integer numero, String hash, List<MangaTexto> textos, Set<VocabularioExterno> vocabularios) {
 		super(null, null, null, numero, nomePagina);
 		this.id = id;
 		this.nomePagina = nomePagina;
 		this.numero = numero;
 		this.hash = hash;
 		this.vocabularios = vocabularios;
-		this.processado = processado;
 		this.textos = textos;
 	}
 

@@ -53,6 +53,7 @@ module TextosJapones {
     requires mp3agic;
 
     opens org.jisho.textosJapones.model.entities.mangaextractor to com.google.gson, javafx.base;
+    opens org.jisho.textosJapones.model.entities.novelextractor to com.google.gson, javafx.base;
     opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.model.entities.subtitle to javafx.base;
     opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;

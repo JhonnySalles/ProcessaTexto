@@ -1,20 +1,13 @@
 package org.jisho.textosJapones.model.entities.novelextractor;
 
+import org.jisho.textosJapones.model.entities.Novel;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class NovelTabela {
+public class NovelTabela extends Novel {
 
-    private String base;
     private List<NovelVolume> volumes;
-
-    public String getBase() {
-        return base;
-    }
-
-    public void setBase(String base) {
-        this.base = base;
-    }
 
     public List<NovelVolume> getVolumes() {
         return volumes;

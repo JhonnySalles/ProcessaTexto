@@ -201,7 +201,7 @@ public class MangasTraducaoController implements Initializable {
 
                                 MangaCapitulo capituloTraduzido = new MangaCapitulo(null, capitulo.getManga(),
                                         capitulo.getVolume(), capitulo.getCapitulo(), Language.PORTUGUESE_GOOGLE,
-                                        capitulo.getScan(), capitulo.isExtra(), capitulo.isRaw(), false);
+                                        capitulo.getScan(), capitulo.isExtra(), capitulo.isRaw());
                                 volumeTraduzido.addCapitulos(capituloTraduzido);
 
                                 P = 0;
@@ -213,13 +213,11 @@ public class MangasTraducaoController implements Initializable {
                                             + " Capitulo " + capitulo.getCapitulo().toString() + " Página "
                                             + P + '/' + capitulo.getPaginas().size() + " - " + pagina.getNomePagina());
 
-                                    MangaPagina paginaTraduzido = new MangaPagina(null, pagina.getNomePagina(),
-                                            pagina.getNumero(), pagina.getHash(), false);
+                                    MangaPagina paginaTraduzido = new MangaPagina(null, pagina.getNomePagina(), pagina.getNumero(), pagina.getHash());
                                     capituloTraduzido.addPaginas(paginaTraduzido);
 
                                     for (MangaTexto texto : pagina.getTextos()) {
-                                        MangaTexto textoTraduzido = new MangaTexto(null, "", texto.getSequencia(),
-                                                texto.getX1(), texto.getY1(), texto.getX2(), texto.getY2());
+                                        MangaTexto textoTraduzido = new MangaTexto(null, "", texto.getSequencia(), texto.getX1(), texto.getY1(), texto.getX2(), texto.getY2());
                                         paginaTraduzido.addTexto(textoTraduzido);
 
                                         traducoes++;

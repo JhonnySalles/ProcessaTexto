@@ -269,6 +269,7 @@ public class Manga {
 		this.isVinculo = false;
 		this.prefixo = null;
 		this.origem = null;
+		this.processar = true;
 	}
 	
 	public Manga(String manga, Integer volume, Float capitulo, Integer pagina, String nomePagina) {
@@ -286,6 +287,7 @@ public class Manga {
 		this.isVinculo = false;
 		this.prefixo = null;
 		this.origem = null;
+		this.processar = true;
 	}
 	
 	public Manga(String manga, Integer volume, Float capitulo) {
@@ -303,6 +305,7 @@ public class Manga {
 		this.isVinculo = false;
 		this.prefixo = null;
 		this.origem = null;
+		this.processar = true;
 	}
 
 	@Override

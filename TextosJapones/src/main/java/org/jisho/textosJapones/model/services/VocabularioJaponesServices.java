@@ -3,6 +3,7 @@ package org.jisho.textosJapones.model.services;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
@@ -12,6 +13,14 @@ import java.util.UUID;
 public class VocabularioJaponesServices {
 
 	private final VocabularioDao vocabularioDao = DaoFactory.createVocabularioJaponesDao();
+
+	private final List<VocabularioDao> externos = DaoFactory.getVocabularioExternos();
+
+	private void updateExterno(Vocabulario vocab) throws ExcessaoBd {
+		VocabularioExterno vocabulario = new VocabularioExterno(vocab.getId(), vocab.getVocabulario(), vocab.getPortugues(), vocab.getIngles(), vocab.getLeitura(), vocab.getLeituraNovel(), true);
+		for (VocabularioDao dao : externos)
+			dao.update(vocabulario);
+	}
 
 	public List<Vocabulario> selectAll() throws ExcessaoBd {
 		return vocabularioDao.selectAll();
@@ -29,6 +38,8 @@ public class VocabularioJaponesServices {
 			vocabularioDao.update(obj);
 		else
 			save(obj);
+
+		updateExterno(obj);
 
 		return this;
 	}
@@ -80,6 +91,7 @@ public class VocabularioJaponesServices {
 
 	public void update(Vocabulario obj) throws ExcessaoBd {
 		vocabularioDao.update(obj);
+		updateExterno(obj);
 	}
 
 	public void delete(Vocabulario obj) throws ExcessaoBd {

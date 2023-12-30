@@ -24,6 +24,9 @@ public class NovelsController implements Initializable {
 	protected AnchorPane apConteinerRoot;
 
 	@FXML
+	private NovelsImportarController importarController;
+
+	@FXML
 	private NovelsProcessarController processarController;
 
 
@@ -36,6 +39,7 @@ public class NovelsController implements Initializable {
 	}
 
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		importarController.setControllerPai(this);
 		processarController.setControllerPai(this);
 	}
 

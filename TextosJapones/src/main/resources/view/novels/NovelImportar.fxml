@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.novels.NovelsImportarController">
+   <children>          
+	  <VBox alignment="TOP_CENTER" spacing="15.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		   <children>
+            <HBox spacing="10.0">
+               <children>
+                  <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Pasta a processar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminho" prefWidth="35.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icoPasta_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="btnArquivo" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarArquivo" prefWidth="35.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icoArquivo_48.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
+		      <HBox spacing="10.0">
+		         <children>
+                  <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" minWidth="210.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+		            <JFXTextField fx:id="txtNovel" focusColor="#71afe5" labelFloat="true" promptText="Novel" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+		         </children>
+		         <opaqueInsets>
+		            <Insets />
+		         </opaqueInsets>
+		      </HBox>
+		      <HBox alignment="CENTER_LEFT" spacing="10.0">
+		         <opaqueInsets>
+		            <Insets />
+		         </opaqueInsets>
+		         <children>
+                  <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+		            <JFXCheckBox fx:id="ckbFavorito" checkedColor="#71afe5" text="Favorito" textFill="WHITE" unCheckedColor="#106ebe" />
+		         </children>
+		      </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <children>
+		            <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="140.0" styleClass="background-White1" text="Processar" />
+               </children>
+            </HBox>
+            <JFXTextArea fx:id="txtLog" focusColor="#71afe5" styleClass="texto-stilo" unFocusColor="#106ebe" VBox.vgrow="ALWAYS" />
+		   </children>
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+		</VBox>
+      <ProgressBar fx:id="barraProgressoArquivos" layoutX="10.0" layoutY="10.0" prefHeight="5.0" progress="0.0" styleClass="progress-bar-2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <ProgressBar fx:id="barraProgressoTextos" layoutX="20.0" layoutY="20.0" prefHeight="5.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />                
+   </children>
+   <styleClass>
+      <String fx:value="background-Black2" />
+      <String fx:value="paneBorder" />
+   </styleClass>
+</AnchorPane>

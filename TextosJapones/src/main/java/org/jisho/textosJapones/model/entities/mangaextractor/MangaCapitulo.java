@@ -2,6 +2,7 @@ package org.jisho.textosJapones.model.entities.mangaextractor;
 
 import com.google.gson.annotations.Expose;
 import org.jisho.textosJapones.model.entities.Manga;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Language;
 
 import java.util.*;
@@ -26,8 +27,7 @@ public class MangaCapitulo extends Manga {
 	@Expose
 	private Boolean raw;
 	@Expose
-	private Set<MangaVocabulario> vocabularios;
-	private Boolean processado;
+	private Set<VocabularioExterno> vocabularios;
 
 	public UUID getId() {
 		return id;
@@ -105,24 +105,16 @@ public class MangaCapitulo extends Manga {
 		this.paginas.add(pagina);
 	}
 
-	public Set<MangaVocabulario> getVocabularios() {
+	public Set<VocabularioExterno> getVocabularios() {
 		return vocabularios;
 	}
 
-	public void setVocabularios(Set<MangaVocabulario> vocabularios) {
+	public void setVocabularios(Set<VocabularioExterno> vocabularios) {
 		this.vocabularios = vocabularios;
 	}
 
-	public void addVocabulario(MangaVocabulario vocabulario) {
+	public void addVocabulario(VocabularioExterno vocabulario) {
 		this.vocabularios.add(vocabulario);
-	}
-
-	public Boolean getProcessado() {
-		return processado;
-	}
-
-	public void setProcessado(Boolean processado) {
-		this.processado = processado;
 	}
 
 	public MangaCapitulo() {
@@ -133,14 +125,12 @@ public class MangaCapitulo extends Manga {
 		this.capitulo = 0F;
 		this.lingua = Language.PORTUGUESE;
 		this.scan = "";
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = false;
+		this.vocabularios = new HashSet<>();
 		this.processar = true;
-		this.paginas = new ArrayList<MangaPagina>();
+		this.paginas = new ArrayList<>();
 	}
 
-	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
-			Boolean extra, Boolean raw, Boolean processado) {
+	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan, Boolean extra, Boolean raw) {
 		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
@@ -148,16 +138,15 @@ public class MangaCapitulo extends Manga {
 		this.capitulo = capitulo;
 		this.lingua = lingua;
 		this.scan = scan;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = processado;
+		this.vocabularios = new HashSet<>();
 		this.processar = true;
-		this.paginas = new ArrayList<MangaPagina>();
+		this.paginas = new ArrayList<>();
 		this.extra = extra;
 		this.raw = raw;
 	}
 
 	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
-			Boolean extra, Boolean raw, Boolean processado, List<MangaPagina> paginas) {
+			Boolean extra, Boolean raw, List<MangaPagina> paginas) {
 		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
@@ -165,8 +154,7 @@ public class MangaCapitulo extends Manga {
 		this.capitulo = capitulo;
 		this.lingua = lingua;
 		this.scan = scan;
-		this.vocabularios = new HashSet<MangaVocabulario>();
-		this.processado = processado;
+		this.vocabularios = new HashSet<>();
 		this.processar = true;
 		this.paginas = paginas;
 		this.extra = extra;
@@ -174,7 +162,7 @@ public class MangaCapitulo extends Manga {
 	}
 
 	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
-			Boolean processado, Set<MangaVocabulario> vocabularios) {
+			Set<VocabularioExterno> vocabularios) {
 		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
@@ -183,14 +171,12 @@ public class MangaCapitulo extends Manga {
 		this.lingua = lingua;
 		this.scan = scan;
 		this.vocabularios = vocabularios;
-		this.processado = processado;
 		this.processar = true;
 		this.paginas = new ArrayList<MangaPagina>();
 	}
 
 	public MangaCapitulo(UUID id, String manga, Integer volume, Float capitulo, Language lingua, String scan,
-			Boolean extra, Boolean raw, Boolean processado, Set<MangaVocabulario> vocabularios,
-			List<MangaPagina> paginas) {
+			Boolean extra, Boolean raw, Set<VocabularioExterno> vocabularios, List<MangaPagina> paginas) {
 		super(manga, volume, capitulo);
 		this.id = id;
 		this.manga = manga;
@@ -200,7 +186,6 @@ public class MangaCapitulo extends Manga {
 		this.scan = scan;
 		this.paginas = paginas;
 		this.vocabularios = vocabularios;
-		this.processado = processado;
 		this.processar = true;
 		this.extra = extra;
 		this.raw = raw;

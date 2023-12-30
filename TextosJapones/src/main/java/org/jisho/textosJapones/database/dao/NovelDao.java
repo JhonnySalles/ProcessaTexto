@@ -1,5 +1,8 @@
 package org.jisho.textosJapones.database.dao;
 
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaTabela;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -31,7 +34,13 @@ public interface NovelDao {
 
     void deleteVocabulario(String base) throws ExcessaoBd;
 
-    void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, Set<NovelVocabulario> vocabulario) throws ExcessaoBd;
+    void updateCancel(String base, NovelVolume obj) throws ExcessaoBd;
+
+    void insertVocabulario(String base, UUID idVolume, UUID idCapitulo, Set<VocabularioExterno> vocabulario) throws ExcessaoBd;
+
+    List<NovelTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String novel) throws ExcessaoBd;
+
+    void updateProcessado(String base, UUID id) throws ExcessaoBd;
 
     void createTabela(String base) throws ExcessaoBd;
 

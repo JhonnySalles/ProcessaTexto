@@ -2,38 +2,52 @@ package org.jisho.textosJapones.controller.novels;
 
 import com.jfoenix.controls.*;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ProgressBar;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import org.jisho.textosJapones.Run;
-import org.jisho.textosJapones.components.notification.Alertas;
+import org.jisho.textosJapones.components.CheckBoxTreeTableCellCustom;
 import org.jisho.textosJapones.components.notification.AlertasPopup;
+import org.jisho.textosJapones.controller.BaseController;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
+import org.jisho.textosJapones.model.entities.Novel;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelCapitulo;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.NovelServices;
 import org.jisho.textosJapones.processar.ProcessarNovels;
-import org.jisho.textosJapones.util.constraints.Validadores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.net.URL;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class NovelsProcessarController implements Initializable {
+public class NovelsProcessarController implements Initializable, BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NovelsProcessarController.class);
 
     @FXML
     protected AnchorPane apRoot;
+
+    @FXML
+    private JFXButton btnCarregar;
 
     @FXML
     private JFXButton btnProcessar;
@@ -45,32 +59,41 @@ public class NovelsProcessarController implements Initializable {
     private JFXTextField txtNovel;
 
     @FXML
-    private JFXCheckBox ckbFavorito;
+    private JFXCheckBox ckbProcessados;
+
+    @FXML
+    private JFXCheckBox ckbMarcarTodos;
+
+    @FXML
+    private TreeTableView<Novel> treeBases;
+
+    @FXML
+    private TreeTableColumn<Novel, Boolean> treecMacado;
+
+    @FXML
+    private TreeTableColumn<Novel, String> treecBase;
+
+    @FXML
+    private TreeTableColumn<Novel, String> treecNovel;
+
+    @FXML
+    private TreeTableColumn<Novel, Float> treecVolume;
+
+    @FXML
+    private TreeTableColumn<Novel, Float> treecCapitulo;
 
     @FXML
     private JFXComboBox<Language> cbLinguagem;
 
     @FXML
-    private JFXTextField txtCaminho;
+    private ProgressBar barraProgressoVolumes;
 
     @FXML
-    private JFXButton btnCaminho;
-
-    @FXML
-    private JFXButton btnArquivo;
-
-    @FXML
-    private JFXTextArea txtLog;
-
-    @FXML
-    private ProgressBar barraProgressoArquivos;
-
-    @FXML
-    private ProgressBar barraProgressoTextos;
+    private ProgressBar barraProgressoCapitulos;
 
     private ProcessarNovels novels;
-
     private NovelServices service = new NovelServices();
+    private ObservableList<NovelTabela> TABELAS;
 
     private NovelsController controller;
 
@@ -78,6 +101,7 @@ public class NovelsProcessarController implements Initializable {
         this.controller = controller;
     }
 
+    @Override
     public NovelsController getControllerPai() {
         return controller;
     }
@@ -89,167 +113,195 @@ public class NovelsProcessarController implements Initializable {
             return;
         }
 
-        if (!valida())
-            return;
-
-        desabilitar();
-        saveConfig();
+        btnProcessar.setAccessibleText("PROCESSANDO");
+        btnProcessar.setText("Pausar");
+        btnCarregar.setDisable(true);
 
         if (novels == null)
             novels = new ProcessarNovels(this);
 
+        treeBases.setDisable(true);
         MenuPrincipalController.getController().getLblLog().setText("Iniciando o processamento das novels...");
-
-        novels.processarArquivos(new File(txtCaminho.getText()), cbBase.getEditor().getText(), cbLinguagem.getSelectionModel().getSelectedItem(), ckbFavorito.isSelected());
+        novels.processarTabelas(TABELAS);
     }
 
-    public boolean valida() {
-        if (txtCaminho.getText().isEmpty()) {
-            txtCaminho.setUnFocusColor(Color.RED);
-            return false;
-        }
-
-        File caminho = new File(txtCaminho.getText());
-        if (!caminho.exists()) {
-            txtCaminho.setUnFocusColor(Color.RED);
-            return false;
-        }
-
-        return true;
+    @FXML
+    private void onBtnCarregar() {
+        carregar();
     }
 
-    public void desabilitar() {
-        btnProcessar.setAccessibleText("PROCESSANDO");
-        btnProcessar.setText("Pausar");
+    @FXML
+    private void onBtnMarcarTodos() {
+        marcarTodosFilhos(treeBases.getRoot(), ckbMarcarTodos.isSelected());
+        treeBases.refresh();
     }
 
+    @Override
     public void habilitar() {
+        treeBases.setDisable(false);
         MenuPrincipalController.getController().getLblLog().setText("");
         btnProcessar.setAccessibleText("PROCESSAR");
         btnProcessar.setText("Processar");
+        btnCarregar.setDisable(false);
         TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
-        getBarraProgressoArquivos().setProgress(0);
-        getBarraProgressoTextos().setProgress(0);
+        getBarraProgresso().setProgress(0);
+        getBarraProgressoCapitulos().setProgress(0);
     }
 
-    @FXML
-    private void onBtnCarregarCaminho() {
-        txtCaminho.setUnFocusColor(Color.web("#106ebe"));
-        txtCaminho.setText(selecionaPasta(txtCaminho.getText(), false));
-    }
-
-    @FXML
-    private void onBtnCarregarArquivo() {
-        txtCaminho.setUnFocusColor(Color.web("#106ebe"));
-        txtCaminho.setText(selecionaPasta(txtCaminho.getText(), true));
-    }
-
-    private String selecionaPasta(String local, Boolean isArquivo) {
-        String pasta = "";
-        File caminho = null;
-
-        if (local != null && !local.isEmpty()) {
-            caminho = new File(local);
-
-            if (caminho.isFile()) {
-                String file = caminho.getAbsolutePath();
-                file = file.substring(0, file.indexOf(caminho.getName()));
-                caminho = new File(file);
-            }
-        }
-
-        if (isArquivo) {
-            FileChooser fileChooser = new FileChooser();
-
-            if (caminho != null)
-                fileChooser.setInitialDirectory(caminho);
-
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
-            fileChooser.setTitle("Selecione o arquivo de destino");
-
-            File file = fileChooser.showOpenDialog(null);
-            pasta = file == null ? "" : file.getAbsolutePath();
-        } else {
-            DirectoryChooser fileChooser = new DirectoryChooser();
-            fileChooser.setTitle("Selecione a pasta de destino");
-
-            if (caminho != null)
-                fileChooser.setInitialDirectory(caminho);
-
-            File file = fileChooser.showDialog(null);
-            pasta = file == null ? "" : file.getAbsolutePath();
-        }
-
-        return pasta;
-    }
-
-    private static String CONFIG = "processa.config";
-    public void saveConfig() {
-        if (txtCaminho.getText() == null || txtCaminho.getText().trim().isEmpty())
-            return;
-
-        File caminho = new File(txtCaminho.getText());
-        if (!caminho.exists())
-            return;
-
-        File pasta = null;
-
-        if (caminho.isFile())
-            pasta = new File((caminho.getParentFile() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
-        else
-            pasta = new File((caminho.getPath() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
-
-
-        Properties props = new Properties();
-        try (OutputStream os = new FileOutputStream(pasta)) {
-            props.clear();
-            props.setProperty("base", cbBase.getEditor().getText());
-            props.setProperty("linguagem", cbLinguagem.getSelectionModel().getSelectedItem().toString());
-            props.setProperty("favorito", ckbFavorito.isSelected() ? "sim" : "nao");
-            props.setProperty("novel", txtNovel.getText());
-            props.store(os, "");
-        } catch (IOException e) {
-            Alertas.Tela_Alerta("Erro ao salvar o properties de configuração", e.getMessage());
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    public void loadConfig() {
-        if (txtCaminho.getText() == null || txtCaminho.getText().trim().isEmpty() || !new File(txtCaminho.getText()).exists())
-            return;
-
-        File config = new File((txtCaminho.getText() + "\\" + CONFIG).replaceAll("\\\\\\\\", "\\"));
-        if (config.exists()) {
-            Properties props = new Properties();
-            try (FileInputStream fs = new FileInputStream(config)) {
-                props.load(fs);
-                cbBase.getEditor().setText(props.getProperty("base"));
-                cbLinguagem.getSelectionModel().select(Language.valueOf(props.getProperty("linguagem")));
-                ckbFavorito.setSelected(props.getProperty("favorito").equalsIgnoreCase("sim"));
-                txtNovel.setText(props.getProperty("novel"));
-                cbBase.requestFocus();
-            } catch (IOException e) {
-                Alertas.Tela_Alerta("Erro ao carregar o properties de configuração", e.getMessage());
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    public void addLog(String text) {
-        txtLog.appendText(text + "\n");
-    }
-
+    @Override
     public AnchorPane getRoot() {
         return apRoot;
     }
 
-    public ProgressBar getBarraProgressoArquivos() {
-        return barraProgressoArquivos;
+    @Override
+    public ProgressBar getBarraProgresso() {
+        return barraProgressoVolumes;
     }
 
-    public ProgressBar getBarraProgressoTextos() {
-        return barraProgressoTextos;
+    public ProgressBar getBarraProgressoCapitulos() {
+        return barraProgressoCapitulos;
+    }
+
+    private Boolean PROCESSADOS;
+    private String BASE;
+    private String NOVEL;
+    private Language LINGUAGEM;
+    private TreeItem<Novel> DADOS;
+
+    private void carregar() {
+        MenuPrincipalController.getController().getLblLog().setText("Carregando dados das novels...");
+        btnCarregar.setDisable(true);
+        btnProcessar.setDisable(true);
+        treeBases.setDisable(true);
+
+        PROCESSADOS = ckbProcessados.isSelected();
+        BASE = cbBase.getValue() != null ? cbBase.getValue().trim() : "";
+        NOVEL = txtNovel.getText().trim();
+        LINGUAGEM = cbLinguagem.getSelectionModel().getSelectedItem();
+
+        getBarraProgressoCapitulos().setProgress(-1);
+        getBarraProgresso().setProgress(-1);
+
+        if (TaskbarProgressbar.isSupported())
+            TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage());
+
+        // Criacao da thread para que esteja validando a conexao e nao trave a tela.
+        Task<Void> carregaItens = new Task<Void>() {
+
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    service = new NovelServices();
+                    TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, false, BASE, LINGUAGEM, NOVEL));
+                    DADOS = getTreeData();
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                Platform.runLater(() -> {
+                    treeBases.setRoot(DADOS);
+                    MenuPrincipalController.getController().getLblLog().setText("");
+                    ckbMarcarTodos.setSelected(true);
+                    btnCarregar.setDisable(false);
+                    btnProcessar.setDisable(false);
+                    treeBases.setDisable(false);
+                    getBarraProgressoCapitulos().setProgress(0);
+                    getBarraProgresso().setProgress(0);
+                    TaskbarProgressbar.stopProgress(Run.getPrimaryStage());
+                });
+
+            }
+        };
+        Thread t = new Thread(carregaItens);
+        t.start();
+    }
+
+    private TreeItem<Novel> getTreeData() {
+        TreeItem<Novel> itmRoot = new TreeItem<>(new Novel("...", ""));
+        for (NovelTabela tabela : TABELAS) {
+            tabela.setNovel("...");
+            TreeItem<Novel> itmTabela = new TreeItem<>(tabela);
+            TreeItem<Novel> itmNovel = null;
+            String volumeAnterior = "";
+            for (NovelVolume volume : tabela.getVolumes()) {
+                // Implementa um nivel por tipo
+                if (!volume.getNovel().equalsIgnoreCase(volumeAnterior) || itmNovel == null) {
+                    volumeAnterior = volume.getNovel();
+                    volume.setBase(tabela.getBase());
+                    itmNovel = new TreeItem<>(new Novel(tabela.getBase(), volume.getNovel(), "..."));
+                    itmTabela.getChildren().add(itmNovel);
+                    itmTabela.setExpanded(true);
+                }
+
+                volume.setBase(tabela.getBase());
+                TreeItem<Novel> itmVolume = new TreeItem<>(volume);
+
+                for (NovelCapitulo capitulo : volume.getCapitulos()) {
+                    capitulo.setBase(tabela.getBase());
+                    itmVolume.getChildren().add(new TreeItem<>(capitulo));
+                }
+
+                itmNovel.getChildren().add(itmVolume);
+            }
+            itmRoot.getChildren().add(itmTabela);
+            itmRoot.setExpanded(true);
+        }
+        return itmRoot;
+    }
+
+    private void marcarTodosFilhos(TreeItem<Novel> treeItem, Boolean newValue) {
+        treeItem.getValue().setProcessar(newValue);
+        treeItem.getChildren().forEach(treeItemNivel2 -> marcarTodosFilhos(treeItemNivel2, newValue));
+    }
+
+    private void ativaTodosPai(TreeItem<Novel> treeItem, Boolean newValue) {
+        if (treeItem.getParent() != null) {
+            treeItem.getParent().getValue().setProcessar(newValue);
+            ativaTodosPai(treeItem.getParent(), newValue);
+        }
+    }
+
+    private void editaColunas() {
+        // ==== (CHECK-BOX) ===
+        treecMacado.setCellValueFactory(
+                param -> {
+                    TreeItem<Novel> treeItem = param.getValue();
+                    Novel item = treeItem.getValue();
+                    SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(item.isProcessar());
+
+                    booleanProp.addListener((observable, oldValue, newValue) -> {
+                        item.setProcessar(newValue);
+                        marcarTodosFilhos(treeItem, newValue);
+                        if (newValue) // Somente ativa caso seja true, pois ao menos um nó precisa estar ativo
+                            ativaTodosPai(treeItem, newValue);
+
+                        treeBases.refresh();
+                    });
+
+                    return booleanProp;
+                });
+
+        treecMacado.setCellFactory(p -> {
+            CheckBoxTreeTableCellCustom<Novel, Boolean> cell = new CheckBoxTreeTableCellCustom<Novel, Boolean>();
+            cell.setAlignment(Pos.CENTER);
+            return cell;
+        });
+
+    }
+
+    private void linkaCelulas() {
+        treecMacado.setCellValueFactory(new TreeItemPropertyValueFactory<>("processar"));
+        treecBase.setCellValueFactory(new TreeItemPropertyValueFactory<>("base"));
+        treecNovel.setCellValueFactory(new TreeItemPropertyValueFactory<>("novel"));
+        treecVolume.setCellValueFactory(new TreeItemPropertyValueFactory<>("volume"));
+        treecCapitulo.setCellValueFactory(new TreeItemPropertyValueFactory<>("capitulo"));
+        treeBases.setShowRoot(false);
+
+        editaColunas();
     }
 
     private final Robot robot = new Robot();
@@ -274,8 +326,7 @@ public class NovelsProcessarController implements Initializable {
 
         cbBase.getEditor().textProperty().addListener(observable -> {
             autoCompletePopup.filter(item -> item.toLowerCase().contains(cbBase.getEditor().getText().toLowerCase()));
-            if (autoCompletePopup.getFilteredSuggestions().isEmpty() || cbBase.showingProperty().get()
-                    || cbBase.getEditor().getText().isEmpty())
+            if (autoCompletePopup.getFilteredSuggestions().isEmpty() || cbBase.showingProperty().get() || cbBase.getEditor().getText().isEmpty())
                 autoCompletePopup.hide();
             else
                 autoCompletePopup.show(cbBase.getEditor());
@@ -286,29 +337,12 @@ public class NovelsProcessarController implements Initializable {
                 robot.keyPress(KeyCode.TAB);
         });
 
-        cbBase.focusedProperty().addListener((options, oldValue, newValue) -> {
-            if (oldValue) {
-                String base = cbBase.getEditor().getText();
-                if (base != null) {
-                    if (base.contains(" "))
-                        cbBase.getEditor().setText(base.replaceAll(" ", "_").toLowerCase());
-                    else
-                        cbBase.getEditor().setText(base.toLowerCase());
-                }
-            }
-        });
-
         txtNovel.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER))
                 robot.keyPress(KeyCode.TAB);
         });
 
-        txtCaminho.focusedProperty().addListener((options, oldValue, newValue) -> {
-            if (oldValue)
-                loadConfig();
-        });
-
-        Validadores.setTextFieldNotEmpty(txtCaminho);
+        linkaCelulas();
     }
 
     public static URL getFxmlLocate() {

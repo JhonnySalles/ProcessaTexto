@@ -1,11 +1,13 @@
 package org.jisho.textosJapones.model.entities.novelextractor;
 
 import com.google.gson.annotations.Expose;
+import org.jisho.textosJapones.model.entities.Novel;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Language;
 
 import java.util.*;
 
-public class NovelVolume {
+public class NovelVolume extends Novel {
 
     private UUID id;
     @Expose
@@ -34,7 +36,7 @@ public class NovelVolume {
     @Expose
     private List<NovelCapitulo> capitulos;
     @Expose
-    private Set<NovelVocabulario> vocabularios;
+    private Set<VocabularioExterno> vocabularios;
     private Boolean processado;
 
     public UUID getId() {
@@ -153,15 +155,15 @@ public class NovelVolume {
         this.capitulos.add(capitulo);
     }
 
-    public Set<NovelVocabulario> getVocabularios() {
+    public Set<VocabularioExterno> getVocabularios() {
         return vocabularios;
     }
 
-    public void setVocabularios(Set<NovelVocabulario> vocabularios) {
+    public void setVocabularios(Set<VocabularioExterno> vocabularios) {
         this.vocabularios = vocabularios;
     }
 
-    public void addVocabulario(NovelVocabulario vocabulario) {
+    public void addVocabulario(VocabularioExterno vocabulario) {
         this.vocabularios.add(vocabulario);
     }
 
@@ -174,6 +176,7 @@ public class NovelVolume {
     }
 
     public NovelVolume() {
+        super();
         this.id = null;
         this.novel = "";
         this.titulo = "";
@@ -193,6 +196,7 @@ public class NovelVolume {
     }
 
     public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String serie, String descricao, String arquivo, String editora, String autor, Float volume, Language lingua, Boolean favorito, Boolean processado) {
+        super(novel, volume, null);
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;
@@ -212,7 +216,8 @@ public class NovelVolume {
     }
 
     public NovelVolume(UUID id, String novel, String titulo, String tituloAlternativo, String serie, String descricao, String arquivo, String editora, String autor, Float volume, Language lingua,
-                       Boolean favorito, NovelCapa capa, Boolean processado, List<NovelCapitulo> capitulos, Set<NovelVocabulario> vocabularios) {
+                       Boolean favorito, NovelCapa capa, Boolean processado, List<NovelCapitulo> capitulos, Set<VocabularioExterno> vocabularios) {
+        super(novel, volume, null);
         this.id = id;
         this.novel = novel;
         this.titulo = titulo;

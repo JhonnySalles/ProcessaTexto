@@ -343,8 +343,7 @@ public class MangasProcessarController implements Initializable {
                     service = new MangaServices();
                     TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS, false, BASE, LINGUAGEM, MANGA));
                     DADOS = getTreeData();
-                } catch (ExcessaoBd e) {
-                    
+                } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 }
                 return null;
@@ -371,10 +370,10 @@ public class MangasProcessarController implements Initializable {
     }
 
     private TreeItem<Manga> getTreeData() {
-        TreeItem<Manga> itmRoot = new TreeItem<Manga>(new Manga("...", ""));
+        TreeItem<Manga> itmRoot = new TreeItem<>(new Manga("...", ""));
         for (MangaTabela tabela : TABELAS) {
             tabela.setManga("...");
-            TreeItem<Manga> itmTabela = new TreeItem<Manga>(tabela);
+            TreeItem<Manga> itmTabela = new TreeItem<>(tabela);
             TreeItem<Manga> itmManga = null;
             String volumeAnterior = "";
             for (MangaVolume volume : tabela.getVolumes()) {
@@ -382,22 +381,22 @@ public class MangasProcessarController implements Initializable {
                 if (!volume.getManga().equalsIgnoreCase(volumeAnterior) || itmManga == null) {
                     volumeAnterior = volume.getManga();
                     volume.setBase(tabela.getBase());
-                    itmManga = new TreeItem<Manga>(new Manga(tabela.getBase(), volume.getManga(), "..."));
+                    itmManga = new TreeItem<>(new Manga(tabela.getBase(), volume.getManga(), "..."));
                     itmTabela.getChildren().add(itmManga);
                     itmTabela.setExpanded(true);
                 }
 
                 volume.setBase(tabela.getBase());
-                TreeItem<Manga> itmVolume = new TreeItem<Manga>(volume);
+                TreeItem<Manga> itmVolume = new TreeItem<>(volume);
 
                 for (MangaCapitulo capitulo : volume.getCapitulos()) {
                     capitulo.setBase(tabela.getBase());
                     capitulo.setNomePagina("...");
-                    TreeItem<Manga> itmCapitulo = new TreeItem<Manga>(capitulo);
+                    TreeItem<Manga> itmCapitulo = new TreeItem<>(capitulo);
                     for (MangaPagina pagina : capitulo.getPaginas()) {
                         pagina.addOutrasInformacoes(tabela.getBase(), volume.getManga(), volume.getVolume(),
                                 capitulo.getCapitulo(), volume.getLingua());
-                        itmCapitulo.getChildren().add(new TreeItem<Manga>(pagina));
+                        itmCapitulo.getChildren().add(new TreeItem<>(pagina));
                     }
                     itmVolume.getChildren().add(itmCapitulo);
                 }

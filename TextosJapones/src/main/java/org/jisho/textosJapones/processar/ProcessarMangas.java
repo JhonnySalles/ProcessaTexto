@@ -18,6 +18,7 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.mangas.MangasProcessarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.entities.mangaextractor.*;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
@@ -53,8 +54,8 @@ public class ProcessarMangas {
     private Site siteDicionario;
     private Boolean desativar = false;
     private Integer traducoes = 0;
-    private final Set<MangaVocabulario> vocabHistorico = new HashSet<>();
-    private final Set<String> validaHistorico = new HashSet<>();
+    private final Set<VocabularioExterno> vocabHistorico = new HashSet<>();
+    private Set<String> validaHistorico = new HashSet<>();
 
     public ProcessarMangas(MangasProcessarController controller) {
         this.controller = controller;
@@ -65,10 +66,10 @@ public class ProcessarMangas {
     }
 
     private Integer V, C, Progress, Size;
-    private final Set<MangaVocabulario> vocabVolume = new HashSet<>();
-    private final Set<MangaVocabulario> vocabCapitulo = new HashSet<>();
-    private final Set<MangaVocabulario> vocabPagina = new HashSet<>();
-    private final Set<String> vocabValida = new HashSet<>();
+    private Set<VocabularioExterno> vocabVolume = new HashSet<>();
+    private Set<VocabularioExterno> vocabCapitulo = new HashSet<>();
+    private Set<VocabularioExterno> vocabPagina = new HashSet<>();
+    private Set<String> vocabValida = new HashSet<>();
 
     private final DoubleProperty propCapitulo = new SimpleDoubleProperty(.0);
     private final DoubleProperty propVolume = new SimpleDoubleProperty(.0);
@@ -93,7 +94,7 @@ public class ProcessarMangas {
                         mode = SudachiTokenizer.getModo(MenuPrincipalController.getController().getModo());
                         siteDicionario = MenuPrincipalController.getController().getSite();
 
-                        validaHistorico.clear();
+                        validaHistorico = new HashSet<>();
                         propTabela.set(.0);
                         propVolume.set(.0);
                         propCapitulo.set(.0);
@@ -133,7 +134,7 @@ public class ProcessarMangas {
                                     continue;
                                 }
 
-                                vocabVolume.clear();
+                                vocabVolume = new HashSet<>();
                                 C = 0;
                                 for (MangaCapitulo capitulo : volume.getCapitulos()) {
                                     C++;
@@ -145,7 +146,7 @@ public class ProcessarMangas {
                                         continue;
                                     }
 
-                                    vocabCapitulo.clear();
+                                    vocabCapitulo = new HashSet<>();
                                     int p = 0;
                                     for (MangaPagina pagina : capitulo.getPaginas()) {
                                         p++;
@@ -161,20 +162,18 @@ public class ProcessarMangas {
                                                 + " volumes." + " Manga: " + volume.getManga() + " - Capitulo: "
                                                 + capitulo.getCapitulo() + " - Página: " + pagina.getNomePagina());
 
-                                        vocabPagina.clear();
-                                        vocabValida.clear();
+                                        vocabPagina = new HashSet<>();
+                                        vocabValida = new HashSet<>();
                                         for (MangaTexto texto : pagina.getTextos())
                                             gerarVocabulario(texto.getTexto());
 
                                         pagina.setVocabularios(vocabPagina);
-                                        pagina.setProcessado(true);
                                         serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
 
                                         if (desativar)
                                             break;
                                     }
                                     capitulo.setVocabularios(vocabCapitulo);
-                                    capitulo.setProcessado(true);
                                     serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
                                     propCapitulo.set((double) C / volume.getCapitulos().size());
 
@@ -323,7 +322,7 @@ public class ProcessarMangas {
         for (Morpheme m : tokenizer.tokenize(mode, frase)) {
             if (m.surface().matches(pattern)) {
                 if (validaHistorico.contains(m.dictionaryForm())) {
-                    MangaVocabulario vocabulario = vocabHistorico.stream()
+                    VocabularioExterno vocabulario = vocabHistorico.stream()
                             .filter(vocab -> m.dictionaryForm().equalsIgnoreCase(vocab.getPalavra())).findFirst()
                             .orElse(null);
                     if (vocabulario != null) {
@@ -338,13 +337,7 @@ public class ProcessarMangas {
                     Vocabulario palavra = vocabularioJaponesService.select(m.surface(), m.dictionaryForm());
 
                     if (palavra != null) {
-                        MangaVocabulario vocabulario = null;
-                        if (palavra.getPortugues().substring(0, 2).matches(japanese))
-                            vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-                                    palavra.getIngles(), m.readingForm());
-                        else
-                            vocabulario = new MangaVocabulario(m.dictionaryForm(), palavra.getPortugues(),
-                                    palavra.getIngles(), m.readingForm());
+                        VocabularioExterno vocabulario = new VocabularioExterno(palavra.getId(), palavra.getVocabulario(), palavra.getPortugues(), palavra.getIngles(), palavra.getLeitura(), true);
 
                         // Usado apenas para correção em formas em branco.
                         if (palavra.getFormaBasica().isEmpty()) {
@@ -406,8 +399,7 @@ public class ProcessarMangas {
                             serviceJaponesRevisar.incrementaVezesAparece(revisar.getVocabulario());
                         }
 
-                        MangaVocabulario vocabulario = new MangaVocabulario(m.dictionaryForm(), revisar.getPortugues(),
-                                revisar.getIngles(), m.readingForm(), false);
+                        VocabularioExterno vocabulario = new VocabularioExterno(revisar.getId(), revisar.getVocabulario(), revisar.getPortugues(), revisar.getIngles(), m.readingForm(), false);
 
                         validaHistorico.add(m.dictionaryForm());
                         vocabHistorico.add(vocabulario);
@@ -428,7 +420,7 @@ public class ProcessarMangas {
         });
     }
 
-    private final Set<String> palavraValida = new HashSet<>();
+    private Set<String> palavraValida = new HashSet<>();
 
     public void processarTabelasIngles(List<MangaTabela> tabelas) {
         error = false;
@@ -444,7 +436,7 @@ public class ProcessarMangas {
                     propTabela.set(.0);
                     propVolume.set(.0);
                     propCapitulo.set(.0);
-                    validaHistorico.clear();
+                    validaHistorico = new HashSet<>();
 
                     updateMessage("Calculando tempo necessário...");
                     Progress = 0;
@@ -466,7 +458,7 @@ public class ProcessarMangas {
                         if (!tabela.isProcessar())
                             continue;
 
-                        palavraValida.clear();
+                        palavraValida = new HashSet<>();
 
                         V = 0;
                         for (MangaVolume volume : tabela.getVolumes()) {
@@ -483,19 +475,18 @@ public class ProcessarMangas {
                                 continue;
                             }
 
-                            vocabVolume.clear();
+                            vocabVolume = new HashSet<>();
                             C = 0;
                             for (MangaCapitulo capitulo : volume.getCapitulos()) {
                                 C++;
 
                                 if (!capitulo.isProcessar()) {
-                                    updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo "
-                                            + capitulo.getCapitulo());
+                                    updateMessage("IGNORADO - Manga: " + volume.getManga() + " - Capitulo " + capitulo.getCapitulo());
                                     propCapitulo.set((double) C / volume.getCapitulos().size());
                                     continue;
                                 }
 
-                                vocabCapitulo.clear();
+                                vocabCapitulo = new HashSet<>();
                                 int p = 0;
                                 for (MangaPagina pagina : capitulo.getPaginas()) {
                                     p++;
@@ -511,8 +502,8 @@ public class ProcessarMangas {
                                             + " Manga: " + volume.getManga() + " - Capitulo: " + capitulo.getCapitulo()
                                             + " - Página: " + pagina.getNomePagina());
 
-                                    vocabPagina.clear();
-                                    vocabValida.clear();
+                                    vocabPagina = new HashSet<>();
+                                    vocabValida = new HashSet<>();
                                     for (MangaTexto texto : pagina.getTextos()) {
                                         if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
                                             Set<String> palavras = Stream.of(texto.getTexto().split(" "))
@@ -526,7 +517,7 @@ public class ProcessarMangas {
                                                     continue;
 
                                                 if (validaHistorico.contains(palavra)) {
-                                                    MangaVocabulario vocabulario = vocabHistorico.stream().filter(
+                                                    VocabularioExterno vocabulario = vocabHistorico.stream().filter(
                                                                     vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
                                                             .findFirst().orElse(null);
                                                     if (vocabulario != null) {
@@ -541,8 +532,7 @@ public class ProcessarMangas {
                                                     Vocabulario salvo = vocabularioInglesService.select(palavra);
 
                                                     if (salvo != null) {
-                                                        MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-                                                                salvo.getPortugues());
+                                                        VocabularioExterno vocabulario = new VocabularioExterno(salvo.getId(), palavra, salvo.getPortugues(), true);
 
                                                         validaHistorico.add(palavra);
                                                         vocabHistorico.add(vocabulario);
@@ -611,8 +601,7 @@ public class ProcessarMangas {
                                                                     .incrementaVezesAparece(revisar.getVocabulario());
                                                         }
 
-                                                        MangaVocabulario vocabulario = new MangaVocabulario(palavra,
-                                                                revisar.getPortugues(), "", "", false);
+                                                        VocabularioExterno vocabulario = new VocabularioExterno(revisar.getId(), palavra, revisar.getPortugues(), false);
 
                                                         validaHistorico.add(palavra);
                                                         vocabHistorico.add(vocabulario);
@@ -637,14 +626,12 @@ public class ProcessarMangas {
                                     }
 
                                     pagina.setVocabularios(vocabPagina);
-                                    pagina.setProcessado(true);
                                     serviceManga.updateVocabularioPagina(tabela.getBase(), pagina);
 
                                     if (desativar)
                                         break;
                                 }
                                 capitulo.setVocabularios(vocabCapitulo);
-                                capitulo.setProcessado(true);
                                 serviceManga.updateVocabularioCapitulo(tabela.getBase(), capitulo);
                                 propCapitulo.set((double) C / volume.getCapitulos().size());
 

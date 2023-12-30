@@ -2,6 +2,11 @@ package org.jisho.textosJapones.model.services;
 
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.NovelDao;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaCapitulo;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
+import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela;
 import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -9,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class NovelServices {
 
@@ -41,6 +48,23 @@ public class NovelServices {
         NovelVolume saved = novelDao.selectVolume(tabela, arquivo, linguagem);
         if (saved != null)
             novelDao.deleteVolume(tabela, saved);
+    }
+
+    public void updateCancel(String base, NovelVolume obj) throws ExcessaoBd {
+        novelDao.updateCancel(base, obj);
+    }
+
+    public void updateVocabularioVolume(String base, NovelVolume volume) throws ExcessaoBd {
+        insertVocabularios(base, volume.getId(), null, volume.getVocabularios());
+        novelDao.updateProcessado(base, volume.getId());
+    }
+
+    public void insertVocabularios(String base, UUID idVolume, UUID idCapitulo, Set<VocabularioExterno> vocabularios) throws ExcessaoBd {
+        novelDao.insertVocabulario(base, idVolume, idCapitulo, vocabularios);
+    }
+
+    public List<NovelTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga) throws ExcessaoBd {
+        return novelDao.selectTabelas(todos, isLike, base, linguagem, manga);
     }
 
 }

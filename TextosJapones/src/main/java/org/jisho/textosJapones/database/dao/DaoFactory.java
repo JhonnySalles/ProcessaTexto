@@ -2,7 +2,12 @@ package org.jisho.textosJapones.database.dao;
 
 import org.jisho.textosJapones.database.dao.implement.*;
 import org.jisho.textosJapones.database.mysql.DB;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Conexao;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DaoFactory {
 
@@ -48,6 +53,20 @@ public class DaoFactory {
 
 	public static ComicInfoDao createComicInfoDao() {
 		return new ComicInfoJDBC(DB.getLocalConnection());
+	}
+
+	public static List<VocabularioDao> getVocabularioExternos() {
+		List<VocabularioDao> externos = new ArrayList<>();
+
+		Connection extractor = DB.getConnection(Conexao.MANGAEXTRACTOR);
+		if (extractor != null)
+			externos.add(new VocabularioExternoDaoJDBC(extractor));
+
+		Connection novel = DB.getConnection(Conexao.NOVELEXTRACTOR);
+		if (novel != null)
+			externos.add(new VocabularioExternoDaoJDBC(novel));
+
+		return externos;
 	}
 
 }

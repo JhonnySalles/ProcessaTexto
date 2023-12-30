@@ -1,16 +1,22 @@
 package org.jisho.textosJapones.model.entities;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.UUID;
 
 public class Vocabulario {
 
-	private UUID id;
-	private String vocabulario;
-	private String formaBasica;
-	private String leitura;
-	private String leituraNovel;
-	private String ingles;
-	private String portugues;
+	protected UUID id;
+	@Expose
+	protected String vocabulario;
+	protected String formaBasica;
+	@Expose
+	protected String leitura;
+	protected String leituraNovel;
+	@Expose
+	protected String ingles;
+	@Expose
+	protected String portugues;
 
 	public UUID getId() {
 		return id;
@@ -90,6 +96,15 @@ public class Vocabulario {
 
 	public Vocabulario(String vocabulario, String portugues) {
 		this.id = null;
+		this.vocabulario = vocabulario;
+		this.portugues = portugues;
+		this.leitura = "";
+		this.formaBasica = "";
+		this.ingles = "";
+	}
+
+	public Vocabulario(UUID id, String vocabulario, String portugues) {
+		this.id = id;
 		this.vocabulario = vocabulario;
 		this.portugues = portugues;
 		this.leitura = "";

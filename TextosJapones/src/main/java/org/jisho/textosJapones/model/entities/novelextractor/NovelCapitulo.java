@@ -1,11 +1,13 @@
 package org.jisho.textosJapones.model.entities.novelextractor;
 
 import com.google.gson.annotations.Expose;
+import org.jisho.textosJapones.model.entities.Novel;
+import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Language;
 
 import java.util.*;
 
-public class NovelCapitulo {
+public class NovelCapitulo extends Novel {
 
     private UUID id;
     @Expose
@@ -23,8 +25,7 @@ public class NovelCapitulo {
     @Expose
     private List<NovelTexto> textos;
     @Expose
-    private Set<NovelVocabulario> vocabularios;
-    private Boolean processado;
+    private Set<VocabularioExterno> vocabularios;
 
     public UUID getId() {
         return id;
@@ -38,7 +39,7 @@ public class NovelCapitulo {
         return novel;
     }
 
-    public void setNovel(String manga) {
+    public void setNovel(String novel) {
         this.novel = novel;
     }
 
@@ -94,27 +95,20 @@ public class NovelCapitulo {
         this.textos.add(texto);
     }
 
-    public Set<NovelVocabulario> getVocabularios() {
+    public Set<VocabularioExterno> getVocabularios() {
         return vocabularios;
     }
 
-    public void setVocabularios(Set<NovelVocabulario> vocabularios) {
+    public void setVocabularios(Set<VocabularioExterno> vocabularios) {
         this.vocabularios = vocabularios;
     }
 
-    public void addVocabulario(NovelVocabulario vocabulario) {
+    public void addVocabulario(VocabularioExterno vocabulario) {
         this.vocabularios.add(vocabulario);
     }
 
-    public Boolean getProcessado() {
-        return processado;
-    }
-
-    public void setProcessado(Boolean processado) {
-        this.processado = processado;
-    }
-
     public NovelCapitulo() {
+        super();
         this.id = null;
         this.novel = "";
         this.volume = 0f;
@@ -124,10 +118,10 @@ public class NovelCapitulo {
         this.lingua = Language.PORTUGUESE;
         this.vocabularios = new HashSet<>();
         this.textos = new ArrayList<>();
-        this.processado = false;
     }
 
-    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua, Boolean processado) {
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua) {
+        super(novel, volume, capitulo);
         this.id = id;
         this.novel = novel;
         this.volume = volume;
@@ -135,13 +129,13 @@ public class NovelCapitulo {
         this.descricao = descricao;
         this.sequencia = sequencia;
         this.lingua = lingua;
-        this.processado = processado;
         this.vocabularios = new HashSet<>();
         this.textos = new ArrayList<>();
     }
 
-    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua, Boolean processado,
-                         List<NovelTexto> textos, Set<NovelVocabulario> vocabularios) {
+    public NovelCapitulo(UUID id, String novel, Float volume, Float capitulo, String descricao, Integer sequencia, Language lingua,
+                         List<NovelTexto> textos, Set<VocabularioExterno> vocabularios) {
+        super(novel, volume, capitulo);
         this.id = id;
         this.novel = novel;
         this.volume = volume;
@@ -149,7 +143,6 @@ public class NovelCapitulo {
         this.descricao = descricao;
         this.sequencia = sequencia;
         this.lingua = lingua;
-        this.processado = processado;
         this.textos = textos;
         this.vocabularios = vocabularios;
     }

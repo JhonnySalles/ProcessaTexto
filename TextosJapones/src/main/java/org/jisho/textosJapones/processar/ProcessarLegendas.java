@@ -99,34 +99,34 @@ public class ProcessarLegendas {
 
     public String processarVocabulario(Dicionario dicionario, Modo modo, String frase) {
         existe.clear();
-        this.vocabulario.clear();
-        String vocabulario = "";
+        vocabulario.clear();
+        String vocab = "";
         try (Dictionary dict = new DictionaryFactory().create("",
                 SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(dicionario))))) {
             tokenizer = dict.create();
             mode = SudachiTokenizer.getModo(modo);
 
-            vocabulario = gerarVocabulario(frase);
+            vocab = gerarVocabulario(frase);
 
-            if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.C))) {
+            if (vocab.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.C))) {
                 mode = SudachiTokenizer.getModo(Modo.B);
-                vocabulario = gerarVocabulario(frase);
+                vocab = gerarVocabulario(frase);
             }
 
-            if (vocabulario.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.B))) {
+            if (vocab.isEmpty() && mode.equals(SudachiTokenizer.getModo(Modo.B))) {
                 mode = SudachiTokenizer.getModo(Modo.C);
-                vocabulario = gerarVocabulario(frase);
+                vocab = gerarVocabulario(frase);
             }
 
         } catch (IOException | ExcessaoBd e) {
-            vocabulario = "";
+            vocab = "";
             
             LOGGER.error(e.getMessage(), e);
             AlertasPopup.ErroModal(controller.getControllerPai().getStackPane(),
                     controller.getControllerPai().getRoot(), null, "Erro", "Erro ao processar a lista.");
         }
 
-        return vocabulario.trim();
+        return vocab.trim();
     }
 
     final private String pattern = ".*[\u4E00-\u9FAF].*";
@@ -200,14 +200,12 @@ public class ProcessarLegendas {
                             Revisar revisar = service.select(m.surface(), m.dictionaryForm());
                             if (revisar != null) {
 
-                                if (!revisar.getPortugues().isEmpty()
-                                        && revisar.getPortugues().substring(0, 2).matches(japanese))
+                                if (!revisar.getPortugues().isEmpty() && revisar.getPortugues().substring(0, 2).matches(japanese))
                                     vocabularios += revisar.getPortugues() + "¹ ";
                                 else {
                                     vocabularios += m.dictionaryForm() + " - " + revisar.getPortugues() + "¹ ";
                                     validaHistorico.add(m.dictionaryForm());
-                                    vocabHistorico
-                                            .add(new Vocabulario(m.dictionaryForm(), revisar.getPortugues() + "¹"));
+                                    vocabHistorico.add(new Vocabulario(m.dictionaryForm(), revisar.getPortugues() + "¹"));
                                 }
 
                                 vocabulario.add(m.dictionaryForm());
