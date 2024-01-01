@@ -438,11 +438,6 @@ public class SudachiTokenizer {
                                 vocabulario += palavra + "\n" + ingles + "\n" + portugues + "\n\n" + expressao + significado + links + "\n" + "-".repeat(20) + "\n";
                         }
                     }
-                } catch (IOException e) {
-                    erro = true;
-                    
-                    LOGGER.error(e.getMessage(), e);
-                    Platform.runLater(() -> AlertasPopup.ErroModal("Erro ao processar o textos", e.getMessage()));
                 } catch (ExcessaoBd e) {
                     erro = true;
                     
@@ -450,9 +445,9 @@ public class SudachiTokenizer {
                     Platform.runLater(() -> AlertasPopup.ErroModal("Erro de conexao", e.getMessage()));
                 } catch (Exception e) {
                     erro = true;
-                    
+
                     LOGGER.error(e.getMessage(), e);
-                    Platform.runLater(() -> AlertasPopup.ErroModal("Erro de conexao", e.getMessage()));
+                    Platform.runLater(() -> AlertasPopup.ErroModal("Erro ao processar o textos", e.getMessage()));
                 } finally {
                     Platform.runLater(() -> {
                         if (erro)
