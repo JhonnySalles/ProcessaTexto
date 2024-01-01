@@ -25,6 +25,9 @@ public class LegendasController implements Initializable {
 	@FXML
 	private LegendasGerarVocabularioController processarController;
 
+	@FXML
+	private LegendasMarcasController marcasController;
+
 	public AnchorPane getRoot() {
 		return apConteinerRoot;
 	}
@@ -36,6 +39,7 @@ public class LegendasController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		importarController.setControllerPai(this);
 		processarController.setControllerPai(this);
+		marcasController.setControllerPai(this);
 	}
 
 	public static URL getFxmlLocate() {

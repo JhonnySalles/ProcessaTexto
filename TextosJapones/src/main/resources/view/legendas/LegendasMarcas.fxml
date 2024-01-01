@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.legendas.LegendasMarcasController">
+   <styleClass>
+      <String fx:value="background-Black2" />
+      <String fx:value="paneBorder" />
+   </styleClass>
+   <children>
+      <VBox layoutX="11.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+         <children>
+            <HBox spacing="5.0">
+               <children>
+                  <HBox spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <JFXButton fx:id="btnGerar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnGerar" prefWidth="290.0" styleClass="background-White1" text="Gerar Marcas" />
+                        <JFXButton fx:id="btnLimpar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimpar" prefWidth="290.0" styleClass="background-White1" text="Limpar" />
+                     </children>
+                  </HBox>
+                  <JFXTextField fx:id="txtPipe" alignment="CENTER" focusColor="#71afe5" labelFloat="true" maxWidth="30.0" prefHeight="25.0" promptText="Pipe" styleClass="texto-stilo" unFocusColor="#106ebe" />
+               </children>
+            </HBox>
+            <JFXTextArea fx:id="txtAreaOriginal" focusColor="#71afe5" labelFloat="true" prefHeight="200.0" promptText="Original" unFocusColor="#106ebe">
+               <styleClass>
+                  <String fx:value="background-Blue3" />
+                  <String fx:value="texto-stilo" />
+               </styleClass>
+            </JFXTextArea>
+            <JFXTextArea fx:id="txtAreaProcessado" focusColor="#71afe5" labelFloat="true" prefHeight="200.0" promptText="Processado" unFocusColor="#106ebe">
+               <styleClass>
+                  <String fx:value="background-Blue3" />
+                  <String fx:value="texto-stilo" />
+               </styleClass>
+            </JFXTextArea>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
