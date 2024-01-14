@@ -806,8 +806,14 @@ public class ProcessarNovels {
 
                         desativar = false;
                         for (NovelTabela novel : tabelas) {
+                            if (!novel.isProcessar())
+                                continue;
+
                             V = 0;
                             for (NovelVolume volume : novel.getVolumes()) {
+                                if (!volume.isProcessar())
+                                    continue;
+
                                 V++;
                                 updateMessage("Processando Vocabulários... " + volume.getNovel());
                                 updateProgress(++Progress, Size);
