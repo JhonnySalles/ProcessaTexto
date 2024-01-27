@@ -3,9 +3,6 @@ package org.jisho.textosJapones.model.services;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.NovelDao;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
-import org.jisho.textosJapones.model.entities.mangaextractor.MangaCapitulo;
-import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
-import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
 import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela;
 import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
@@ -63,8 +60,12 @@ public class NovelServices {
         novelDao.insertVocabulario(base, idVolume, idCapitulo, vocabularios);
     }
 
-    public List<NovelTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String manga) throws ExcessaoBd {
-        return novelDao.selectTabelas(todos, isLike, base, linguagem, manga);
+    public List<NovelTabela> selectTabelas(Boolean todos, Boolean isLike, String base, Language linguagem, String novel) throws ExcessaoBd {
+        return novelDao.selectTabelas(todos, isLike, base, linguagem, novel);
+    }
+
+    public void delete(String tabela, NovelVolume obj) throws ExcessaoBd {
+        novelDao.deleteVolume(tabela, obj);
     }
 
 }

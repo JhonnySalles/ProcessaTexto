@@ -1,5 +1,6 @@
 package org.jisho.textosJapones.processar;
 
+import com.google.common.io.Files;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
@@ -21,6 +22,7 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.entities.novelextractor.*;
+import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.enums.Site;
@@ -513,24 +515,29 @@ public class ProcessarNovels {
         String tabela;
         String nome = "";
         if (linguagem.compareTo(Language.JAPANESE) == 0) {
-            Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
-            if (matcher.find() && !matcher.group(0).isEmpty()) {
-                String item = matcher.group(0);
-                if (item.trim().substring(0, 1).matches("[ぁ-んァ-ンa-zA-Z0-9]"))
-                    tabela = toAlfabeto(item.trim().substring(0, 1));
-                else {
-                    List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
-                    if (!m.isEmpty()) {
-                        if (!m.get(0).readingForm().isEmpty())
-                            nome = m.get(0).readingForm().substring(0, 1);
-                        else if (!m.get(0).surface().isEmpty())
-                            nome = m.get(0).surface().substring(0, 1);
-                    }
+            Matcher matcher = Pattern.compile("^[a-zA-Z0-9]").matcher(texto);
+            if (matcher.find() && !matcher.group(0).isEmpty())
+                tabela = toAlfabeto(matcher.group(0).substring(0, 1));
+            else {
+                matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
+                if (matcher.find() && !matcher.group(0).isEmpty()) {
+                    String item = matcher.group(0);
+                    if (item.trim().substring(0, 1).matches("[ぁ-んァ-ンa-zA-Z0-9]"))
+                        tabela = toAlfabeto(item.trim().substring(0, 1));
+                    else {
+                        List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item);
+                        if (!m.isEmpty()) {
+                            if (!m.get(0).readingForm().isEmpty())
+                                nome = m.get(0).readingForm().substring(0, 1);
+                            else if (!m.get(0).surface().isEmpty())
+                                nome = m.get(0).surface().substring(0, 1);
+                        }
 
-                    tabela = toAlfabeto(nome);
-                }
-            } else
-                tabela = texto.substring(0, 1);
+                        tabela = toAlfabeto(nome);
+                    }
+                } else
+                    tabela = texto.substring(0, 1);
+            }
         } else
             tabela = texto.substring(0, 1);
 
@@ -778,6 +785,10 @@ public class ProcessarNovels {
                 else
                     LOG = new File(caminho.getPath().substring(0, caminho.getPath().lastIndexOf("\\")) + "\\" + LOGFILE);
 
+                File concluido = new File(caminho + "\\concluido\\");
+                if (!concluido.exists())
+                    concluido.mkdirs();
+
                 try {
                     try (Dictionary dict = new DictionaryFactory().create("",
                             SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.getController().getDicionario()))))) {
@@ -874,6 +885,16 @@ public class ProcessarNovels {
                                 addLog("Concluído processamento do arquivo " + volume.getArquivo() + ".");
                                 addLog("-".repeat(30));
                                 addLog("");
+
+                                File arq = arquivos.get(volume.getArquivo());
+                                File jpg = new File(arq.getPath().substring(0, arq.getPath().lastIndexOf(".")) + ".jpg");
+                                File opf = new File(arq.getPath().substring(0, arq.getPath().lastIndexOf(".")) + ".opf");
+
+                                Files.move(arq, new File(concluido, volume.getArquivo()));
+                                if (jpg.exists())
+                                    Files.move(jpg, new File(concluido, jpg.getName()));
+                                if (opf.exists())
+                                    Files.move(opf, new File(concluido, opf.getName()));
 
                                 Platform.runLater(() -> {
                                     if (TaskbarProgressbar.isSupported())
@@ -1472,6 +1493,45 @@ public class ProcessarNovels {
         }
         volume.setVocabularios(vocabVolume);
         volume.setProcessado(true);
+    }
+
+
+
+    public void corrige() {
+        // Função de correção ou movimentação de novels para outra tabela. Basta adicionar a condição abaixo na função de select
+        //condicao += " AND Table_Name LIKE 'temp_volumes' ";
+        try {
+            try (Dictionary dict = new DictionaryFactory().create("",
+                    SudachiTokenizer.readAll(new FileInputStream(SudachiTokenizer.getPathSettings(Dicionario.FULL))))) {
+                tokenizer = dict.create();
+                mode = SplitMode.A;
+
+                LOGGER.info("Consultando a correção...");
+                List<NovelTabela> lista = serviceNovel.selectTabelas(true, false, null, Language.JAPANESE, null);
+
+                LOGGER.info("Iniciando a correção...");
+                for (NovelTabela novel : lista) {
+                    String oldBase = novel.getBase();
+                    LOGGER.info("Corrigindo a base " + oldBase);
+                    for (NovelVolume volume : novel.getVolumes()) {
+                        String newBase = getBase(Language.JAPANESE, volume.getTitulo());
+                        if (oldBase.equalsIgnoreCase(newBase))
+                            continue;
+
+                        LOGGER.info("Corrigindo a novel " + volume.getTitulo());
+                        serviceNovel.salvarVolume(newBase, volume);
+                        serviceNovel.delete(oldBase, volume);
+                        LOGGER.info("Concluido a correção da novel " + volume.getTitulo());
+                    }
+                }
+                LOGGER.info("Concluido a correção das novels.");
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+                error = false;
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Erro ao corrigir as listas", ex);
+        }
     }
 
 }
