@@ -88,39 +88,101 @@ public class ProcessarNovels {
     private String toAlfabeto(String texto) {
         String tabela = "temp";
         switch (texto) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+                tabela = "0";
+                break;
+
             case "あ":
             case "ア":
+            case "A":
+            case "a":
                 tabela = "a";
                 break;
 
             case "え":
             case "エ":
+            case "E":
+            case "e":
                 tabela = "e";
                 break;
 
             case "い":
             case "イ":
+            case "I":
+            case "i":
                 tabela = "i";
                 break;
 
             case "お":
             case "オ":
+            case "O":
+            case "o":
                 tabela = "o";
                 break;
 
             case "う":
             case "ウ":
+            case "U":
+            case "u":
                 tabela = "u";
+                break;
+
+            case "ば":
+            case "べ":
+            case "び":
+            case "ぼ":
+
+            case "バ":
+            case "ベ":
+            case "ビ":
+            case "ボ":
+
+            case "B":
+            case "b":
+                tabela = "b";
                 break;
 
             case "ち":
             case "チ":
+            case "C":
+            case "c":
                 tabela = "c";
+                break;
+
+            case "だ":
+            case "で":
+            case "ど":
+
+            case "ダ":
+            case "デ":
+            case "ド":
+
+            case "D":
+            case "d":
+                tabela = "d";
                 break;
 
             case "ふ":
             case "フ":
+            case "ぶ":
+            case "ブ":
+            case "F":
+            case "f":
                 tabela = "f";
+                break;
+
+            case "G":
+            case "g":
+                tabela = "g";
                 break;
 
             case "は":
@@ -132,7 +194,18 @@ public class ProcessarNovels {
             case "ヘ":
             case "ヒ":
             case "ホ":
+
+            case "H":
+            case "h":
                 tabela = "h";
+                break;
+
+            case "じ":
+            case "ジ":
+
+            case "J":
+            case "j":
+                tabela = "j";
                 break;
 
             case "か":
@@ -141,12 +214,32 @@ public class ProcessarNovels {
             case "こ":
             case "く":
 
+            case "が":
+            case "げ":
+            case "ぎ":
+            case "ご":
+            case "ぐ":
+
             case "カ":
             case "ケ":
             case "キ":
             case "コ":
             case "ク":
+
+            case "ガ":
+            case "ゲ":
+            case "ギ":
+            case "ゴ":
+            case "グ":
+
+            case "K":
+            case "k":
                 tabela = "k";
+                break;
+
+            case "L":
+            case "l":
+                tabela = "l";
                 break;
 
             case "ま":
@@ -160,6 +253,9 @@ public class ProcessarNovels {
             case "ミ":
             case "モ":
             case "ム":
+
+            case "M":
+            case "m":
                 tabela = "m";
                 break;
 
@@ -176,7 +272,32 @@ public class ProcessarNovels {
             case "ノ":
             case "ヌ":
             case "ン":
+
+            case "N":
+            case "n":
                 tabela = "n";
+                break;
+
+            case "ぱ":
+            case "ぺ":
+            case "ぴ":
+            case "ぽ":
+            case "ぷ":
+
+            case "パ":
+            case "ペ":
+            case "ピ":
+            case "ポ":
+            case "プ":
+
+            case "P":
+            case "p":
+                tabela = "p";
+                break;
+
+            case "Q":
+            case "q":
+                tabela = "q";
                 break;
 
             case "ら":
@@ -190,6 +311,9 @@ public class ProcessarNovels {
             case "リ":
             case "ロ":
             case "ル":
+
+            case "R":
+            case "r":
                 tabela = "r";
                 break;
 
@@ -204,6 +328,9 @@ public class ProcessarNovels {
             case "シ":
             case "ソ":
             case "ス":
+
+            case "S":
+            case "s":
                 tabela = "s";
                 break;
 
@@ -212,23 +339,68 @@ public class ProcessarNovels {
             case "と":
             case "つ":
 
+            case "づ":
+
             case "タ":
             case "テ":
             case "ト":
             case "ツ":
+
+            case "ヅ":
+
+            case "T":
+            case "t":
                 tabela = "t";
+                break;
+
+            case "V":
+            case "v":
+                tabela = "v";
                 break;
 
             case "や":
             case "よ":
             case "ゆ":
-            case "を":
 
             case "ヤ":
             case "ヨ":
             case "ユ":
-            case "ヲ":
+
+            case "Y":
+            case "y":
                 tabela = "y";
+                break;
+
+
+            case "わ":
+            case "を":
+
+            case "ワ":
+            case "ヲ":
+
+            case "W":
+            case "w":
+                tabela = "w";
+                break;
+
+            case "X":
+            case "x":
+                tabela = "x";
+                break;
+
+            case "ざ":
+            case "ぜ":
+            case "ぞ":
+            case "ず":
+
+            case "ザ":
+            case "ゼ":
+            case "ゾ":
+            case "ズ":
+
+            case "Z":
+            case "z":
+                tabela = "z";
                 break;
         }
 
@@ -344,7 +516,7 @@ public class ProcessarNovels {
             Matcher matcher = Pattern.compile("([\u3041-\u9FAF]+)").matcher(texto);
             if (matcher.find() && !matcher.group(0).isEmpty()) {
                 String item = matcher.group(0);
-                if (item.trim().substring(0, 1).matches("[ぁ-んァ-ン]"))
+                if (item.trim().substring(0, 1).matches("[ぁ-んァ-ンa-zA-Z0-9]"))
                     tabela = toAlfabeto(item.trim().substring(0, 1));
                 else {
                     List<Morpheme> m = tokenizer.tokenize(SplitMode.A, item.substring(0, 1));
@@ -393,7 +565,11 @@ public class ProcessarNovels {
         if (volume <= 0f) {
             matcher = Pattern.compile("(([0-9]+.)?[0-9]+$)").matcher(arq.trim());
             if (matcher.find() && !matcher.group(0).isEmpty()) {
-                volume = Float.valueOf(matcher.group(0));
+                if (matcher.group(0).contains(" "))
+                    volume = Float.valueOf(matcher.group(0).substring(matcher.group(0).lastIndexOf(" ")).trim());
+                else
+                    volume = Float.valueOf(matcher.group(0));
+
                 if (nome.matches("[a-zA-Z\\d]") && nome.contains(matcher.group(0)))
                     titulo = nome.substring(0, nome.lastIndexOf(matcher.group(0)));
             } else {
@@ -620,6 +796,7 @@ public class ProcessarNovels {
                         if (caminho.isDirectory()) {
                             for (File arquivo : caminho.listFiles())
                                 if (!arquivo.getName().equalsIgnoreCase(LOGFILE) && arquivo.getName().substring(arquivo.getName().lastIndexOf('.') + 1).equalsIgnoreCase("txt")) {
+                                    addLog("Preparando " + arquivo.getName());
                                     NovelTabela obj = getTabela(tabela, arquivo, linguagem, favorito);
                                     Optional<NovelTabela> tab = novels.stream().filter(i -> i.getBase().equalsIgnoreCase(obj.getBase())).findFirst();
                                     if (tab.isPresent())
