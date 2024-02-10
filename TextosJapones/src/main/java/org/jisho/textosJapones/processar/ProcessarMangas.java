@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -427,7 +428,8 @@ public class ProcessarMangas {
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Mangas - Processar vocabulário");
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
-        Task<Void> processarTabela = new Task<Void>() {
+        Task<Void> processarTabela = new Task<>() {
+            final Pattern ignore = Pattern.compile("[\\d|\\W]");
 
             @Override
             protected Void call() throws Exception {
@@ -512,8 +514,7 @@ public class ProcessarMangas {
                                                     .collect(Collectors.toSet());
 
                                             for (String palavra : palavras) {
-
-                                                if (palavra.matches("[\\d|\\W]"))
+                                                if (ignore.matcher(palavra).find())
                                                     continue;
 
                                                 if (validaHistorico.contains(palavra)) {
@@ -555,8 +556,7 @@ public class ProcessarMangas {
                                                         Revisar revisar = serviceInglesRevisar.select(palavra);
                                                         if (revisar == null) {
                                                             revisar = new Revisar(palavra, false, false, true, false);
-                                                            Platform.runLater(() -> MenuPrincipalController
-                                                                    .getController().getLblLog()
+                                                            Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
                                                                     .setText(palavra + " : Vocabulário novo."));
 
                                                             if (!revisar.getVocabulario().isEmpty()) {
@@ -583,7 +583,6 @@ public class ProcessarMangas {
                                                                                             .getController()
                                                                                             .getContaGoogle())));
                                                                 } catch (IOException e) {
-                                                                    
                                                                     LOGGER.error(e.getMessage(), e);
                                                                 }
                                                             }
@@ -656,7 +655,7 @@ public class ProcessarMangas {
                     }
 
                 } catch (Exception e) {
-                    
+
                     LOGGER.error(e.getMessage(), e);
                     error = true;
                 }

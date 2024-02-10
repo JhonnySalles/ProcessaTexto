@@ -23,7 +23,7 @@ public class LegendasController implements Initializable {
 	private LegendasImportarController importarController;
 
 	@FXML
-	private LegendasGerarVocabularioController processarController;
+	private LegendasVocabularioController processarController;
 
 	@FXML
 	private LegendasMarcasController marcasController;

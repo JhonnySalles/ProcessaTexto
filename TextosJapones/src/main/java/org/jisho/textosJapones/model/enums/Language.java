@@ -1,7 +1,8 @@
 package org.jisho.textosJapones.model.enums;
 
 public enum Language {
-	
+
+	TODOS("all"),
 	AFRIKAANS("af"),
 	ALBANIAN("sq"),
 	ARABIC("ar"),

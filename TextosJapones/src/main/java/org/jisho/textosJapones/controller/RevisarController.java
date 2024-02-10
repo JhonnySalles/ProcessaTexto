@@ -12,10 +12,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.enums.Api;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
+import org.jisho.textosJapones.model.services.RevisarInglesServices;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
+import org.jisho.textosJapones.model.services.VocabularioInglesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.*;
 import org.jisho.textosJapones.processar.scriptGoogle.ScriptGoogle;
@@ -36,6 +37,9 @@ public class RevisarController implements Initializable {
 
     @FXML
     private AnchorPane apRoot;
+
+    @FXML
+    private JFXComboBox<Language> cbLinguagem;
 
     @FXML
     private Label lblRestantes;
@@ -65,7 +69,7 @@ public class RevisarController implements Initializable {
     private JFXButton btnNovoAux;
 
     @FXML
-    private JFXCheckBox cbAnime;
+    private JFXCheckBox cbLegenda;
 
     @FXML
     private JFXCheckBox cbManga;
@@ -89,9 +93,6 @@ public class RevisarController implements Initializable {
     private JFXCheckBox cbCorrecao;
 
     @FXML
-    private JFXComboBox<Api> cbContaGoolge;
-
-    @FXML
     private JFXButton btnTraduzir;
 
     @FXML
@@ -112,8 +113,12 @@ public class RevisarController implements Initializable {
     @FXML
     private JFXTextArea txtAreaPortugues;
 
-    private final RevisarJaponesServices service = new RevisarJaponesServices();
-    private final VocabularioJaponesServices vocabulario = new VocabularioJaponesServices();
+    private final RevisarJaponesServices revisarJapones = new RevisarJaponesServices();
+    private final VocabularioJaponesServices vocabularioJapones = new VocabularioJaponesServices();
+
+    private final RevisarInglesServices revisarIngles = new RevisarInglesServices();
+    private final VocabularioInglesServices vocabularioIngles = new VocabularioInglesServices();
+
     private List<Revisar> similar;
     private Revisar revisando;
     private Vocabulario corrigindo;
@@ -141,13 +146,20 @@ public class RevisarController implements Initializable {
             List<Vocabulario> lista = Revisar.toVocabulario(similar);
 
             try {
-                vocabulario.insert(palavra);
-                vocabulario.insert(lista);
+                if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH)) {
+                    vocabularioIngles.insert(palavra);
+                    vocabularioIngles.insert(lista);
 
-                service.delete(revisando);
-                service.delete(similar);
+                    revisarIngles.delete(revisando);
+                    revisarIngles.delete(similar);
+                } else  {
+                    vocabularioJapones.insert(palavra);
+                    vocabularioJapones.insert(lista);
+
+                    revisarJapones.delete(revisando);
+                    revisarJapones.delete(similar);
+                }
             } catch (ExcessaoBd e) {
-                
                 LOGGER.error(e.getMessage(), e);
                 error = true;
             }
@@ -156,7 +168,10 @@ public class RevisarController implements Initializable {
             corrigindo.setPortugues(texto);
 
             try {
-                vocabulario.insertOrUpdate(corrigindo);
+                if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                    vocabularioIngles.insertOrUpdate(corrigindo);
+                else
+                    vocabularioJapones.insertOrUpdate(corrigindo);
             } catch (ExcessaoBd e) {
                 
                 LOGGER.error(e.getMessage(), e);
@@ -179,7 +194,10 @@ public class RevisarController implements Initializable {
         Boolean error = false;
         if (revisando != null) {
             try {
-                service.delete(revisando);
+                if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                    revisarIngles.delete(revisando);
+                else
+                    revisarJapones.delete(revisando);
             } catch (ExcessaoBd e) {
                 
                 LOGGER.error(e.getMessage(), e);
@@ -207,7 +225,8 @@ public class RevisarController implements Initializable {
 
     private void limpaCampos() {
         try {
-            lblRestantes.setText("Restante " + service.selectQuantidadeRestante() + " palavras.");
+            String qtd = (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH)) ? revisarIngles.selectQuantidadeRestante() : revisarJapones.selectQuantidadeRestante();
+            lblRestantes.setText("Restante " + qtd + " palavras.");
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
             lblRestantes.setText("Restante 0 palavras.");
@@ -226,7 +245,7 @@ public class RevisarController implements Initializable {
     }
 
     private Boolean pesquisaCorrecao(String pesquisar) throws ExcessaoBd {
-        corrigindo = vocabulario.select(pesquisar, pesquisar);
+        corrigindo = (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH)) ? vocabularioIngles.select(pesquisar) : vocabularioJapones.select(pesquisar, pesquisar);
         if (corrigindo != null && !corrigindo.getPortugues().isEmpty()) {
             limpaTextos();
             cbCorrecao.setSelected(true);
@@ -242,13 +261,20 @@ public class RevisarController implements Initializable {
     }
 
     private Boolean pesquisaRevisao(String pesquisar) throws ExcessaoBd {
-        revisando = service.selectRevisar(pesquisar, cbAnime.isSelected(), cbManga.isSelected(), cbNovel.isSelected());
+        if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+            revisando = revisarIngles.selectRevisar(pesquisar, cbLegenda.isSelected(), cbManga.isSelected(), cbNovel.isSelected());
+        else
+            revisando = revisarJapones.selectRevisar(pesquisar, cbLegenda.isSelected(), cbManga.isSelected(), cbNovel.isSelected());
+
         if (revisando != null) {
             limpaTextos();
             cbCorrecao.setSelected(false);
-            if (cbSimilar.isSelected())
-                similar = service.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
-            else
+            if (cbSimilar.isSelected()) {
+                if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                    similar = revisarIngles.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
+                else
+                    similar = revisarJapones.selectSimilar(revisando.getVocabulario(), revisando.getIngles());
+            } else
                 similar = new ArrayList<>();
 
             txtVocabulario.setText(revisando.getVocabulario());
@@ -307,7 +333,8 @@ public class RevisarController implements Initializable {
 
         try {
             String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-                    Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(), cbContaGoolge.getValue()));
+                    Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(),
+                    MenuPrincipalController.getController().getContaGoogle()));
 
             txtAreaPortugues.setText(Util.normalize(texto));
         } catch (IOException e) {
@@ -364,8 +391,8 @@ public class RevisarController implements Initializable {
         return apRoot;
     }
 
-    public void setAnime(Boolean ativo) {
-        cbAnime.setSelected(ativo);
+    public void setLegenda(Boolean ativo) {
+        cbLegenda.setSelected(ativo);
     }
 
     public void setManga(Boolean ativo) {
@@ -384,8 +411,12 @@ public class RevisarController implements Initializable {
     private ChangeListener<Boolean> listenerCorrecao;
 
     public void initialize(URL arg0, ResourceBundle arg1) {
-        cbContaGoolge.getItems().addAll(Api.values());
-        cbContaGoolge.getSelectionModel().selectLast();
+        cbLinguagem.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
+        cbLinguagem.getSelectionModel().selectFirst();
+        cbLinguagem.setOnAction(e -> {
+            limpaCampos();
+            pesquisar();
+        });
 
         limpaCampos();
 
@@ -445,17 +476,11 @@ public class RevisarController implements Initializable {
             }
         });
 
-        cbAnime.selectedProperty().addListener((o, oldVal, newVal) -> {
-            pesquisar();
-        });
+        cbLegenda.selectedProperty().addListener((o, oldVal, newVal) -> pesquisar());
 
-        cbManga.selectedProperty().addListener((o, oldVal, newVal) -> {
-            pesquisar();
-        });
+        cbManga.selectedProperty().addListener((o, oldVal, newVal) -> pesquisar());
 
-        cbNovel.selectedProperty().addListener((o, oldVal, newVal) -> {
-            pesquisar();
-        });
+        cbNovel.selectedProperty().addListener((o, oldVal, newVal) -> pesquisar());
 
         pesquisar();
     }

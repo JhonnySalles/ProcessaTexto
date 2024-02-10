@@ -1,9 +1,6 @@
 package org.jisho.textosJapones.controller.legendas;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import javafx.application.Platform;
@@ -25,9 +22,11 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.model.entities.FilaSQL;
 import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.enums.Dicionario;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.LegendasServices;
+import org.jisho.textosJapones.model.services.VocabularioInglesServices;
 import org.jisho.textosJapones.model.services.VocabularioJaponesServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 import org.jisho.textosJapones.util.Prop;
@@ -42,12 +41,15 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LegendasGerarVocabularioController implements Initializable {
+public class LegendasVocabularioController implements Initializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LegendasGerarVocabularioController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegendasVocabularioController.class);
 
     @FXML
     private AnchorPane apRoot;
+
+    @FXML
+    private JFXComboBox<Language> cbLinguagem;
 
     @FXML
     private JFXTextField txtCaminhoExportar;
@@ -113,7 +115,8 @@ public class LegendasGerarVocabularioController implements Initializable {
     private TableColumn<Processar, String> tcVocabulario;
 
     private final LegendasServices service = new LegendasServices();
-    private final VocabularioJaponesServices vocabularioService = new VocabularioJaponesServices();
+    private final VocabularioJaponesServices vocabularioJapones = new VocabularioJaponesServices();
+    private final VocabularioInglesServices vocabularioIngles = new VocabularioInglesServices();
     private final ProcessarLegendas processar = new ProcessarLegendas(null);
 
     private LegendasController controller;
@@ -215,8 +218,7 @@ public class LegendasGerarVocabularioController implements Initializable {
     private void onBtnAtualizar() {
         if (txtAreaSelect.getText().trim().isEmpty() || txtAreaSelect.getText().trim()
                 .equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")) {
-            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                    "Necessário informar um select para prosseguir com o salvamento.");
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um select para prosseguir com o salvamento.");
             return;
         }
 
@@ -226,8 +228,7 @@ public class LegendasGerarVocabularioController implements Initializable {
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Concluido....");
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-                    "Erro ao realizar a pesquisa.");
+            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro", "Erro ao realizar a pesquisa.");
         }
     }
 
@@ -235,8 +236,7 @@ public class LegendasGerarVocabularioController implements Initializable {
     private void onBtnDeletar() {
         if (txtAreaDelete.getText().trim().isEmpty() || txtAreaDelete.getText().trim()
                 .equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL")) {
-            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                    "Necessário informar um delete para prosseguir com a limpeza.");
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um delete para prosseguir com a limpeza.");
             return;
         }
 
@@ -246,15 +246,19 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-                    "Erro ao salvar as atualizações.");
+            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro", "Erro ao salvar as atualizações.");
         } finally {
             MenuPrincipalController.getController().getLblLog().setText("[LEGENDAS] Delete do vocabulario concluido.");
         }
     }
 
-    private String getVocabulario(Dicionario dicionario, Modo modo, String palavra) {
-        return processar.processarVocabulario(dicionario, modo, palavra);
+    private String getVocabulario(Dicionario dicionario, Modo modo, Language linguagem, String palavra) {
+        String vocabulario = "";
+        switch (linguagem) {
+            case JAPANESE -> vocabulario = processar.processarJapones(dicionario, modo, palavra);
+            case ENGLISH -> vocabulario = processar.processarIngles(palavra);
+        }
+        return vocabulario;
     }
 
     @FXML
@@ -265,9 +269,15 @@ public class LegendasGerarVocabularioController implements Initializable {
         if (tbLista.getSelectionModel().getSelectedItem().getVocabulario().isEmpty()) {
             processar.vocabulario.clear();
 
+            Language linguagem = Language.JAPANESE;
+            if (cbLinguagem.getSelectionModel().getSelectedItem() == null || cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.TODOS))
+                cbLinguagem.getSelectionModel().select(Language.JAPANESE);
+            else
+                linguagem = cbLinguagem.getSelectionModel().getSelectedItem();
+
             tbLista.getSelectionModel().getSelectedItem()
                     .setVocabulario(getVocabulario(MenuPrincipalController.getController().getDicionario(),
-                            MenuPrincipalController.getController().getModo(),
+                            MenuPrincipalController.getController().getModo(), linguagem,
                             tbLista.getSelectionModel().getSelectedItem().getOriginal()));
 
             txtAreaVocabulario.setText(processar.vocabulario.stream().collect(Collectors.joining("\n")));
@@ -311,9 +321,15 @@ public class LegendasGerarVocabularioController implements Initializable {
 
             @Override
             public Void call() throws IOException, InterruptedException {
-                lista = new ArrayList<Processar>(tbLista.getItems());
+                lista = new ArrayList<>(tbLista.getItems());
 
                 try {
+                    Language linguagem = Language.JAPANESE;
+                    if (cbLinguagem.getSelectionModel().getSelectedItem() == null || cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.TODOS))
+                        cbLinguagem.getSelectionModel().select(Language.JAPANESE);
+                    else
+                        linguagem = cbLinguagem.getSelectionModel().getSelectedItem();
+
                     for (Processar item : lista) {
 
                         i++;
@@ -322,19 +338,17 @@ public class LegendasGerarVocabularioController implements Initializable {
 
                         Platform.runLater(() -> {
                             if (TaskbarProgressbar.isSupported())
-                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size(),
-                                        Type.NORMAL);
+                                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size(), Type.NORMAL);
                         });
 
                         if (item.getVocabulario().isEmpty())
-                            item.setVocabulario(getVocabulario(dicionario, modo, item.getOriginal()));
+                            item.setVocabulario(getVocabulario(dicionario, modo, linguagem, item.getOriginal()));
 
                         if (desativar)
                             break;
                     }
 
                 } catch (Exception e) {
-                    
                     LOGGER.error(e.getMessage(), e);
                 } finally {
                     Platform.runLater(() -> tbLista.setItems(FXCollections.observableArrayList(lista)));
@@ -374,13 +388,14 @@ public class LegendasGerarVocabularioController implements Initializable {
             return;
 
         try {
-            vocabularioService
-                    .insertExclusao(new ArrayList<String>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
+            if (cbLinguagem.getSelectionModel().getSelectedItem() != null && cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                vocabularioIngles.insertExclusao(new ArrayList<>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
+            else
+                vocabularioJapones.insertExclusao(new ArrayList<>(Arrays.asList(txtAreaVocabulario.getText().split("\n"))));
             txtAreaVocabulario.setText("");
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-                    "Erro ao salvar a exclusao.");
+            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro", "Erro ao salvar a exclusao.");
         }
     }
 
@@ -389,37 +404,30 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         if (cbLimpeza.isSelected() || cbExporta.isSelected()) {
             if (cbLimpeza.isSelected() && txtAreaDelete.getText().trim().isEmpty()) {
-                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                        "Necessário informar um delete para a limpeza.");
+                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um delete para a limpeza.");
                 return;
             }
 
             if (cbExporta.isSelected() && txtAreaSelect.getText().trim().isEmpty()) {
-                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                        "Necessário informar um select para a exportação.");
+                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um select para a exportação.");
                 return;
             }
-        } else if (txtAreaSelect.getText().trim().isEmpty()
-                || txtAreaSelect.getText().trim().equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")
-                || txtAreaUpdate.getText().trim().isEmpty()
-                || txtAreaUpdate.getText().trim().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")
-                || txtAreaDelete.getText().trim().isEmpty() || txtAreaDelete.getText().trim()
-                .equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL")) {
-            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                    "Necessário informar um select, update e delete para gravar na lista.");
+        } else if (txtAreaSelect.getText().trim().isEmpty() || txtAreaSelect.getText().trim().equalsIgnoreCase("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela")
+                || txtAreaUpdate.getText().trim().isEmpty() || txtAreaUpdate.getText().trim().equalsIgnoreCase("UPDATE tabela SET campo3 = ? WHERE id = ?")
+                || txtAreaDelete.getText().trim().isEmpty() || txtAreaDelete.getText().trim().equalsIgnoreCase("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL")) {
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um select, update e delete para gravar na lista.");
+            return;
+        } else if (cbLinguagem.getSelectionModel().getSelectedItem() == null || cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.TODOS)) {
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar uma linguagem para gravar na lista.");
             return;
         }
 
         try {
-            service.insertOrUpdateFila(new FilaSQL(txtAreaSelect.getText().trim(), txtAreaUpdate.getText().trim(),
-                    txtAreaDelete.getText().trim(), cbExporta.isSelected(), cbLimpeza.isSelected()));
-
-            AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo",
-                    "Salvo com sucesso.");
+            service.insertOrUpdateFila(new FilaSQL(txtAreaSelect.getText().trim(), txtAreaUpdate.getText().trim(), txtAreaDelete.getText().trim(), cbLinguagem.getSelectionModel().getSelectedItem(), cbExporta.isSelected(), cbLimpeza.isSelected()));
+            AlertasPopup.AvisoModal(controller.getStackPane(), controller.getRoot(), null, "Salvo", "Salvo com sucesso.");
         } catch (ExcessaoBd e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro",
-                    "Erro ao salvar ao salvar a fila.");
+            AlertasPopup.ErroModal(controller.getStackPane(), controller.getRoot(), null, "Erro", "Erro ao salvar ao salvar a fila.");
         }
     }
 
@@ -428,8 +436,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         if (txtPipe.getText().isEmpty()) {
             valido = false;
-            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                    "Necessário informar um pipe para salvar o arquivo de exportação.");
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um pipe para salvar o arquivo de exportação.");
         }
 
         if (!txtCaminhoExportar.getText().isEmpty()) {
@@ -437,12 +444,10 @@ public class LegendasGerarVocabularioController implements Initializable {
 
             if (arquivo.isDirectory()) {
                 valido = false;
-                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                        "Necessário informar um arquivo.");
-            } else if (!arquivo.canWrite()) {
+                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar um arquivo.");
+            } else if (!new File(arquivo.getParent()).canWrite()) {
                 valido = false;
-                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta",
-                        "Não é possível gravar no arquivo informado.");
+                AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Não é possível gravar no local informado.");
             }
         }
 
@@ -474,7 +479,7 @@ public class LegendasGerarVocabularioController implements Initializable {
 
         GrupoBarraProgressoController progress = MenuPrincipalController.getController().criaBarraProgresso();
         progress.getTitulo().setText("Legendas - Processar Fila");
-        Task<Void> processarFila = new Task<Void>() {
+        Task<Void> processarFila = new Task<>() {
             List<Processar> lista = null;
             List<FilaSQL> fila = null;
             final Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
@@ -482,20 +487,29 @@ public class LegendasGerarVocabularioController implements Initializable {
             Integer i = 0, x = 0;
             final String pipe = txtPipe.getText();
             final File arquivo = (txtCaminhoExportar.getText().isEmpty() ? null : new File(txtCaminhoExportar.getText()));
+            Language linguegem;
+
             @Override
             public Void call() throws IOException, InterruptedException {
                 try {
                     fila = service.selectFila();
 
+                    linguegem = cbLinguagem.getSelectionModel().getSelectedItem();
+                    if (linguegem != null && !linguegem.equals(Language.TODOS))
+                        fila = fila.stream().filter(f -> f.getLinguagem().equals(linguegem)).collect(Collectors.toList());
+
                     List<FilaSQL> temp = fila.stream().filter(f -> !f.isLimpeza() && !f.isExporta()).collect(Collectors.toList());
+
                     for (FilaSQL select : temp) {
                         x++;
+                        Language lang = select.getLinguagem();
 
                         Platform.runLater(() -> {
                             txtAreaSelect.setText(select.getSelect());
                             txtAreaUpdate.setText(select.getUpdate());
                             txtAreaDelete.setText(select.getDelete());
                             txtAreaVocabulario.setText(select.getVocabulario());
+                            cbLinguagem.getSelectionModel().select(lang);
                             cbExporta.setSelected(select.isExporta());
                             cbLimpeza.setSelected(select.isLimpeza());
                         });
@@ -521,7 +535,7 @@ public class LegendasGerarVocabularioController implements Initializable {
                                                 Type.NORMAL);
                                 });
 
-                                item.setVocabulario(getVocabulario(dicionario, modo, item.getOriginal()));
+                                item.setVocabulario(getVocabulario(dicionario, modo, lang, item.getOriginal()));
 
                                 if (desativar)
                                     break;
@@ -536,39 +550,37 @@ public class LegendasGerarVocabularioController implements Initializable {
                             select.setVocabulario(processar.vocabulario.stream().collect(Collectors.joining("\n")));
                             service.insertOrUpdateFila(select);
                         } catch (ExcessaoBd e) {
-                            
                             LOGGER.error(e.getMessage(), e);
                         }
                     }
 
                     if (arquivo != null && !desativar) {
-                        List<FilaSQL> select = fila.stream().filter(FilaSQL::isExporta).collect(Collectors.toList());
+                        List<FilaSQL> select = fila.stream().filter(FilaSQL::isExporta).filter(f -> f.getLinguagem().equals(Language.JAPANESE)).collect(Collectors.toList());
                         if (!select.isEmpty()) {
-                            updateMessage("Exportando arquivo  " + arquivo.getName());
+                            File file = new File(arquivo.getParent(), arquivo.getName().substring(0, arquivo.getName().lastIndexOf(".")) + " Japones" + arquivo.getName().substring(arquivo.getName().lastIndexOf(".")));
+                            updateMessage("Exportando arquivo " + file.getName());
                             lista = new ArrayList<>();
 
                             for (FilaSQL item : select)
                                 lista.addAll(service.comandoSelect(item.getSelect()));
 
-                            if (arquivo.exists())
-                                arquivo.delete();
+                            exportar(pipe, lista, file);
+                        }
 
-                            arquivo.createNewFile();
+                        select = fila.stream().filter(FilaSQL::isExporta).filter(f -> f.getLinguagem().equals(Language.ENGLISH)).collect(Collectors.toList());
+                        if (!select.isEmpty()) {
+                            File file = new File(arquivo.getParent(), arquivo.getName().substring(0, arquivo.getName().lastIndexOf(".")) + " Ingles" + arquivo.getName().substring(arquivo.getName().lastIndexOf(".")));
+                            updateMessage("Exportando arquivo " + file.getName());
+                            lista = new ArrayList<>();
 
-                            try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
-                                Integer index = 0;
-                                for (Processar item : lista) {
-                                    index++;
-                                    writer.append(item.getId()).append(pipe).append(item.getOriginal());
-                                    if (index < lista.size())
-                                        writer.newLine();
-                                }
-                                writer.flush();
-                            }
+                            for (FilaSQL item : select)
+                                lista.addAll(service.comandoSelect(item.getSelect()));
+
+                            exportar(pipe, lista, file);
                         }
 
                         updateMessage("Executando a limpeza.");
-                        for (FilaSQL item: fila.stream().filter(FilaSQL::isLimpeza).collect(Collectors.toList()))
+                        for (FilaSQL item : fila.stream().filter(FilaSQL::isLimpeza).collect(Collectors.toList()))
                             service.comandoDelete(item.getDelete());
 
                         Properties props = Prop.loadProperties();
@@ -591,7 +603,6 @@ public class LegendasGerarVocabularioController implements Initializable {
 
                         habilitaBotoes();
                         btnProcessarTudo.setDisable(false);
-
                         tbLista.setDisable(false);
 
                         progress.getBarraProgresso().progressProperty().unbind();
@@ -604,6 +615,7 @@ public class LegendasGerarVocabularioController implements Initializable {
                         txtAreaUpdate.setText("");
                         txtAreaDelete.setText("");
                         txtAreaVocabulario.setText("");
+                        cbLinguagem.getSelectionModel().select(linguegem);
                     });
                 }
                 return null;
@@ -614,6 +626,24 @@ public class LegendasGerarVocabularioController implements Initializable {
         progress.getLog().textProperty().bind(processarFila.messageProperty());
         progress.getBarraProgresso().progressProperty().bind(processarFila.progressProperty());
         processa.start();
+    }
+
+    private void exportar(String pipe, List<Processar> lista, File arquivo) throws IOException {
+        if (arquivo.exists())
+            arquivo.delete();
+
+        arquivo.createNewFile();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
+            Integer index = 0;
+            for (Processar item : lista) {
+                index++;
+                writer.append(item.getId()).append(pipe).append(item.getOriginal());
+                if (index < lista.size())
+                    writer.newLine();
+            }
+            writer.flush();
+        }
     }
 
     public AnchorPane getRoot() {
@@ -644,6 +674,9 @@ public class LegendasGerarVocabularioController implements Initializable {
     ChangeListener limpezaListenner;
 
     public void initialize(URL arg0, ResourceBundle arg1) {
+        cbLinguagem.getItems().addAll(Language.TODOS, Language.JAPANESE, Language.ENGLISH);
+        cbLinguagem.getSelectionModel().selectFirst();
+
         linkaCelulas();
         btnProcessarTudo.setAccessibleText("PROCESSAR");
         btnExecutarFila.setAccessibleText("PROCESSAR");
@@ -695,7 +728,7 @@ public class LegendasGerarVocabularioController implements Initializable {
     }
 
     public static URL getFxmlLocate() {
-        return LegendasGerarVocabularioController.class.getResource("/view/legendas/LegendasGerarVocabulario.fxml");
+        return LegendasVocabularioController.class.getResource("/view/legendas/LegendasVocabulario.fxml");
     }
 
 }

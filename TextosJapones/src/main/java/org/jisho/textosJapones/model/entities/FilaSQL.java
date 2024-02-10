@@ -1,5 +1,7 @@
 package org.jisho.textosJapones.model.entities;
 
+import org.jisho.textosJapones.model.enums.Language;
+
 import java.util.UUID;
 
 public class FilaSQL {
@@ -10,6 +12,7 @@ public class FilaSQL {
     private final String update;
     private final String delete;
     private String vocabulario;
+    private Language linguagem;
     private Boolean isExporta;
     private Boolean isLimpeza;
 
@@ -37,6 +40,10 @@ public class FilaSQL {
         return vocabulario;
     }
 
+    public Language getLinguagem() {
+        return linguagem;
+    }
+
     public Boolean isExporta() {
         return isExporta;
     }
@@ -57,32 +64,33 @@ public class FilaSQL {
         this.vocabulario = vocabulario;
     }
 
-    public FilaSQL(String select, String update, String delete, Boolean isExporta, Boolean isLimpeza) {
+    public FilaSQL(String select, String update, String delete, Language linguagem, Boolean isExporta, Boolean isLimpeza) {
         this.id = null;
         this.sequencial = 0L;
         this.select = select;
         this.update = update;
         this.delete = delete;
+        this.linguagem = linguagem;
         this.isExporta = isExporta;
         this.isLimpeza = isLimpeza;
         this.vocabulario = "";
     }
 
-    public FilaSQL(UUID id, Long sequencial, String select, String update, String delete, String vocabulario, Boolean isExporta, Boolean isLimpeza) {
+    public FilaSQL(UUID id, Long sequencial, String select, String update, String delete, String vocabulario, Language linguagem, Boolean isExporta, Boolean isLimpeza) {
         this.id = id;
         this.sequencial = sequencial;
         this.select = select;
         this.update = update;
         this.delete = delete;
         this.vocabulario = vocabulario;
+        this.linguagem = linguagem;
         this.isExporta = isExporta;
         this.isLimpeza = isLimpeza;
     }
 
     @Override
     public String toString() {
-        return "FilaSQL [id=" + id + ", select=" + select + ", update=" + update + ", delete=" + delete
-                + ", vocabulario=" + vocabulario + "]";
+        return "FilaSQL [id=" + id + ", select=" + select + ", update=" + update + ", delete=" + delete + ", vocabulario=" + vocabulario + "]";
     }
 
 }

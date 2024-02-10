@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.*?>
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.RevisarController">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.RevisarController">
    <children>
       <VBox spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
          <children>
@@ -19,7 +26,7 @@
                         <Label fx:id="lblRestantes" text="Restante 0 palavras." textFill="WHITE" />
                      </children>
                   </HBox>
-                  <JFXCheckBox fx:id="cbAnime" checkedColor="#28d325" selected="true" text="Anime" textFill="WHITE" unCheckedColor="#19b516" />
+                  <JFXCheckBox fx:id="cbLegenda" checkedColor="#28d325" selected="true" text="Legenda" textFill="WHITE" unCheckedColor="#19b516" />
                   <JFXCheckBox fx:id="cbManga" checkedColor="#1fd61c" text="Manga" textFill="WHITE" unCheckedColor="#19b516" />
                   <JFXCheckBox fx:id="cbNovel" checkedColor="#1fd61c" text="Novel" textFill="WHITE" unCheckedColor="#19b516" />
                   <JFXButton fx:id="btnExcluir" focusTraversable="false" minWidth="100.0" onAction="#onBtnExcluir" prefWidth="110.0" styleClass="background-White1" text="Excluir" />
@@ -52,7 +59,7 @@
                   <Insets top="5.0" />
                </padding>
                <children>
-                  <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="150.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="250.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
                   <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="100.0" onAction="#onBtnTraduzir" prefWidth="100.0" styleClass="background-White1" text="Traduzir" />
                   <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapaneseTanoshi" prefWidth="100.0" styleClass="background-White1" text="Jap. Tanoshi" />
                   <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapanDict" prefWidth="100.0" styleClass="background-White1" text="JapanDict" />

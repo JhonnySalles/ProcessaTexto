@@ -57,6 +57,9 @@ public class LegendasImportarController implements Initializable {
     private AnchorPane apRoot;
 
     @FXML
+    private JFXComboBox<Language> cbLinguagemFilaSql;
+
+    @FXML
     private JFXComboBox<Language> cbLinguagem;
 
     @FXML
@@ -168,11 +171,11 @@ public class LegendasImportarController implements Initializable {
 
             final Dicionario dicionario = MenuPrincipalController.getController().getDicionario();
             final Modo modo = MenuPrincipalController.getController().getModo();
+            final Language linguagemFilaSql = cbLinguagemFilaSql.getSelectionModel().getSelectedItem();
 
             @Override
             public Void call() {
                 try {
-
                     File processados = new File(caminho, ARQUIVO_FULL);
                     if (processados.exists())
                         processados.delete();
@@ -260,7 +263,7 @@ public class LegendasImportarController implements Initializable {
                                     }
 
                                     if (isVocab && !texto.isEmpty())
-                                        vocabulario = getVocabulario(dicionario, modo, texto);
+                                        vocabulario = getVocabulario(dicionario, modo, linguagemFilaSql, texto);
 
                                     legendas.add(new Legenda(seq, arquivo.getEpisodio(), lingua, tempo, texto, traducao, som, imagem, vocabulario));
 
@@ -293,11 +296,11 @@ public class LegendasImportarController implements Initializable {
                                     String delete = "UPDATE " + schema + "." + base + " SET Vocabulario = '' WHERE Vocabulario IS NOT NULL;";
 
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(new FilaSQL(select, update, delete, false, false));
+                                        services.insertOrUpdateFila(new FilaSQL(select, update, delete, linguagemFilaSql, false, false));
 
                                     delete = "UPDATE "+  schema + "." + base + " SET Vocabulario = NULL WHERE Vocabulario = '';";
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(new FilaSQL("", "", delete, false, true));
+                                        services.insertOrUpdateFila(new FilaSQL("", "", delete, linguagemFilaSql, false, true));
                                 }
 
                                 File pastaMidia = new File(arquivo.getArquivo().getAbsolutePath().substring(0, arquivo.getArquivo().getAbsolutePath().lastIndexOf(".tsv")) + ".media");
@@ -398,6 +401,12 @@ public class LegendasImportarController implements Initializable {
     private Boolean valida() {
         Boolean valido = true;
 
+        if (cbLinguagemFilaSql.getValue() == null) {
+            valido = false;
+            cbLinguagemFilaSql.setUnFocusColor(Color.RED);
+            AlertasPopup.AlertaModal(controller.getStackPane(), controller.getRoot(), null, "Alerta", "Necessário informar uma linguagem de processamento.");
+        }
+
         if (cbBase.getValue() == null || cbBase.getValue().isEmpty()) {
             valido = false;
             cbBase.setUnFocusColor(Color.RED);
@@ -427,6 +436,7 @@ public class LegendasImportarController implements Initializable {
     private void desabilitaBotoes() {
         btnLimpar.setDisable(true);
         cbBase.setDisable(true);
+        cbLinguagemFilaSql.setDisable(true);
         cbLinguagem.setDisable(true);
         txtPipe.setDisable(true);
         txtNome.setDisable(true);
@@ -442,6 +452,7 @@ public class LegendasImportarController implements Initializable {
     private void habilitaBotoes() {
         btnLimpar.setDisable(false);
         cbBase.setDisable(false);
+        cbLinguagemFilaSql.setDisable(false);
         cbLinguagem.setDisable(false);
         txtPipe.setDisable(false);
         txtNome.setDisable(false);
@@ -456,8 +467,13 @@ public class LegendasImportarController implements Initializable {
             ckbVocabulario.setDisable(false);
     }
 
-    private String getVocabulario(Dicionario dicionario, Modo modo, String palavra) {
-        return processar.processarVocabulario(dicionario, modo, palavra);
+    private String getVocabulario(Dicionario dicionario, Modo modo, Language linguagem, String palavra) {
+        String vocabulario = "";
+        switch (linguagem) {
+            case JAPANESE -> vocabulario = processar.processarJapones(dicionario, modo, palavra);
+            case ENGLISH -> vocabulario = processar.processarIngles(palavra);
+        }
+        return vocabulario;
     }
 
     private String selecionaPasta(String pasta, Boolean isFile) {
@@ -572,6 +588,7 @@ public class LegendasImportarController implements Initializable {
         linkaCelulas();
         btnProcessar.setAccessibleText("PROCESSAR");
 
+        Validadores.setComboBoxNotEmpty(cbLinguagemFilaSql, false);
         Validadores.setComboBoxNotEmpty(cbLinguagem, false);
         Validadores.setComboBoxNotEmpty(cbBase, true);
         Validadores.setTextFieldNotEmpty(txtNome);
@@ -626,6 +643,15 @@ public class LegendasImportarController implements Initializable {
                 }
             }
         });
+
+        cbLinguagemFilaSql.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
+        cbLinguagem.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ESCAPE))
+                cbLinguagem.getSelectionModel().clearSelection();
+            else if (ke.getCode().equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB);
+        });
+        cbLinguagemFilaSql.getSelectionModel().selectFirst();
 
         cbLinguagem.getItems().addAll(Language.ENGLISH, Language.PORTUGUESE);
         cbLinguagem.setOnKeyPressed(ke -> {

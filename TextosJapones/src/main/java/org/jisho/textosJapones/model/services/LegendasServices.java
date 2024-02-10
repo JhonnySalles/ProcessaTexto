@@ -13,63 +13,63 @@ import java.util.List;
 
 public class LegendasServices {
 
-	private final LegendasDao processarDao = DaoFactory.createLegendasDao();
+	private final LegendasDao dao = DaoFactory.createLegendasDao();
 
 	public String getSchema() {
 		return DB.getDados(Conexao.DECKSUBTITLE).getBase();
 	}
 
 	public List<String> getTabelas() throws ExcessaoBd {
-		return processarDao.getTabelas();
+		return dao.getTabelas();
 	}
 
 	private void criarTabela(String tabela) throws ExcessaoBd {
-		if (processarDao.getTabelas().stream().filter(t -> t.equalsIgnoreCase(tabela)).findFirst().isEmpty())
-			processarDao.createTabela(tabela);
+		if (dao.getTabelas().stream().filter(t -> t.equalsIgnoreCase(tabela)).findFirst().isEmpty())
+			dao.createTabela(tabela);
 	}
 
 	public void salvar(String base, List<Legenda> legendas) throws ExcessaoBd {
 		criarTabela(base);
 
-		processarDao.delete(base, legendas.get(0));
+		dao.delete(base, legendas.get(0));
 		for (Legenda legenda : legendas) {
 			if (legenda.getId() == null)
-				processarDao.insert(base, legenda);
+				dao.insert(base, legenda);
 			else
-				processarDao.update(base, legenda);
+				dao.update(base, legenda);
 		}
 	}
 
 	public void comandoUpdate(String update, List<Processar> lista) throws ExcessaoBd {
 		for (Processar obj : lista)
-			processarDao.comandoUpdate(update, obj);
+			dao.comandoUpdate(update, obj);
 	}
 
 	public void comandoUpdate(String update, Processar obj) throws ExcessaoBd {
-		processarDao.comandoUpdate(update, obj);
+		dao.comandoUpdate(update, obj);
 	}
 
 	public List<Processar> comandoSelect(String select) throws ExcessaoBd {
-		return processarDao.comandoSelect(select);
+		return dao.comandoSelect(select);
 	}
 
 	public void comandoDelete(String delete) throws ExcessaoBd {
-		processarDao.comandoDelete(delete);
+		dao.comandoDelete(delete);
 	}
 
 	public void insertOrUpdateFila(FilaSQL fila) throws ExcessaoBd {
 		if (fila.getId() == null)
-			processarDao.comandoInsert(fila);
+			dao.comandoInsert(fila);
 		else
-			processarDao.comandoUpdate(fila);
+			dao.comandoUpdate(fila);
 	}
 
 	public List<FilaSQL> selectFila() throws ExcessaoBd {
-		return processarDao.comandoSelect();
+		return dao.comandoSelect();
 	}
 
 	public Boolean existFila(String deleteSql) throws ExcessaoBd {
-		return processarDao.existFila(deleteSql);
+		return dao.existFila(deleteSql);
 	}
 
 }

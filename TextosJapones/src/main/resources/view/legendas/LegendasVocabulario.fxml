@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import java.lang.*?>
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.legendas.LegendasGerarVocabularioController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.legendas.LegendasVocabularioController">
    <children>
       <SplitPane dividerPositions="0.5887096774193549" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="background-Black2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -21,10 +21,8 @@
                   <VBox spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                      <children>
                         <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="500.0" spacing="10.0">
-                           <padding>
-                              <Insets left="15.0" right="15.0" />
-                           </padding>
                            <children>
+                              <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="100.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
                               <JFXTextField fx:id="txtCaminhoExportar" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Arquivo para exportar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                               <JFXButton fx:id="btnCaminhoExportar" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarCaminhoExportar" prefWidth="35.0">
                                  <graphic>

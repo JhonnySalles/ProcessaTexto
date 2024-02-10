@@ -1,9 +1,10 @@
 package org.jisho.textosJapones.database.dao;
 
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
-import org.jisho.textosJapones.model.entities.mangaextractor.MangaPagina;
-import org.jisho.textosJapones.model.entities.mangaextractor.MangaTabela;
-import org.jisho.textosJapones.model.entities.novelextractor.*;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelCapitulo;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelTexto;
+import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 

@@ -2,7 +2,6 @@ package org.jisho.textosJapones.database.dao;
 
 import org.jisho.textosJapones.database.dao.implement.*;
 import org.jisho.textosJapones.database.mysql.DB;
-import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Conexao;
 
 import java.sql.Connection;

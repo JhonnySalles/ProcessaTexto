@@ -7,7 +7,6 @@ import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,6 +105,10 @@ public class RevisarInglesServices {
 
 	public Revisar selectRevisar(String pesquisar, Boolean isAnime, Boolean isManga, Boolean isNovel) throws ExcessaoBd {
 		return revisarDao.selectRevisar(pesquisar, isAnime, isManga, isNovel);
+	}
+
+	public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
+		return revisarDao.selectSimilar(vocabulario, ingles);
 	}
 
 	public void incrementaVezesAparece(String vocabulario) throws ExcessaoBd {

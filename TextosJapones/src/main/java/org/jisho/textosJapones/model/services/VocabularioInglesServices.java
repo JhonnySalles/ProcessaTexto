@@ -2,7 +2,6 @@ package org.jisho.textosJapones.model.services;
 
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
-import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -79,10 +78,6 @@ public class VocabularioInglesServices {
 
 	public boolean existeExclusao(String palavra) throws ExcessaoBd {
 		return vocabularioDao.existeExclusao(palavra, palavra);
-	}
-	
-	public boolean existeExclusao(String palavra, String basico) throws ExcessaoBd {
-		return vocabularioDao.existeExclusao(palavra, basico);
 	}
 
 	public Set<String> selectExclusao() throws ExcessaoBd {

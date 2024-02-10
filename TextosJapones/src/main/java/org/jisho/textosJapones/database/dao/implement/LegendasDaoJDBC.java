@@ -5,6 +5,7 @@ import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.FilaSQL;
 import org.jisho.textosJapones.model.entities.Processar;
 import org.jisho.textosJapones.model.entities.subtitle.Legenda;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 import org.slf4j.Logger;
@@ -43,10 +44,10 @@ public class LegendasDaoJDBC implements LegendasDao {
                     "    SET new.Atualizacao = NOW();" +
                     "  END";
 
-    final private String INSERT_FILA = "INSERT INTO fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    final private String UPDATE_FILA = "UPDATE fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, isExporta = ?, isLimpeza = ? WHERE id = ?";
-    final private String SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, isExporta, isLimpeza FROM fila_sql";
-    final private String EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, isExporta, isLimpeza FROM fila_sql WHERE delete_sql = ?";
+    final private String INSERT_FILA = "INSERT INTO fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    final private String UPDATE_FILA = "UPDATE fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?";
+    final private String SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM fila_sql";
+    final private String EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM fila_sql WHERE delete_sql = ?";
 
     final private static String INSERT = "INSERT INTO %s (Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?);";
     final private static String UPDATE = "UPDATE %s SET Episodio = ?, Linguagem = ?, TempoInicial = ?, TempoFinal = ?, Texto = ?, Traducao = ?, Vocabulario = ? WHERE id = ?;";
@@ -260,8 +261,9 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setString(3, fila.getUpdate());
             st.setString(4, fila.getDelete());
             st.setString(5, fila.getVocabulario());
-            st.setBoolean(6, fila.isExporta());
-            st.setBoolean(7, fila.isLimpeza());
+            st.setString(6, fila.getLinguagem().getSigla().toUpperCase());
+            st.setBoolean(7, fila.isExporta());
+            st.setBoolean(8, fila.isLimpeza());
 
             int rowsAffected = st.executeUpdate();
 
@@ -289,9 +291,10 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setString(2, fila.getUpdate());
             st.setString(3, fila.getDelete());
             st.setString(4, fila.getVocabulario());
-            st.setBoolean(5, fila.isExporta());
-            st.setBoolean(6, fila.isLimpeza());
-            st.setString(7, fila.getId().toString());
+            st.setString(5, fila.getLinguagem().getSigla().toUpperCase());
+            st.setBoolean(6, fila.isExporta());
+            st.setBoolean(7, fila.isLimpeza());
+            st.setString(8, fila.getId().toString());
 
             int rowsAffected = st.executeUpdate();
 
@@ -314,7 +317,6 @@ public class LegendasDaoJDBC implements LegendasDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-
             st = conn.prepareStatement(EXISTS_FILA);
             st.setString(1, deleteSql);
             rs = st.executeQuery();
@@ -343,6 +345,7 @@ public class LegendasDaoJDBC implements LegendasDao {
             while (rs.next())
                 list.add(new FilaSQL(UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("select_sql"),
                         rs.getString("update_sql"), rs.getString("delete_sql"), rs.getString("vocabulario"),
+                        Language.getEnum(rs.getString("linguagem").toLowerCase()),
                         rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")));
 
             return list;

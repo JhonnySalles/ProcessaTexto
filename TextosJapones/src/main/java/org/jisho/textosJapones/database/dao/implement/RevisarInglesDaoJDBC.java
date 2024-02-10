@@ -302,7 +302,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-
             if (!pesquisar.trim().isEmpty()) {
                 st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
                 st.setString(1, pesquisar);
@@ -345,7 +344,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
 
     @Override
     public List<Revisar> selectSimilar(String vocabulario, String ingles) throws ExcessaoBd {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
