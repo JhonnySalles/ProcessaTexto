@@ -429,7 +429,7 @@ public class ProcessarMangas {
         progress.getTitulo().setText("Mangas - Processar vocabulário");
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         Task<Void> processarTabela = new Task<>() {
-            final Pattern ignore = Pattern.compile("[\\d|\\W]");
+            final Pattern matcher = Pattern.compile("[\\d|\\W]");
 
             @Override
             protected Void call() throws Exception {
@@ -514,7 +514,7 @@ public class ProcessarMangas {
                                                     .collect(Collectors.toSet());
 
                                             for (String palavra : palavras) {
-                                                if (ignore.matcher(palavra).find())
+                                                if (matcher.matcher(palavra).find())
                                                     continue;
 
                                                 if (validaHistorico.contains(palavra)) {

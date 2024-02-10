@@ -156,7 +156,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(INSERT_EXCLUSAO, Statement.RETURN_GENERATED_KEYS);
-            st.setString(1, palavra);
+            st.setString(1, palavra.toLowerCase());
 
             st.executeUpdate();
         } catch (SQLException e) {
@@ -197,7 +197,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
         ResultSet rs = null;
         try {
             st = conn.prepareStatement(SELECT_EXCLUSAO);
-            st.setString(1, palavra);
+            st.setString(1, palavra.toLowerCase());
             rs = st.executeQuery();
 
             if (rs.next())
