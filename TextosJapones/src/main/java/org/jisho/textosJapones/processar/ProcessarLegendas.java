@@ -333,6 +333,7 @@ public class ProcessarLegendas {
         try {
             Pattern ignore = Pattern.compile("[\\d|\\W]");
             if (frase != null && !frase.isEmpty()) {
+                frase = frase.toLowerCase();
                 Set<String> palavras = Stream.of(frase.split(" "))
                         .map(txt -> txt.replaceAll("\\W", ""))
                         .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
@@ -355,7 +356,7 @@ public class ProcessarLegendas {
     }
 
     private String gerarVocabularioIngles(String texto) throws ExcessaoBd {
-        String vocabularios = "";
+        String vocab = "";
 
         if (!existe.contains(texto) && !vocabularioIngles.existeExclusao(texto)) {
             existe.add(texto);
@@ -363,15 +364,15 @@ public class ProcessarLegendas {
             Vocabulario palavra = null;
             if (validaHistorico.contains(texto))
                 palavra = vocabHistorico.stream()
-                        .filter(vocab -> texto.equalsIgnoreCase(vocab.getVocabulario()))
+                        .filter(vc -> texto.equalsIgnoreCase(vc.getVocabulario()))
                         .findFirst().orElse(null);
 
             if (palavra != null)
-                vocabularios = texto + " - " + palavra.getPortugues() + " ";
+                vocab = "• " + texto.substring(0, 1).toUpperCase() + texto.substring(1) + " - " + palavra.getPortugues() + " ";
             else {
                 palavra = vocabularioIngles.select(texto);
                 if (palavra != null) {
-                    vocabularios = texto + " - " + palavra.getPortugues() + " ";
+                    vocab = "• " + texto.substring(0, 1).toUpperCase() + texto.substring(1) + " - " + palavra.getPortugues() + " ";
 
                     validaHistorico.add(texto);
                     vocabHistorico.add(palavra);
@@ -379,7 +380,7 @@ public class ProcessarLegendas {
                 } else if (usarRevisar) {
                     Revisar revisar = revisarIngles.select(texto);
                     if (revisar != null) {
-                        vocabularios = texto + " - " + revisar.getPortugues() + "¹ ";
+                        vocab = "• " + texto.substring(0, 1).toUpperCase() + texto.substring(1) + " - " + revisar.getPortugues() + "¹ ";
                         validaHistorico.add(texto);
                         vocabHistorico.add(new Vocabulario(texto, revisar.getPortugues() + "¹"));
                         vocabulario.add(texto);
@@ -396,7 +397,7 @@ public class ProcessarLegendas {
 
                         revisarIngles.insert(revisar);
 
-                        vocabularios = texto + " - " + revisar.getPortugues() + "¹ ";
+                        vocab = "• " + texto.substring(0, 1).toUpperCase() + texto.substring(1) + " - " + revisar.getPortugues() + "¹ ";
                         validaHistorico.add(texto);
                         vocabHistorico.add(new Vocabulario(texto, revisar.getPortugues() + "¹"));
                         vocabulario.add(texto);
@@ -405,7 +406,7 @@ public class ProcessarLegendas {
             }
         }
 
-        return vocabularios;
+        return vocab;
     }
 
 }

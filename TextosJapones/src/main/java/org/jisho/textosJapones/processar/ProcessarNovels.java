@@ -1391,7 +1391,7 @@ public class ProcessarNovels {
                 callback.call(size);
 
                 if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
-                    Set<String> palavras = Stream.of(texto.getTexto().split(" "))
+                    Set<String> palavras = Stream.of(texto.getTexto().toLowerCase().split(" "))
                             .map(txt -> txt.replaceAll("\\W", ""))
                             .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
                             .collect(Collectors.toSet());
@@ -1459,8 +1459,7 @@ public class ProcessarNovels {
                                     }
 
                                     serviceInglesRevisar.insert(revisar);
-                                    Platform.runLater(() -> MenuPrincipalController
-                                            .getController().getLblLog().setText(""));
+                                    Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(""));
                                 } else {
                                     if (!revisar.isNovel()) {
                                         revisar.setNovel(true);

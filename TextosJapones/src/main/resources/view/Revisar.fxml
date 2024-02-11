@@ -105,8 +105,7 @@
                         <JFXCheckBox fx:id="cbSubstituirKanji" checkedColor="#71afe5" selected="true" text="Substituir kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </HBox>
-                  <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
-                  <JFXButton fx:id="btnNovoAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnNovo" prefWidth="110.0" styleClass="background-White1" text="Novo" />
+                  <JFXTextField fx:id="txtExclusao" focusColor="#71afe5" labelFloat="true" promptText="Exclusão" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

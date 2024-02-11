@@ -305,7 +305,6 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
             if (!pesquisar.trim().isEmpty()) {
                 st = conn.prepareStatement(SELECT_REVISAR_PESQUISA);
                 st.setString(1, pesquisar);
-                st.setString(2, pesquisar);
             } else {
                 String parametro = "";
 

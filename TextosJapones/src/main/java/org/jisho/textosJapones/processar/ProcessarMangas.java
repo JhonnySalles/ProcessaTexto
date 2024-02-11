@@ -508,7 +508,7 @@ public class ProcessarMangas {
                                     vocabValida = new HashSet<>();
                                     for (MangaTexto texto : pagina.getTextos()) {
                                         if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
-                                            Set<String> palavras = Stream.of(texto.getTexto().split(" "))
+                                            Set<String> palavras = Stream.of(texto.getTexto().toLowerCase().split(" "))
                                                     .map(txt -> txt.replaceAll("\\W", ""))
                                                     .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
                                                     .collect(Collectors.toSet());

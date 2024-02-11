@@ -10,9 +10,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Language;
+import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.RevisarInglesServices;
 import org.jisho.textosJapones.model.services.RevisarJaponesServices;
@@ -63,12 +65,6 @@ public class RevisarController implements Initializable {
     private JFXButton btnNovo;
 
     @FXML
-    private JFXButton btnSalvarAux;
-
-    @FXML
-    private JFXButton btnNovoAux;
-
-    @FXML
     private JFXCheckBox cbLegenda;
 
     @FXML
@@ -113,6 +109,9 @@ public class RevisarController implements Initializable {
     @FXML
     private JFXTextArea txtAreaPortugues;
 
+    @FXML
+    private JFXTextField txtExclusao;
+
     private final RevisarJaponesServices revisarJapones = new RevisarJaponesServices();
     private final VocabularioJaponesServices vocabularioJapones = new VocabularioJaponesServices();
 
@@ -152,7 +151,7 @@ public class RevisarController implements Initializable {
 
                     revisarIngles.delete(revisando);
                     revisarIngles.delete(similar);
-                } else  {
+                } else {
                     vocabularioJapones.insert(palavra);
                     vocabularioJapones.insert(lista);
 
@@ -173,7 +172,7 @@ public class RevisarController implements Initializable {
                 else
                     vocabularioJapones.insertOrUpdate(corrigindo);
             } catch (ExcessaoBd e) {
-                
+
                 LOGGER.error(e.getMessage(), e);
                 error = true;
             }
@@ -199,7 +198,7 @@ public class RevisarController implements Initializable {
                 else
                     revisarJapones.delete(revisando);
             } catch (ExcessaoBd e) {
-                
+
                 LOGGER.error(e.getMessage(), e);
                 error = true;
             }
@@ -414,6 +413,10 @@ public class RevisarController implements Initializable {
         cbLinguagem.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
         cbLinguagem.getSelectionModel().selectFirst();
         cbLinguagem.setOnAction(e -> {
+            switch (cbLinguagem.getSelectionModel().getSelectedItem()) {
+                case JAPANESE -> cbSubstituirKanji.setSelected(true);
+                case ENGLISH -> cbSubstituirKanji.setSelected(false);
+            }
             limpaCampos();
             pesquisar();
         });
@@ -423,20 +426,18 @@ public class RevisarController implements Initializable {
         txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
             if (cbSubstituirKanji.isSelected())
                 if (newVal.matches(allFlag + japanese + allFlag))
-                    Platform.runLater(
-                            () -> txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, "")));
+                    txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, ""));
         });
 
         txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
             if (cbSubstituirKanji.isSelected())
-                if (newVal.matches(allFlag + notJapanese + allFlag))
-                    Platform.runLater(() -> {
-                        String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
-                        txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
+                if (newVal.matches(allFlag + notJapanese + allFlag)) {
+                    String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
+                    txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
 
-                        if (newVal.matches(allFlag + japanese + allFlag))
-                            frasePortugues = texto.replaceAll(japanese, "");
-                    });
+                    if (newVal.matches(allFlag + japanese + allFlag))
+                        frasePortugues = texto.replaceAll(japanese, "");
+                }
         });
 
         txtPesquisar.focusedProperty().addListener((o, oldVal, newVal) -> {
@@ -458,6 +459,43 @@ public class RevisarController implements Initializable {
                 robot.keyPress(KeyCode.TAB);
         });
 
+        txtExclusao.focusedProperty().addListener((o, oldVal, newVal) -> {
+            if (oldVal) {
+                if (txtExclusao.getText() != null && !txtExclusao.getText().isEmpty()) {
+                    try {
+                        String exclusao = txtExclusao.getText().trim().toLowerCase();
+                        Boolean sucesso = false;
+                        switch (cbLinguagem.getSelectionModel().getSelectedItem()) {
+                            case JAPANESE:
+                                if (exclusao.matches(allFlag + japanese + allFlag)) {
+                                    vocabularioJapones.insertExclusao(txtExclusao.getText().trim().toLowerCase());
+                                    sucesso = true;
+                                }
+                                break;
+                            case ENGLISH:
+                                if (exclusao.matches(allFlag + "[A-Za-z\\d]" + allFlag)) {
+                                    vocabularioIngles.insertExclusao(txtExclusao.getText().trim().toLowerCase());
+                                    sucesso = true;
+                                }
+                                break;
+                        }
+                        if (sucesso) {
+                            txtExclusao.setText("");
+                            Notificacoes.notificacao(Notificacao.SUCESSO, "Salvo.", "Exclusão salvo com sucesso. (" + exclusao +")");
+                        } else
+                            Notificacoes.notificacao(Notificacao.AVISO, "Alerta.", "Verifique a linguagem de exclusão ou a existência de caracteres especiais.");
+                    } catch (ExcessaoBd e) {
+                        Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao salvar exclusão. \n" + e.getMessage());
+                    }
+                }
+            }
+        });
+
+        txtExclusao.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB);
+        });
+
         listenerCorrecao = (o, oldVal, newVal) -> {
             if (newVal)
                 pesquisar();
@@ -472,7 +510,7 @@ public class RevisarController implements Initializable {
                 pesquisar();
             else {
                 txtSimilar.setText("");
-                similar = new ArrayList<Revisar>();
+                similar = new ArrayList<>();
             }
         });
 
