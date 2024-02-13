@@ -20,7 +20,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
     private final Connection conn;
 
-    final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, leitura, portugues) VALUES (?,?,?,?,?);";
+    final private String INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, leitura, portugues) VALUES (?,?,?,?);";
     final private String UPDATE = "UPDATE vocabulario SET leitura = ?, portugues = ? WHERE vocabulario = ?;";
     final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
     final private String SELECT = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE vocabulario = ?;";

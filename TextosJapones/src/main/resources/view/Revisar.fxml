@@ -94,9 +94,6 @@
                </padding>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="500.0" spacing="10.0">
-               <padding>
-                  <Insets left="15.0" right="15.0" />
-               </padding>
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
@@ -106,6 +103,7 @@
                      </children>
                   </HBox>
                   <JFXTextField fx:id="txtExclusao" focusColor="#71afe5" labelFloat="true" promptText="Exclusão" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                  <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
                </children>
             </HBox>
          </children>

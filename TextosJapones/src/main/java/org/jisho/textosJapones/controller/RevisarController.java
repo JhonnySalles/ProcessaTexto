@@ -62,6 +62,9 @@ public class RevisarController implements Initializable {
     private JFXButton btnSalvar;
 
     @FXML
+    private JFXButton btnSalvarAux;
+
+    @FXML
     private JFXButton btnNovo;
 
     @FXML
@@ -331,10 +334,7 @@ public class RevisarController implements Initializable {
             return;
 
         try {
-            String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(),
-                    Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(),
-                    MenuPrincipalController.getController().getContaGoogle()));
-
+            String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(), MenuPrincipalController.getController().getContaGoogle()));
             txtAreaPortugues.setText(Util.normalize(texto));
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
@@ -424,13 +424,17 @@ public class RevisarController implements Initializable {
         limpaCampos();
 
         txtAreaPortugues.textProperty().addListener((o, oldVal, newVal) -> {
-            if (cbSubstituirKanji.isSelected())
+            if (cbSubstituirKanji.isSelected()) {
                 if (newVal.matches(allFlag + japanese + allFlag))
                     txtAreaPortugues.setText(newVal.replaceFirst(" - ", "").replaceAll(japanese, ""));
+            } else {
+                if (newVal.contains("-"))
+                    txtAreaPortugues.setText(newVal.substring(newVal.indexOf("-")).replaceFirst("-", "").replaceAll("¹", "").trim());
+            }
         });
 
         txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
-            if (cbSubstituirKanji.isSelected())
+            if (cbSubstituirKanji.isSelected()) {
                 if (newVal.matches(allFlag + notJapanese + allFlag)) {
                     String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
                     txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
@@ -438,6 +442,13 @@ public class RevisarController implements Initializable {
                     if (newVal.matches(allFlag + japanese + allFlag))
                         frasePortugues = texto.replaceAll(japanese, "");
                 }
+            } else {
+                if (newVal.contains("-")) {
+                    String texto = newVal.substring(0, newVal.indexOf("-")).replaceFirst("-", "").trim();
+                    txtPesquisar.setText(texto);
+                    frasePortugues = newVal.replaceFirst(texto, "").replaceFirst("-", "").trim();
+                }
+            }
         });
 
         txtPesquisar.focusedProperty().addListener((o, oldVal, newVal) -> {
@@ -445,7 +456,7 @@ public class RevisarController implements Initializable {
                 txtPesquisar.setUnFocusColor(Color.web("#106ebe"));
                 pesquisar();
 
-                if (revisando != null && cbSubstituirKanji.isSelected() && !frasePortugues.isEmpty()) {
+                if (revisando != null && !frasePortugues.isEmpty()) {
                     txtAreaPortugues.setText(frasePortugues);
                     onBtnFormatar();
                 }
