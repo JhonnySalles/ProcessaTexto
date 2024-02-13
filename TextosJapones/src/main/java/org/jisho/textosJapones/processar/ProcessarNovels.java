@@ -1377,7 +1377,7 @@ public class ProcessarNovels {
         vocabVolume = new HashSet<>();
         palavraValida = new HashSet<>();
 
-        Pattern ignore = Pattern.compile("[\\d|\\W]");
+        Pattern ignore = Pattern.compile("[\\d]|[^a-zA-Z0-9_'çãáàéèíìúù]");
 
         Integer[] size = new Integer[2];
         size[0] = 0;
@@ -1392,7 +1392,6 @@ public class ProcessarNovels {
 
                 if (texto.getTexto() != null && !texto.getTexto().isEmpty()) {
                     Set<String> palavras = Stream.of(texto.getTexto().toLowerCase().split(" "))
-                            .map(txt -> txt.replaceAll("\\W", ""))
                             .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
                             .collect(Collectors.toSet());
 
@@ -1401,8 +1400,7 @@ public class ProcessarNovels {
                             continue;
 
                         if (validaHistorico.contains(palavra)) {
-                            VocabularioExterno vocabulario = vocabHistorico.stream().filter(vocab -> palavra.equalsIgnoreCase(vocab.getPalavra()))
-                                    .findFirst().orElse(null);
+                            VocabularioExterno vocabulario = vocabHistorico.stream().filter(vocab -> palavra.equalsIgnoreCase(vocab.getPalavra())).findFirst().orElse(null);
                             if (vocabulario != null) {
                                 vocabCapitulo.add(vocabulario);
                                 vocabVolume.add(vocabulario);

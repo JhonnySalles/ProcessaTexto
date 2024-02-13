@@ -446,7 +446,7 @@ public class RevisarController implements Initializable {
                 if (newVal.contains("-")) {
                     String texto = newVal.substring(0, newVal.indexOf("-")).replaceFirst("-", "").trim();
                     txtPesquisar.setText(texto);
-                    frasePortugues = newVal.replaceFirst(texto, "").replaceFirst("-", "").trim();
+                    frasePortugues = newVal.replaceFirst(texto, "").replaceFirst("-", "").replaceAll("¹", "").trim();
                 }
             }
         });
@@ -468,6 +468,12 @@ public class RevisarController implements Initializable {
         txtPesquisar.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER))
                 robot.keyPress(KeyCode.TAB);
+        });
+
+        txtExclusao.textProperty().addListener((o, oldVal, newVal) -> {
+            String exclusao = newVal.trim().toLowerCase();
+            if (exclusao.contains("-"))
+                txtExclusao.setText(exclusao.substring(0, exclusao.indexOf("-")).replaceFirst("-", "").trim());
         });
 
         txtExclusao.focusedProperty().addListener((o, oldVal, newVal) -> {

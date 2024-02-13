@@ -331,11 +331,10 @@ public class ProcessarLegendas {
         String vocab = "";
 
         try {
-            Pattern ignore = Pattern.compile("[\\d|\\W]");
+            Pattern ignore = Pattern.compile("[\\d]|[^a-zA-Z0-9_'çãáàéèíìúù]");
             if (frase != null && !frase.isEmpty()) {
                 frase = frase.toLowerCase();
                 Set<String> palavras = Stream.of(frase.split(" "))
-                        .map(txt -> txt.replaceAll("\\W", ""))
                         .filter(txt -> !txt.trim().contains(" ") && !txt.isEmpty())
                         .collect(Collectors.toSet());
 
