@@ -59,12 +59,13 @@ public class LegendasMarcasController implements Initializable {
 
         String tempo = itens[0].trim();
         tempo = tempo.substring(tempo.lastIndexOf(" ")).trim();
-        String nome = itens[1].trim();
-        nome = nome.replaceAll("\n", " ");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime time = LocalTime.parse(tempo, formatter);
         LocalTime nextTime = time.plusSeconds(3);
+
+        String nome = (itens.length > 1) ? itens[1].trim() : "Posição " + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) ;
+        nome = nome.replaceAll("\n", " ");
 
         return time.format(DateTimeFormatter.ofPattern("HH:mm:ss.S")) + " " + nextTime.format(DateTimeFormatter.ofPattern("HH:mm:ss.S")) + " " + nome + "\n";
     }
