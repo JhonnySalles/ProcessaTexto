@@ -581,7 +581,7 @@ public class ProcessarNovels {
                     titulo = nome.substring(0, nome.lastIndexOf(matcher.group(0)));
             } else {
                 matcher = Pattern.compile("(([0-9]+.)?[0-9]+)").matcher(arq.trim());
-                if (matcher.find() && !matcher.group(0).isEmpty())
+                if (matcher.find() && !matcher.group(0).isEmpty() && !matcher.group(0).contains("-"))
                     volume = Float.valueOf(matcher.group(0));
                 else {
                     matcher = Pattern.compile("(([\uFF10-\uFF19]+.)?[\uFF10-\uFF19]+$)").matcher(arq.trim());
@@ -594,7 +594,7 @@ public class ProcessarNovels {
                         if (matcher.find() && !matcher.group(0).isEmpty())
                             volume = Float.valueOf(matcher.group(0).replaceAll("\uFF10", "0").replaceAll("\uFF11", "1").replaceAll("\uFF12", "2").replaceAll("\uFF13", "3")
                                     .replaceAll("\uFF14", "4").replaceAll("\uFF15", "5").replaceAll("\uFF16", "6").replaceAll("\uFF17", "7")
-                                    .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9"));
+                                    .replaceAll("\uFF18", "8").replaceAll("\uFF19", "9").replaceAll("\uFF0E", "."));
                     }
                 }
             }
@@ -697,7 +697,7 @@ public class ProcessarNovels {
                             cap = Float.valueOf(aux);
                     }
                 } else if (linguagem.compareTo(Language.ENGLISH) == 0) {
-                    Matcher matcher = Pattern.compile("((capítulo |capitulo |cap. |cap )?([\\d.]+)?[\\d.]+)").matcher(indice.toLowerCase());
+                    Matcher matcher = Pattern.compile("((capítulo |capitulo |cap. |cap )?([\\d.]+)?[\\d]+)").matcher(indice.toLowerCase());
                     if (matcher.find() && !matcher.group(0).isEmpty()) {
                         String aux = matcher.group(0).toLowerCase()
                                 .replace("capítulo", "")
@@ -711,7 +711,7 @@ public class ProcessarNovels {
                 }
 
                 if (cap == lastCap) {
-                    Matcher matcher = Pattern.compile("^(([\\d.]+)?[\\d.]+)").matcher(indice.toLowerCase());
+                    Matcher matcher = Pattern.compile("^(([\\d.]+)?[\\d]+)").matcher(indice.toLowerCase());
                     if (matcher.find() && !matcher.group(0).isEmpty())
                         cap = Float.valueOf(matcher.group(0));
                 }
