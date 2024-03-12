@@ -278,30 +278,28 @@ public class ProcessarMangas {
 
     private String getDesmembrado(String palavra) {
         String resultado = "";
-        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog()
-                .setText(palavra + " : Desmembrando a palavra."));
-        resultado = processaPalavras(
-                desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B),
-                Modo.B);
+        Platform.runLater(() -> MenuPrincipalController.getController().getLblLog().setText(palavra + " : Desmembrando a palavra."));
+        resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.B),Modo.B);
 
         if (resultado.isEmpty())
-            resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
-                    MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
+            resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
 
         return resultado;
     }
 
-    private String processaPalavras(List<String> palavras, Modo modo) {
+    private String processaPalavras(String original, List<String> palavras, Modo modo) {
         String desmembrado = "";
         try {
             for (String palavra : palavras) {
+                if (original.equalsIgnoreCase(palavra))
+                    continue;
+
                 String resultado = getSignificado(palavra);
 
                 if (!resultado.trim().isEmpty())
                     desmembrado += palavra + " - " + resultado + "; ";
                 else if (modo.equals(Modo.B)) {
-                    resultado = processaPalavras(desmembra.processarDesmembrar(palavra,
-                            MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
+                    resultado = processaPalavras(original, desmembra.processarDesmembrar(palavra,MenuPrincipalController.getController().getDicionario(), Modo.A), Modo.A);
                     if (!resultado.trim().isEmpty())
                         desmembrado += resultado;
                 }
@@ -362,11 +360,11 @@ public class ProcessarMangas {
                                     .setText(m.surface() + " : Vocabulário novo."));
                             revisar.setIngles(getSignificado(revisar.getVocabulario()));
 
-                            if (revisar.getIngles().isEmpty())
+                            if (revisar.getIngles().isEmpty() && !revisar.getFormaBasica().equalsIgnoreCase(revisar.getVocabulario()))
                                 revisar.setIngles(getSignificado(revisar.getFormaBasica()));
 
                             if (revisar.getIngles().isEmpty())
-                                revisar.setIngles(getSignificado(getDesmembrado(revisar.getVocabulario())));
+                                revisar.setIngles(getDesmembrado(revisar.getVocabulario()));
 
                             if (!revisar.getIngles().isEmpty()) {
                                 try {

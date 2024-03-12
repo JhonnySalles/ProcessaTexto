@@ -229,7 +229,7 @@ public class ProcessarLegendas {
                                     revisar.setIngles(getSignificado(revisar.getFormaBasica()));
 
                                 if (revisar.getIngles().isEmpty())
-                                    revisar.setIngles(getSignificado(getDesmembrado(revisar.getVocabulario())));
+                                    revisar.setIngles(getDesmembrado(revisar.getVocabulario()));
 
                                 if (!revisar.getIngles().isEmpty()) {
                                     try {
