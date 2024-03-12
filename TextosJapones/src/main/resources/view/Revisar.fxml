@@ -97,12 +97,12 @@
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
+                        <JFXTextField fx:id="txtExclusao" focusColor="#71afe5" labelFloat="true" promptText="Exclusão" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="btnFormatar" focusTraversable="false" minWidth="100.0" onAction="#onBtnFormatar" prefWidth="110.0" styleClass="background-White1" text="Formatar" />
                         <JFXCheckBox fx:id="cbDuplicados" checkedColor="#71afe5" selected="true" text="Substituir duplicados" textFill="WHITE" unCheckedColor="#106ebe" />
                         <JFXCheckBox fx:id="cbSubstituirKanji" checkedColor="#71afe5" selected="true" text="Substituir kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
                      </children>
                   </HBox>
-                  <JFXTextField fx:id="txtExclusao" focusColor="#71afe5" labelFloat="true" promptText="Exclusão" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
                   <JFXButton fx:id="btnSalvarAux" focusTraversable="false" minWidth="100.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
                </children>
             </HBox>
