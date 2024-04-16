@@ -38,6 +38,15 @@
                                                 </ImageView>
                                              </graphic>
                                           </JFXButton>
+                                          <JFXButton fx:id="btnCompartilhamento" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" onAction="#onBtnCompartilhamentoDatabase" prefHeight="45.0" prefWidth="2.0">
+                                             <graphic>
+                                                <ImageView fx:id="imgCompartilhamento" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/bd/icoCompartilhamentoDataBase_48.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </JFXButton>
                                        </children>
                                        <padding>
                                           <Insets left="15.0" />

@@ -82,6 +82,15 @@ public class MenuPrincipalController implements Initializable {
     final static Image imgAnimaImportaConcluido = new Image(
             Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Concluido_48.png"));
 
+    final static Image imgAnimaCompartilha = new Image(
+            Animacao.class.getResourceAsStream("/images/export/icoCompartilhamentoDataBase_48.png"));
+    final static Image imgAnimaCompartilhaEspera = new Image(
+            Animacao.class.getResourceAsStream("/images/export/icoCompartilhamentoDataBaseEspera_48.png"));
+    final static Image imgAnimaCompartilhaErro = new Image(
+            Animacao.class.getResourceAsStream("/images/export/icoCompartilhamentoDataBaseErro_48.png"));
+    final static Image imgAnimaCompartilhaEnvio = new Image(
+            Animacao.class.getResourceAsStream("/images/export/icoCompartilhamentoDataBaseEnvio_48.png"));
+
     @FXML
     private AnchorPane apGlobal;
 
@@ -102,6 +111,12 @@ public class MenuPrincipalController implements Initializable {
 
     @FXML
     private ImageView imgBackup;
+
+    @FXML
+    private JFXButton btnCompartilhamento;
+
+    @FXML
+    private ImageView imgCompartilhamento;
 
     @FXML
     private JFXComboBox<Site> cbSite;
@@ -130,11 +145,17 @@ public class MenuPrincipalController implements Initializable {
 
     private PopOver pop;
     private Timeline tmlImagemBackup;
-    private final Animacao animacao = new Animacao();
+    private final Animacao animacaoConexao = new Animacao();
+    private final Animacao animacaoCompartilhaDataBase = new Animacao();
 
     @FXML
     private void onBtnVerificaConexao() {
         verificaConexao();
+    }
+
+    @FXML
+    private void onBtnCompartilhamentoDatabase() {
+        compartilhaDataBase();
     }
 
     @FXML
@@ -146,7 +167,7 @@ public class MenuPrincipalController implements Initializable {
     }
 
     public void setImagemBancoErro(String erro) {
-        animacao.tmLineImageBanco.stop();
+        animacaoConexao.tmLineImageBanco.stop();
         imgConexaoBase.setImage(imgAnimaBancoErro);
         Notificacoes.notificacao(Notificacao.ERRO, "Erro.", erro);
     }
@@ -169,18 +190,18 @@ public class MenuPrincipalController implements Initializable {
     }
 
     public void cancelaBackup() {
-        animacao.tmLineImageBackup.stop();
+        animacaoConexao.tmLineImageBackup.stop();
         imgBackup.setImage(imgAnimaBackup);
     }
 
     public void importaBackup() {
-        animacao.animaImageBackup(imgBackup, imgAnimaImporta, imgAnimaImportaEspera);
-        animacao.tmLineImageBackup.play();
+        animacaoConexao.animaImageBackup(imgBackup, imgAnimaImporta, imgAnimaImportaEspera);
+        animacaoConexao.tmLineImageBackup.play();
         Backup.importarBackup(this);
     }
 
     public void importaConcluido(boolean erro) {
-        animacao.tmLineImageBackup.stop();
+        animacaoConexao.tmLineImageBackup.stop();
         if (erro)
             imgBackup.setImage(imgAnimaImportaErro);
         else {
@@ -192,13 +213,13 @@ public class MenuPrincipalController implements Initializable {
     }
 
     public void exportaBackup() {
-        animacao.animaImageBackup(imgBackup, imgAnimaExporta, imgAnimaExportaEspera);
-        animacao.tmLineImageBackup.play();
+        animacaoConexao.animaImageBackup(imgBackup, imgAnimaExporta, imgAnimaExportaEspera);
+        animacaoConexao.tmLineImageBackup.play();
         Backup.exportarBackup(this);
     }
 
     public void exportaConcluido(boolean erro) {
-        animacao.tmLineImageBackup.stop();
+        animacaoConexao.tmLineImageBackup.stop();
         if (erro)
             imgBackup.setImage(imgAnimaExportaErro);
         else
@@ -277,7 +298,7 @@ public class MenuPrincipalController implements Initializable {
     }
 
     public void verificaConexao() {
-        animacao.tmLineImageBanco.play();
+        animacaoConexao.tmLineImageBanco.play();
 
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         Task<String> verificaConexao = new Task<String>() {
@@ -290,7 +311,7 @@ public class MenuPrincipalController implements Initializable {
 
             @Override
             protected void succeeded() {
-                animacao.tmLineImageBanco.stop();
+                animacaoConexao.tmLineImageBanco.stop();
                 String conectado = getValue();
 
                 if (!conectado.isEmpty())
@@ -302,6 +323,10 @@ public class MenuPrincipalController implements Initializable {
 
         Thread t = new Thread(verificaConexao);
         t.start();
+    }
+
+    public void compartilhaDataBase() {
+        animacaoCompartilhaDataBase.tmLineImageBanco.play();
     }
 
     private void criaMenuBackup() {
@@ -374,9 +399,11 @@ public class MenuPrincipalController implements Initializable {
         CONTROLLER = this;
         scpBarraProgress.managedProperty().bind(scpBarraProgress.visibleProperty());
         progressBarVisible(false);
-        animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera);
+        animacaoConexao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera);
         criaConfiguracao();
         criaMenuBackup();
+
+        animacaoCompartilhaDataBase.animaImageBanco(imgCompartilhamento, imgAnimaCompartilha, imgAnimaCompartilhaEspera);
 
         cbSite.getItems().addAll(Site.values());
         cbSite.getSelectionModel().select(Site.TODOS);

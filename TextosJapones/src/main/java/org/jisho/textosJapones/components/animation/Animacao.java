@@ -27,12 +27,7 @@ public class Animacao {
 			public void handle(ActionEvent t) {
 				img.setImage(img1);
 			}
-		}), new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent t) {
-				img.setImage(img2);
-			}
-		}));
+		}), new KeyFrame(Duration.millis(500), t -> img.setImage(img2)));
 		tmLineImageBanco.setCycleCount(Animation.INDEFINITE);
 	}
 
