@@ -8,6 +8,9 @@ public class DadosConexao {
     private final String url;
     private final String base;
 
+    private final String usuario;
+    private final String senha;
+
     public Long getId() {
         return id;
     }
@@ -24,10 +27,20 @@ public class DadosConexao {
         return base;
     }
 
-    public DadosConexao(Long id, Conexao tipo, String url, String base) {
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public DadosConexao(Long id, Conexao tipo, String url, String base, String usuario, String senha) {
         this.id = id;
         this.tipo = tipo;
         this.url = url;
         this.base = base;
+        this.usuario = usuario;
+        this.senha = senha;
     }
 }

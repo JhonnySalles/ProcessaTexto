@@ -36,44 +36,43 @@ public class DB {
             String url = "jdbc:mysql://" + props.getProperty("server") + ":" + props.getProperty("port") + "/"
                     + props.getProperty("base")
                     + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-            dados.add(new DadosConexao(0L, Conexao.TEXTOJAPONES, "jdbc:mysql://" + props.getProperty("server") + ":" + props.getProperty("port"), props.getProperty("base")));
+            dados.add(new DadosConexao(0L, Conexao.TEXTOJAPONES, "jdbc:mysql://" + props.getProperty("server") + ":" + props.getProperty("port"), props.getProperty("base"), props.getProperty("user"), props.getProperty("password")));
             conn = createConnection(props, url);
         }
         return conn;
     }
 
     public static Connection getConnection(Conexao conexao) {
-        if (conexao == Conexao.TEXTOJAPONES)
-            return conn;
-        else {
-            if (connections.containsKey(conexao))
-                return connections.get(conexao);
-            else {
-                Connection created = findConnection(conexao);
-                if (created != null)
-                    connections.put(conexao, created);
-                return created;
+        switch (conexao) {
+            case TEXTOJAPONES -> {
+                return conn;
+            }
+            case FIREBASE -> {
+                return null;
+            }
+            default -> {
+                if (connections.containsKey(conexao))
+                    return connections.get(conexao);
+                else {
+                    Connection created = createConnection(conexao);
+                    if (created != null)
+                        connections.put(conexao, created);
+                    return created;
+                }
             }
         }
     }
 
-    private static Connection findConnection(Conexao conexao) {
+    public static DadosConexao findConnection(Conexao conexao) {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT id, tipo, url, base, driver FROM conexoes WHERE tipo = ?");
+            st = conn.prepareStatement("SELECT id, tipo, url, username, password, base, driver FROM conexoes WHERE tipo = ?");
             st.setString(1, conexao.toString());
             rs = st.executeQuery();
 
-            if (rs.next()) {
-                Properties props = loadProperties();
-                props.setProperty("characterEncoding", "UTF-8");
-                props.setProperty("useUnicode", "true");
-                String url = rs.getString("url") + "/" + rs.getString("base")
-                        + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-                dados.add(new DadosConexao(rs.getLong("id"), conexao, rs.getString("url"), rs.getString("base")));
-                return createConnection(props, url);
-            }
+            if (rs.next())
+                return new DadosConexao(rs.getLong("id"), conexao, rs.getString("url"), rs.getString("base"), rs.getString("username"), rs.getString("password"));
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -81,6 +80,20 @@ public class DB {
             DB.closeResultSet(rs);
         }
         return null;
+    }
+
+    private static Connection createConnection(Conexao conexao) {
+        DadosConexao dados = findConnection(conexao);
+
+        if (dados == null)
+            return null;
+
+        Properties props = loadProperties();
+        props.setProperty("characterEncoding", "UTF-8");
+        props.setProperty("useUnicode", "true");
+        String url = dados.getUrl() + "/" + dados.getBase() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        DB.dados.add(dados);
+        return createConnection(props, url);
     }
 
     public static DadosConexao getDados(Conexao conexao) {
@@ -93,7 +106,6 @@ public class DB {
             try {
                 conn.close();
             } catch (SQLException e) {
-                
                 LOGGER.error(e.getMessage(), e);
             }
         }

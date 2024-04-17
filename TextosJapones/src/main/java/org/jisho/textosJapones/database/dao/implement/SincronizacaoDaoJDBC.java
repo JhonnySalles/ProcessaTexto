@@ -32,7 +32,6 @@ public class SincronizacaoDaoJDBC implements SincronizacaoDao {
         this.conn = conn;
     }
 
-
     @Override
     public void update(Sincronizacao obj) throws ExcessaoBd {
         PreparedStatement st = null;
@@ -40,8 +39,8 @@ public class SincronizacaoDaoJDBC implements SincronizacaoDao {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS);
 
             int index = 0;
-            st.setTimestamp(++index, Util.convertToTimeStamp(obj.getEnvio()));
-            st.setTimestamp(++index, Util.convertToTimeStamp(obj.getRecebimento()));
+            st.setString(++index, Util.convertToString(obj.getEnvio()));
+            st.setString(++index, Util.convertToString(obj.getRecebimento()));
             st.setString(++index, obj.getConexao().toString());
 
             st.executeUpdate();

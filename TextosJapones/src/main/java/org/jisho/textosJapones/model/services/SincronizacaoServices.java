@@ -12,6 +12,7 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.RevisarDao;
 import org.jisho.textosJapones.database.dao.SincronizacaoDao;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
+import org.jisho.textosJapones.model.entities.DadosConexao;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Sincronizacao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
@@ -22,6 +23,8 @@ import org.jisho.textosJapones.util.Prop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -63,10 +66,10 @@ public class SincronizacaoServices extends TimerTask {
         dao = DaoFactory.createSincronizacaoDao();
 
         try {
-            Properties props = Prop.loadProperties();
-            String projectId = props.getProperty("firebase");
-            GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-            FirebaseOptions options = FirebaseOptions.builder().setProjectId(projectId).setCredentials(credentials).build();
+            DadosConexao conexao = org.jisho.textosJapones.database.mysql.DB.findConnection(Conexao.FIREBASE);
+            InputStream serviceAccount = new FileInputStream("secrets-firebase.json");
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
+            FirebaseOptions options = FirebaseOptions.builder().setProjectId(conexao.getUsuario()).setCredentials(credentials).build();
             FirebaseApp.initializeApp(options);
 
             DB = FirestoreClient.getFirestore();
@@ -76,7 +79,7 @@ public class SincronizacaoServices extends TimerTask {
             LOGGER.error(ex.getMessage(), ex);
         }
 
-        iniciar();
+        consultar();
     }
 
     @Override
@@ -89,7 +92,7 @@ public class SincronizacaoServices extends TimerTask {
         sincronizar.add(new Pair<>(database, vocabulario));
     }
 
-    public void iniciar() {
+    public void consultar() {
         if (sincronizacao == null)
             return;
 

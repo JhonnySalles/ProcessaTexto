@@ -62,11 +62,12 @@ module TextosJapones {
     opens org.jisho.textosJapones.model.entities.novelextractor to com.google.gson, javafx.base;
     opens org.jisho.textosJapones.model.entities.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.model.entities.subtitle to javafx.base;
-    opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson;
+    opens org.jisho.textosJapones.model.entities to javafx.base, com.google.gson, google.cloud.firestore;
     opens org.jisho.textosJapones.model.enums.comicinfo to java.xml.bind;
     opens org.jisho.textosJapones.controller to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.mangas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.legendas to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.controller.novels to javafx.fxml, javafx.graphics;
     opens org.jisho.textosJapones.processar to com.google.gson;
+
 }

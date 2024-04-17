@@ -27,6 +27,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -376,17 +377,18 @@ public class Util {
 		Map<String, Integer> capitulos = parse.getPastas();
 		List<String> descricao = new ArrayList<String>(capitulos.keySet());
 		descricao.sort((a, b) -> a.compareToIgnoreCase(b));
-		Pair<Map<String, Integer>, List<String>> itens = new Pair<Map<String, Integer>, List<String>>(capitulos,
+		Pair<Map<String, Integer>, List<String>> itens = new Pair<>(capitulos,
 				descricao);
 
 		return itens;
 	}
 
-	public static Timestamp convertToTimeStamp(LocalDateTime ldt) {
-		return Timestamp.valueOf(ldt);
-	}
-
 	public static LocalDateTime convertToDateTime(Timestamp ts) {
 		return ts.toLocalDateTime();
+	}
+
+	private final static DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public static String convertToString(LocalDateTime ldt) {
+		return ldt.format(dateTime);
 	}
 }

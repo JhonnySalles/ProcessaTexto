@@ -335,7 +335,8 @@ public class MenuPrincipalController implements Initializable {
     SincronizacaoServices sincronizacao = new SincronizacaoServices(this);
 
     public void compartilhaDataBase() {
-        sincronizacao.iniciar();
+        sincronizacao.consultar();
+        sincronizacao.sincroniza();
     }
 
     public void animacaoSincronizacaoDatabase(Boolean isProcessando, Boolean isErro) {

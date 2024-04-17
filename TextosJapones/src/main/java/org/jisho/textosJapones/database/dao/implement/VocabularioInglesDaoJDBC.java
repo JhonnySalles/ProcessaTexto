@@ -229,7 +229,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
         try {
 
             st = conn.prepareStatement(SELECT_ENVIO);
-            st.setTimestamp(1, Util.convertToTimeStamp(ultimo));
+            st.setString(1, Util.convertToString(ultimo));
             rs = st.executeQuery();
 
             List<Vocabulario> list = new ArrayList<>();

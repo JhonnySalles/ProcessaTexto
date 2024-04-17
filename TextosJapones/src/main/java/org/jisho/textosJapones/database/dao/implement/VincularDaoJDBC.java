@@ -247,8 +247,8 @@ public class VincularDaoJDBC implements VincularDao {
             st.setString(5, obj.getNomeArquivoVinculado());
             st.setString(6, obj.getLinguagemVinculado().getSigla());
             st.setString(7, obj.getVolumeVinculado().getId().toString());
-            st.setTimestamp(8, Util.convertToTimeStamp(obj.getDataCriacao()));
-            st.setTimestamp(9, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
+            st.setString(8, Util.convertToString(obj.getDataCriacao()));
+            st.setString(9, Util.convertToString(obj.getUltimaAlteracao()));
 
             int rowsAffected = st.executeUpdate();
 
@@ -770,7 +770,7 @@ public class VincularDaoJDBC implements VincularDao {
             st.setString(5, obj.getNomeArquivoVinculado());
             st.setString(6, obj.getLinguagemVinculado().getSigla());
             st.setString(7, obj.getVolumeVinculado().getId().toString());
-            st.setTimestamp(8, Util.convertToTimeStamp(obj.getUltimaAlteracao()));
+            st.setString(8, Util.convertToString(obj.getUltimaAlteracao()));
             st.setString(9, obj.getId().toString());
 
             int rowsAffected = st.executeUpdate();

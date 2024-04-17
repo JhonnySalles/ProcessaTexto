@@ -98,3 +98,4 @@ nb-configuration.xml
 ##############################
 .DS_Store
 *.class
+TextosJapones/secrets-firebase.json
