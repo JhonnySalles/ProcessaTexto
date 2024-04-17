@@ -51,6 +51,12 @@ module TextosJapones {
     requires logback.classic;
     requires logback.core;
     requires mp3agic;
+    requires firebase.admin;
+    requires com.google.auth.oauth2;
+    requires com.google.auth;
+    requires google.cloud.core;
+    requires google.cloud.firestore;
+    requires com.google.api.apicommon;
 
     opens org.jisho.textosJapones.model.entities.mangaextractor to com.google.gson, javafx.base;
     opens org.jisho.textosJapones.model.entities.novelextractor to com.google.gson, javafx.base;

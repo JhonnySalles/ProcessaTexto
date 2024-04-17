@@ -3,6 +3,7 @@ package org.jisho.textosJapones.database.dao.implement;
 import org.jisho.textosJapones.database.dao.RevisarDao;
 import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
     final private String SELECT = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles, revisado, isAnime, isManga, isNovel FROM revisar ";
     final private String SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR forma_basica = ?;";
     final private String SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;";
+    final private String SELECT_ID = SELECT + "WHERE id = ?;";
     final private String EXIST = "SELECT vocabulario FROM revisar WHERE vocabulario = ?;";
     final private String SELECT_ALL = SELECT + "WHERE 1 > 0;";
     final private String SELECT_TRADUZIR = SELECT + "WHERE revisado = false";
@@ -38,6 +40,11 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
 
     public RevisarJaponesDaoJDBC(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public Database getTipo() {
+        return Database.JAPONES;
     }
 
     @Override
@@ -190,6 +197,30 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
             DB.closeResultSet(rs);
         }
         return new Revisar(vocabulario);
+    }
+
+    @Override
+    public Revisar select(UUID id) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_ID);
+            st.setString(1, id.toString());
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                return new Revisar(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+                        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
+                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel"));
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return null;
     }
 
     @Override

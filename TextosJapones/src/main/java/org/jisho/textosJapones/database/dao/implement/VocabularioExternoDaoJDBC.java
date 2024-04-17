@@ -4,12 +4,14 @@ import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +32,11 @@ public class VocabularioExternoDaoJDBC implements VocabularioDao {
 
     public VocabularioExternoDaoJDBC(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public Database getTipo() {
+        return Database.EXTERNO;
     }
 
     @Override
@@ -132,6 +139,11 @@ public class VocabularioExternoDaoJDBC implements VocabularioDao {
     }
 
     @Override
+    public Vocabulario select(UUID id) throws ExcessaoBd {
+        return null;
+    }
+
+    @Override
     public boolean exist(String id) {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -157,6 +169,11 @@ public class VocabularioExternoDaoJDBC implements VocabularioDao {
     @Override
     public Set<String> selectExclusao() throws ExcessaoBd {
         return null;
+    }
+
+    @Override
+    public List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+        return new ArrayList<>();
     }
 
     @Override

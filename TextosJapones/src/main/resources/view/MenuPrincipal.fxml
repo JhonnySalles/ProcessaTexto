@@ -94,7 +94,7 @@
                                        </rotationAxis></AnchorPane>
                                 </content>
                               </Tab>
-                              <Tab closable="false" text="Revisar Vocabulario">
+                              <Tab fx:id="tbRevisar" closable="false" text="Revisar Vocabulario" onSelectionChanged="#onSelectRevisarChanged">
                                  <content>
                                     <AnchorPane>
                                        <children>

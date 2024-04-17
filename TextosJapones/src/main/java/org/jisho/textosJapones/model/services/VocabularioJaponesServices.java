@@ -4,6 +4,7 @@ import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.entities.VocabularioExterno;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public class VocabularioJaponesServices {
 	private final List<VocabularioDao> externos = DaoFactory.getVocabularioExternos();
 
 	private void updateExterno(Vocabulario vocab) throws ExcessaoBd {
+		SincronizacaoServices.enviar(Database.JAPONES, vocab);
+
 		VocabularioExterno vocabulario = new VocabularioExterno(vocab.getId(), vocab.getVocabulario(), vocab.getPortugues(), vocab.getIngles(), vocab.getLeitura(), vocab.getLeituraNovel(), true);
 		for (VocabularioDao dao : externos)
 			dao.update(vocabulario);

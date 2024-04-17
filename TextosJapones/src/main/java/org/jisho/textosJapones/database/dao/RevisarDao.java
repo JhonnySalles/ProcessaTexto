@@ -1,11 +1,15 @@
 package org.jisho.textosJapones.database.dao;
 
 import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface RevisarDao {
+
+	Database getTipo();
 
 	void insert(Revisar obj) throws ExcessaoBd;
 
@@ -22,6 +26,8 @@ public interface RevisarDao {
 	Revisar select(String vocabulario, String base) throws ExcessaoBd;
 
 	Revisar select(String vocabulario) throws ExcessaoBd;
+
+	Revisar select(UUID id) throws ExcessaoBd;
 
 	List<Revisar> selectAll() throws ExcessaoBd;
 

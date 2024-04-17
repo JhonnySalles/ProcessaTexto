@@ -54,6 +54,10 @@ public class DaoFactory {
 		return new ComicInfoJDBC(DB.getLocalConnection());
 	}
 
+	public static SincronizacaoDao createSincronizacaoDao() {
+		return new SincronizacaoDaoJDBC(DB.getLocalConnection());
+	}
+
 	public static List<VocabularioDao> getVocabularioExternos() {
 		List<VocabularioDao> externos = new ArrayList<>();
 

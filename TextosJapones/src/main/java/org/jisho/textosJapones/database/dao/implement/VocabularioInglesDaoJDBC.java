@@ -3,16 +3,16 @@ package org.jisho.textosJapones.database.dao.implement;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
+import org.jisho.textosJapones.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
@@ -24,13 +24,21 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
     final private String UPDATE = "UPDATE vocabulario SET leitura = ?, portugues = ? WHERE vocabulario = ?;";
     final private String DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;";
     final private String SELECT = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE vocabulario = ?;";
+    final private String SELECT_ID = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE id = ?;";
     final private String EXIST = "SELECT id, vocabulario FROM vocabulario WHERE vocabulario = ?;";
     final private String INSERT_EXCLUSAO = "INSERT IGNORE INTO exclusao (palavra) VALUES (?)";
     final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
     final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? ";
 
+    final private String SELECT_ENVIO = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE atualizacao >= ?;";
+
     public VocabularioInglesDaoJDBC(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public Database getTipo() {
+        return Database.INGLES;
     }
 
     @Override
@@ -104,7 +112,7 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
 
     @Override
     public Vocabulario select(String vocabulario, String base) throws ExcessaoBd {
-        return null;
+        return select(vocabulario);
     }
 
     @Override
@@ -114,6 +122,29 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
         try {
             st = conn.prepareStatement(SELECT);
             st.setString(1, vocabulario);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                return new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
+                        rs.getString("leitura"), "", "", rs.getString("portugues"));
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+        return null;
+    }
+
+    @Override
+    public Vocabulario select(UUID id) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement(SELECT_ID);
+            st.setString(1, id.toString());
             rs = st.executeQuery();
 
             if (rs.next()) {
@@ -181,6 +212,32 @@ public class VocabularioInglesDaoJDBC implements VocabularioDao {
             while (rs.next())
                 list.add(rs.getString("palavra"));
 
+            return list;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+
+            st = conn.prepareStatement(SELECT_ENVIO);
+            st.setTimestamp(1, Util.convertToTimeStamp(ultimo));
+            rs = st.executeQuery();
+
+            List<Vocabulario> list = new ArrayList<>();
+
+            while (rs.next()) {
+                list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
+                        rs.getString("leitura"), "", "", rs.getString("portugues")));
+            }
             return list;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);

@@ -53,6 +53,17 @@ public class Animacao {
 		tmLineImageBackup.setCycleCount(Animation.INDEFINITE);
 	}
 
+	final public Timeline tmLineImageSincronizacao = new Timeline();
+
+	synchronized public void animaImageSincronizacao(ImageView img, Image img1, Image img2) {
+		if (img1 == null || img2 == null)
+			return;
+
+		tmLineImageSincronizacao.getKeyFrames().clear();
+		tmLineImageSincronizacao.getKeyFrames().addAll(new KeyFrame(Duration.millis(250), t -> img.setImage(img1)), new KeyFrame(Duration.millis(500), t -> img.setImage(img2)));
+		tmLineImageSincronizacao.setCycleCount(Animation.INDEFINITE);
+	}
+
 	/**
 	 * <p>
 	 * Função que fará a animação de abertura das telas, onde será movimentada a

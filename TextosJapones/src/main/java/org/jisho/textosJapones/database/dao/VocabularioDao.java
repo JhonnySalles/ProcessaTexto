@@ -1,12 +1,19 @@
 package org.jisho.textosJapones.database.dao;
 
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Database;
+import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public interface VocabularioDao {
+
+	Database getTipo();
 
 	void insert(Vocabulario obj) throws ExcessaoBd;
 
@@ -20,6 +27,8 @@ public interface VocabularioDao {
 	
 	Vocabulario select(String vocabulario) throws ExcessaoBd;
 
+	Vocabulario select(UUID id) throws ExcessaoBd;
+
 	List<Vocabulario> selectAll() throws ExcessaoBd;
 	
 	void insertExclusao(String palavra) throws ExcessaoBd;
@@ -27,5 +36,7 @@ public interface VocabularioDao {
 	boolean existeExclusao(String palavra, String basico) throws ExcessaoBd;
 	
 	Set<String> selectExclusao() throws ExcessaoBd;
+
+	List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd;
 
 }

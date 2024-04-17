@@ -464,7 +464,7 @@ public class ProcessaComicInfo {
                         info.setPublisher(publisher.substring(0, publisher.lastIndexOf("; ")));
                 }
 
-                DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss");
+                DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String notes = "";
                 if (info.getNotes() != null) {
                     if (info.getNotes().contains(";")) {

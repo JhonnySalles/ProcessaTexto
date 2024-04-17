@@ -2,6 +2,7 @@ package org.jisho.textosJapones.model.entities;
 
 import com.google.gson.annotations.Expose;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Vocabulario {
@@ -17,6 +18,7 @@ public class Vocabulario {
 	protected String ingles;
 	@Expose
 	protected String portugues;
+	public String sincronizacao;
 
 	public UUID getId() {
 		return id;
@@ -135,5 +137,14 @@ public class Vocabulario {
 	@Override
 	public String toString() {
 		return vocabulario;
+	}
+
+	public void merge(Vocabulario vocab) {
+		this.vocabulario = vocab.vocabulario;
+		this.formaBasica = vocab.formaBasica;
+		this.leitura = vocab.leitura;
+		this.leituraNovel = vocab.leituraNovel;
+		this.portugues = vocab.portugues;
+		this.ingles = vocab.ingles;
 	}
 }
