@@ -4,10 +4,11 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.jisho.textosJapones.components.animation.Animacao;
@@ -34,6 +36,7 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.database.mysql.Backup;
 import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.*;
 import org.jisho.textosJapones.model.services.SincronizacaoServices;
 import org.slf4j.Logger;
@@ -335,20 +338,32 @@ public class MenuPrincipalController implements Initializable {
     SincronizacaoServices sincronizacao = new SincronizacaoServices(this);
 
     public void compartilhaDataBase() {
-        sincronizacao.consultar();
-        sincronizacao.sincroniza();
+        Task<Void> compartilhaDatabase = new Task<>() {
+
+            @Override
+            protected Void call() {
+                sincronizacao.consultar();
+                sincronizacao.sincroniza();
+                return null;
+            }
+        };
+
+        Thread t = new Thread(compartilhaDatabase);
+        t.start();
     }
 
     public void animacaoSincronizacaoDatabase(Boolean isProcessando, Boolean isErro) {
-        if (isProcessando)
-            animacao.tmLineImageSincronizacao.play();
-        else {
-            animacao.tmLineImageSincronizacao.stop();
-            if (isErro)
-                imgCompartilhamento.setImage(imgAnimaCompartilhaErro);
-            else
-                imgCompartilhamento.setImage(imgAnimaCompartilhaEnvio);
-        }
+        Platform.runLater(() -> {
+            if (isProcessando)
+                animacao.tmLineImageSincronizacao.play();
+            else {
+                animacao.tmLineImageSincronizacao.stop();
+                if (isErro)
+                    imgCompartilhamento.setImage(imgAnimaCompartilhaErro);
+                else
+                    imgCompartilhamento.setImage(imgAnimaCompartilhaEnvio);
+            }
+        });
     }
 
     private void criaMenuBackup() {
@@ -366,13 +381,7 @@ public class MenuPrincipalController implements Initializable {
         imgImporta.setFitHeight(20);
         imgImporta.setFitWidth(20);
         miRestaurar.setGraphic(imgImporta);
-        miRestaurar.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                importaBackup();
-            }
-        });
+        miRestaurar.setOnAction(event -> importaBackup());
 
         menuBackup.getItems().addAll(miBackup, miRestaurar);
 
@@ -443,6 +452,21 @@ public class MenuPrincipalController implements Initializable {
         AlertasPopup.setRootStackPane(rootStackPane);
         AlertasPopup.setNodeBlur(root);
         Notificacoes.setRootAnchorPane(apGlobal);
+
+        sincronizacao.setObserver((ListChangeListener<? super Pair<Database, Vocabulario>>) (observable) -> {
+            if (!sincronizacao.isSincronizando())
+                Platform.runLater(() -> {
+                    if (!observable.getList().isEmpty())
+                        imgCompartilhamento.setImage(imgAnimaCompartilhaEspera);
+                    else
+                        imgCompartilhamento.setImage(imgAnimaCompartilha);
+                });
+        });
+
+        if (!sincronizacao.isListEmpty())
+            imgCompartilhamento.setImage(imgAnimaCompartilhaEspera);
+        else
+            imgCompartilhamento.setImage(imgAnimaCompartilha);
 
         verificaConexao();
     }

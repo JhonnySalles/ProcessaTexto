@@ -398,8 +398,8 @@ public class VincularDaoJDBC implements VincularDao {
                 volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
                 Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
                         Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
-                        Util.convertToDateTime(rs.getTimestamp(10)));
+                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getString(9)),
+                        Util.convertToDateTime(rs.getString(10)));
                 obj.setVinculados(selectVinculados(base, obj.getId()));
                 obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -458,8 +458,8 @@ public class VincularDaoJDBC implements VincularDao {
                 volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
                 Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
                         Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
-                        Util.convertToDateTime(rs.getTimestamp(10)));
+                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getString(9)),
+                        Util.convertToDateTime(rs.getString(10)));
                 obj.setVinculados(selectVinculados(base, obj.getId()));
                 obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -497,8 +497,8 @@ public class VincularDaoJDBC implements VincularDao {
                 volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
                 Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
                         Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
-                        Util.convertToDateTime(rs.getTimestamp(10)));
+                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getString(9)),
+                        Util.convertToDateTime(rs.getString(10)));
                 obj.setVinculados(selectVinculados(base, obj.getId()));
                 obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -536,8 +536,8 @@ public class VincularDaoJDBC implements VincularDao {
                 volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
                 Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
                         Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
-                        Util.convertToDateTime(rs.getTimestamp(10)));
+                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getString(9)),
+                        Util.convertToDateTime(rs.getString(10)));
                 obj.setVinculados(selectVinculados(base, obj.getId()));
                 obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 
@@ -590,8 +590,8 @@ public class VincularDaoJDBC implements VincularDao {
                 volumeVinculado = selectVolume(base, UUID.fromString(rs.getString(8)));
                 Vinculo obj = new Vinculo(UUID.fromString(rs.getString(1)), base, rs.getInt(2), rs.getString(3),
                         Language.getEnum(rs.getString(4)), volumeOriginal, rs.getString(6),
-                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getTimestamp(9)),
-                        Util.convertToDateTime(rs.getTimestamp(10)));
+                        Language.getEnum(rs.getString(7)), volumeVinculado, Util.convertToDateTime(rs.getString(9)),
+                        Util.convertToDateTime(rs.getString(10)));
                 obj.setVinculados(selectVinculados(base, obj.getId()));
                 obj.setNaoVinculados(selectNaoVinculados(base, obj.getId()));
 

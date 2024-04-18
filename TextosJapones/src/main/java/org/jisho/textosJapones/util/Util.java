@@ -383,11 +383,10 @@ public class Util {
 		return itens;
 	}
 
-	public static LocalDateTime convertToDateTime(Timestamp ts) {
-		return ts.toLocalDateTime();
-	}
-
 	private final static DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public static LocalDateTime convertToDateTime(String str) {
+		return LocalDateTime.parse(str, dateTime);
+	}
 	public static String convertToString(LocalDateTime ldt) {
 		return ldt.format(dateTime);
 	}

@@ -63,7 +63,7 @@ public class SincronizacaoDaoJDBC implements SincronizacaoDao {
             rs = st.executeQuery();
 
             if (rs.next())
-                return new Sincronizacao(Conexao.valueOf(rs.getString("conexao")), Util.convertToDateTime(rs.getTimestamp("envio")), Util.convertToDateTime(rs.getTimestamp("recebimento")));
+                return new Sincronizacao(Conexao.valueOf(rs.getString("conexao")), Util.convertToDateTime(rs.getString("envio")), Util.convertToDateTime(rs.getString("recebimento")));
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);

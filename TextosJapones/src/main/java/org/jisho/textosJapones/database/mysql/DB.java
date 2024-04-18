@@ -63,7 +63,7 @@ public class DB {
         }
     }
 
-    public static DadosConexao findConnection(Conexao conexao) {
+    private static DadosConexao findConnection(Conexao conexao) {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {

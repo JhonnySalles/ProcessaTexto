@@ -51,6 +51,7 @@ public class VocabularioJaponesServices {
 		if (obj.getId() == null)
 			obj.setId(UUID.randomUUID());
 		vocabularioDao.insert(obj);
+		updateExterno(obj);
 	}
 
 	public VocabularioJaponesServices insert(Vocabulario obj) throws ExcessaoBd {
@@ -58,6 +59,7 @@ public class VocabularioJaponesServices {
 			if (obj.getId() == null)
 				obj.setId(UUID.randomUUID());
 			vocabularioDao.insert(obj);
+			updateExterno(obj);
 		}
 
 		return this;

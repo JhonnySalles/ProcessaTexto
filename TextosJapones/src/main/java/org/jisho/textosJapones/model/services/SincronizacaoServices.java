@@ -6,25 +6,30 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.RevisarDao;
 import org.jisho.textosJapones.database.dao.SincronizacaoDao;
 import org.jisho.textosJapones.database.dao.VocabularioDao;
-import org.jisho.textosJapones.model.entities.DadosConexao;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Sincronizacao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Conexao;
 import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
-import org.jisho.textosJapones.util.Prop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -39,15 +44,19 @@ public class SincronizacaoServices extends TimerTask {
     private final SincronizacaoDao dao;
     private Sincronizacao sincronizacao = null;
     private Firestore DB;
-    private final DateTimeFormatter formaterDia = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter formaterData = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter formaterDataHora = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private Boolean sincronizando = false;
     public static Boolean processar = false;
 
-    private static List<Pair<Database, Vocabulario>> sincronizar = new ArrayList<>();
+    private static ObservableList<Pair<Database, Vocabulario>> sincronizar = FXCollections.observableArrayList();
 
     private MenuPrincipalController controller;
+
+    public void setObserver(ListChangeListener<? super Pair<Database, Vocabulario>> listener) {
+        sincronizar.addListener(listener);
+    }
 
     public SincronizacaoServices(MenuPrincipalController controller) {
         this.controller = controller;
@@ -66,10 +75,9 @@ public class SincronizacaoServices extends TimerTask {
         dao = DaoFactory.createSincronizacaoDao();
 
         try {
-            DadosConexao conexao = org.jisho.textosJapones.database.mysql.DB.findConnection(Conexao.FIREBASE);
             InputStream serviceAccount = new FileInputStream("secrets-firebase.json");
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
-            FirebaseOptions options = FirebaseOptions.builder().setProjectId(conexao.getUsuario()).setCredentials(credentials).build();
+            FirebaseOptions options = FirebaseOptions.builder().setCredentials(credentials).build();
             FirebaseApp.initializeApp(options);
 
             DB = FirestoreClient.getFirestore();
@@ -107,7 +115,8 @@ public class SincronizacaoServices extends TimerTask {
         }
     }
 
-    private void envia() throws Exception {
+    private Boolean envia() throws Exception {
+        Boolean processado = false;
         if (!sincronizar.isEmpty()) {
             LOGGER.info("Enviando dados a cloud... ");
             List<Pair<Database, Vocabulario>> sinc = sincronizar.parallelStream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).distinct().collect(Collectors.toList());
@@ -120,34 +129,37 @@ public class SincronizacaoServices extends TimerTask {
                 for (Database db : bases) {
                     List<Vocabulario> env = sinc.parallelStream().filter(i -> i.getKey().equals(db)).map(Pair::getValue).collect(Collectors.toList());
                     if (!env.isEmpty()) {
-                        DocumentReference docRef = DB.collection(db.toString()).document(formaterDia.format(LocalDateTime.now()));
+                        DocumentReference docRef = DB.collection(db.toString()).document(formaterData.format(LocalDate.now()));
                         Map<String, Object> data = new HashMap<>();
                         for (Vocabulario voc : env) {
                             voc.sincronizacao = envio;
                             data.put(voc.getId().toString(), voc);
                         }
                         ApiFuture<WriteResult> result = docRef.set(data);
-                        LOGGER.info("Enviado dados a cloud: " + env.size() + " registros (" + db + ").");
+                        result.get();
+                        LOGGER.info("Enviado dados a cloud: " + env.size() + " registros (" + db + "). ");
                     }
                 }
                 LOGGER.info("Concluído envio de dados a cloud.");
 
-                sincronizacao.setEnvio(LocalDateTime.now());
-                dao.update(sincronizacao);
+                processado = true;
             } catch (Exception e) {
                 sincronizar.addAll(sinc);
                 LOGGER.error("Erro ao enviar dados a cloud, adicionado arquivos para novo ciclo.\n" + e.getMessage(), e);
                 throw e;
             }
         }
+
+        return processado;
     }
 
-    private void receber() throws Exception {
+    private Boolean receber() throws Exception {
+        Boolean processado = false;
         try {
             LOGGER.info("Recebendo dados a cloud.... ");
             List<Pair<Database, Vocabulario>> lista = new ArrayList<>();
 
-            String atual = LocalDateTime.now().format(formaterDia);
+            String atual = LocalDate.now().format(formaterData);
 
             for (VocabularioDao vocab : daoVocabulario) {
                 ApiFuture<QuerySnapshot> query = DB.collection(vocab.getTipo().toString()).get();
@@ -155,14 +167,16 @@ public class SincronizacaoServices extends TimerTask {
                 QuerySnapshot querySnapshot = query.get();
                 List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
                 for (QueryDocumentSnapshot document : documents) {
-                    LocalDateTime data = LocalDateTime.parse(document.getId(), formaterDia);
-                    if (sincronizacao.getRecebimento().isAfter(data) && !atual.equalsIgnoreCase(document.getId()))
+                    LocalDate data = LocalDate.parse(document.getId(), formaterData);
+                    if (sincronizacao.getRecebimento().toLocalDate().isAfter(data) && !atual.equalsIgnoreCase(document.getId()))
                         continue;
 
-                    Vocabulario item = document.toObject(Vocabulario.class);
-                    LocalDateTime sinc = LocalDateTime.parse(item.sincronizacao, formaterDataHora);
-                    if (sinc.isAfter(sincronizacao.getRecebimento()))
-                        lista.add(new Pair<>(vocab.getTipo(), item));
+                    for(String key : document.getData().keySet()) {
+                        HashMap<String, String> obj = (HashMap<String, String>) document.getData().get(key);
+                        LocalDateTime sinc = LocalDateTime.parse(obj.get("sincronizacao"), formaterDataHora);
+                        if (sinc.isAfter(sincronizacao.getRecebimento()))
+                            lista.add(new Pair<>(vocab.getTipo(), new Vocabulario(key, obj)));
+                    }
                 }
             }
 
@@ -198,14 +212,13 @@ public class SincronizacaoServices extends TimerTask {
                     }
             }
 
-            sincronizacao.setRecebimento(LocalDateTime.now());
-            dao.update(sincronizacao);
-
+            processado = true;
             LOGGER.info("Concluído recebimento de dados a cloud.");
         } catch (Exception e) {
             LOGGER.error("Erro ao receber dados a cloud.\n" + e.getMessage(), e);
             throw e;
         }
+        return processado;
     }
 
     public boolean sincroniza() {
@@ -217,8 +230,18 @@ public class SincronizacaoServices extends TimerTask {
         try {
             sincronizando = true;
             controller.animacaoSincronizacaoDatabase(true, false);
-            envia();
-            receber();
+            Boolean enviado = envia();
+            Boolean recebido = receber();
+
+            if (enviado)
+                sincronizacao.setEnvio(LocalDateTime.now());
+
+            if (recebido)
+                sincronizacao.setRecebimento(LocalDateTime.now());
+
+            if (enviado || recebido)
+                dao.update(sincronizacao);
+
             sincronizado = true;
             controller.animacaoSincronizacaoDatabase(false, false);
         } catch (Exception e) {
@@ -227,6 +250,14 @@ public class SincronizacaoServices extends TimerTask {
             sincronizando = false;
             return sincronizado;
         }
+    }
+
+    public Boolean isSincronizando() {
+        return sincronizando;
+    }
+
+    public Boolean isListEmpty() {
+        return sincronizar.isEmpty();
     }
 
 }

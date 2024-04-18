@@ -3,6 +3,7 @@ package org.jisho.textosJapones.model.entities;
 import com.google.gson.annotations.Expose;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Vocabulario {
@@ -132,6 +133,16 @@ public class Vocabulario {
 		this.leituraNovel = leituraNovel;
 		this.portugues = portugues;
 		this.ingles = ingles;
+	}
+
+	public Vocabulario(String id, HashMap<String, String> obj) {
+		this.id = UUID.fromString(id);
+		this.vocabulario = obj.get("vocabulario");
+		this.formaBasica = obj.get("formaBasica");
+		this.leitura = obj.get("leitura");
+		this.leituraNovel = obj.get("leituraNovel");
+		this.portugues = obj.get("portugues");
+		this.ingles = obj.get("ingles");
 	}
 
 	@Override
