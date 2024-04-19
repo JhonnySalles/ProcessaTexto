@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RevisarController implements Initializable {
@@ -463,11 +465,15 @@ public class RevisarController implements Initializable {
     }
 
     final private String allFlag = ".*";
+
+    final private String japaneseCopy = "([\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+)\\s-\\s(((?! - ).)*¹)";
+    final private String englishCopy = "([A-Za-z0-9']+)\\s-\\s(((?! - ).)*¹)";
     final private String japanese = "[\u3041-\u9FAF]";
     final private String notJapanese = "[A-Za-z0-9 ,;.à-úÀ-ú\\[\\]\\-\\(\\)]";
     private String frasePortugues = "";
 
     private ChangeListener<Boolean> listenerCorrecao;
+    private ChangeListener<? super String> listenerReplace;
 
     public void initialize(URL arg0, ResourceBundle arg1) {
         cbLinguagem.getItems().addAll(Language.JAPANESE, Language.ENGLISH);
@@ -493,23 +499,38 @@ public class RevisarController implements Initializable {
             }
         });
 
-        txtPesquisar.textProperty().addListener((o, oldVal, newVal) -> {
-            if (cbSubstituirKanji.isSelected()) {
-                if (newVal.matches(allFlag + notJapanese + allFlag)) {
-                    String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
-                    txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
+        listenerReplace = (o, oldVal, newVal) -> {
+            try {
+                txtPesquisar.textProperty().removeListener(listenerReplace);
+                if (cbSubstituirKanji.isSelected()) {
+                    Matcher matcher = Pattern.compile(japaneseCopy).matcher(newVal.trim());
+                    if (matcher.find()) {
+                        txtPesquisar.setText(matcher.group(1));
+                        frasePortugues = matcher.group(2);
+                    } else if (newVal.matches(allFlag + notJapanese + allFlag)) {
+                        String texto = newVal.replaceFirst(" - ", "").replaceAll("¹", "");
+                        txtPesquisar.setText(texto.replaceAll(notJapanese, ""));
 
-                    if (newVal.matches(allFlag + japanese + allFlag))
-                        frasePortugues = texto.replaceAll(japanese, "");
+                        if (newVal.matches(allFlag + japanese + allFlag))
+                            frasePortugues = texto.replaceAll(japanese, "");
+                    }
+                } else {
+                    Matcher matcher = Pattern.compile(englishCopy).matcher(newVal.trim());
+                    if (matcher.find()) {
+                        txtPesquisar.setText(matcher.group(1));
+                        frasePortugues = matcher.group(2);
+                    } else if (newVal.contains("-")) {
+                        String texto = newVal.substring(0, newVal.indexOf("-")).replaceFirst("-", "").trim();
+                        txtPesquisar.setText(texto);
+                        frasePortugues = newVal.replaceFirst(texto, "").replaceFirst("-", "").replaceAll("¹", "").trim();
+                    }
                 }
-            } else {
-                if (newVal.contains("-")) {
-                    String texto = newVal.substring(0, newVal.indexOf("-")).replaceFirst("-", "").trim();
-                    txtPesquisar.setText(texto);
-                    frasePortugues = newVal.replaceFirst(texto, "").replaceFirst("-", "").replaceAll("¹", "").trim();
-                }
+            } finally {
+                txtPesquisar.textProperty().addListener(listenerReplace);
             }
-        });
+        };
+
+        txtPesquisar.textProperty().addListener(listenerReplace);
 
         txtPesquisar.focusedProperty().addListener((o, oldVal, newVal) -> {
             if (oldVal) {
