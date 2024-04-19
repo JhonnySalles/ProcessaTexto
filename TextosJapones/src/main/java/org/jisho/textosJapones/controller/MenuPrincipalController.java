@@ -341,13 +341,20 @@ public class MenuPrincipalController implements Initializable {
     SincronizacaoServices sincronizacao = new SincronizacaoServices(this);
 
     public void compartilhaDataBase() {
-        Task<Void> compartilhaDatabase = new Task<>() {
+
+        Task<Boolean> compartilhaDatabase = new Task<>() {
+            @Override
+            protected Boolean call() {
+                sincronizacao.consultar();
+                return sincronizacao.sincroniza();
+            }
 
             @Override
-            protected Void call() {
-                sincronizacao.consultar();
-                sincronizacao.sincroniza();
-                return null;
+            protected void succeeded() {
+                if (!getValue())
+                    Notificacoes.notificacao(Notificacao.ERRO, "Compartilhamento de alterações da Database.", "Não foi possível sincronizar os dados com a cloud.");
+                else
+                    Notificacoes.notificacao(Notificacao.SUCESSO, "Compartilhamento de alterações da Database.", "Sincronização de dados com a cloud concluída com sucesso.");
             }
         };
 

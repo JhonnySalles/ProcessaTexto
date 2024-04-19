@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
+import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.database.dao.DaoFactory;
 import org.jisho.textosJapones.database.dao.RevisarDao;
@@ -23,6 +24,7 @@ import org.jisho.textosJapones.model.entities.Sincronizacao;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.Conexao;
 import org.jisho.textosJapones.model.enums.Database;
+import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,6 +184,8 @@ public class SincronizacaoServices extends TimerTask {
 
             LOGGER.info("Processando retorno dados a cloud: " + lista.size() + " itens.");
 
+            String vocabularios = "";
+
             for (Pair<Database, Vocabulario> sinc : lista) {
                 for (VocabularioDao voc : daoVocabulario)
                     if (voc.getTipo().equals(sinc.getKey())) {
@@ -198,6 +202,8 @@ public class SincronizacaoServices extends TimerTask {
                             voc.insert(vocab);
                         }
 
+                        vocabularios += vocab.getVocabulario() + ", ";
+
                         for (RevisarDao rev : daoRevisar)
                             if (rev.getTipo().equals(sinc.getKey())) {
                                 Revisar revisar = rev.select(vocab.getId());
@@ -211,6 +217,9 @@ public class SincronizacaoServices extends TimerTask {
                             }
                     }
             }
+
+            if (!vocabularios.isEmpty())
+                Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " registros da cloud.", "Sincronizado: " + vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim());
 
             processado = true;
             LOGGER.info("Concluído recebimento de dados a cloud.");
