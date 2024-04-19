@@ -1,18 +1,27 @@
 package org.jisho.textosJapones.controller;
 
+import com.google.firebase.database.*;
 import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
+import javafx.util.Callback;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Revisar;
+import org.jisho.textosJapones.model.entities.Triple;
 import org.jisho.textosJapones.model.entities.Vocabulario;
+import org.jisho.textosJapones.model.enums.Database;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Notificacao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
@@ -28,9 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RevisarController implements Initializable {
@@ -62,10 +69,13 @@ public class RevisarController implements Initializable {
     private JFXButton btnSalvar;
 
     @FXML
+    private JFXButton btnNovo;
+
+    @FXML
     private JFXButton btnSalvarAux;
 
     @FXML
-    private JFXButton btnNovo;
+    private ListView<Triple<Vocabulario, Database, DatabaseReference>> lvProcesssar;
 
     @FXML
     private JFXCheckBox cbLegenda;
@@ -122,9 +132,14 @@ public class RevisarController implements Initializable {
     private final VocabularioInglesServices vocabularioIngles = new VocabularioInglesServices();
 
     private List<Revisar> similar;
+
+    private ObservableList<Triple<Vocabulario, Database, DatabaseReference>> processsar = FXCollections.observableArrayList();
     private Revisar revisando;
     private Vocabulario corrigindo;
     private final Robot robot = new Robot();
+
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance("https://bilingual-reader-272ac-default-rtdb.firebaseio.com/");
+    private DatabaseReference reference = null;
 
     @FXML
     private void onBtnSalvar() {
@@ -161,6 +176,8 @@ public class RevisarController implements Initializable {
                     revisarJapones.delete(revisando);
                     revisarJapones.delete(similar);
                 }
+
+                removeFiredac(palavra);
             } catch (ExcessaoBd e) {
                 LOGGER.error(e.getMessage(), e);
                 error = true;
@@ -174,8 +191,9 @@ public class RevisarController implements Initializable {
                     vocabularioIngles.insertOrUpdate(corrigindo);
                 else
                     vocabularioJapones.insertOrUpdate(corrigindo);
-            } catch (ExcessaoBd e) {
 
+                removeFiredac(corrigindo);
+            } catch (ExcessaoBd e) {
                 LOGGER.error(e.getMessage(), e);
                 error = true;
             }
@@ -223,6 +241,86 @@ public class RevisarController implements Initializable {
             txtAreaPortugues.setText(Util.removeDuplicate(txtAreaPortugues.getText()));
         else
             txtAreaPortugues.setText(Util.normalize(txtAreaPortugues.getText()));
+    }
+
+    @FXML
+    private void onBtnNovo() {
+        limpaCampos();
+        pesquisar();
+    }
+
+    @FXML
+    private void onBtnTraduzir() {
+        if (txtAreaIngles.getText().isEmpty())
+            return;
+
+        try {
+            String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(), MenuPrincipalController.getController().getContaGoogle()));
+            txtAreaPortugues.setText(Util.normalize(texto));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void onBtnJapaneseTanoshi() {
+        if (txtVocabulario.getText().isEmpty())
+            return;
+
+        txtAreaIngles.setText(TanoshiJapanese.processa(txtVocabulario.getText()));
+        onBtnTraduzir();
+    }
+
+    @FXML
+    private void onBtnTangorin() {
+        if (txtVocabulario.getText().isEmpty())
+            return;
+
+        txtAreaIngles.setText(Tangorin.processa(txtVocabulario.getText()));
+        onBtnTraduzir();
+    }
+
+    @FXML
+    private void onBtnJapanDict() {
+        if (txtVocabulario.getText().isEmpty())
+            return;
+
+        txtAreaIngles.setText(JapanDict.processa(txtVocabulario.getText()));
+        onBtnTraduzir();
+    }
+
+    @FXML
+    private void onBtnJisho() {
+        if (txtVocabulario.getText().isEmpty())
+            return;
+
+        txtAreaIngles.setText(Jisho.processa(txtVocabulario.getText()));
+        onBtnTraduzir();
+    }
+
+    @FXML
+    private void onBtnKanshudo() {
+        if (txtVocabulario.getText().isEmpty())
+            return;
+
+        txtAreaIngles.setText(Kanshudo.processa(txtVocabulario.getText()));
+        onBtnTraduzir();
+    }
+
+    public AnchorPane getRoot() {
+        return apRoot;
+    }
+
+    public void setLegenda(Boolean ativo) {
+        cbLegenda.setSelected(ativo);
+    }
+
+    public void setManga(Boolean ativo) {
+        cbManga.setSelected(ativo);
+    }
+
+    public void setNovel(Boolean ativo) {
+        cbNovel.setSelected(ativo);
     }
 
     private void limpaCampos() {
@@ -322,84 +420,46 @@ public class RevisarController implements Initializable {
         }
     }
 
-    @FXML
-    private void onBtnNovo() {
-        limpaCampos();
-        pesquisar();
-    }
+    public void iniciaFirebase() {
+        if (reference == null) {
+            reference = database.getReference("anki");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    try {
+                        List<Triple<Vocabulario, Database, DatabaseReference>> lista = new ArrayList<>();
 
-    @FXML
-    private void onBtnTraduzir() {
-        if (txtAreaIngles.getText().isEmpty())
-            return;
+                        for (DataSnapshot linguagem : dataSnapshot.getChildren()) {
+                            Database database = Database.valueOf(linguagem.getKey().toUpperCase());
+                            for (DataSnapshot vocab : linguagem.getChildren()) {
+                                HashMap<String, String> obj = (HashMap<String, String>) vocab.getValue();
+                                Vocabulario vocabulario = new Vocabulario(obj.get("vocabulario"), obj.get("portugues"));
+                                lista.add(new Triple<>(vocabulario, database, vocab.getRef()));
+                            }
+                        }
 
-        try {
-            String texto = Util.normalize(ScriptGoogle.translate(Language.ENGLISH.getSigla(), Language.PORTUGUESE.getSigla(), txtAreaIngles.getText(), MenuPrincipalController.getController().getContaGoogle()));
-            txtAreaPortugues.setText(Util.normalize(texto));
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+                        Platform.runLater(() -> processsar.setAll(lista));
+                    } catch (Exception e) {
+                        LOGGER.error("Erro ao obter a lista de revisão do firebase.", e);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    LOGGER.error("Erro ao obter a database do firebase.", databaseError);
+                }
+            });
         }
     }
 
-    @FXML
-    private void onBtnJapaneseTanoshi() {
-        if (txtVocabulario.getText().isEmpty())
-            return;
-
-        txtAreaIngles.setText(TanoshiJapanese.processa(txtVocabulario.getText()));
-        onBtnTraduzir();
-    }
-
-    @FXML
-    private void onBtnTangorin() {
-        if (txtVocabulario.getText().isEmpty())
-            return;
-
-        txtAreaIngles.setText(Tangorin.processa(txtVocabulario.getText()));
-        onBtnTraduzir();
-    }
-
-    @FXML
-    private void onBtnJapanDict() {
-        if (txtVocabulario.getText().isEmpty())
-            return;
-
-        txtAreaIngles.setText(JapanDict.processa(txtVocabulario.getText()));
-        onBtnTraduzir();
-    }
-
-    @FXML
-    private void onBtnJisho() {
-        if (txtVocabulario.getText().isEmpty())
-            return;
-
-        txtAreaIngles.setText(Jisho.processa(txtVocabulario.getText()));
-        onBtnTraduzir();
-    }
-
-    @FXML
-    private void onBtnKanshudo() {
-        if (txtVocabulario.getText().isEmpty())
-            return;
-
-        txtAreaIngles.setText(Kanshudo.processa(txtVocabulario.getText()));
-        onBtnTraduzir();
-    }
-
-    public AnchorPane getRoot() {
-        return apRoot;
-    }
-
-    public void setLegenda(Boolean ativo) {
-        cbLegenda.setSelected(ativo);
-    }
-
-    public void setManga(Boolean ativo) {
-        cbManga.setSelected(ativo);
-    }
-
-    public void setNovel(Boolean ativo) {
-        cbNovel.setSelected(ativo);
+    private void removeFiredac(Vocabulario vocabulario) {
+        if (!processsar.isEmpty() && reference != null && vocabulario != null) {
+            Optional<Triple<Vocabulario, Database, DatabaseReference>> item = processsar.parallelStream().filter(i -> i.first.getVocabulario().equalsIgnoreCase(vocabulario.getVocabulario())).findFirst();
+            if (item.isPresent()) {
+                processsar.remove(item.get());
+                item.get().third.removeValueAsync();
+            }
+        }
     }
 
     final private String allFlag = ".*";
@@ -498,7 +558,7 @@ public class RevisarController implements Initializable {
                         }
                         if (sucesso) {
                             txtExclusao.setText("");
-                            Notificacoes.notificacao(Notificacao.SUCESSO, "Salvo.", "Exclusão salvo com sucesso. (" + exclusao +")");
+                            Notificacoes.notificacao(Notificacao.SUCESSO, "Salvo.", "Exclusão salvo com sucesso. (" + exclusao + ")");
                         } else
                             Notificacoes.notificacao(Notificacao.AVISO, "Alerta.", "Verifique a linguagem de exclusão ou a existência de caracteres especiais.");
                     } catch (ExcessaoBd e) {
@@ -536,6 +596,55 @@ public class RevisarController implements Initializable {
         cbManga.selectedProperty().addListener((o, oldVal, newVal) -> pesquisar());
 
         cbNovel.selectedProperty().addListener((o, oldVal, newVal) -> pesquisar());
+
+        lvProcesssar.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Triple<Vocabulario, Database, DatabaseReference>> call(ListView<Triple<Vocabulario, Database, DatabaseReference>> list) {
+                ListCell<Triple<Vocabulario, Database, DatabaseReference>> cell = new ListCell<>() {
+                    @Override
+                    public void updateItem(Triple<Vocabulario, Database, DatabaseReference> item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        setText(null);
+                        if (empty || item == null)
+                            setGraphic(null);
+                        else
+                            setText(item.first.getVocabulario());
+                    }
+                };
+
+                return cell;
+            }
+        });
+
+        lvProcesssar.setOnMouseClicked(click -> {
+            if (click.getClickCount() == 1 && !lvProcesssar.getItems().isEmpty()) {
+                Triple<Vocabulario, Database, DatabaseReference> voc = lvProcesssar.getSelectionModel().getSelectedItem();
+
+                if (voc != null)
+                    switch (voc.second) {
+                        case INGLES -> {
+                            if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                                cbLinguagem.getSelectionModel().select(Language.ENGLISH);
+                        }
+                        case JAPONES -> {
+                            if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.JAPANESE))
+                                cbLinguagem.getSelectionModel().select(Language.JAPANESE);
+                        }
+                    }
+
+                txtPesquisar.setText(voc.first.getVocabulario());
+                pesquisar();
+                txtAreaPortugues.setText(voc.first.getPortugues());
+                onBtnFormatar();
+            }
+        });
+
+        processsar.addListener((ListChangeListener<? super Triple<Vocabulario, Database, DatabaseReference>>) (observable) -> lvProcesssar.setVisible(!observable.getList().isEmpty()));
+
+        lvProcesssar.setItems(processsar);
+        lvProcesssar.setVisible(false);
+        lvProcesssar.managedProperty().bind(lvProcesssar.visibleProperty());
 
         pesquisar();
     }

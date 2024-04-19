@@ -5,7 +5,6 @@ import com.jfoenix.controls.JFXComboBox;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.Event;
@@ -147,6 +146,9 @@ public class MenuPrincipalController implements Initializable {
     @FXML
     private Tab tbRevisar;
 
+    @FXML
+    private RevisarController revisarController;
+
     private final Map<GrupoBarraProgressoController, Node> progressBar = new HashMap<>();
 
     private PopOver pop;
@@ -166,6 +168,7 @@ public class MenuPrincipalController implements Initializable {
     @FXML
     private void onSelectRevisarChanged(Event event) {
         SincronizacaoServices.processar = tbRevisar.isSelected();
+        revisarController.iniciaFirebase();
     }
 
     @FXML
