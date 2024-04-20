@@ -286,6 +286,10 @@ public class SincronizacaoServices extends TimerTask {
         }
     }
 
+    public Boolean  isConfigurado() {
+        return sincronizacao != null;
+    }
+
     public Boolean isSincronizando() {
         return sincronizando;
     }

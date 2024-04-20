@@ -501,7 +501,9 @@ public class MenuPrincipalController implements Initializable {
                 });
         });
 
-        if (sincronizacao.listSize() > 0) {
+        if (!sincronizacao.isConfigurado())
+            imgCompartilhamento.setImage(imgAnimaCompartilhaErro);
+        else if (sincronizacao.listSize() > 0) {
             lblLog.setText("Pendente de envio " + sincronizacao.listSize() + " registro(s).");
             imgCompartilhamento.setImage(imgAnimaCompartilhaEspera);
         } else
