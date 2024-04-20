@@ -13,7 +13,6 @@ import org.jisho.textosJapones.controller.MenuPrincipalController;
 import org.jisho.textosJapones.controller.legendas.LegendasImportarController;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;

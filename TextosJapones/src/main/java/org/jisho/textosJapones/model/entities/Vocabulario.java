@@ -2,7 +2,6 @@ package org.jisho.textosJapones.model.entities;
 
 import com.google.gson.annotations.Expose;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 

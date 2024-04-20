@@ -1,11 +1,8 @@
 package org.jisho.textosJapones.database.dao.implement;
 
 import org.jisho.textosJapones.database.dao.SincronizacaoDao;
-import org.jisho.textosJapones.database.dao.VocabularioDao;
 import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Sincronizacao;
-import org.jisho.textosJapones.model.entities.Vocabulario;
-import org.jisho.textosJapones.model.entities.VocabularioExterno;
 import org.jisho.textosJapones.model.enums.Conexao;
 import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.message.Mensagens;
@@ -14,10 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 public class SincronizacaoDaoJDBC implements SincronizacaoDao {
 

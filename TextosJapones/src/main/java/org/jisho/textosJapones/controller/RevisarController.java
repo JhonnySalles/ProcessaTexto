@@ -35,8 +35,11 @@ import org.jisho.textosJapones.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -466,8 +469,8 @@ public class RevisarController implements Initializable {
 
     final private String allFlag = ".*";
 
-    final private String japaneseCopy = "([\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+)\\s-\\s(((?! - ).)*¹)";
-    final private String englishCopy = "([A-Za-z0-9']+)\\s-\\s(((?! - ).)*¹)";
+    final private String japaneseCopy = "([\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+)\\s-\\s(((?! - ).)*¹?)";
+    final private String englishCopy = "([A-Za-z0-9']+)\\s-\\s(((?! - ).)*¹?)";
     final private String japanese = "[\u3041-\u9FAF]";
     final private String notJapanese = "[A-Za-z0-9 ,;.à-úÀ-ú\\[\\]\\-\\(\\)]";
     private String frasePortugues = "";
@@ -658,6 +661,10 @@ public class RevisarController implements Initializable {
                 pesquisar();
                 txtAreaPortugues.setText(voc.first.getPortugues());
                 onBtnFormatar();
+
+                Toolkit.getDefaultToolkit()
+                        .getSystemClipboard()
+                        .setContents(new StringSelection(voc.first.getVocabulario()), null);
             }
         });
 
