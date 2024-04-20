@@ -86,13 +86,13 @@ public class MenuPrincipalController implements Initializable {
             Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Concluido_48.png"));
 
     final static Image imgAnimaCompartilha = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoDataBase_48.png"));
+            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamento_48.png"));
     final static Image imgAnimaCompartilhaEspera = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoDataBaseEspera_48.png"));
+            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEspera_48.png"));
     final static Image imgAnimaCompartilhaErro = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoDataBaseErro_48.png"));
+            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoErro_48.png"));
     final static Image imgAnimaCompartilhaEnvio = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoDataBaseEnvio_48.png"));
+            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEnvio_48.png"));
 
     @FXML
     private AnchorPane apGlobal;
