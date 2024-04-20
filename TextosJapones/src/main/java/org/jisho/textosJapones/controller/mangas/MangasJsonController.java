@@ -771,9 +771,8 @@ public class MangasJsonController implements Initializable {
     public void initialize(URL arg0, ResourceBundle arg1) {
         try {
             cbBase.getItems().setAll(serviceManga.getTabelas());
-        } catch (ExcessaoBd e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
         }
 
         cbBase.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {

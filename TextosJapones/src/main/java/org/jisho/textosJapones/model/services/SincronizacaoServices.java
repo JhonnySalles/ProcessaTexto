@@ -6,6 +6,7 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -152,6 +153,7 @@ public class SincronizacaoServices extends TimerTask {
         return processado;
     }
 
+    String vocabularios;
     private Boolean receber() throws Exception {
         Boolean processado = false;
         try {
@@ -181,7 +183,7 @@ public class SincronizacaoServices extends TimerTask {
 
             LOGGER.info("Processando retorno dados a cloud: " + lista.size() + " itens.");
 
-            String vocabularios = "";
+            vocabularios = "";
 
             for (Pair<Database, Vocabulario> sinc : lista) {
                 for (VocabularioDao voc : daoVocabulario)
@@ -215,8 +217,10 @@ public class SincronizacaoServices extends TimerTask {
                     }
             }
 
-            if (!vocabularios.isEmpty())
-                Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " registros da cloud.", "Sincronizado: " + vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim());
+            if (!vocabularios.isEmpty()) {
+                vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
+                Platform.runLater(() -> Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " registros da cloud.", "Sincronizado: " + vocabularios));
+            }
 
             processado = true;
             LOGGER.info("Concluído recebimento de dados a cloud.");

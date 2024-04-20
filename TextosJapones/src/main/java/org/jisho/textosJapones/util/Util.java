@@ -63,7 +63,7 @@ public class Util {
 		if (texto == null || texto.isEmpty())
 			return "";
 
-		String frase = texto.substring(0, 1).toUpperCase() + texto.substring(1).replaceAll("; ", ", ").concat(".");
+		String frase = texto.substring(0, 1).toUpperCase() + texto.substring(1).replaceAll("¹", "").replaceAll("; ", ", ").concat(".");
 		if (frase.contains(".."))
 			frase = frase.replaceAll("\\.{2,}", ".");
 		return frase;

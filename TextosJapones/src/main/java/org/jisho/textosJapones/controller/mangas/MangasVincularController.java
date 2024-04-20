@@ -1886,9 +1886,8 @@ public class MangasVincularController implements Initializable, VinculoListener,
 
 		try {
 			cbBase.getItems().setAll(service.getTabelas());
-		} catch (ExcessaoBd e) {
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
 		}
 
 		cbBase.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {

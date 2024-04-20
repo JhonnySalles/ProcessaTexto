@@ -31,19 +31,23 @@ public class DaoFactory {
 	}
 
 	public static LegendasDao createLegendasDao() {
-		return new LegendasDaoJDBC(DB.getLocalConnection(), DB.getConnection(Conexao.DECKSUBTITLE), DB.getDados(Conexao.DECKSUBTITLE).getBase());
+		Connection conn = DB.getConnection(Conexao.DECKSUBTITLE);
+		return conn != null ? new LegendasDaoJDBC(DB.getLocalConnection(), DB.getConnection(Conexao.DECKSUBTITLE), DB.getDados(Conexao.DECKSUBTITLE).getBase()) : null;
 	}
 
 	public static MangaDao createMangaDao() {
-		return new MangaDaoJDBC(DB.getConnection(Conexao.MANGAEXTRACTOR), DB.getDados(Conexao.MANGAEXTRACTOR).getBase());
+		Connection conn = DB.getConnection(Conexao.MANGAEXTRACTOR);
+		return conn != null ? new MangaDaoJDBC(conn, DB.getDados(Conexao.MANGAEXTRACTOR).getBase()) : null;
 	}
 
 	public static NovelDao createNovelDao() {
-		return new NovelDaoJDBC(DB.getConnection(Conexao.NOVELEXTRACTOR), DB.getDados(Conexao.NOVELEXTRACTOR).getBase());
+		Connection conn = DB.getConnection(Conexao.NOVELEXTRACTOR);
+		return conn != null ? new NovelDaoJDBC(conn, DB.getDados(Conexao.NOVELEXTRACTOR).getBase()) : null;
 	}
 	
 	public static VincularDao createVincularDao() {
-		return new VincularDaoJDBC(DB.getConnection(Conexao.MANGAEXTRACTOR));
+		Connection conn = DB.getConnection(Conexao.NOVELEXTRACTOR);
+		return conn != null ? new VincularDaoJDBC(DB.getConnection(Conexao.MANGAEXTRACTOR)) : null;
 	}
 
 	public static KanjiDao createKanjiDao() {

@@ -35,6 +35,7 @@ import org.jisho.textosJapones.components.notification.AlertasPopup;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.database.mysql.Backup;
 import org.jisho.textosJapones.database.mysql.ConexaoMysql;
+import org.jisho.textosJapones.database.mysql.DB;
 import org.jisho.textosJapones.model.entities.Vocabulario;
 import org.jisho.textosJapones.model.enums.*;
 import org.jisho.textosJapones.model.services.SincronizacaoServices;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -144,7 +146,22 @@ public class MenuPrincipalController implements Initializable {
     private VBox vbBarraProgress;
 
     @FXML
+    private Tab tbAnki;
+
+    @FXML
     private Tab tbRevisar;
+
+    @FXML
+    private Tab tbTraduzir;
+
+    @FXML
+    private Tab tbLegendas;
+
+    @FXML
+    private Tab tbNovels;
+
+    @FXML
+    private Tab tbMangas;
 
     @FXML
     private RevisarController revisarController;
@@ -314,7 +331,7 @@ public class MenuPrincipalController implements Initializable {
         animacao.tmLineImageBanco.play();
 
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
-        Task<String> verificaConexao = new Task<String>() {
+        Task<String> verificaConexao = new Task<>() {
 
             @Override
             protected String call() throws Exception {
@@ -336,6 +353,12 @@ public class MenuPrincipalController implements Initializable {
 
         Thread t = new Thread(verificaConexao);
         t.start();
+    }
+
+    private void verificaBases() {
+        tbLegendas.setDisable(DB.getConnection(Conexao.DECKSUBTITLE) == null);
+        tbNovels.setDisable(DB.getConnection(Conexao.NOVELEXTRACTOR) == null);
+        tbMangas.setDisable(DB.getConnection(Conexao.MANGAEXTRACTOR) == null);
     }
 
     SincronizacaoServices sincronizacao = new SincronizacaoServices(this);
@@ -479,6 +502,7 @@ public class MenuPrincipalController implements Initializable {
             imgCompartilhamento.setImage(imgAnimaCompartilha);
 
         verificaConexao();
+        verificaBases();
     }
 
     public static URL getFxmlLocate() {

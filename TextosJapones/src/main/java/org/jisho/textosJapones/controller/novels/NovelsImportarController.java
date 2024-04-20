@@ -265,9 +265,8 @@ public class NovelsImportarController implements Initializable, BaseController {
 
         try {
             cbBase.getItems().setAll(service.getTabelas());
-        } catch (ExcessaoBd e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            AlertasPopup.ErroModal("Erro ao carregar as tabelas", e.getMessage());
         }
 
         JFXAutoCompletePopup<String> autoCompletePopup = new JFXAutoCompletePopup<>();
