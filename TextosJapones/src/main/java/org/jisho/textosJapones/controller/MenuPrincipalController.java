@@ -294,6 +294,10 @@ public class MenuPrincipalController implements Initializable {
         return lblLog;
     }
 
+    public void setLblLog(String text) {
+        lblLog.setText(text);
+    }
+
     private void progressBarVisible(Boolean visible) {
         scpBarraProgress.setVisible(visible);
     }
@@ -489,16 +493,18 @@ public class MenuPrincipalController implements Initializable {
         sincronizacao.setObserver((ListChangeListener<? super Pair<Database, Vocabulario>>) (observable) -> {
             if (!sincronizacao.isSincronizando())
                 Platform.runLater(() -> {
-                    if (!observable.getList().isEmpty())
+                    if (!observable.getList().isEmpty()) {
+                        lblLog.setText("Pendente de envio " + observable.getList().size() + " registro(s).");
                         imgCompartilhamento.setImage(imgAnimaCompartilhaEspera);
-                    else
+                    } else
                         imgCompartilhamento.setImage(imgAnimaCompartilha);
                 });
         });
 
-        if (!sincronizacao.isListEmpty())
+        if (sincronizacao.listSize() > 0) {
+            lblLog.setText("Pendente de envio " + sincronizacao.listSize() + " registro(s).");
             imgCompartilhamento.setImage(imgAnimaCompartilhaEspera);
-        else
+        } else
             imgCompartilhamento.setImage(imgAnimaCompartilha);
 
         verificaConexao();

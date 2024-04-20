@@ -645,7 +645,7 @@ public class RevisarController implements Initializable {
             if (click.getClickCount() == 1 && !lvProcesssar.getItems().isEmpty()) {
                 Triple<Vocabulario, Database, DatabaseReference> voc = lvProcesssar.getSelectionModel().getSelectedItem();
 
-                if (voc != null)
+                if (voc != null) {
                     switch (voc.second) {
                         case INGLES -> {
                             if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
@@ -657,14 +657,15 @@ public class RevisarController implements Initializable {
                         }
                     }
 
-                txtPesquisar.setText(voc.first.getVocabulario());
-                pesquisar();
-                txtAreaPortugues.setText(voc.first.getPortugues());
-                onBtnFormatar();
+                    txtPesquisar.setText(voc.first.getVocabulario());
+                    pesquisar();
+                    txtAreaPortugues.setText(voc.first.getPortugues());
+                    onBtnFormatar();
 
-                Toolkit.getDefaultToolkit()
-                        .getSystemClipboard()
-                        .setContents(new StringSelection(voc.first.getVocabulario()), null);
+                    Toolkit.getDefaultToolkit()
+                            .getSystemClipboard()
+                            .setContents(new StringSelection(voc.first.getVocabulario()), null);
+                }
             }
         });
 

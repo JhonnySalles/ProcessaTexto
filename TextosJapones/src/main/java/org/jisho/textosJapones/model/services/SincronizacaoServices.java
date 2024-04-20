@@ -106,7 +106,9 @@ public class SincronizacaoServices extends TimerTask {
 
         for (VocabularioDao vocab : daoVocabulario) {
             try {
-                List<Pair<Database, Vocabulario>> sinc = vocab.selectEnvio(sincronizacao.getEnvio()).parallelStream().map(i -> new Pair<>(vocab.getTipo(), i)).collect(Collectors.toList());
+                List<Pair<Database, Vocabulario>> sinc = vocab.selectEnvio(sincronizacao.getEnvio()).parallelStream()
+                        .filter(i -> sincronizar.parallelStream().noneMatch(s -> s.getKey().equals(vocab.getTipo()) && s.getValue().equals(i)))
+                        .map(i -> new Pair<>(vocab.getTipo(), i)).collect(Collectors.toList());
                 if (!sinc.isEmpty())
                     sincronizar.addAll(sinc);
             } catch (ExcessaoBd ex) {
@@ -115,14 +117,20 @@ public class SincronizacaoServices extends TimerTask {
         }
     }
 
+
+    Integer registros = 0;
+    String vocabularios;
+    String processados;
     private Boolean envia() throws Exception {
         Boolean processado = false;
+        vocabularios = "";
+        registros = 0;
+
         if (!sincronizar.isEmpty()) {
             LOGGER.info("Enviando dados a cloud... ");
             List<Pair<Database, Vocabulario>> sinc = sincronizar.parallelStream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).distinct().collect(Collectors.toList());
             try {
                 sincronizar.clear();
-
                 String envio = LocalDateTime.now().format(formaterDataHora);
 
                 List<Database> bases = sinc.parallelStream().map(Pair::getKey).distinct().collect(Collectors.toList());
@@ -137,8 +145,16 @@ public class SincronizacaoServices extends TimerTask {
                         }
                         ApiFuture<WriteResult> result = docRef.set(data);
                         result.get();
+                        registros += env.size();
                         LOGGER.info("Enviado dados a cloud: " + env.size() + " registros (" + db + "). ");
                     }
+                }
+
+                if (registros > 0) {
+                    processados += "Enviado " + registros + " registro(s). " ;
+                    if (!vocabularios.isEmpty())
+                        vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
+                    Platform.runLater(() -> Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído o envio de " + registros + " registros para cloud.", "Sincronizado: " + vocabularios));
                 }
                 LOGGER.info("Concluído envio de dados a cloud.");
 
@@ -153,7 +169,6 @@ public class SincronizacaoServices extends TimerTask {
         return processado;
     }
 
-    String vocabularios;
     private Boolean receber() throws Exception {
         Boolean processado = false;
         try {
@@ -181,19 +196,20 @@ public class SincronizacaoServices extends TimerTask {
                 }
             }
 
-            LOGGER.info("Processando retorno dados a cloud: " + lista.size() + " itens.");
+            LOGGER.info("Processando retorno dados a cloud: " + lista.size() + " registros.");
 
             vocabularios = "";
+            registros = lista.size();
 
             for (Pair<Database, Vocabulario> sinc : lista) {
                 for (VocabularioDao voc : daoVocabulario)
                     if (voc.getTipo().equals(sinc.getKey())) {
                         Vocabulario vocab = voc.select(sinc.getValue().getId());
 
-                        if (voc == null)
+                        if (vocab == null)
                             vocab = voc.select(sinc.getValue().getVocabulario(), sinc.getValue().getFormaBasica());
 
-                        if (voc != null) {
+                        if (vocab != null) {
                             vocab.merge(sinc.getValue());
                             voc.update(vocab);
                         } else {
@@ -217,8 +233,10 @@ public class SincronizacaoServices extends TimerTask {
                     }
             }
 
-            if (!vocabularios.isEmpty()) {
-                vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
+            if (registros > 0) {
+                processados += "Recebido " + registros + " registro(s). " ;
+                if (!vocabularios.isEmpty())
+                    vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
                 Platform.runLater(() -> Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " registros da cloud.", "Sincronizado: " + vocabularios));
             }
 
@@ -240,8 +258,11 @@ public class SincronizacaoServices extends TimerTask {
         try {
             sincronizando = true;
             controller.animacaoSincronizacaoDatabase(true, false);
-            Boolean enviado = envia();
+
+            processados = "";
+
             Boolean recebido = receber();
+            Boolean enviado = envia();
 
             if (enviado)
                 sincronizacao.setEnvio(LocalDateTime.now());
@@ -249,8 +270,11 @@ public class SincronizacaoServices extends TimerTask {
             if (recebido)
                 sincronizacao.setRecebimento(LocalDateTime.now());
 
-            if (enviado || recebido)
+            if (enviado || recebido) {
                 dao.update(sincronizacao);
+                Platform.runLater(() -> controller.setLblLog(processados.trim()));
+            } else
+                Platform.runLater(() -> controller.setLblLog(""));
 
             sincronizado = true;
             controller.animacaoSincronizacaoDatabase(false, false);
@@ -266,8 +290,8 @@ public class SincronizacaoServices extends TimerTask {
         return sincronizando;
     }
 
-    public Boolean isListEmpty() {
-        return sincronizar.isEmpty();
+    public Integer listSize() {
+        return sincronizar.size();
     }
 
 }

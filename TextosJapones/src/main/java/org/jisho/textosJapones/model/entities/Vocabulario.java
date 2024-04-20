@@ -3,6 +3,7 @@ package org.jisho.textosJapones.model.entities;
 import com.google.gson.annotations.Expose;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Vocabulario {
@@ -156,5 +157,18 @@ public class Vocabulario {
 		this.leituraNovel = vocab.leituraNovel;
 		this.portugues = vocab.portugues;
 		this.ingles = vocab.ingles;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Vocabulario that = (Vocabulario) o;
+		return id.equals(that.id) && vocabulario.equals(that.vocabulario);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, vocabulario);
 	}
 }
