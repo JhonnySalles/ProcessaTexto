@@ -106,7 +106,7 @@ public class SincronizacaoServices extends TimerTask {
 
         for (VocabularioDao vocab : daoVocabulario) {
             try {
-                List<Pair<Database, Vocabulario>> sinc = vocab.selectEnvio(sincronizacao.getEnvio()).parallelStream()
+                List<Pair<Database, Vocabulario>> sinc = vocab.selectEnvioVocabulario(sincronizacao.getEnvio()).parallelStream()
                         .filter(i -> sincronizar.parallelStream().noneMatch(s -> s.getKey().equals(vocab.getTipo()) && s.getValue().equals(i)))
                         .map(i -> new Pair<>(vocab.getTipo(), i)).collect(Collectors.toList());
                 if (!sinc.isEmpty())
@@ -121,13 +121,13 @@ public class SincronizacaoServices extends TimerTask {
     Integer registros = 0;
     String vocabularios;
     String processados;
-    private Boolean envia() throws Exception {
+    private Boolean enviaVocabulario() throws Exception {
         Boolean processado = false;
         vocabularios = "";
         registros = 0;
 
         if (!sincronizar.isEmpty()) {
-            LOGGER.info("Enviando dados a cloud... ");
+            LOGGER.info("Enviando vocabulário para cloud... ");
             List<Pair<Database, Vocabulario>> sinc = sincronizar.parallelStream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).distinct().collect(Collectors.toList());
             try {
                 sincronizar.clear();
@@ -137,16 +137,26 @@ public class SincronizacaoServices extends TimerTask {
                 for (Database db : bases) {
                     List<Vocabulario> env = sinc.parallelStream().filter(i -> i.getKey().equals(db)).map(Pair::getValue).collect(Collectors.toList());
                     if (!env.isEmpty()) {
-                        DocumentReference docRef = DB.collection(db.toString()).document(formaterData.format(LocalDate.now()));
+                        DocumentReference docRef = DB.collection("VOCABULARIO " + db.toString()).document(formaterData.format(LocalDate.now()));
+
                         Map<String, Object> data = new HashMap<>();
                         for (Vocabulario voc : env) {
                             voc.sincronizacao = envio;
                             data.put(voc.getId().toString(), voc);
                         }
+
+                        DocumentSnapshot document = docRef.get().get();
+                        Map<String, Object> olds = document.getData();
+                        if (olds != null && !olds.isEmpty()) {
+                            for (String key : olds.keySet())
+                                if (!data.containsKey(key))
+                                    data.put(key, olds.get(key));
+                        }
+
                         ApiFuture<WriteResult> result = docRef.set(data);
                         result.get();
                         registros += env.size();
-                        LOGGER.info("Enviado dados a cloud: " + env.size() + " registros (" + db + "). ");
+                        LOGGER.info("Enviado vocabulário para cloud: " + env.size() + " registros (" + db + "). ");
                     }
                 }
 
@@ -161,7 +171,7 @@ public class SincronizacaoServices extends TimerTask {
                 processado = true;
             } catch (Exception e) {
                 sincronizar.addAll(sinc);
-                LOGGER.error("Erro ao enviar dados a cloud, adicionado arquivos para novo ciclo.\n" + e.getMessage(), e);
+                LOGGER.error("Erro ao enviar vocabulários a cloud, adicionado arquivos para novo ciclo.\n" + e.getMessage(), e);
                 throw e;
             }
         }
@@ -169,16 +179,16 @@ public class SincronizacaoServices extends TimerTask {
         return processado;
     }
 
-    private Boolean receber() throws Exception {
+    private Boolean receberVocabulario() throws Exception {
         Boolean processado = false;
         try {
-            LOGGER.info("Recebendo dados a cloud.... ");
+            LOGGER.info("Recebendo vocabulário da cloud.... ");
             List<Pair<Database, Vocabulario>> lista = new ArrayList<>();
 
             String atual = LocalDate.now().format(formaterData);
 
             for (VocabularioDao vocab : daoVocabulario) {
-                ApiFuture<QuerySnapshot> query = DB.collection(vocab.getTipo().toString()).get();
+                ApiFuture<QuerySnapshot> query = DB.collection("VOCABULARIO " + vocab.getTipo().toString()).get();
 
                 QuerySnapshot querySnapshot = query.get();
                 List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
@@ -196,7 +206,7 @@ public class SincronizacaoServices extends TimerTask {
                 }
             }
 
-            LOGGER.info("Processando retorno dados a cloud: " + lista.size() + " registros.");
+            LOGGER.info("Processando retorno vocabulário da cloud: " + lista.size() + " registros.");
 
             vocabularios = "";
             registros = lista.size();
@@ -237,13 +247,112 @@ public class SincronizacaoServices extends TimerTask {
                 processados += "Recebido " + registros + " registro(s). " ;
                 if (!vocabularios.isEmpty())
                     vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
-                Platform.runLater(() -> Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " registros da cloud.", "Sincronizado: " + vocabularios));
+                Platform.runLater(() -> Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size() + " vocabulários da cloud.", "Vocabulários: " + vocabularios));
             }
 
             processado = true;
-            LOGGER.info("Concluído recebimento de dados a cloud.");
+            LOGGER.info("Concluído recebimento de vocabulários da cloud.");
         } catch (Exception e) {
             LOGGER.error("Erro ao receber dados a cloud.\n" + e.getMessage(), e);
+            throw e;
+        }
+        return processado;
+    }
+
+    private Boolean enviaExclusao() throws Exception {
+        Boolean processado = false;
+        vocabularios = "";
+        registros = 0;
+
+        List<Pair<Database, String>> enviar = new ArrayList<>();
+
+        for (VocabularioDao vocab : daoVocabulario) {
+            try {
+                List<Pair<Database, String>> sinc = vocab.selectExclusaoEnvio(sincronizacao.getEnvio()).parallelStream()
+                        .filter(Objects::nonNull).filter(i -> !i.isEmpty())
+                        .map(i -> new Pair<>(vocab.getTipo(), i)).collect(Collectors.toList());
+                if (!sinc.isEmpty())
+                    enviar.addAll(sinc);
+            } catch (ExcessaoBd ex) {
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        }
+
+        if (!enviar.isEmpty()) {
+            LOGGER.info("Enviando exclusões para cloud... ");
+            try {
+                String envio = LocalDateTime.now().format(formaterDataHora);
+
+                List<Database> bases = enviar.parallelStream().map(Pair::getKey).distinct().collect(Collectors.toList());
+                for (Database db : bases) {
+                    List<String> env = enviar.parallelStream().filter(i -> i.getKey().equals(db)).map(Pair::getValue).collect(Collectors.toList());
+                    if (!env.isEmpty()) {
+                        DocumentReference docRef = DB.collection("EXCLUSAO " + db.toString()).document(formaterData.format(LocalDate.now()));
+
+                        Map<String, String> data = new HashMap<>();
+                        for (String exc : env)
+                            data.put(exc, envio);
+
+                        DocumentSnapshot document = docRef.get().get();
+                        Map<String, Object> olds = document.getData();
+                        if (olds != null && !olds.isEmpty()) {
+                            for (String key : olds.keySet())
+                                if (!data.containsKey(key))
+                                    data.put(key, olds.get(key).toString());
+                        }
+
+                        ApiFuture<WriteResult> result = docRef.set(data);
+                        result.get();
+                        registros += env.size();
+                        LOGGER.info("Enviado exclusões para cloud: " + env.size() + " registros (" + db + "). ");
+                    }
+                }
+
+                if (registros > 0) {
+                    if (!vocabularios.isEmpty())
+                        vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim();
+                }
+                LOGGER.info("Concluído envio de exclusões para cloud.");
+
+                processado = true;
+            } catch (Exception e) {
+                LOGGER.error("Erro ao enviar exclusões a cloud.\n" + e.getMessage(), e);
+                throw e;
+            }
+        }
+
+        return processado;
+    }
+
+    private Boolean receberExclusao() throws Exception {
+        Boolean processado = false;
+        try {
+            LOGGER.info("Recebendo exclusões da cloud.... ");
+
+            String atual = LocalDate.now().format(formaterData);
+
+            for (VocabularioDao vocab : daoVocabulario) {
+                ApiFuture<QuerySnapshot> query = DB.collection("EXCLUSAO " + vocab.getTipo().toString()).get();
+
+                QuerySnapshot querySnapshot = query.get();
+                List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+                for (QueryDocumentSnapshot document : documents) {
+                    LocalDate data = LocalDate.parse(document.getId(), formaterData);
+                    if (sincronizacao.getRecebimento().toLocalDate().isAfter(data) && !atual.equalsIgnoreCase(document.getId()))
+                        continue;
+
+                    for(String key : document.getData().keySet()) {
+                        LocalDateTime sinc = LocalDateTime.parse((String) document.getData().get(key), formaterDataHora);
+                        if (sinc.isAfter(sincronizacao.getRecebimento()))
+                            vocab.insertExclusao(key);
+                    }
+                }
+            }
+
+            processado = true;
+            LOGGER.info("Concluído recebimento de exclusão da cloud.");
+        } catch (Exception e) {
+            LOGGER.error("Erro ao receber exclusões da cloud.\n" + e.getMessage(), e);
             throw e;
         }
         return processado;
@@ -261,8 +370,11 @@ public class SincronizacaoServices extends TimerTask {
 
             processados = "";
 
-            Boolean recebido = receber();
-            Boolean enviado = envia();
+            Boolean recebido = receberVocabulario();
+            Boolean enviado = enviaVocabulario();
+
+            recebido = receberExclusao() || recebido;
+            enviado = enviaExclusao() || enviado;
 
             if (enviado)
                 sincronizacao.setEnvio(LocalDateTime.now());
@@ -279,6 +391,7 @@ public class SincronizacaoServices extends TimerTask {
             sincronizado = true;
             controller.animacaoSincronizacaoDatabase(false, false);
         } catch (Exception e) {
+            LOGGER.error("Erro ao sincronizar dados.", e);
             controller.animacaoSincronizacaoDatabase(false, true);
         } finally {
             sincronizando = false;

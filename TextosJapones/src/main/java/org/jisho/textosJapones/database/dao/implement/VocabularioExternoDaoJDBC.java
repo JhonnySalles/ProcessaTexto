@@ -172,8 +172,13 @@ public class VocabularioExternoDaoJDBC implements VocabularioDao {
     }
 
     @Override
-    public List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+    public List<Vocabulario> selectEnvioVocabulario(LocalDateTime ultimo) throws ExcessaoBd {
         return new ArrayList<>();
+    }
+
+    @Override
+    public Set<String> selectExclusaoEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+        return null;
     }
 
     @Override

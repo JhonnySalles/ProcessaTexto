@@ -411,7 +411,7 @@ public class RevisarInglesDaoJDBC implements RevisarDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(SET_ISNOVEL);
-            st.setBoolean(1, obj.isManga());
+            st.setBoolean(1, obj.isNovel());
             st.setString(2, obj.getVocabulario());
             st.executeUpdate();
         } catch (SQLException e) {

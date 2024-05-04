@@ -35,6 +35,8 @@ public interface VocabularioDao {
 	
 	Set<String> selectExclusao() throws ExcessaoBd;
 
-	List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd;
+	List<Vocabulario> selectEnvioVocabulario(LocalDateTime ultimo) throws ExcessaoBd;
+
+	Set<String> selectExclusaoEnvio(LocalDateTime ultimo) throws ExcessaoBd;
 
 }

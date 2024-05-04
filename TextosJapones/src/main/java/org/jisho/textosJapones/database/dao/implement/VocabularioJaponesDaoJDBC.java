@@ -32,7 +32,9 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
     final private String SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao";
     final private String SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? or palavra = ? ";
 
-    final private String SELECT_ENVIO = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE atualizacao >= ?;";
+    final private String SELECT_ENVIO_VOCABULARIO = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE atualizacao >= ?;";
+    final private String SELECT_ENVIO_EXCLUSAO = "SELECT palavra FROM exclusao WHERE atualizacao >= ?;";
+
 
     public VocabularioJaponesDaoJDBC(Connection conn) {
         this.conn = conn;
@@ -277,11 +279,11 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
     }
 
     @Override
-    public List<Vocabulario> selectEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+    public List<Vocabulario> selectEnvioVocabulario(LocalDateTime ultimo) throws ExcessaoBd {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement(SELECT_ENVIO);
+            st = conn.prepareStatement(SELECT_ENVIO_VOCABULARIO);
             st.setString(1, Util.convertToString(ultimo));
             rs = st.executeQuery();
 
@@ -291,6 +293,31 @@ public class VocabularioJaponesDaoJDBC implements VocabularioDao {
                 list.add(new Vocabulario(UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues")));
             }
+            return list;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_SELECT);
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public Set<String> selectExclusaoEnvio(LocalDateTime ultimo) throws ExcessaoBd {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+
+            st = conn.prepareStatement(SELECT_ENVIO_EXCLUSAO);
+            st.setString(1, Util.convertToString(ultimo));
+            rs = st.executeQuery();
+
+            Set<String> list = new HashSet<>();
+
+            while (rs.next())
+                list.add(rs.getString(1));
+
             return list;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);

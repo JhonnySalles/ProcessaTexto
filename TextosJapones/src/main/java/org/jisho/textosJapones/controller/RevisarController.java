@@ -429,17 +429,55 @@ public class RevisarController implements Initializable {
         if (reference == null) {
             reference = database.getReference("anki");
             reference.addValueEventListener(new ValueEventListener() {
+
+                private void excluir(DataSnapshot linguagem) {
+                    try {
+                        Database database = Database.valueOf(linguagem.getKey().toUpperCase());
+                        switch (database) {
+                            case INGLES:
+                                for (DataSnapshot vocab : linguagem.getChildren()) {
+                                    vocabularioIngles.insertExclusao(vocab.getKey());
+                                    vocab.getRef().removeValueAsync();
+                                }
+                                break;
+                            case JAPONES:
+                                for (DataSnapshot vocab : linguagem.getChildren()) {
+                                    vocabularioJapones.insertExclusao(vocab.getKey());
+                                    vocab.getRef().removeValueAsync();
+                                }
+                                break;
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Erro ao processar a exclusão.", e);
+                    }
+                }
+
+                private List<Triple<Vocabulario, Database, DatabaseReference>> processa(DataSnapshot linguagem) {
+                    List<Triple<Vocabulario, Database, DatabaseReference>> lista = new ArrayList<>();
+                    Database database = Database.valueOf(linguagem.getKey().toUpperCase());
+
+                    for (DataSnapshot vocab : linguagem.getChildren()) {
+                        HashMap<String, String> obj = (HashMap<String, String>) vocab.getValue();
+                        Vocabulario vocabulario = new Vocabulario(obj.get("vocabulario"), obj.get("portugues"));
+                        lista.add(new Triple<>(vocabulario, database, vocab.getRef()));
+                    }
+
+                    return lista;
+                }
+
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     try {
                         List<Triple<Vocabulario, Database, DatabaseReference>> lista = new ArrayList<>();
 
                         for (DataSnapshot linguagem : dataSnapshot.getChildren()) {
-                            Database database = Database.valueOf(linguagem.getKey().toUpperCase());
-                            for (DataSnapshot vocab : linguagem.getChildren()) {
-                                HashMap<String, String> obj = (HashMap<String, String>) vocab.getValue();
-                                Vocabulario vocabulario = new Vocabulario(obj.get("vocabulario"), obj.get("portugues"));
-                                lista.add(new Triple<>(vocabulario, database, vocab.getRef()));
+                            switch (linguagem.getKey().toUpperCase()) {
+                                case "EXCLUIR":
+                                    for (DataSnapshot excluir : linguagem.getChildren())
+                                        excluir(excluir);
+                                    break;
+                                default:
+                                    lista.addAll(processa(linguagem));
                             }
                         }
 
