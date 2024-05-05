@@ -6,6 +6,8 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import io.grpc.LoadBalancerRegistry;
+import io.grpc.internal.PickFirstLoadBalancerProvider;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -369,6 +371,8 @@ public class SincronizacaoServices extends TimerTask {
             controller.animacaoSincronizacaoDatabase(true, false);
 
             processados = "";
+
+            LoadBalancerRegistry.getDefaultRegistry().register(new PickFirstLoadBalancerProvider());
 
             Boolean recebido = receberVocabulario();
             Boolean enviado = enviaVocabulario();
