@@ -496,7 +496,7 @@ public class RevisarController implements Initializable {
     }
 
     private void removeFiredac(Vocabulario vocabulario) {
-        if (!processsar.isEmpty() && reference != null && vocabulario != null) {
+        if (!processsar.isEmpty() && vocabulario != null) {
             Optional<Triple<Vocabulario, Database, DatabaseReference>> item = processsar.parallelStream().filter(i -> i.first.getVocabulario().equalsIgnoreCase(vocabulario.getVocabulario())).findFirst();
             if (item.isPresent()) {
                 processsar.remove(item.get());

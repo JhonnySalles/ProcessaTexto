@@ -159,12 +159,13 @@ public class Vocabulario {
 		this.ingles = vocab.ingles;
 	}
 
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Vocabulario that = (Vocabulario) o;
-		return id.equals(that.id) && vocabulario.equals(that.vocabulario);
+		return Objects.equals(id, that.id) && Objects.equals(vocabulario, that.vocabulario);
 	}
 
 	@Override
