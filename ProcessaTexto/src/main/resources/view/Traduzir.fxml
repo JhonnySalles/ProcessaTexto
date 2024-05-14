@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.TraduzirController">
+   <children>
+      <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="500.0" spacing="10.0" VBox.vgrow="ALWAYS">
+               <padding>
+                  <Insets left="15.0" right="15.0" />
+               </padding>
+               <children>
+                  <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <JFXTextField fx:id="txtQuantidadeRegistros" focusColor="#71afe5" labelFloat="true" promptText="Carregar x registros" styleClass="texto-stilo" text="0" unFocusColor="#106ebe" />
+                     </children>
+                  </HBox>
+                  <JFXButton fx:id="btnTraduzir" focusTraversable="false" minWidth="110.0" onAction="#onBtnTraduzir" prefWidth="110.0" styleClass="background-White1" text="Traduzir" />
+                  <JFXButton fx:id="btnAtualizar" focusTraversable="false" minWidth="110.0" onAction="#onBtnAtualizar" prefWidth="110.0" styleClass="background-White1" text="Atualizar" />
+                  <JFXButton fx:id="btnSalvar" focusTraversable="false" minWidth="110.0" onAction="#onBtnSalvar" prefWidth="110.0" styleClass="background-White1" text="Salvar" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <JFXButton fx:id="btnJapaneseTanoshi" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapaneseTanoshi" prefWidth="100.0" styleClass="background-White1" text="Jap. Tanoshi" />
+                  <JFXButton fx:id="btnJapanDict" focusTraversable="false" minWidth="100.0" onAction="#onBtnJapanDict" prefWidth="100.0" styleClass="background-White1" text="JapanDict" />
+                  <JFXButton fx:id="btnJisho" focusTraversable="false" minWidth="100.0" onAction="#onBtnJisho" prefWidth="100.0" styleClass="background-White1" text="Jisho" />
+                  <JFXButton fx:id="btnKanshudo" focusTraversable="false" minWidth="100.0" onAction="#onBtnKanshudo" prefWidth="100.0" styleClass="background-White1" text="Kanshudo" />
+                  <JFXButton fx:id="btnTangorin" focusTraversable="false" minWidth="100.0" onAction="#onBtnTangorin" prefWidth="100.0" styleClass="background-White1" text="Tangorin" />
+                  <JFXButton fx:id="btnProcessarTudo" accessibleText="PROCESSAR" focusTraversable="false" minWidth="100.0" onAction="#onBtnProcessarTudo" prefWidth="100.0" styleClass="background-White1" text="Processar tudo" />
+                  <JFXCheckBox fx:id="ckbDesmembrar" checkedColor="#71afe5" text="Desmembrar kanjis" textFill="WHITE" unCheckedColor="#106ebe" />
+               </children>
+               <padding>
+                  <Insets left="15.0" right="15.0" />
+               </padding>
+            </HBox>
+         </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+      <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="95.0">
+         <columns>
+            <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
+            <TableColumn fx:id="tcIngles" prefWidth="260.0" text="Ingles" />
+            <TableColumn fx:id="tcPortugues" prefWidth="298.5" text="Tradução" />
+            <TableColumn fx:id="tcRevisado" prefWidth="30.0" resizable="false">
+	            <cellValueFactory>
+	      		</cellValueFactory>
+	            <graphic>
+	               <JFXCheckBox fx:id="ckbMarcarTodos" alignment="CENTER" checkedColor="#71afe5" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onBtnMarcarTodos" unCheckedColor="#106ebe" />
+	            </graphic>
+            </TableColumn>
+         </columns>
+         <styleClass>
+            <String fx:value="accelerator-text" />
+            <String fx:value="paneBorder" />
+         </styleClass>
+      </TableView>
+   </children>
+   <styleClass>
+      <String fx:value="background-Black2" />
+      <String fx:value="paneBorder" />
+   </styleClass>
+</AnchorPane>

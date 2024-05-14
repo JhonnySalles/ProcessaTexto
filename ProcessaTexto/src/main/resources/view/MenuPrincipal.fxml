@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="apGlobal" minHeight="750.0" minWidth="750.0" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.MenuPrincipalController">
+   <children>
+      <StackPane fx:id="rootStackPane" layoutX="5.0" layoutY="11.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane fx:id="root" styleClass="background-Black1" stylesheets="@../css/Dark_Theme.css">
+               <children>
+                  <VBox alignment="TOP_CENTER" layoutY="-8.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox alignment="TOP_CENTER" styleClass="tituloBackground">
+                           <children>
+                              <HBox alignment="CENTER_RIGHT" minHeight="39.0" prefHeight="50.0" spacing="10.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <JFXButton fx:id="btnBanco" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" onAction="#onBtnVerificaConexao" onMouseClicked="#onBtnConexaoOnMouseClicked" prefHeight="45.0" prefWidth="2.0">
+                                             <graphic>
+                                                <ImageView fx:id="imgConexaoBase" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/bd/icoDataBase_48.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </JFXButton>
+                                          <JFXButton fx:id="btnBackup" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" onMouseClicked="#onBtnConexaoOnMouseClicked" prefHeight="45.0" prefWidth="2.0">
+                                             <graphic>
+                                                <ImageView fx:id="imgBackup" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/export/icoBDBackup_48.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </JFXButton>
+                                          <JFXButton fx:id="btnCompartilhamento" alignment="TOP_CENTER" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" onAction="#onBtnCompartilhamentoDatabase" prefHeight="45.0" prefWidth="2.0">
+                                             <graphic>
+                                                <ImageView fx:id="imgCompartilhamento" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/bd/icoCompartilhamento_48.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </JFXButton>
+                                       </children>
+                                       <padding>
+                                          <Insets left="15.0" />
+                                       </padding>
+                                    </HBox>
+                                    <JFXComboBox fx:id="cbSite" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="100.0" promptText="Site" styleClass="comboBox-stilo" unFocusColor="WHITE" />
+                                    <JFXComboBox fx:id="cbContaGoolge" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" minWidth="150.0" promptText="Conta Google" styleClass="comboBox-stilo" unFocusColor="WHITE" />
+                                    <JFXComboBox fx:id="cbDicionario" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="131.0" promptText="Dicionário" styleClass="comboBox-stilo" unFocusColor="WHITE" />
+                                    <JFXComboBox fx:id="cbModo" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="100.0" promptText="Modo Split" styleClass="comboBox-stilo" unFocusColor="WHITE" />
+                                 </children>
+                                 <padding>
+                                    <Insets right="15.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets top="3.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox fx:id="hbContainerLog" alignment="CENTER_RIGHT">
+                                 <VBox.margin>
+                                    <Insets top="3.0" />
+                                 </VBox.margin>
+                                 <children>
+                                    <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="lblLog" minHeight="17.0" textFill="WHITE" wrapText="true">
+                                             <VBox.margin>
+                                                <Insets left="10.0" right="10.0" />
+                                             </VBox.margin></Label>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <JFXTabPane cache="true" style="-fx-border-color: black; -fx-border-width: 1;" tabDragPolicy="REORDER" VBox.vgrow="ALWAYS">
+                           <tabs>
+                              <Tab fx:id="tbAnki" closable="false" text="Frases Anki">
+                                <content>
+                                  <AnchorPane cache="true">
+                                       <children>
+                                          <fx:include maxHeight="-Infinity" maxWidth="-Infinity" source="FrasesAnki.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                       <rotationAxis>
+                                          <Point3D />
+                                       </rotationAxis></AnchorPane>
+                                </content>
+                              </Tab>
+                              <Tab fx:id="tbRevisar" closable="false" onSelectionChanged="#onSelectRevisarChanged" text="Revisar Vocabulario">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <fx:include fx:id="revisar" source="Revisar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          </fx:include>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="tbTraduzir" closable="false" text="Traduzir Vocabulario">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <fx:include fx:id="traduzir" source="Traduzir.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="tbLegendas" closable="false" text="Legendas">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <fx:include source="legendas/Legendas.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children></AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="tbNovels" text="Novels">
+                                <content>
+                                   <AnchorPane>
+                                      <children>
+                                         <fx:include source="novels/Novel.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                      </children></AnchorPane>
+                                </content>
+                              </Tab>
+                              <Tab fx:id="tbMangas" closable="false" text="Mangas">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <fx:include source="mangas/Manga.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children></AnchorPane>
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </JFXTabPane>
+                        <ScrollPane fx:id="scpBarraProgress" fitToHeight="true" fitToWidth="true" minHeight="50.0" prefHeight="50.0">
+                           <content>
+                              <AnchorPane styleClass="background-Black3">
+                                 <children>
+                                    <VBox fx:id="vbBarraProgress" spacing="5.0" styleClass="background-Black3" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <padding>
+                                          <Insets bottom="2.0" left="3.0" right="3.0" top="2.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

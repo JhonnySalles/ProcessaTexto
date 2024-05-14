@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.fenix.processatexto.controller.legendas.LegendasImportarController">
+   <styleClass>
+      <String fx:value="background-Black2" />
+      <String fx:value="paneBorder" />
+   </styleClass>
+   <children>
+      <VBox layoutX="11.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <HBox spacing="5.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" spacing="10.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <HBox maxWidth="600.0" spacing="10.0">
+                           <children>
+                              <JFXComboBox fx:id="cbBase" editable="true" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Base" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                              <JFXComboBox fx:id="cbLinguagem" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem" styleClass="comboBox-stilo" unFocusColor="#106ebe" />
+                              <JFXTextField fx:id="txtPipe" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="50.0" promptText="Pipe" styleClass="texto-stilo" unFocusColor="#106ebe" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                        <HBox maxWidth="600.0" spacing="10.0">
+                           <children>
+                              <JFXTextField fx:id="txtNome" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Nome" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                        <HBox maxWidth="600.0" spacing="10.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <children>
+                              <JFXTextField fx:id="txtPrefixoSom" alignment="CENTER" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="60.0" promptText="Prefixo som" styleClass="texto-stilo" text="(PT)" unFocusColor="#106ebe" />
+                              <JFXCheckBox fx:id="ckbVocabulario" alignment="CENTER" checkedColor="#71afe5" contentDisplay="TEXT_ONLY" mnemonicParsing="false" prefHeight="18.0" prefWidth="53.0" selected="true" text="Gerar Vocabulário" textFill="WHITE" unCheckedColor="#106ebe" />
+                           </children>
+                        </HBox>
+                        <HBox maxWidth="600.0" prefWidth="600.0" spacing="10.0">
+                           <children>
+                              <JFXTextField fx:id="txtCaminho" focusColor="#71afe5" labelFloat="true" maxWidth="1.7976931348623157E308" prefHeight="25.0" promptText="Pasta a processar" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                              <JFXButton fx:id="btnCaminho" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarPasta" prefWidth="35.0">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icoPasta_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="btnArquivo" contentDisplay="GRAPHIC_ONLY" onAction="#onBtnCarregarArquivo" prefWidth="35.0" text="Button">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icoArquivo_48.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox prefWidth="350.0" spacing="5.0">
+                     <children>
+                        <JFXComboBox fx:id="cbLinguagemFilaSql" focusColor="#71afe5" labelFloat="true" prefWidth="200.0" promptText="Linguagem Processamento" styleClass="comboBox-stilo" unFocusColor="#106ebe">
+                           <VBox.margin>
+                              <Insets bottom="15.0" />
+                           </VBox.margin>
+                        </JFXComboBox>
+                        <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="290.0" styleClass="background-White1" text="Processar" />
+                        <JFXButton fx:id="btnLimpar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimpar" prefWidth="290.0" styleClass="background-White1" text="Limpar" />
+                     </children>
+                     <HBox.margin>
+                        <Insets top="10.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </HBox>
+            <TableView fx:id="tbTabela" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <columns>
+                  <TableColumn fx:id="tcMarcado" prefWidth="32.571410179138184" text="Marcado">
+                     <graphic>
+                        <JFXCheckBox fx:id="ckbMarcarTodos" alignment="CENTER" checkedColor="#71afe5" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onBtnMarcarTodos" prefHeight="18.0" prefWidth="53.0" unCheckedColor="#106ebe" />
+                     </graphic></TableColumn>
+                  <TableColumn fx:id="tcArquivo" prefWidth="313.14281845092773" text="Arquivo" />
+                  <TableColumn fx:id="tcEpisodio" prefWidth="217.14288330078125" text="Episódio" />
+               </columns>
+               <styleClass>
+                  <String fx:value="accelerator-text" />
+                  <String fx:value="paneBorder" />
+               </styleClass>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

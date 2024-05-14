@@ -114,5 +114,9 @@ nb-configuration.xml
 ##############################
 .DS_Store
 *.class
+
 TextosJapones/secrets-firebase.json
 TextosJapones/secrets.properties
+
+ProcessaTexto/secrets-firebase.json
+ProcessaTexto/secrets.properties

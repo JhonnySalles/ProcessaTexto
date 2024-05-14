@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<AnchorPane fx:id="apRoot" prefHeight="654.0" prefWidth="973.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jisho.textosJapones.controller.FrasesAnkiController">
+   <children>
+      <StackPane fx:id="stackPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane fx:id="apConteinerRoot" stylesheets="@../css/Dark_Theme.css">
+               <children>
+                  <SplitPane dividerPositions="0.5" styleClass="splitbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                      <AnchorPane>
+                           <children>
+                              <VBox layoutX="-19.0" layoutY="16.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <JFXTextArea fx:id="txtAreaOrigem" focusColor="#71afe5" labelFloat="true" promptText="Texto de origem" unFocusColor="#106ebe" VBox.vgrow="ALWAYS">
+                                       <styleClass>
+                                          <String fx:value="background-Blue3" />
+                                          <String fx:value="texto-stilo" />
+                                       </styleClass>
+                                    </JFXTextArea>
+                                    <HBox spacing="10.0">
+                                       <children>
+                                          <JFXComboBox fx:id="cbTipo" focusColor="#71afe5" labelFloat="true" minWidth="100.0" prefHeight="25.0" prefWidth="125.0" promptText="Tipo" styleClass="comboBox-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                                          <JFXButton fx:id="btnCorrecao" buttonType="RAISED" onAction="#onBtnCorrecao" prefWidth="80.0" styleClass="background-White1" text="Correção" textFill="#0a0a0a" />
+                                          <JFXButton fx:id="btnEstatistica" buttonType="RAISED" onAction="#onBtnEstatistica" prefWidth="90.0" styleClass="background-White1" text="Estatisticas" textFill="#0a0a0a" />
+                                          <JFXButton fx:id="btnImportar" buttonType="RAISED" onAction="#onBtnImportar" prefWidth="90.0" styleClass="background-White1" text="Importar" textFill="#0a0a0a" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <JFXButton fx:id="btnProcessar" focusTraversable="false" onAction="#onBtnProcessar" prefHeight="25.0" prefWidth="103.0" styleClass="background-White1" text="Processar lista" />
+                                          <JFXButton fx:id="btnFormatarTabela" focusTraversable="false" onAction="#onBtnFormatarLista" prefHeight="25.0" prefWidth="110.0" styleClass="background-White1" text="Formatar tabela" />
+                                          <JFXButton fx:id="btnSalvar" focusTraversable="false" onAction="#onBtnSalvar" prefHeight="25.0" prefWidth="144.0" styleClass="background-White1" text="Salvar tabela">
+                                             <graphic>
+                                                <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/icoSalvar_48.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </JFXButton>
+                                          <JFXCheckBox fx:id="ckListaExcel" checkedColor="#71afe5" text="Lista em excel" textFill="WHITE" unCheckedColor="#106ebe" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="10.0">
+                                       <children>
+                                          <JFXTextField fx:id="txtVocabulario" editable="false" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="228.0" promptText="Vocabulário" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="10.0">
+                                       <children>
+                                          <JFXTextField fx:id="txtExclusoes" focusColor="#71afe5" labelFloat="true" prefHeight="25.0" prefWidth="230.0" promptText="Exclusões" styleClass="texto-stilo" unFocusColor="#106ebe" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <Label fx:id="lblExclusoes" textFill="#71afe5">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <Label fx:id="lblRegistros" alignment="CENTER_RIGHT" minWidth="70.0" text="Vocab.: 0" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                           <styleClass>
+                              <String fx:value="background-Black2" />
+                              <String fx:value="paneBorder" />
+                           </styleClass>
+                        </AnchorPane>
+                        <AnchorPane>
+                           <children>
+                              <SplitPane dividerPositions="0.6718266253869969" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <items>
+                                    <AnchorPane styleClass="background-Black2">
+                                       <children>
+                                          <JFXTextArea fx:id="txtAreaDestino" focusColor="#71afe5" labelFloat="true" promptText="Texto de destino" unFocusColor="#106ebe" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
+                                             <styleClass>
+                                                <String fx:value="background-Blue3" />
+                                                <String fx:value="texto-stilo" />
+                                             </styleClass>
+                                          </JFXTextArea>
+                                       </children>
+                                    </AnchorPane>
+                                    <TableView fx:id="tbVocabulario" editable="true" fixedCellSize="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="131.0" prefWidth="479.0">
+                                       <columns>
+                                          <TableColumn fx:id="tcVocabulario" prefWidth="75.0" text="Palavra" />
+                                          <TableColumn fx:id="tcPortugues" prefWidth="300.0" text="Tradução" />
+                                          <TableColumn fx:id="tcIngles" prefWidth="150.0" text="Inglês" />
+                                       </columns>
+                                       <styleClass>
+                                          <String fx:value="accelerator-text" />
+                                          <String fx:value="paneBorder" />
+                                       </styleClass>
+                                    </TableView>
+                                 </items>
+                              </SplitPane>
+                           </children>
+                           <styleClass>
+                              <String fx:value="background-Black2" />
+                              <String fx:value="paneBorder" />
+                           </styleClass>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+               <styleClass>
+                  <String fx:value="background-Black2" />
+                  <String fx:value="paneBorder" />
+               </styleClass>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
