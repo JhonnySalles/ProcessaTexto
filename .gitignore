@@ -13,6 +13,22 @@
 /TextosJapones/system_core.dic
 /TextosJapones/system_full.dic
 /TextosJapones/system_small.dic
+
+/ProcessaTexto/cache/
+/ProcessaTexto/target/
+/ProcessaTexto/target/classes/sudachi_coredict.json
+/ProcessaTexto/target/classes/sudachi_fulldict.json
+/ProcessaTexto/target/classes/sudachi_smalldict.json
+/ProcessaTexto/target/classes/system_core.dic
+/ProcessaTexto/target/classes/system_full.dic
+/ProcessaTexto/target/classes/system_small.dic
+/ProcessaTexto/sudachi_coredict.json
+/ProcessaTexto/sudachi_fulldict.json
+/ProcessaTexto/sudachi_smalldict.json
+/ProcessaTexto/system_core.dic
+/ProcessaTexto/system_full.dic
+/ProcessaTexto/system_small.dic
+
 /App/*
 
 ##############################
