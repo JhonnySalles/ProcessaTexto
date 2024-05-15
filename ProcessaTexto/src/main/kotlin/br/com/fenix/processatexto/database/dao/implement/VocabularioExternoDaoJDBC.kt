@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.VocabularioDao
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 
-class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao<UUID?, Vocabulario>(conexao) {
+class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDaoBase<UUID?, Vocabulario>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(VocabularioExternoDaoJDBC::class.java)
 

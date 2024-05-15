@@ -2,7 +2,7 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.KanjiDao
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.processatexto.Kanji
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
@@ -13,7 +13,7 @@ import java.sql.SQLException
 import java.util.*
 
 
-class KanjiDaoJDBC(conexao: Conexao) : KanjiDao, RepositoryDao<UUID?, Kanji>(conexao) {
+class KanjiDaoJDBC(conexao: Conexao) : KanjiDao, RepositoryDaoBase<UUID?, Kanji>(conexao) {
 
     companion object {
         private const val SELECT = "SELECT id, kanji, palavra, significado FROM kanjax_pt WHERE kanji = ?;"

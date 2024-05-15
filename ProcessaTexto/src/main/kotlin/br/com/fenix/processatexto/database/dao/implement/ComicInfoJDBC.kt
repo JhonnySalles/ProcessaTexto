@@ -2,7 +2,7 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.ComicInfoDao
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
@@ -12,7 +12,7 @@ import java.sql.*
 import java.util.*
 
 
-class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDao<UUID?, ComicInfo>(conexao) {
+class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
 
     companion object {
         private const val INSERT = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"

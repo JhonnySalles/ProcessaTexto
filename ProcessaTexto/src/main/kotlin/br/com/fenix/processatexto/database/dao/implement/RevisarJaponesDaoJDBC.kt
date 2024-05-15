@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.RevisarDao
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.enums.Conexao
@@ -15,7 +15,7 @@ import java.sql.Statement
 import java.util.*
 
 
-class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDao<UUID?, Revisar>(conexao) {
+class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUID?, Revisar>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(RevisarJaponesDaoJDBC::class.java)
 

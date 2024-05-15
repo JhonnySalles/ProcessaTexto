@@ -1,15 +1,15 @@
 package br.com.fenix.processatexto.database
 
-import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpa
+import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.exceptions.DatabaseException
 import br.com.fenix.processatexto.util.configuration.Configuracao
-import java.util.*
 import jakarta.persistence.EntityManagerFactory
 import jakarta.persistence.Persistence
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.*
 
 
 object JpaFactory {
@@ -23,7 +23,7 @@ object JpaFactory {
         Configuracao.password
     )
 
-    private val default: EntityManagerFactory = buildDefault()
+    private var default: EntityManagerFactory = buildDefault()
     private val external: MutableMap<Conexao, EntityManagerFactory> = mutableMapOf()
 
     private fun buildFactory(dados: DadosConexao): EntityManagerFactory {
@@ -46,7 +46,7 @@ object JpaFactory {
             default
         else {
             if (!external.contains(conexao)) {
-                val repository = RepositoryJpa<Long?, DadosConexao>(conexao)
+                val repository = RepositoryJpaImpl<Long?, DadosConexao>(conexao)
                 val param = mapOf(Pair("tipo", conexao))
                 // language=SQL
                 val s = "SELECT c FROM DadosConexao c WHERE c.tipo = :tipo"
@@ -56,5 +56,17 @@ object JpaFactory {
             }
             external.getOrElse(conexao, throw Exception("Database não encontrada."))
         }
+    }
+
+    fun resetConnection() {
+        conexao = DadosConexao("jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port, Configuracao.database, Configuracao.user, Configuracao.password)
+
+        default.close()
+        default = buildDefault()
+
+        for (key in external.keys)
+            external[key]?.close()
+
+        external.clear()
     }
 }

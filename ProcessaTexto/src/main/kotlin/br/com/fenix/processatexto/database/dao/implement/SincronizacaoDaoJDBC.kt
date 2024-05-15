@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.SincronizacaoDao
 import br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao
 import br.com.fenix.processatexto.model.enums.Conexao
@@ -15,7 +15,7 @@ import java.sql.Statement
 import java.util.*
 
 
-class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDao<Long, Sincronizacao>(conexao) {
+class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Long, Sincronizacao>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
 

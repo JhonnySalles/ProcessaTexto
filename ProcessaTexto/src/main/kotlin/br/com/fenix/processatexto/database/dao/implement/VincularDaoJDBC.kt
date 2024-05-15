@@ -2,7 +2,7 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.VincularDao
 import br.com.fenix.processatexto.model.entities.mangaextractor.*
 import br.com.fenix.processatexto.model.entities.processatexto.Vinculo
@@ -21,7 +21,7 @@ import java.util.*
 import java.util.stream.Collectors
 
 
-class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDao<UUID?, Vinculo>(conexao) {
+class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, Vinculo>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(VincularDaoJDBC::class.java)
 

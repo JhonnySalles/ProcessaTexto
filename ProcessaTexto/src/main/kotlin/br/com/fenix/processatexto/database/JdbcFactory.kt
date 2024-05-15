@@ -22,7 +22,7 @@ object JdbcFactory {
         Configuracao.password
     )
 
-    private val default: Connection = buildDefault()
+    private var default: Connection = buildDefault()
     private val external: MutableMap<Conexao, Connection> = mutableMapOf()
 
     private fun buildDefault(): Connection = buildFactory(conexao)
@@ -31,12 +31,12 @@ object JdbcFactory {
         FlywayFactory.migrate(dados)
 
         val properties = Properties()
-        properties["username"] = dados.usuario
+        properties["user"] = dados.usuario
         properties["password"] = dados.senha
         properties["characterEncoding"] = "UTF-8"
         properties["useUnicode"] = "true"
 
-        val url = dados.url + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+        val url = dados.url + "/" + dados.base + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
 
         return DriverManager.getConnection(url, properties)
     }
@@ -48,7 +48,7 @@ object JdbcFactory {
             default
         else {
             if (!external.contains(conexao)) {
-                val dados= getConfiguracao(conexao).orElseThrow { DatabaseException("Não encontrado a conexão") }
+                val dados = getConfiguracao(conexao).orElseThrow { DatabaseException("Não encontrado a conexão") }
                 external[conexao] = buildFactory(dados)
             }
             external.getOrElse(conexao, throw Exception("Database não encontrada."))
@@ -89,7 +89,7 @@ object JdbcFactory {
             }
     }
 
-    class RepositoryDao(conexao: Conexao) : br.com.fenix.processatexto.database.dao.RepositoryDao<Long?, DadosConexao>(conexao) {
+    class RepositoryDao(conexao: Conexao) : br.com.fenix.processatexto.database.dao.RepositoryDaoBase<Long?, DadosConexao>(conexao) {
         override fun toEntity(rs: ResultSet): DadosConexao = DadosConexao(
             rs.getLong("id"),
             Conexao.valueOf(rs.getString("tipo")),
@@ -105,7 +105,7 @@ object JdbcFactory {
         var connection: Connection? = null
         var conecta = ""
         try {
-            val config  = if (conexao == Conexao.PROCESSA_TEXTO)
+            val config = if (conexao == Conexao.PROCESSA_TEXTO)
                 this.conexao
             else
                 getConfiguracao(conexao).orElseThrow { Exception("Configuração não encontrada na tabela de bases") }
@@ -131,5 +131,17 @@ object JdbcFactory {
                 connection.close()
         }
         return conecta
+    }
+
+    fun resetConnection() {
+        conexao = DadosConexao("jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port, Configuracao.database, Configuracao.user, Configuracao.password)
+
+        default.close()
+        default = buildDefault()
+
+        for (key in external.keys)
+            external[key]?.close()
+
+        external.clear()
     }
 }

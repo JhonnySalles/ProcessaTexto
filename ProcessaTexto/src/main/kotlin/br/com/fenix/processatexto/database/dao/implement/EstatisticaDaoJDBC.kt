@@ -3,7 +3,7 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.controller.EstatisticaController
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.EstatisticaDao
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
@@ -15,7 +15,7 @@ import java.sql.Statement
 import java.util.*
 
 
-class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDao<UUID?, Estatistica>(conexao) {
+class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<UUID?, Estatistica>(conexao) {
 
     companion object {
         private const val INSERT =

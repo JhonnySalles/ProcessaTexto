@@ -2,7 +2,7 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
-import br.com.fenix.processatexto.database.dao.RepositoryDao
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import br.com.fenix.processatexto.model.enums.Conexao
@@ -17,7 +17,7 @@ import java.sql.Statement
 import java.util.*
 
 
-class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryDao<UUID?, FilaSQL>(conexao) {
+class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryDaoBase<UUID?, FilaSQL>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
 

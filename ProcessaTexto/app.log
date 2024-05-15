@@ -2617,3 +2617,196 @@ Caused by: java.sql.SQLSyntaxErrorException: Table 'processa_texto.dadosconexao'
 20240422 23:51:46.139 | [INFO] | [main] - gerConnectionProviderImpl.<init> : HHH000115: Hibernate connection pool size: 20 (min=1)
 20240422 23:51:46.227 | [INFO] | [main] - o.h.dialect.Dialect      .<init> : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
 20240422 23:51:46.799 | [INFO] | [main] - .p.i.JtaPlatformInitiator.initiateService : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+20240514 20:28:07.674 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:28:07.711 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/processa_texto (MySQL 8.1)
+20240514 20:28:08.043 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:29:20.492 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:29:20.512 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/processa_texto (MySQL 8.1)
+20240514 20:29:20.547 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:32:00.578 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:32:00.587 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/processa_texto (MySQL 8.1)
+20240514 20:32:00.620 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:33:50.304 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:33:50.315 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/processa_texto (MySQL 8.1)
+20240514 20:33:50.351 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:33:53.223 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:35:47.552 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:35:48.988 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:35:48.992 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 20:35:49.032 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:35:49.151 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.096s)
+20240514 20:35:49.256 | [INFO] | [main] - .s.JdbcTableSchemaHistory.info : Creating Schema History table `teste_processa_texto`.`flyway_schema_history` ...
+20240514 20:35:49.545 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: << Empty Schema >>
+20240514 20:35:49.588 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Migrating schema `teste_processa_texto` to version "1 - create initial tables"
+20240514 20:35:49.678 | [WARN] | [main] - .DefaultSqlScriptExecutor.warn : DB: 'utf8mb3' is deprecated and will be removed in a future release. Please use utf8mb4 instead (SQL State: HY000 - Error Code: 1287)
+20240514 20:35:49.754 | [WARN] | [main] - .DefaultSqlScriptExecutor.warn : DB: Integer display width is deprecated and will be removed in a future release. (SQL State: HY000 - Error Code: 1681)
+20240514 20:35:49.755 | [WARN] | [main] - .DefaultSqlScriptExecutor.warn : DB: Integer display width is deprecated and will be removed in a future release. (SQL State: HY000 - Error Code: 1681)
+20240514 20:35:49.765 | [WARN] | [main] - .DefaultSqlScriptExecutor.warn : DB: Trigger does not exist (SQL State: HY000 - Error Code: 1360)
+20240514 20:35:49.822 | [WARN] | [main] - .DefaultSqlScriptExecutor.warn : DB: Trigger does not exist (SQL State: HY000 - Error Code: 1360)
+20240514 20:35:49.913 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Successfully applied 1 migration to schema `teste_processa_texto`, now at version v1 (execution time 00:00.383s)
+20240514 20:35:50.370 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 20:35:50.472 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 20:35:50.544 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 20:37:59.267 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:38:27.105 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:38:27.192 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 20:38:27.550 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:38:28.224 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.528s)
+20240514 20:38:28.908 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 20:38:28.963 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 20:38:31.826 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 20:38:33.002 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 20:38:34.240 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 20:40:23.579 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:40:25.327 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:40:25.330 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 20:40:25.359 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:40:25.448 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.067s)
+20240514 20:40:25.479 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 20:40:25.481 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 20:40:52.267 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 20:40:52.413 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 20:40:52.540 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 20:50:16.326 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:50:17.554 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:50:17.556 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 20:50:17.589 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:50:17.656 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.046s)
+20240514 20:50:17.684 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 20:50:17.686 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 20:50:17.980 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 20:50:18.091 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 20:50:18.201 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 20:55:49.028 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 20:55:51.055 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 20:55:51.057 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 20:55:51.095 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 20:55:51.157 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.042s)
+20240514 20:55:51.186 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 20:55:51.189 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 20:55:51.923 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 20:55:52.201 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 20:55:52.482 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 21:00:10.671 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:00:12.807 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:00:12.812 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:00:12.868 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:00:12.945 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.051s)
+20240514 21:00:12.975 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:00:12.977 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:00:13.628 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 21:00:13.793 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 21:00:13.925 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 21:00:37.706 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:00:39.161 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:00:39.165 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:00:39.207 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:00:39.282 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.050s)
+20240514 21:00:39.312 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:00:39.314 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:00:39.602 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 21:00:39.735 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 21:00:39.831 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 21:01:09.222 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:01:10.494 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:01:10.497 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:01:10.537 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:01:10.608 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.051s)
+20240514 21:01:10.655 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:01:10.658 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:02:24.530 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:02:25.727 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:02:25.731 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:02:25.765 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:02:25.830 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.042s)
+20240514 21:02:25.855 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:02:25.857 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:04:57.220 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:04:58.973 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:04:58.976 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:04:59.023 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:04:59.115 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.057s)
+20240514 21:04:59.146 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:04:59.149 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:11:54.030 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:11:55.158 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:11:55.160 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:11:55.201 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:11:55.257 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.035s)
+20240514 21:11:55.283 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:11:55.285 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:13:16.685 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:13:17.711 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:13:17.714 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:13:17.747 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:13:17.806 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.043s)
+20240514 21:13:17.836 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:13:17.838 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:20:48.865 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:20:50.294 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:20:50.297 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:20:50.326 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:20:50.383 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.037s)
+20240514 21:20:50.409 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:20:50.411 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:22:06.728 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:22:07.984 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:22:07.987 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:22:08.015 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:22:08.079 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.043s)
+20240514 21:22:08.115 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:22:08.118 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:46:18.995 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:46:20.323 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:46:20.325 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:46:20.360 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:46:20.450 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.064s)
+20240514 21:46:20.475 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:46:20.477 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:49:16.504 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:49:17.455 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:49:17.458 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:49:17.491 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:49:17.548 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.037s)
+20240514 21:49:17.574 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:49:17.576 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:57:25.647 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 21:57:27.045 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 21:57:27.048 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 21:57:27.085 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 21:57:27.182 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.072s)
+20240514 21:57:27.215 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 21:57:27.218 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 21:57:58.443 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 21:57:58.707 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 21:57:58.925 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 22:03:52.809 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 22:03:54.552 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 22:03:54.561 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 22:03:54.619 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 22:03:54.693 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.047s)
+20240514 22:03:54.722 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 22:03:54.725 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 22:03:55.085 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 22:03:55.236 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 22:03:55.340 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 22:09:35.384 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 22:09:36.704 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 22:09:36.708 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 22:09:36.796 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 22:09:36.906 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.078s)
+20240514 22:09:36.946 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 22:09:36.950 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 22:09:37.261 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 22:09:37.402 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 22:09:37.483 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
+20240514 22:21:17.357 | [INFO] | [main] - b.c.f.p.TestsConfig      .prepareDatabase : Configurando conexão com a database de teste....
+20240514 22:21:18.607 | [INFO] | [main] - o.f.c.i.l.VersionPrinter .info : Flyway Community Edition 8.0.0 by Redgate
+20240514 22:21:18.610 | [INFO] | [main] - .c.i.d.b.BaseDatabaseType.info : Database: jdbc:mysql://localhost:3306/teste_processa_texto (MySQL 8.1)
+20240514 22:21:18.670 | [WARN] | [main] - o.f.c.i.d.base.Database  .warn : Flyway upgrade recommended: MySQL 8.1 is newer than this version of Flyway and support has not been tested. The latest supported version of MySQL is 8.0.
+20240514 22:21:18.733 | [INFO] | [main] - o.f.c.i.c.DbValidate     .info : Successfully validated 1 migration (execution time 00:00.042s)
+20240514 22:21:18.758 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Current version of schema `teste_processa_texto`: 1
+20240514 22:21:18.760 | [INFO] | [main] - o.f.c.i.command.DbMigrate.info : Schema `teste_processa_texto` is up to date. No migration necessary.
+20240514 22:21:19.120 | [INFO] | [main] - o.h.j.i.util.LogHelper   .logPersistenceUnitInformation : HHH000204: Processing PersistenceUnitInfo [name: processa_texto]
+20240514 22:21:19.241 | [INFO] | [main] - org.hibernate.Version    .logVersion : HHH000412: Hibernate ORM core version [WORKING]
+20240514 22:21:19.328 | [INFO] | [main] - .i.RegionFactoryInitiator.initiateService : HHH000026: Second-level cache disabled
