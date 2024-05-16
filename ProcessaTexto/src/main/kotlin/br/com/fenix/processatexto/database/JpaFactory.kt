@@ -25,6 +25,7 @@ object JpaFactory {
 
     private var default: EntityManagerFactory = buildDefault()
     private val external: MutableMap<Conexao, EntityManagerFactory> = mutableMapOf()
+    private var repository = RepositoryJpaImpl<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO)
 
     private fun buildFactory(dados: DadosConexao): EntityManagerFactory {
         FlywayFactory.migrate(dados)
@@ -46,15 +47,13 @@ object JpaFactory {
             default
         else {
             if (!external.contains(conexao)) {
-                val repository = RepositoryJpaImpl<Long?, DadosConexao>(conexao)
                 val param = mapOf(Pair("tipo", conexao))
                 // language=SQL
                 val s = "SELECT c FROM DadosConexao c WHERE c.tipo = :tipo"
-                val dados = repository.queryEntity(s, param)
-                    .orElseThrow { DatabaseException("Não encontrado a conexão") }
+                val dados = repository.queryEntity(s, param).orElseThrow { DatabaseException("Não encontrado a conexão ${conexao.name}") }
                 external[conexao] = buildFactory(dados)
             }
-            external.getOrElse(conexao, throw Exception("Database não encontrada."))
+            external[conexao] ?: throw Exception("Database ${conexao.name} não encontrada.")
         }
     }
 
@@ -63,6 +62,7 @@ object JpaFactory {
 
         default.close()
         default = buildDefault()
+        repository = RepositoryJpaImpl(Conexao.PROCESSA_TEXTO)
 
         for (key in external.keys)
             external[key]?.close()

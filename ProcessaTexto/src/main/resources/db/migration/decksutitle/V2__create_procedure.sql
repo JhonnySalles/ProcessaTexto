@@ -1,9 +1,9 @@
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=admin@% PROCEDURE create_table(in _tablename varchar(100))
+CREATE DEFINER=`admin`@`%` PROCEDURE `create_table`(IN _tablename VARCHAR(100))
 BEGIN
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'(
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'(
 	  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  Episodio INT(2) DEFAULT NULL,
 	  Linguagem VARCHAR(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15,10 +15,10 @@ BEGIN
 	  Atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
 	  PRIMARY KEY (id)
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
-	END */$$
+END$$
 
 DELIMITER ;

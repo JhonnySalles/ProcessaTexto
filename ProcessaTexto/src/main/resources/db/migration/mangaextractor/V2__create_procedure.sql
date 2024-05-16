@@ -1,9 +1,9 @@
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=admin@% PROCEDURE create_table(in _tablename varchar(100))
+CREATE DEFINER=`admin`@`%` PROCEDURE `create_table`(IN _tablename VARCHAR(100))
 BEGIN
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_volumes (
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_volumes (
 	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 	  manga VARCHAR(250) DEFAULT NULL,
 	  volume INT(4) DEFAULT NULL,
@@ -14,11 +14,11 @@ BEGIN
 	  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
 	  PRIMARY KEY (id)
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_capitulos (
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_capitulos (
 	  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  manga LONGTEXT COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -35,12 +35,12 @@ BEGIN
 	  KEY ',_tablename,'_volumes_fk (id_volume),
 	  CONSTRAINT ',_tablename,'_volumes_capitulos_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_paginas (
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_paginas (
 	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 	  id_capitulo VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 	  nome VARCHAR(250) DEFAULT NULL,
@@ -53,12 +53,12 @@ BEGIN
 	  KEY ',_tablename,'_capitulos_fk (id_capitulo),
 	  CONSTRAINT ',_tablename,'_capitulos_paginas_fk FOREIGN KEY (id_capitulo) REFERENCES ',_tablename,'_capitulos (id) ON DELETE CASCADE ON UPDATE CASCADE
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_textos (
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_textos (
 	  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  id_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  sequencia INT(4) DEFAULT NULL,
@@ -73,11 +73,11 @@ BEGIN
 	  KEY ',_tablename,'_paginas_fk (id_pagina),
 	  CONSTRAINT ',_tablename,'_paginas_textos_fk FOREIGN KEY (id_pagina) REFERENCES ',_tablename,'_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_vocabularios (
+    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_vocabularios (
 	  id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
 	  id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 	  id_capitulo VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -96,11 +96,11 @@ BEGIN
 	  CONSTRAINT ',_tablename,'_vocab_pagina_fk FOREIGN KEY (id_pagina) REFERENCES ',_tablename,'_paginas (id),
 	  CONSTRAINT ',_tablename,'_vocab_volume_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id)
 	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
 
-	END */$$
+END$$
 
 DELIMITER ;

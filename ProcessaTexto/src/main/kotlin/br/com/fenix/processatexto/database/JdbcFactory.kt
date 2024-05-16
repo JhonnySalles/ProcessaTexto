@@ -50,7 +50,7 @@ object JdbcFactory {
             default
         else {
             if (!external.contains(conexao)) {
-                val dados = getConfiguracao(conexao).orElseThrow { DatabaseException("Não encontrado a conexão") }
+                val dados = getConfiguracao(conexao).orElseThrow { DatabaseException("Não encontrado a conexão ${conexao.name}") }
                 external[conexao] = buildFactory(dados)
             }
             external[conexao] ?: throw Exception("Database ${conexao.name} não encontrada.")
