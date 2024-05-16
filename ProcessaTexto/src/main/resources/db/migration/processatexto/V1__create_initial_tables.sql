@@ -45,8 +45,7 @@ CREATE TABLE Fila_Sql
     PRIMARY KEY (sequencial)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELIMITER
-$$
+DELIMITER $$
 
 DROP TRIGGER IF EXISTS tr_fila_sql_insert$$
 

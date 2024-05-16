@@ -12,8 +12,10 @@ CREATE TABLE Estatistica
     cor_sequencial   INT                                                          DEFAULT NULL,
     atualizacao      DATETIME                                                     DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (sequencial),
-    KEY              sequencial (sequencial)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    KEY sequencial (sequencial)
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE Exclusao
 (
@@ -21,7 +23,9 @@ CREATE TABLE Exclusao
     palavra     VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     atualizacao DATETIME                                                     DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (palavra)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE Kanjax_pt
 (
@@ -45,20 +49,22 @@ CREATE TABLE Kanjax_pt
     parts             VARCHAR(100)                                                  DEFAULT NULL,
     utf8              VARCHAR(10)                                                   DEFAULT NULL,
     sjis              VARCHAR(5)                                                    DEFAULT NULL,
-    isTraduzido       TINYINT(1) DEFAULT NULL,
-    isChecado         TINYINT(1) DEFAULT NULL,
-    isRevisado        TINYINT(1) DEFAULT NULL,
-    sinaliza          TINYINT(1) DEFAULT NULL,
+    isTraduzido       TINYINT(1)                                                    DEFAULT NULL,
+    isChecado         TINYINT(1)                                                    DEFAULT NULL,
+    isRevisado        TINYINT(1)                                                    DEFAULT NULL,
+    sinaliza          TINYINT(1)                                                    DEFAULT NULL,
     data_traducao     DATETIME                                                      DEFAULT NULL,
     data_correcao     DATETIME                                                      DEFAULT NULL,
     obs               VARCHAR(100)                                                  DEFAULT NULL,
-    isKanjax_original TINYINT(1) DEFAULT '0',
+    isKanjax_original TINYINT(1)                                                    DEFAULT '0',
     palavra           VARCHAR(100)                                                  DEFAULT NULL,
     significado       VARCHAR(250)                                                  DEFAULT NULL,
     atualizacao       DATETIME                                                      DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (kanji),
-    KEY               Sequencia (sequencia)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    KEY Sequencia (sequencia)
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE TABLE Revisar
 (
@@ -69,24 +75,27 @@ CREATE TABLE Revisar
     leitura_novel VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     ingles        LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     portugues     LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    revisado      TINYINT(1) DEFAULT '0',
+    revisado      TINYINT(1)                                                    DEFAULT '0',
     aparece       INT                                                           DEFAULT '0',
-    isAnime       TINYINT(1) DEFAULT '0',
-    isManga       TINYINT(1) DEFAULT '0',
-    isNovel       TINYINT(1) DEFAULT '0',
+    isAnime       TINYINT(1)                                                    DEFAULT '0',
+    isManga       TINYINT(1)                                                    DEFAULT '0',
+    isNovel       TINYINT(1)                                                    DEFAULT '0',
     atualizacao   DATETIME                                                      DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (vocabulario),
-    KEY           Vocabulario (vocabulario,forma_basica)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    KEY Vocabulario (vocabulario, forma_basica)
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE Sincronizacao
 (
-    id          INT NOT NULL AUTO_INCREMENT,
-    conexao     ENUM('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+    id          INT                                                                                                                                  NOT NULL AUTO_INCREMENT,
+    conexao     ENUM ('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
     envio       DATETIME DEFAULT NULL,
     recebimento DATETIME DEFAULT NULL,
     PRIMARY KEY (id, conexao)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb3;
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb3;
 
 CREATE TABLE Vocabulario
 (
@@ -100,8 +109,10 @@ CREATE TABLE Vocabulario
     jlpt          INT                                                           DEFAULT '0',
     atualizacao   DATETIME                                                      DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (vocabulario),
-    KEY           Vocabulario (vocabulario,forma_basica)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    KEY Vocabulario (vocabulario, forma_basica)
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE Words_kanji_info
 (
@@ -113,4 +124,6 @@ CREATE TABLE Words_kanji_info
     tabela      LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     atualizacao DATETIME                                                      DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (sequencia)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
