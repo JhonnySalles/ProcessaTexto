@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
+import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.*
@@ -35,6 +36,8 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      */
     override fun rollBack() = conn.rollback()
 
+    private fun prepareSql(sql: String) : String = sql.replace(":[\\w]*".toRegex(), "?")
+
     private fun setParams(st: PreparedStatement, params: Map<String, Any?>) {
         var index = 0
         for (p in params.keys) {
@@ -49,6 +52,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                     is Boolean -> st.setBoolean(++index, params[p] as Boolean)
                     is UUID -> st.setString(++index, params[p].toString())
                     is LocalDateTime -> st.setString(++index, Utils.convertToString(params[p] as LocalDateTime))
+                    is Enum<*> -> st.setString(++index, params[p].toString())
                 }
         }
     }
@@ -85,7 +89,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
     override fun query(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any?>) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(sql)
+            st = conn.prepareStatement(prepareSql(sql))
             setParams(st, params)
             val rowsAffected = st.executeUpdate()
             if (rowsAffected < 1) {
@@ -111,7 +115,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {
-            st = conn.prepareStatement(sql)
+            st = conn.prepareStatement(prepareSql(sql))
             setParams(st, params)
             rs = st.executeQuery()
             if (rs.next())
@@ -138,7 +142,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {
-            st = conn.prepareStatement(sql)
+            st = conn.prepareStatement(prepareSql(sql))
             setParams(st, params)
             rs = st.executeQuery()
             val list: MutableList<E> = mutableListOf()
@@ -151,6 +155,45 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         } finally {
             JdbcFactory.closeStatement(st)
             JdbcFactory.closeResultSet(rs)
+        }
+    }
+
+    /**
+     * Executa uma query nativa no sistema
+     * @param sql query em string para o java persistem
+     * @throws IllegalArgumentException caso o sql esteja errado
+     */
+    @Transactional
+    fun queryNative(@org.intellij.lang.annotations.Language("sql") sql: String) {
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(sql)
+            st.executeUpdate()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            throw SQLException(Mensagens.BD_ERRO_QUERRY)
+        } finally {
+            JdbcFactory.closeStatement(st)
+        }
+    }
+
+    /**
+     * Executa uma query nativa com parâmetros
+     * @param sql query em string para o java persistem
+     * @throws IllegalArgumentException caso o sql esteja errado
+     */
+    @Transactional
+    fun queryNative(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>) {
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(prepareSql(sql))
+            setParams(st, params)
+            st.executeUpdate()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            throw SQLException(Mensagens.BD_ERRO_QUERRY)
+        } finally {
+            JdbcFactory.closeStatement(st)
         }
     }
 }

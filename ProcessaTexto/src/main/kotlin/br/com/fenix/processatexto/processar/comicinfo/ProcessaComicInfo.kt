@@ -21,11 +21,11 @@ import br.com.fenix.processatexto.util.Utils
 import br.com.fenix.processatexto.util.configuration.Configuracao
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
 import br.com.fenix.processatexto.model.enums.comicinfo.Manga
+import jakarta.xml.bind.JAXBContext
+import jakarta.xml.bind.JAXBException
+import jakarta.xml.bind.Marshaller
+import jakarta.xml.bind.Unmarshaller
 import org.slf4j.LoggerFactory
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.JAXBException
-import javax.xml.bind.Marshaller
-import javax.xml.bind.Unmarshaller
 import java.io.*
 import java.net.URI
 import java.net.http.HttpClient
@@ -35,6 +35,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 object ProcessaComicInfo {
 

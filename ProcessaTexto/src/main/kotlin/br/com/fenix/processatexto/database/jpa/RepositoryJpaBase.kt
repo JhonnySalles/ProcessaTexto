@@ -249,4 +249,40 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             throw e
         }
     }
+
+    /**
+     * Executa uma query nativa no sistema
+     * @param sql query em string para o java persistem
+     * @throws IllegalArgumentException caso o sql esteja errado
+     */
+    @Transactional
+    fun queryNative(@org.intellij.lang.annotations.Language("sql") sql: String) {
+        try {
+            em.transaction.begin()
+            val q = em.createNativeQuery(sql)
+            q.executeUpdate()
+            em.transaction.commit()
+        } catch (E : Exception) {
+            em.transaction.rollback()
+        }
+    }
+
+    /**
+     * Executa uma query nativa com parâmetros
+     * @param sql query em string para o java persistem
+     * @throws IllegalArgumentException caso o sql esteja errado
+     */
+    @Transactional
+    fun queryNative(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>) {
+        try {
+            em.transaction.begin()
+            val q = em.createNativeQuery(sql)
+            for (itm in params.keys)
+                q.setParameter(itm, params[itm])
+            q.executeUpdate()
+            em.transaction.commit()
+        } catch (E : Exception) {
+            em.transaction.rollback()
+        }
+    }
 }

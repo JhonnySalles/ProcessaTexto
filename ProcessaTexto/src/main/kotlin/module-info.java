@@ -22,7 +22,6 @@ module br.com.fenix.processatexto {
     requires java.base;
     requires junrar;
     requires org.apache.commons.compress;
-    requires java.xml.bind;
     requires Mal4J;
     requires java.net.http;
     requires org.slf4j;
@@ -42,6 +41,7 @@ module br.com.fenix.processatexto {
     requires annotations;
     requires jakarta.persistence;
     requires jakarta.transaction;
+    requires jakarta.xml.bind;
 
     exports br.com.fenix.processatexto;
     exports br.com.fenix.processatexto.logback;

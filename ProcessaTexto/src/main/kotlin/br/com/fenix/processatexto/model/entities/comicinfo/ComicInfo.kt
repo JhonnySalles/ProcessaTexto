@@ -3,10 +3,10 @@ package br.com.fenix.processatexto.model.entities.comicinfo
 import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.enums.comicinfo.Manga
 import br.com.fenix.processatexto.model.enums.comicinfo.YesNo
+import jakarta.xml.bind.annotation.*
 import org.jisho.textosJapones.model.entities.comicinfo.AgeRating
 import java.util.*
 import java.util.List
-import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ComicInfo")

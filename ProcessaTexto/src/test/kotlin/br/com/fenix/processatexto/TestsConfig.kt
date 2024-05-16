@@ -2,12 +2,14 @@ package br.com.fenix.processatexto
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.JpaFactory
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import br.com.fenix.processatexto.util.configuration.Configuracao
 import org.slf4j.LoggerFactory
+import java.sql.ResultSet
 
 
 class TestsConfig {
@@ -22,20 +24,32 @@ class TestsConfig {
                 JpaFactory.resetConnection()
                 JdbcFactory.resetConnection()
 
-                val repository = RepositoryJpaImpl<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO)
-                repository.query("DELETE FROM conexoes")
+                val repository = RepositoryDao()
+                repository.queryNative("DELETE FROM conexoes")
                 val url = "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port
                 for (conexao in Conexao.values())
-                    if (conexao != Conexao.PROCESSA_TEXTO) {
+                    if (conexao != Conexao.PROCESSA_TEXTO && !conexao.isExternal) {
                         val database = DATABASE + conexao.name
                         LOGGER.info("Atualizando a conexão da database ${conexao.name} - ${url} -- ${database}")
-                        repository.query("INSERT INTO Conexoes (tipo, url, username, Password, base, driver) VALUES ('${conexao.name}', '${url}', '${Configuracao.user}', '${Configuracao.password}', '${database}', '${Driver.MYSQL}')")
-                        repository.query("CREATE DATABASE IF NOT EXISTS " + database)
+                        repository.queryNative("INSERT INTO Conexoes (tipo, url, username, Password, base, driver) VALUES ('${conexao.name}', '${url}', '${Configuracao.user}', '${Configuracao.password}', '${database}', '${Driver.MYSQL}')")
+                        repository.queryNative("CREATE DATABASE IF NOT EXISTS " + database)
                         JdbcFactory.getFactory(conexao)
                     }
 
                 LOGGER.info("Configuração das conexões concluida.")
             }
+        }
+
+        private class RepositoryDao() : RepositoryDaoBase<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {
+            override fun toEntity(rs: ResultSet): DadosConexao = DadosConexao(
+                rs.getLong("id"),
+                Conexao.valueOf(rs.getString("tipo")),
+                rs.getString("url"),
+                rs.getString("base"),
+                rs.getString("username"),
+                rs.getString("password"),
+                Driver.valueOf(rs.getString("driver"))
+            )
         }
     }
 }

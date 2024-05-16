@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.database
 
+import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
@@ -24,6 +25,7 @@ object JdbcFactory {
 
     private var default: Connection = buildDefault()
     private val external: MutableMap<Conexao, Connection> = mutableMapOf()
+    private var repository: RepositoryDao = RepositoryDao(Conexao.PROCESSA_TEXTO)
 
     private fun buildDefault(): Connection = buildFactory(conexao)
 
@@ -51,15 +53,14 @@ object JdbcFactory {
                 val dados = getConfiguracao(conexao).orElseThrow { DatabaseException("Não encontrado a conexão") }
                 external[conexao] = buildFactory(dados)
             }
-            external.getOrElse(conexao, throw Exception("Database não encontrada."))
+            external[conexao] ?: throw Exception("Database ${conexao.name} não encontrada.")
         }
     }
 
     fun getConfiguracao(conexao: Conexao): Optional<DadosConexao> {
-        val repository = RepositoryDao(conexao)
         val param = mapOf(Pair("tipo", conexao))
         // language=SQL
-        val s = "SELECT * FROM DadosConexao WHERE tipo = :tipo"
+        val s = "SELECT * FROM Conexoes WHERE tipo = :tipo"
         return repository.queryEntity(s, param)
     }
 
@@ -89,7 +90,7 @@ object JdbcFactory {
             }
     }
 
-    class RepositoryDao(conexao: Conexao) : br.com.fenix.processatexto.database.dao.RepositoryDaoBase<Long?, DadosConexao>(conexao) {
+    class RepositoryDao(conexao: Conexao) : RepositoryDaoBase<Long?, DadosConexao>(conexao) {
         override fun toEntity(rs: ResultSet): DadosConexao = DadosConexao(
             rs.getLong("id"),
             Conexao.valueOf(rs.getString("tipo")),
@@ -138,6 +139,7 @@ object JdbcFactory {
 
         default.close()
         default = buildDefault()
+        repository = RepositoryDao(Conexao.PROCESSA_TEXTO)
 
         for (key in external.keys)
             external[key]?.close()

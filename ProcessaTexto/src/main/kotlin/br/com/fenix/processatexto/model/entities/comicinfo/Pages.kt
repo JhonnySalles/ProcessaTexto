@@ -1,10 +1,11 @@
 package br.com.fenix.processatexto.model.entities.comicinfo
 
 import br.com.fenix.processatexto.model.enums.comicinfo.ComicPageType
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAttribute
-import javax.xml.bind.annotation.XmlRootElement
+import jakarta.xml.bind.annotation.XmlAccessType
+import jakarta.xml.bind.annotation.XmlAccessorType
+import jakarta.xml.bind.annotation.XmlAttribute
+import jakarta.xml.bind.annotation.XmlRootElement
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Page")
