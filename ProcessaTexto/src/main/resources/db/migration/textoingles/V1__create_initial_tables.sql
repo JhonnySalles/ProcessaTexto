@@ -1,5 +1,4 @@
-CREATE TABLE Exclusao
-(
+CREATE TABLE Exclusao (
     id          VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     palavra     VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     atualizacao DATETIME                                                     DEFAULT CURRENT_TIMESTAMP,
@@ -8,8 +7,7 @@ CREATE TABLE Exclusao
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Revisar
-(
+CREATE TABLE Revisar (
     id          VARCHAR(36)  DEFAULT NULL,
     vocabulario VARCHAR(250) NOT NULL,
     leitura     VARCHAR(250) DEFAULT NULL,
@@ -25,8 +23,7 @@ CREATE TABLE Revisar
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Sincronizacao
-(
+CREATE TABLE Sincronizacao (
     id          INT                                                                                                                                  NOT NULL AUTO_INCREMENT,
     conexao     ENUM ('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
     envio       DATETIME DEFAULT NULL,
@@ -35,8 +32,7 @@ CREATE TABLE Sincronizacao
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Valido
-(
+CREATE TABLE Valido (
     id          VARCHAR(36) DEFAULT NULL,
     palavra     VARCHAR(250) NOT NULL,
     atualizacao DATETIME    DEFAULT CURRENT_TIMESTAMP,
@@ -44,8 +40,7 @@ CREATE TABLE Valido
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Vocabulario
-(
+CREATE TABLE Vocabulario (
     id          VARCHAR(36)  DEFAULT NULL,
     vocabulario VARCHAR(250) NOT NULL,
     leitura     VARCHAR(250) DEFAULT NULL,

@@ -1,5 +1,4 @@
-CREATE TABLE _sql
-(
+CREATE TABLE _sql (
     id          varchar(36) NOT NULL,
     tipo        enum ('INSERT','SELECT','CREATE','UPDATE','DELETE') DEFAULT NULL,
     descricao   varchar(250)                                        DEFAULT NULL,
@@ -10,8 +9,7 @@ CREATE TABLE _sql
   DEFAULT CHARSET = utf8mb3;
 
 
-CREATE TABLE Exemplo_Volumes
-(
+CREATE TABLE Exemplo_Volumes (
     id                 varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     novel              varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
     serie              varchar(250)                                                  DEFAULT NULL,
@@ -30,8 +28,7 @@ CREATE TABLE Exemplo_Volumes
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Exemplo_Capas
-(
+CREATE TABLE Exemplo_Capas (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_volume   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     novel       longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci    NOT NULL,
@@ -46,8 +43,7 @@ CREATE TABLE Exemplo_Capas
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Capitulos
-(
+CREATE TABLE Exemplo_Capitulos (
     id            varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_volume     varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     novel         longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci    NOT NULL,
@@ -65,8 +61,7 @@ CREATE TABLE Exemplo_Capitulos
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Textos
-(
+CREATE TABLE Exemplo_Textos (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_capitulo varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     sequencia   int      DEFAULT NULL,
@@ -79,8 +74,7 @@ CREATE TABLE Exemplo_Textos
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Vocabularios
-(
+CREATE TABLE Exemplo_Vocabularios (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_volume   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
     id_capitulo varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,

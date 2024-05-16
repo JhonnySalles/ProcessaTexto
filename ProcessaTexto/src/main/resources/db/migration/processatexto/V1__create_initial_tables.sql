@@ -1,5 +1,4 @@
-CREATE TABLE ComicInfo
-(
+CREATE TABLE ComicInfo (
     id                VARCHAR(36) NOT NULL,
     comic             VARCHAR(250) DEFAULT NULL,
     idMal             INT          DEFAULT NULL,
@@ -17,8 +16,7 @@ CREATE TABLE ComicInfo
     KEY               CAMPOS (comic, LANGUAGE)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE Conexoes
-(
+CREATE TABLE Conexoes (
     id       INT NOT NULL AUTO_INCREMENT,
     tipo     ENUM('PROCESSA_TEXTO','MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','TEXTO_JAPONES','DECKSUBTITLE','FIREBASE') CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT 'PROCESSA_TEXTO',
     url      VARCHAR(250) DEFAULT NULL,
@@ -30,8 +28,7 @@ CREATE TABLE Conexoes
     UNIQUE KEY tipo (tipo)
 ) ENGINE=INNODB DEFAULT CHARSET=latin1;
 
-CREATE TABLE Fila_Sql
-(
+CREATE TABLE Fila_Sql (
     id          VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     sequencial  INT NOT NULL AUTO_INCREMENT,
     select_sql  LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,

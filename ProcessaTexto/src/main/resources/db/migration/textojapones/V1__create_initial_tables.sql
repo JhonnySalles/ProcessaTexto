@@ -1,5 +1,4 @@
-CREATE TABLE Estatistica
-(
+CREATE TABLE Estatistica (
     id               VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     sequencial       INT NOT NULL AUTO_INCREMENT,
     kanji            VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -17,8 +16,7 @@ CREATE TABLE Estatistica
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exclusao
-(
+CREATE TABLE Exclusao (
     id          VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     palavra     VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     atualizacao DATETIME                                                     DEFAULT CURRENT_TIMESTAMP,
@@ -27,8 +25,7 @@ CREATE TABLE Exclusao
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Kanjax_pt
-(
+CREATE TABLE Kanjax_pt (
     id                VARCHAR(36)                                                   DEFAULT NULL,
     sequencia         INT                                                          NOT NULL,
     kanji             VARCHAR(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
@@ -66,8 +63,7 @@ CREATE TABLE Kanjax_pt
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE Revisar
-(
+CREATE TABLE Revisar (
     id            VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
     vocabulario   VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     forma_basica  VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -87,8 +83,7 @@ CREATE TABLE Revisar
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Sincronizacao
-(
+CREATE TABLE Sincronizacao (
     id          INT                                                                                                                                  NOT NULL AUTO_INCREMENT,
     conexao     ENUM ('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
     envio       DATETIME DEFAULT NULL,
@@ -97,8 +92,7 @@ CREATE TABLE Sincronizacao
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Vocabulario
-(
+CREATE TABLE Vocabulario (
     id            VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
     vocabulario   VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     forma_basica  VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -114,8 +108,7 @@ CREATE TABLE Vocabulario
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Words_kanji_info
-(
+CREATE TABLE Words_kanji_info (
     id          VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
     sequencia   INT NOT NULL AUTO_INCREMENT,
     word        VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,

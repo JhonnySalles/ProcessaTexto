@@ -1,5 +1,4 @@
-CREATE TABLE _sql
-(
+CREATE TABLE _sql (
     id          varchar(36) NOT NULL,
     tipo        enum ('INSERT','SELECT','CREATE','UPDATE','DELETE') DEFAULT NULL,
     descricao   varchar(250)                                        DEFAULT NULL,
@@ -14,8 +13,7 @@ values ('cb43444b-33c4-11ee-ad88-309c231b7fe8', 'DELETE', 'Delete a partir de vo
         'DELETE vol FROM %s_vocabulario AS vol INNER JOIN %s_paginas AS p ON p.id = vol.id_pagina \r\nINNER JOIN %s_capitulos AS c ON c.id = p.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume WHERE v.id = 1;\r\n\r\nDELETE vol FROM %s_vocabularios AS vol INNER JOIN %s_capitulos AS c ON c.id = vol.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume WHERE v.id = 1;\r\n\r\nDELETE vol FROM %s_vocabularios AS vol INNER JOIN %s_volumes AS v ON v.id = vol.id_volume WHERE v.id = 1;\r\n\r\n\r\n\r\nDELETE t FROM %s_textos AS t INNER JOIN %s_paginas AS p ON p.id = t.id_pagina \r\nINNER JOIN %s_capitulos AS c ON c.id = p.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume WHERE v.id = 1;\r\n\r\nDELETE p FROM %s_paginas p INNER JOIN %s_capitulos AS c ON c.id = p.id_capitulo INNER JOIN %s_volumes AS v ON v.id = c.id_volume WHERE v.id = 1;\r\n\r\nDELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume WHERE v.id = 1;\r\n\r\nDELETE v FROM %s_volumes AS v WHERE v.id = 1;',
         '2023-08-05 16:17:57');
 
-CREATE TABLE _vocabularios
-(
+CREATE TABLE _vocabularios (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     base        varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     manga       varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -32,8 +30,7 @@ CREATE TABLE _vocabularios
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Volumes
-(
+CREATE TABLE Exemplo_Volumes (
     id            varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     manga         varchar(250) DEFAULT NULL,
     volume        int          DEFAULT NULL,
@@ -46,8 +43,7 @@ CREATE TABLE Exemplo_Volumes
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Exemplo_Capitulos
-(
+CREATE TABLE Exemplo_Capitulos (
     id            varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_volume     varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     manga         longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci    NOT NULL,
@@ -67,8 +63,7 @@ CREATE TABLE Exemplo_Capitulos
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Paginas
-(
+CREATE TABLE Exemplo_Paginas (
     id            varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_capitulo   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     nome          varchar(250) DEFAULT NULL,
@@ -83,8 +78,7 @@ CREATE TABLE Exemplo_Paginas
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE Exemplo_Textos
-(
+CREATE TABLE Exemplo_Textos (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_pagina   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     sequencia   int                                                          DEFAULT NULL,
@@ -102,8 +96,7 @@ CREATE TABLE Exemplo_Textos
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE Exemplo_Vocabularios
-(
+CREATE TABLE Exemplo_Vocabularios (
     id          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     id_volume   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
     id_capitulo varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  DEFAULT NULL,
