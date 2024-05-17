@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.model.entities.comicinfo
 
+
 data class MAL(
     var arquivo: String = "",
     var myanimelist: MutableList<Registro> = mutableListOf()

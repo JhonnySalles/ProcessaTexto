@@ -7,6 +7,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />

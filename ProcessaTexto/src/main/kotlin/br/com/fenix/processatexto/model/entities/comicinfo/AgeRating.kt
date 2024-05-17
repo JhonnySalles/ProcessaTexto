@@ -1,4 +1,5 @@
-package org.jisho.textosJapones.model.entities.comicinfo
+package br.com.fenix.processatexto.model.entities.comicinfo
+
 
 enum class AgeRating(val descricao: String) {
     Unknown("Unknown"),

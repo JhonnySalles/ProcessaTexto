@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import jakarta.persistence.*
 
+
 @jakarta.persistence.Entity
 @Table(name = "conexoes")
 data class DadosConexao(
@@ -22,8 +23,10 @@ data class DadosConexao(
     @Column(name = "password", length = 250, nullable = true)
     val senha: String,
     @Enumerated(EnumType.STRING)
+    @Column(name = "driver")
     val driver: Driver
 ) : EntityBase<Long?, DadosConexao>() {
+
     constructor(url: String, base: String, usuario: String, senha: String) :
             this(0, Conexao.PROCESSA_TEXTO, url, base, usuario, senha, Driver.MYSQL)
 

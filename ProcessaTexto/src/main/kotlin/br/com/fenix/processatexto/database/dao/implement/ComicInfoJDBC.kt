@@ -6,7 +6,7 @@ import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
-import org.jisho.textosJapones.model.entities.comicinfo.AgeRating
+import br.com.fenix.processatexto.model.entities.comicinfo.AgeRating
 import org.slf4j.LoggerFactory
 import java.sql.*
 import java.util.*

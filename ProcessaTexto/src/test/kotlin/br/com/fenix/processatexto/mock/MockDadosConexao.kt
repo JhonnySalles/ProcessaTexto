@@ -5,16 +5,12 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import br.com.fenix.processatexto.util.configuration.Configuracao
 import org.junit.jupiter.api.Assertions.*
+import kotlin.random.Random
 
 
 class MockDadosConexao : Mock<Long?, DadosConexao> {
 
-    private fun conexaoByID(id: Long?): Conexao {
-        return if (id != null && id < 5 && id > 0)
-            arrayListOf(Conexao.DECKSUBTITLE, Conexao.TEXTO_INGLES, Conexao.TEXTO_JAPONES, Conexao.MANGA_EXTRACTOR, Conexao.NOVEL_EXTRACTOR)[id.minus(1).toInt()]
-        else
-            Conexao.PROCESSA_TEXTO
-    }
+    private fun conexaoByID(id: Long?): Conexao = arrayListOf(Conexao.PROCESSA_TEXTO, Conexao.FIREBASE)[Random.nextInt(1, 2)]
 
     override fun mockEntity(): DadosConexao = mockEntity(0)
 
@@ -31,7 +27,7 @@ class MockDadosConexao : Mock<Long?, DadosConexao> {
 
     override fun updateEntityById(lastId: Long?): DadosConexao {
         return DadosConexao(
-            lastId, Conexao.TEXTO_INGLES,
+            lastId, Conexao.FIREBASE,
             "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port + "/" + Configuracao.database + "?useTimezone=true&serverTimezone=UTC",
             "base", "usuario", "senha", Driver.EXTERNO
         )
