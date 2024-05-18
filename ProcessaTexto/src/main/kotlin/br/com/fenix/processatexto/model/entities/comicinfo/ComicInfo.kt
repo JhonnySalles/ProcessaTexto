@@ -5,6 +5,8 @@ import br.com.fenix.processatexto.model.enums.comicinfo.Manga
 import br.com.fenix.processatexto.model.enums.comicinfo.YesNo
 import jakarta.persistence.*
 import jakarta.xml.bind.annotation.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.*
 import java.util.List
 
@@ -15,7 +17,8 @@ import java.util.List
 @XmlRootElement(name = "ComicInfo")
 data class ComicInfo(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false, unique = true, length = 11)
     private var id: UUID? = null,
     @Column(name = "idMal", nullable = true)

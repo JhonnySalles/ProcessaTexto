@@ -13,7 +13,7 @@ abstract class MockJpaBase<ID, E : EntityBase<ID, E>> : MockJpa<ID, E> {
     override fun mockEntityList(): List<E> {
         val list: MutableList<E> = mutableListOf()
         for (i in 1..3)
-            list.add(mockEntity(randomId()))
+            list.add(mockEntity(null))
         return list
     }
 

@@ -18,7 +18,7 @@ import java.util.*
 class ComicInfoRepositoryTest : RepositoryTestBase<UUID?, ComicInfo>() {
 
     @InjectMocks
-    override var repository: RepositoryJpa<UUID?, ComicInfo> = object : RepositoryJpaImpl<UUID?, ComicInfo>(Conexao.DECKSUBTITLE) {}
+    override var repository: RepositoryJpa<UUID?, ComicInfo> = object : RepositoryJpaImpl<UUID?, ComicInfo>(Conexao.PROCESSA_TEXTO) {}
 
     @BeforeEach
     @Throws(Exception::class)

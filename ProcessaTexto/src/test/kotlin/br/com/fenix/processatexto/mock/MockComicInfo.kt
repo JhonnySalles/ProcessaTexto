@@ -22,7 +22,7 @@ class MockComicInfo : MockJpaBase<UUID?, ComicInfo>() {
         input.seriesGroup += "---"
         input.imprint += "---"
         input.genre += "---"
-        input.languageISO += "---"
+        input.languageISO = "jpu"
 
         input.idMal = 2
         input.ageRating = AgeRating.Adults
@@ -34,7 +34,7 @@ class MockComicInfo : MockJpaBase<UUID?, ComicInfo>() {
         return ComicInfo(
             lastId, 2, "comic" + "---", "title" + "---", "series" + "---", "publisher" + "---",
             "alternativeSeries" + "---", "storyArc" + "---", "seriesGroup" + "---", "imprint" + "---",
-            "genre" + "---", "language" + "---", AgeRating.Adults
+            "genre" + "---", "jpu", AgeRating.Adults
         )
     }
 
@@ -42,7 +42,7 @@ class MockComicInfo : MockJpaBase<UUID?, ComicInfo>() {
         return ComicInfo(
             id, 1, "comic", "title", "series", "publisher",
             "alternativeSeries", "storyArc", "seriesGroup", "imprint",
-            "genre", "language", AgeRating.Adults
+            "genre", "jpa", AgeRating.Adults
         )
     }
 
