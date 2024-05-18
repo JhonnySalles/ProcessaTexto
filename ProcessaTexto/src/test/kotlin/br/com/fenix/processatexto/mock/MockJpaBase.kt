@@ -32,8 +32,9 @@ abstract class MockJpaBase<ID, E : EntityBase<ID, E>> : MockJpa<ID, E> {
             field.isAccessible = true
             when (field.type) {
                 String::class.java -> field[update] = field[update].toString().plus("---")
-                Int::class.java, Long::class.java -> field[update] = 10
-                Float::class.java, Double::class.java -> field[update] = 10.0
+                Int::class.java, Long::class.java -> field[update] = 100
+                Float::class.java, Double::class.java -> field[update] = 100.0
+                Char::class.java -> field[update] = '-'
             }
 
         }

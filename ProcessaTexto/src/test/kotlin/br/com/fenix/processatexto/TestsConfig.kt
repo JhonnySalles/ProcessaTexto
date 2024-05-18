@@ -13,6 +13,10 @@ import java.sql.ResultSet
 
 class TestsConfig {
     companion object {
+        const val EXCLUIR_MENSAGEM = "Ignorado o teste de exclusão."
+        const val TESTA_EXCLUIR = true
+        const val LIMPA_LISTA = TESTA_EXCLUIR
+
         private val LOGGER = LoggerFactory.getLogger(TestsConfig::class.java)
 
         const val DATABASE = "teste_"

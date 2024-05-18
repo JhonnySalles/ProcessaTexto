@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
+import kotlin.concurrent.thread
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -31,6 +32,16 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     abstract fun setUpMocks()
 
     protected open var lastId: ID? = null
+
+
+    private fun valideList(oldList: List<E>, newList : List<E>) {
+        val listOld = oldList.sortedBy { it.getId()?.toString() ?: "" }
+        val listNew = newList.sortedBy { it.getId()?.toString() ?: "" }
+
+        input.assertsService(listOld[0], listNew[0])
+        input.assertsService(listOld[listOld.size / 2], listNew[listNew.size / 2])
+        input.assertsService(listOld[listOld.size - 1], listNew[listNew.size - 1])
+    }
 
     @Test
     @Order(1)
@@ -62,6 +73,9 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(4)
     open fun testDeleteById() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         repository.delete(lastId!!)
         val persisted = repository.find(lastId!!)
         Assertions.assertTrue(persisted.isEmpty)
@@ -74,10 +88,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
         val persisteds = repository.saveAll(lastList)
 
         Assertions.assertTrue(persisteds.isNotEmpty())
-
-        input.assertsService(persisteds[0], lastList[0])
-        input.assertsService(persisteds[persisteds.size / 2], lastList[lastList.size / 2])
-        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
+        valideList(lastList, persisteds)
     }
 
     @Test
@@ -86,10 +97,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
         val entities = repository.findAll()
 
         Assertions.assertTrue(entities.isNotEmpty())
-
-        input.assertsService(lastList[0], entities[0])
-        input.assertsService(lastList[lastList.size / 2], entities[entities.size / 2])
-        input.assertsService(lastList[lastList.size - 1], entities[entities.size - 1])
+        valideList(lastList, entities)
     }
 
     @Test
@@ -100,15 +108,15 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
         val persisteds = repository.findAll()
 
         Assertions.assertTrue(persisteds.isNotEmpty())
-
-        input.assertsService(lastList[0], persisteds[0])
-        input.assertsService(lastList[lastList.size / 2], persisteds[persisteds.size / 2])
-        input.assertsService(lastList[lastList.size - 1], persisteds[persisteds.size - 1])
+        valideList(lastList, persisteds)
     }
 
     @Test
     @Order(8)
     open fun deleteByEntity() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         val entity = lastList[0]
         Assertions.assertNotNull(entity)
         val id = entity.getId()!!
@@ -120,6 +128,9 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(9)
     open fun deleteList() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         for (entity in lastList)
             repository.delete(entity)
 
@@ -130,8 +141,9 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
 
     @AfterAll
     open fun clear() {
-        for (entity in lastList)
-            repository.delete(entity)
+        if (TestsConfig.LIMPA_LISTA)
+            for (entity in lastList)
+                repository.delete(entity)
     }
 
 }

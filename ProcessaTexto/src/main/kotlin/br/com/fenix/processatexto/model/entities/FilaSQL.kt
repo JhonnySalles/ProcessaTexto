@@ -8,9 +8,10 @@ import java.util.*
 
 
 @jakarta.persistence.Entity
+@Table(name="_fila_sql")
 data class FilaSQL(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false, unique = true, length = 36)
     private val id: UUID? = null,

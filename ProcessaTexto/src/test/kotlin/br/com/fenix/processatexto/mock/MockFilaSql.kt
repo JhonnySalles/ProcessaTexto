@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.model.entities.FilaSQL
 import br.com.fenix.processatexto.model.enums.Language
 import org.junit.jupiter.api.Assertions.*
 import java.util.*
+import kotlin.random.Random
 
 
 class MockFilaSql : MockJpaBase<UUID?, FilaSQL>() {
@@ -13,7 +14,7 @@ class MockFilaSql : MockJpaBase<UUID?, FilaSQL>() {
     override fun randomId(): UUID? = UUID.randomUUID()
 
     override fun updateEntity(input: FilaSQL): FilaSQL {
-        input.sequencial = 1
+        input.sequencial = Random.nextLong(1, 10000)
         input.select += "---"
         input.update += "---"
         input.delete += "---"
@@ -27,7 +28,7 @@ class MockFilaSql : MockJpaBase<UUID?, FilaSQL>() {
 
     override fun updateEntityById(lastId: UUID?): FilaSQL {
         return FilaSQL(
-            lastId, 1, "select_sql" + "---",
+            lastId, Random.nextLong(1, 10000), "select_sql" + "---",
             "update_sql" + "---", "delete_sql" + "---", "vocabulario" + "---",
             Language.ENGLISH, false, true
         )

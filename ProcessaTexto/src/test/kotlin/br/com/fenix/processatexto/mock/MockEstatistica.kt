@@ -15,17 +15,17 @@ class MockEstatistica : MockJpaBase<UUID?, Estatistica>() {
         input.kanji += "---"
         input.tipo += "---"
         input.leitura += "---"
-        input.quantidade = 3.0
-        input.percentual = 22f
-        input.media = 0.0
-        input.percentMedia = 550f
-        input.corSequencial = 10
+        input.quantidade *= 2
+        input.percentual *= 2
+        input.media *= 2
+        input.percentMedia *= 2
+        input.corSequencial *= 2
 
         return input
     }
 
     override fun updateEntityById(lastId: UUID?): Estatistica {
-        return Estatistica(lastId, "kanji" + "---", "tipo" + "---", "leitura" + "---", 3.0, 22f, 0.0, 550f, 10)
+        return Estatistica(lastId, "kanji" + "---", "tipo" + "---", "leitura" + "---", 3.0, 22f, 20.0, 550f, 10)
     }
 
     override fun mockEntity(id: UUID?): Estatistica {

@@ -29,6 +29,7 @@ data class Estatistica(
     var percentMedia: Float = 0f,
     @Column(name = "cor_sequencial", nullable = true)
     var corSequencial: Int = 0,
+    @Transient
     var isGerar : Boolean = false
 ) : EntityBase<UUID?, Estatistica>() {
 
