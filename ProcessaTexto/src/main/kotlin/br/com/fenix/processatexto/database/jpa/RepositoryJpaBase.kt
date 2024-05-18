@@ -3,19 +3,17 @@ package br.com.fenix.processatexto.database.jpa
 import br.com.fenix.processatexto.database.JpaFactory
 import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.enums.Conexao
-import java.lang.reflect.ParameterizedType
-import java.util.*
 import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
+import java.lang.reflect.ParameterizedType
+import java.util.*
 
 
 abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : RepositoryJpa<ID, E> {
 
-    private val clazzEntity: Class<E>
-
-    init {
+    private fun retrieveClass(): Class<E> {
         val superclass = (javaClass.genericSuperclass as ParameterizedType)
-        clazzEntity = superclass.actualTypeArguments[1].javaClass as Class<E>
+        return superclass.actualTypeArguments[1] as Class<E>
     }
 
     protected val em: EntityManager = JpaFactory.getFactory(conexao).createEntityManager()
@@ -25,14 +23,14 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @param id id genérico dependendo da entidade
      * @return retorna preenchido caso encontre
      */
-    override fun find(id: ID): Optional<E> = Optional.ofNullable(em.find(clazzEntity, id))
+    override fun find(id: ID): Optional<E> = Optional.ofNullable(em.find(retrieveClass(), id))
 
     /**
      * Verifica se a entidade se encontra salva no banco
      * @param entity entidade
      * @return true se encontrado
      */
-    override fun exists(entity: E): Boolean = em.contains(entity)
+    override fun exists(entity: E): Boolean = find(entity.getId()!!).isPresent
 
     /**
      * Inicia a transação no banco de dados
@@ -55,8 +53,8 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      */
     override fun findAll(): List<E> {
         val cb = em.criteriaBuilder
-        val cq = cb.createQuery(clazzEntity)
-        val rootEntry = cq.from(clazzEntity)
+        val cq = cb.createQuery(retrieveClass())
+        val rootEntry = cq.from(retrieveClass())
         val all = cq.select(rootEntry)
         val allQuery = em.createQuery(all)
         return allQuery.resultList
@@ -72,7 +70,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryEntity(@org.intellij.lang.annotations.Language("sql") sql: String): Optional<E> {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         return Optional.ofNullable(q.singleResult)
     }
 
@@ -87,7 +85,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryEntity(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>): Optional<E> {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         return Optional.ofNullable(q.singleResult)
@@ -103,7 +101,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryList(@org.intellij.lang.annotations.Language("sql") sql: String): List<E> {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         return q.resultList
     }
 
@@ -118,7 +116,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryList(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>): List<E> {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         return q.resultList
@@ -135,7 +133,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see queryEntity
      */
     override fun query(@org.intellij.lang.annotations.Language("sql") sql: String) {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         q.executeUpdate()
     }
 
@@ -151,7 +149,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see queryEntity
      */
     override fun query(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>) {
-        val q = em.createQuery(sql, clazzEntity)
+        val q = em.createQuery(sql, retrieveClass())
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         q.executeUpdate()
@@ -164,9 +162,9 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
     @Transactional
     override fun delete(entity: E) {
         try {
-            if (em.contains(entity)) {
+            if (find(entity.getId()!!).isPresent) {
                 em.transaction.begin()
-                em.remove(entity)
+                em.remove(if (em.contains(entity)) entity else em.merge(entity))
                 em.transaction.commit()
             }
         } catch (e: Exception) {
