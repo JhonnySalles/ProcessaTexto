@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
 import br.com.fenix.processatexto.mock.MockDadosConexao
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
+import br.com.fenix.processatexto.model.enums.Driver
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -32,25 +33,24 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
     @Order(1)
     override fun testCreate() {
         lastId = null
-        val entity = input.mockEntity(lastId)
-        val persisted = repository.save(entity)
+        lastEntity = input.mockEntity(lastId)
+        val persisted = repository.save(lastEntity)
         lastId = persisted.getId()
         Assertions.assertNotNull(lastId)
-        input.assertsService(persisted, entity)
+        input.assertsService(persisted, lastEntity)
     }
 
     @Test
     @Order(2)
     override fun testFindById() {
-        val entity = input.mockEntity(lastId)
         val persisted = repository.find(lastId!!).get()
-        input.assertsService(persisted, entity)
+        input.assertsService(persisted, lastEntity)
     }
 
     @Test
     @Order(3)
     override fun testUpdate() {
-        val entity = input.updateEntityById(lastId)
+        val entity = input.updateEntity(lastEntity)
         repository.save(entity)
         val persisted = repository.find(lastId!!)
         input.assertsService(entity, persisted.get())
@@ -67,33 +67,43 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
     @Test
     @Order(5)
     override fun testSaveAll() {
-        val entities: List<DadosConexao> = input.mockEntityList()
-        val persisteds = repository.saveAll(entities)
+        lastList = input.mockEntityList()
+        val persisteds = repository.saveAll(lastList)
 
-        Assertions.assertNotNull(persisteds)
+        Assertions.assertTrue(persisteds.isNotEmpty())
 
-        input.assertsService(persisteds[0], entities[0])
-        input.assertsService(persisteds[persisteds.size / 2], entities[entities.size / 2])
-        input.assertsService(persisteds[persisteds.size - 1], entities[entities.size - 1])
+        input.assertsService(persisteds[persisteds.size - 2], lastList[lastList.size - 2])
+        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
     }
 
     @Test
     @Order(6)
     override fun testFindAll() {
-        val list: List<DadosConexao> = input.mockEntityList()
         val entities = repository.findAll()
 
-        Assertions.assertNotNull(entities)
+        Assertions.assertTrue(entities.isNotEmpty())
 
-        input.assertsService(list[0], entities[0])
-        input.assertsService(list[list.size / 2], entities[entities.size / 2])
-        input.assertsService(list[list.size - 1], entities[entities.size - 1])
+        input.assertsService(entities[entities.size - 2], lastList[lastList.size - 2])
+        input.assertsService(entities[entities.size - 1], lastList[lastList.size - 1])
     }
 
     @Test
     @Order(7)
+    override fun testUpdateAll() {
+        lastList = input.updateList(lastList)
+        repository.saveAll(lastList)
+        val persisteds = repository.findAll()
+
+        Assertions.assertTrue(persisteds.isNotEmpty())
+
+        input.assertsService(persisteds[persisteds.size - 2], lastList[lastList.size - 2])
+        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
+    }
+
+    @Test
+    @Order(8)
     override fun deleteByEntity() {
-        val entity = repository.findAll()[0]
+        val entity = lastList[0]
         Assertions.assertNotNull(entity)
         val id = entity.getId()!!
         repository.delete(entity)
@@ -102,15 +112,19 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     override fun deleteList() {
-        val entities = repository.findAll()
-        Assertions.assertNotNull(entities)
-        for (entity in entities)
+        for (entity in lastList)
             repository.delete(entity)
 
         val persisteds = repository.findAll()
-        Assertions.assertTrue(persisteds.isEmpty())
+        for (entity in lastList)
+            Assertions.assertFalse(persisteds.contains(entity))
+    }
+
+    @AfterAll
+    override fun clear() {
+
     }
 
 }

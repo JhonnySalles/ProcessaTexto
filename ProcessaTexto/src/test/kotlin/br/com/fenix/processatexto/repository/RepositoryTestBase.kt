@@ -23,6 +23,9 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
 
     abstract var repository: RepositoryJpa<ID, E>
 
+    protected lateinit var lastEntity: E
+    protected lateinit var lastList: List<E>
+
     @BeforeEach
     @Throws(Exception::class)
     abstract fun setUpMocks()
@@ -33,25 +36,24 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Order(1)
     open fun testCreate() {
         lastId = null
-        val entity = input.mockEntity(lastId)
-        val persisted = repository.save(entity)
+        lastEntity = input.mockEntity(lastId)
+        val persisted = repository.save(lastEntity)
         lastId = persisted.getId()
         Assertions.assertNotNull(lastId)
-        input.assertsService(persisted, entity)
+        input.assertsService(persisted, lastEntity)
     }
 
     @Test
     @Order(2)
     open fun testFindById() {
-        val entity = input.mockEntity(lastId)
         val persisted = repository.find(lastId!!).get()
-        input.assertsService(persisted, entity)
+        input.assertsService(persisted, lastEntity)
     }
 
     @Test
     @Order(3)
     open fun testUpdate() {
-        val entity = input.updateEntityById(lastId)
+        val entity = input.updateEntity(lastEntity)
         repository.save(entity)
         val persisted = repository.find(lastId!!)
         input.assertsService(entity, persisted.get())
@@ -68,31 +70,44 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(5)
     open fun testSaveAll() {
-        val entities = input.mockEntityList()
-        val persisteds = repository.saveAll(entities)
+        lastList = input.mockEntityList()
+        val persisteds = repository.saveAll(lastList)
 
-        Assertions.assertNotNull(persisteds)
+        Assertions.assertTrue(persisteds.isNotEmpty())
 
-        input.assertsService(persisteds[0], entities[0])
-        input.assertsService(persisteds[persisteds.size / 2], entities[entities.size / 2])
-        input.assertsService(persisteds[persisteds.size - 1], entities[entities.size - 1])
+        input.assertsService(persisteds[0], lastList[0])
+        input.assertsService(persisteds[persisteds.size / 2], lastList[lastList.size / 2])
+        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
     }
 
     @Test
     @Order(6)
     open fun testFindAll() {
-        val list = input.mockEntityList()
         val entities = repository.findAll()
 
-        Assertions.assertNotNull(entities)
+        Assertions.assertTrue(entities.isNotEmpty())
 
-        input.assertsService(list[0], entities[0])
-        input.assertsService(list[list.size / 2], entities[entities.size / 2])
-        input.assertsService(list[list.size - 1], entities[entities.size - 1])
+        input.assertsService(lastList[0], entities[0])
+        input.assertsService(lastList[lastList.size / 2], entities[entities.size / 2])
+        input.assertsService(lastList[lastList.size - 1], entities[entities.size - 1])
     }
 
     @Test
     @Order(7)
+    open fun testUpdateAll() {
+        lastList = input.updateList(lastList)
+        repository.saveAll(lastList)
+        val persisteds = repository.findAll()
+
+        Assertions.assertTrue(persisteds.isNotEmpty())
+
+        input.assertsService(lastList[0], persisteds[0])
+        input.assertsService(lastList[lastList.size / 2], persisteds[persisteds.size / 2])
+        input.assertsService(lastList[lastList.size - 1], persisteds[persisteds.size - 1])
+    }
+
+    @Test
+    @Order(8)
     open fun deleteByEntity() {
         val entity = repository.findAll()[0]
         Assertions.assertNotNull(entity)
@@ -103,7 +118,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     open fun deleteList() {
         val entities = repository.findAll()
         Assertions.assertNotNull(entities)

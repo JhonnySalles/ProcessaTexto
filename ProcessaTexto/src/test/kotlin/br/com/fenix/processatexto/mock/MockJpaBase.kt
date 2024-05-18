@@ -17,6 +17,13 @@ abstract class MockJpaBase<ID, E : EntityBase<ID, E>> : MockJpa<ID, E> {
         return list
     }
 
+    override fun updateList(list: List<E>): List<E> {
+        val updated: MutableList<E> = mutableListOf()
+        for (item in list)
+            updated.add(updateEntity(item))
+        return updated
+    }
+
     override fun updateEntityById(lastId: ID?): E {
         val update = mockEntity(lastId)
         val fields: Array<Field> = update::class.java.declaredFields

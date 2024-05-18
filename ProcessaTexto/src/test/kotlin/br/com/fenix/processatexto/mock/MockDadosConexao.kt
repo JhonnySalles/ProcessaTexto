@@ -8,40 +8,46 @@ import org.junit.jupiter.api.Assertions.*
 import kotlin.random.Random
 
 
-class MockDadosConexao : Mock<Long?, DadosConexao> {
+class MockDadosConexao : MockJpaBase<Long?, DadosConexao>() {
 
-    private fun conexaoByID(id: Long?): Conexao = arrayListOf(Conexao.PROCESSA_TEXTO, Conexao.FIREBASE)[Random.nextInt(1, 2)]
+    private fun randomConexao(): Conexao = arrayListOf(Conexao.PROCESSA_TEXTO, Conexao.FIREBASE)[Random.nextInt(1, 2)]
 
     override fun mockEntity(): DadosConexao = mockEntity(0)
+    override fun randomId(): Long? = Random.nextLong()
 
     override fun mockEntityList(): List<DadosConexao> {
         val list: MutableList<DadosConexao> = mutableListOf()
-        for (i in 1..3)
-            list.add(mockEntity(i.toLong()))
+        for (i in 1..2) {
+            val conexao = when(i) {
+                1 -> Conexao.PROCESSA_TEXTO
+                else -> Conexao.FIREBASE
+            }
+            list.add(mockEntity(null, conexao))
+        }
         return list
     }
 
     override fun updateEntity(input: DadosConexao): DadosConexao {
-        return updateEntityById(input.getId())
-    }
-
-    override fun updateEntityById(lastId: Long?): DadosConexao {
         return DadosConexao(
-            lastId, Conexao.FIREBASE,
+            input.getId(), input.tipo,
             "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port + "/" + Configuracao.database + "?useTimezone=true&serverTimezone=UTC",
             "base", "usuario", "senha", Driver.EXTERNO
         )
     }
 
+    fun mockEntity(id: Long?, conexao: Conexao): DadosConexao {
+        return DadosConexao(
+            id, conexao,
+            "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port + "/" + Configuracao.database + "?useTimezone=true&serverTimezone=UTC",
+            Configuracao.database, Configuracao.user, Configuracao.password, Driver.MYSQL
+        )
+    }
+
     override fun mockEntity(id: Long?): DadosConexao {
         return DadosConexao(
-            id,
-            conexaoByID(id),
+            id, randomConexao(),
             "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port + "/" + Configuracao.database + "?useTimezone=true&serverTimezone=UTC",
-            Configuracao.database,
-            Configuracao.user,
-            Configuracao.password,
-            Driver.MYSQL
+            Configuracao.database, Configuracao.user, Configuracao.password, Driver.MYSQL
         )
     }
 

@@ -16,7 +16,6 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
 
     override fun randomId(): UUID? = UUID.randomUUID()
 
-
     override fun updateEntityById(lastId: UUID?): MangaVolume = updateEntity(mockEntity(randomId()))
 
     override fun updateEntity(input: MangaVolume): MangaVolume {
