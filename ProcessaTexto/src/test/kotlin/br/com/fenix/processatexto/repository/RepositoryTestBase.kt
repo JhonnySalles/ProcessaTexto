@@ -109,7 +109,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(8)
     open fun deleteByEntity() {
-        val entity = repository.findAll()[0]
+        val entity = lastList[0]
         Assertions.assertNotNull(entity)
         val id = entity.getId()!!
         repository.delete(entity)
@@ -120,9 +120,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(9)
     open fun deleteList() {
-        val entities = repository.findAll()
-        Assertions.assertNotNull(entities)
-        for (entity in entities)
+        for (entity in lastList)
             repository.delete(entity)
 
         val persisteds = repository.findAll()
@@ -132,7 +130,7 @@ abstract class RepositoryTestBase<ID, E : EntityBase<ID, E>> {
 
     @AfterAll
     open fun clear() {
-        for (entity in repository.findAll())
+        for (entity in lastList)
             repository.delete(entity)
     }
 

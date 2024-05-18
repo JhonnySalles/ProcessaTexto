@@ -12,7 +12,7 @@ import java.util.*
 abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : RepositoryJpa<ID, E> {
 
     private fun retrieveClass(): Class<E> {
-        val superclass = (javaClass.genericSuperclass as ParameterizedType)
+        val superclass = (this.javaClass.genericSuperclass as ParameterizedType)
         return superclass.actualTypeArguments[1] as Class<E>
     }
 
