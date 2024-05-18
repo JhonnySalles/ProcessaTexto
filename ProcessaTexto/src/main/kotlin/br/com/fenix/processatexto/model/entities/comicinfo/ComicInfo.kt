@@ -19,7 +19,7 @@ data class ComicInfo(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "ID", nullable = false, unique = true, length = 11)
+    @Column(name = "ID", nullable = false, unique = true, length = 36)
     private var id: UUID? = null,
     @Column(name = "idMal", nullable = true)
     var idMal: Long? = null,
@@ -92,19 +92,19 @@ data class ComicInfo(
     @Transient
     @XmlElement(name = "Count")
     var count: Int? = null,
-    @Column(name="alternativeSeries", length = 900, nullable = true)
+    @Column(name = "alternativeSeries", length = 900, nullable = true)
     @XmlElement(name = "AlternateSeries")
     var alternateSeries: String? = null,
     @Transient
     @XmlElement(name = "AlternateNumber")
     var alternateNumber: Float? = null,
-    @Column(name="storyArc", length = 900, nullable = true)
+    @Column(name = "storyArc", length = 900, nullable = true)
     @XmlElement(name = "StoryArc")
     var storyArc: String? = null,
     @Transient
     @XmlElement(name = "StoryArcNumber")
     var storyArcNumber: String? = null,
-    @Column(name="seriesGroup", length = 900, nullable = true)
+    @Column(name = "seriesGroup", length = 900, nullable = true)
     @XmlElement(name = "SeriesGroup")
     var seriesGroup: String? = null,
     @Transient
@@ -113,20 +113,20 @@ data class ComicInfo(
     @Transient
     @XmlElement(name = "Summary")
     var summary: String? = null,
-    @Column(name="imprint", length = 300, nullable = true)
+    @Column(name = "imprint", length = 300, nullable = true)
     @XmlElement(name = "Imprint")
     var imprint: String? = null,
     @Column(name = "genre", length = 900, nullable = true)
     @XmlElement(name = "Genre")
     var genre: String? = null,
-    @Column(name="LANGUAGE", length = 3, nullable = true)
+    @Column(name = "LANGUAGE", length = 3, nullable = true)
     @XmlElement(name = "LanguageISO")
     var languageISO: String? = null,
     @Transient
     @XmlElement(name = "Format")
     var format: String? = null,
     @Enumerated(EnumType.STRING)
-    @Column(name="maturityRating", length = 100, nullable = true)
+    @Column(name = "maturityRating", length = 100, nullable = true)
     @XmlElement(name = "AgeRating")
     var ageRating: AgeRating? = null,
     @Transient

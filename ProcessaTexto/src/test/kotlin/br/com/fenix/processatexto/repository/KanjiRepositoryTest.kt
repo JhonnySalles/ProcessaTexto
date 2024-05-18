@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.repository
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
-import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
+import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
 import br.com.fenix.processatexto.mock.MockKanji
 import br.com.fenix.processatexto.model.entities.processatexto.Kanji
 import br.com.fenix.processatexto.model.enums.Conexao
@@ -18,7 +18,7 @@ import java.util.*
 class KanjiRepositoryTest : RepositoryTestBase<UUID?, Kanji>() {
 
     @InjectMocks
-    override var repository: RepositoryJpa<UUID?, Kanji> = object : RepositoryJpaImpl<UUID?, Kanji>(Conexao.TEXTO_JAPONES) {}
+    override var repository: RepositoryJpa<UUID?, Kanji> = object : RepositoryJpaBase<UUID?, Kanji>(Conexao.TEXTO_JAPONES) {}
 
     @BeforeEach
     @Throws(Exception::class)

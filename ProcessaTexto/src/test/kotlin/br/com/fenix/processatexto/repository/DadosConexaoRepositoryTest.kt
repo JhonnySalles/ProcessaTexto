@@ -1,11 +1,10 @@
 package br.com.fenix.processatexto.repository
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
-import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
+import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
 import br.com.fenix.processatexto.mock.MockDadosConexao
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
-import br.com.fenix.processatexto.model.enums.Driver
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -19,7 +18,7 @@ import java.util.*
 class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
 
     @InjectMocks
-    override var repository: RepositoryJpa<Long?, DadosConexao> = object : RepositoryJpaImpl<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {}
+    override var repository: RepositoryJpa<Long?, DadosConexao> = object : RepositoryJpaBase<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {}
 
     @BeforeEach
     @Throws(Exception::class)

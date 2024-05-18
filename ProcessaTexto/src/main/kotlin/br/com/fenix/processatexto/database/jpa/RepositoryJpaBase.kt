@@ -11,9 +11,11 @@ import java.util.*
 
 abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : RepositoryJpa<ID, E> {
 
-    private fun retrieveClass(): Class<E> {
+    private val clazzEntity: Class<E>
+
+    init {
         val superclass = (this.javaClass.genericSuperclass as ParameterizedType)
-        return superclass.actualTypeArguments[1] as Class<E>
+        clazzEntity = superclass.actualTypeArguments[1] as Class<E>
     }
 
     protected val em: EntityManager = JpaFactory.getFactory(conexao).createEntityManager()
@@ -23,7 +25,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @param id id genérico dependendo da entidade
      * @return retorna preenchido caso encontre
      */
-    override fun find(id: ID): Optional<E> = Optional.ofNullable(em.find(retrieveClass(), id))
+    override fun find(id: ID): Optional<E> = Optional.ofNullable(em.find(clazzEntity, id))
 
     /**
      * Verifica se a entidade se encontra salva no banco
@@ -53,8 +55,8 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      */
     override fun findAll(): List<E> {
         val cb = em.criteriaBuilder
-        val cq = cb.createQuery(retrieveClass())
-        val rootEntry = cq.from(retrieveClass())
+        val cq = cb.createQuery(clazzEntity)
+        val rootEntry = cq.from(clazzEntity)
         val all = cq.select(rootEntry)
         val allQuery = em.createQuery(all)
         return allQuery.resultList
@@ -70,7 +72,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryEntity(@org.intellij.lang.annotations.Language("sql") sql: String): Optional<E> {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         return Optional.ofNullable(q.singleResult)
     }
 
@@ -85,7 +87,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryEntity(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>): Optional<E> {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         return Optional.ofNullable(q.singleResult)
@@ -101,7 +103,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryList(@org.intellij.lang.annotations.Language("sql") sql: String): List<E> {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         return q.resultList
     }
 
@@ -116,7 +118,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see query
      */
     override fun queryList(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>): List<E> {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         return q.resultList
@@ -133,7 +135,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see queryEntity
      */
     override fun query(@org.intellij.lang.annotations.Language("sql") sql: String) {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         q.executeUpdate()
     }
 
@@ -149,7 +151,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @see queryEntity
      */
     override fun query(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any>) {
-        val q = em.createQuery(sql, retrieveClass())
+        val q = em.createQuery(sql, clazzEntity)
         for (itm in params.keys)
             q.setParameter(itm, params[itm])
         q.executeUpdate()
@@ -260,7 +262,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             val q = em.createNativeQuery(sql)
             q.executeUpdate()
             em.transaction.commit()
-        } catch (E : Exception) {
+        } catch (E: Exception) {
             em.transaction.rollback()
         }
     }
@@ -279,7 +281,7 @@ abstract class RepositoryJpaBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                 q.setParameter(itm, params[itm])
             q.executeUpdate()
             em.transaction.commit()
-        } catch (E : Exception) {
+        } catch (E: Exception) {
             em.transaction.rollback()
         }
     }

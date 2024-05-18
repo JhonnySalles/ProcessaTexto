@@ -2,6 +2,8 @@ package br.com.fenix.processatexto.model.entities
 
 import br.com.fenix.processatexto.model.enums.Language
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.*
 
 
@@ -9,7 +11,8 @@ import java.util.*
 data class FilaSQL(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false, unique = true, length = 11)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "ID", nullable = false, unique = true, length = 36)
     private val id: UUID? = null,
     var sequencial: Long = 0,
     @Column(name = "select_sql", nullable = true)

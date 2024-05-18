@@ -6,13 +6,16 @@ import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.*
 
 
 open class Vocabulario(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", nullable = false, unique = true)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "ID", nullable = false, unique = true, length = 36)
     private var id: UUID? = null,
     @Column(length = 250, nullable = false, unique = true)
     @Expose var vocabulario: String = "",

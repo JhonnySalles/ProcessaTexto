@@ -2,13 +2,16 @@ package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.UUID
 
 @Entity
 data class Estatistica(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", nullable = false, unique = true)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "ID", nullable = false, unique = true, length = 36)
     private var id: UUID? = null,
     @Column(length = 10, nullable = true)
     var kanji: String = "",

@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.repository
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
-import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
+import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
 import br.com.fenix.processatexto.mock.MockFilaSql
 import br.com.fenix.processatexto.model.entities.FilaSQL
 import br.com.fenix.processatexto.model.enums.Conexao
@@ -18,7 +18,7 @@ import java.util.*
 class FilaSqlRepositoryTest : RepositoryTestBase<UUID?, FilaSQL>() {
 
     @InjectMocks
-    override var repository: RepositoryJpa<UUID?, FilaSQL> = object : RepositoryJpaImpl<UUID?, FilaSQL>(Conexao.DECKSUBTITLE) {}
+    override var repository: RepositoryJpa<UUID?, FilaSQL> = object : RepositoryJpaBase<UUID?, FilaSQL>(Conexao.DECKSUBTITLE) {}
 
     @BeforeEach
     @Throws(Exception::class)

@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.database
 
-import br.com.fenix.processatexto.database.jpa.implement.RepositoryJpaImpl
+import br.com.fenix.processatexto.database.jpa.implement.RepositoryDadosConexaoJpa
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.exceptions.DatabaseException
@@ -25,7 +25,7 @@ object JpaFactory {
 
     private var default: EntityManagerFactory = buildDefault()
     private val external: MutableMap<Conexao, EntityManagerFactory> = mutableMapOf()
-    private var repository = RepositoryJpaImpl<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO)
+    private var repository = RepositoryDadosConexaoJpa(Conexao.PROCESSA_TEXTO)
 
     private fun buildFactory(dados: DadosConexao): EntityManagerFactory {
         FlywayFactory.migrate(dados)
@@ -62,7 +62,7 @@ object JpaFactory {
 
         default.close()
         default = buildDefault()
-        repository = RepositoryJpaImpl(Conexao.PROCESSA_TEXTO)
+        repository = RepositoryDadosConexaoJpa(Conexao.PROCESSA_TEXTO)
 
         for (key in external.keys)
             external[key]?.close()
