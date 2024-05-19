@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Conexao
 import org.junit.jupiter.api.Assertions.*
 import java.util.*
+import kotlin.random.Random
 
 
 class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() {
@@ -19,7 +20,7 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
         val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica" + "---"
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel" + "---"
         return Vocabulario(
-            lastId, "vocabulario" + "---", formaBasica, "leitura" + "---", leituraNovel,
+            lastId, "vocabulario" + Random.nextInt().toString() + "---", formaBasica, "leitura" + "---", leituraNovel,
             ingles, "portugues" + "---"
         )
     }
@@ -29,7 +30,7 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
         val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica"
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel"
         return Vocabulario(
-            id, "vocabulario", formaBasica, "leitura", leituraNovel, ingles, "portugues"
+            id, "vocabulario" + Random.nextInt().toString(), formaBasica, "leitura", leituraNovel, ingles, "portugues"
         )
     }
 

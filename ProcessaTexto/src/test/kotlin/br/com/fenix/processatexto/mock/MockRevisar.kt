@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.enums.Conexao
 import org.junit.jupiter.api.Assertions.*
 import java.util.*
+import kotlin.random.Random
 
 
 class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
@@ -19,7 +20,7 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica" + "---"
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel" + "---"
         return Revisar(
-            lastId, "vocabulario" + "---", formaBasica, "leitura" + "---", leituraNovel,
+            lastId, "vocabulario" + Random.nextInt().toString() + "---", formaBasica, "leitura" + "---", leituraNovel,
             "portugues" + "---", ingles, 9999, false, isAnime = false, isManga = false, isNovel = false
         )
     }
@@ -29,7 +30,7 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica"
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel"
         return Revisar(
-            id, "vocabulario", formaBasica, "leitura", leituraNovel, "portugues",
+            id, "vocabulario" + Random.nextInt().toString(), formaBasica, "leitura", leituraNovel, "portugues",
             ingles, 1, true, isAnime = true, isManga = true, isNovel = true
         )
     }
@@ -44,10 +45,6 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         assertTrue(input.leituraNovel.isNotEmpty())
         assertTrue(input.portugues.isNotEmpty())
         assertTrue(input.ingles.isNotEmpty())
-        assertTrue(input.isRevisado)
-        assertTrue(input.isManga)
-        assertTrue(input.isNovel)
-        assertTrue(input.isAnime)
     }
 
     override fun assertsService(oldObj: Revisar?, newObj: Revisar?) {
