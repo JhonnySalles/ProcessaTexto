@@ -53,5 +53,6 @@ module br.com.fenix.processatexto {
     opens br.com.fenix.processatexto.model.entities.mangaextractor to org.hibernate.orm.core;
     opens br.com.fenix.processatexto.model.entities.novelextractor to org.hibernate.orm.core;
     opens br.com.fenix.processatexto.model.entities.processatexto to org.hibernate.orm.core;
+    opens br.com.fenix.processatexto.model.entities.processatexto.japones to org.hibernate.orm.core;
     opens br.com.fenix.processatexto.model.entities.subtitle to org.hibernate.orm.core;
 }

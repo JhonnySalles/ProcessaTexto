@@ -113,7 +113,7 @@ class TraduzirController : Initializable {
             btnKanshudo.isDisable = true
 
             val update: List<Revisar> = tbVocabulario.items.stream()
-                .filter { revisar -> revisar.revisado.isSelected }
+                .filter { revisar -> revisar.isRevisado }
                 .collect(Collectors.toList())
 
             // List<Vocabulario> salvar = update.stream().map(revisar ->
@@ -260,7 +260,7 @@ class TraduzirController : Initializable {
                                 TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), i, lista.size.toLong(), Type.NORMAL)
                         }
 
-                        if (!item.revisado.isSelected) {
+                        if (!item.isRevisado) {
                             if (item.ingles.isEmpty()) {
                                 item.ingles = getSignificado(item.vocabulario)
 
@@ -286,7 +286,7 @@ class TraduzirController : Initializable {
                                 }
                             }
 
-                            item.revisado.isSelected = true
+                            item.isRevisado = true
                         }
                         if (desativar)
                             break
@@ -431,7 +431,7 @@ class TraduzirController : Initializable {
         tcIngles.setOnEditCommit { e ->
             e.tableView.items[e.tablePosition.row].ingles = e.newValue.trim()
             if (e.newValue.trim().isNotEmpty()) {
-                e.tableView.items[e.tablePosition.row].revisado.isSelected = true
+                e.tableView.items[e.tablePosition.row].isRevisado = true
                 if (e.tableView.items[e.tablePosition.row].portugues.isEmpty()) {
                     try {
                         e.tableView.items[e.tablePosition.row].portugues = Utils.normalize(
@@ -455,7 +455,7 @@ class TraduzirController : Initializable {
             e.tableView.items[e.tablePosition.row].portugues = e.newValue.trim()
 
             if (e.newValue.trim().isNotEmpty())
-                e.tableView.items[e.tablePosition.row].revisado.isSelected = true
+                e.tableView.items[e.tablePosition.row].isRevisado = true
 
             tbVocabulario.requestFocus()
         }

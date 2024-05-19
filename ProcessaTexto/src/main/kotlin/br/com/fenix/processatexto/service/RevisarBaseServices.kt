@@ -22,7 +22,7 @@ abstract class RevisarBaseServices {
             revisar.ingles,
             revisar.leitura,
             revisar.leituraNovel,
-            revisar.revisado.isSelected
+            revisar.isRevisado
         )
         for (dao in externos)
             dao.update(vocabulario)

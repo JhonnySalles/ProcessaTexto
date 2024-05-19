@@ -23,7 +23,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
         private const val INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles, revisado, isAnime, isManga, isNovel) VALUES (?,?,?,?,?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE revisar SET forma_basica = ?, leitura = ?, leitura_novel = ?, portugues = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ?, isNovel = ? WHERE vocabulario = ?;"
         private const val DELETE = "DELETE FROM revisar WHERE vocabulario = ?;"
-        private const val SELECT = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles, revisado, isAnime, isManga, isNovel FROM revisar "
+        private const val SELECT = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles, aparece, revisado, isAnime, isManga, isNovel FROM revisar "
         private const val SELECT_FORMA = SELECT + "WHERE vocabulario = ? OR forma_basica = ?;"
         private const val SELECT_PALAVRA = SELECT + "WHERE vocabulario = ?;"
         private const val SELECT_ID = SELECT + "WHERE id = ?;"
@@ -56,7 +56,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
             st.setString(++index, obj.leituraNovel)
             st.setString(++index, obj.portugues)
             st.setString(++index, obj.ingles)
-            st.setBoolean(++index, obj.revisado.isSelected)
+            st.setBoolean(++index, obj.isRevisado)
             st.setBoolean(++index, obj.isAnime)
             st.setBoolean(++index, obj.isManga)
             st.setBoolean(++index, obj.isNovel)
@@ -83,7 +83,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
             st.setString(++index, obj.leituraNovel)
             st.setString(++index, obj.portugues)
             st.setString(++index, obj.ingles)
-            st.setBoolean(++index, obj.revisado.isSelected)
+            st.setBoolean(++index, obj.isRevisado)
             st.setBoolean(++index, obj.isAnime)
             st.setBoolean(++index, obj.isManga)
             st.setBoolean(++index, obj.isNovel)
@@ -153,7 +153,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             } else
@@ -180,7 +180,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             } else
@@ -207,7 +207,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             } else
@@ -234,7 +234,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             }
@@ -261,7 +261,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             list
@@ -365,7 +365,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             else
@@ -394,7 +394,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
                         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-                        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+                        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
             list
@@ -454,7 +454,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
     override fun toEntity(rs: ResultSet): Revisar = Revisar(
         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-        rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
     )
 
 }

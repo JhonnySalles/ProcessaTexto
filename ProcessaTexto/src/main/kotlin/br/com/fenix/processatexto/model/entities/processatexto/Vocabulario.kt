@@ -19,18 +19,20 @@ open class Vocabulario(
     @Column(name = "ID", nullable = false, unique = true, length = 36)
     private var id: UUID? = null,
     @Column(length = 250, nullable = false, unique = true)
-    @Expose var vocabulario: String = "",
+    @Expose open var vocabulario: String = "",
     @Column(name = "forma_basica", length = 250, nullable = true)
-    var formaBasica: String = "",
+    open var formaBasica: String = "",
     @Column(length = 250, nullable = true)
-    @Expose var leitura: String = "",
+    @Expose open var leitura: String = "",
     @Column(name = "leitura_novel", length = 250, nullable = true)
-    var leituraNovel: String = "",
+    open var leituraNovel: String = "",
     @Column(nullable = true)
-    @Expose var ingles: String = "",
+    @Expose open var ingles: String = "",
     @Column(nullable = true)
-    @Expose var portugues: String = ""
+    @Expose open var portugues: String = ""
 ) : EntityBase<UUID?, Vocabulario>() {
+
+    @Transient
     var sincronizacao: String = ""
 
     constructor(vocabulario: String) : this(null, vocabulario)
@@ -72,7 +74,7 @@ open class Vocabulario(
 
     override fun create(id: UUID?): Vocabulario = Vocabulario(id)
 
-    fun setId(id: UUID?) {
+    open fun setId(id: UUID?) {
         this.id = id
     }
 

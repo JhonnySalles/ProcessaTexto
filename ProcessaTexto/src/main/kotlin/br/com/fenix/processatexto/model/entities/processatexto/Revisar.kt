@@ -5,7 +5,10 @@ import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import javafx.beans.value.ChangeListener
 import javafx.scene.control.CheckBox
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.*
 
 
@@ -13,6 +16,7 @@ import java.util.*
 data class Revisar(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false)
     private var id: UUID? = null,
     @Column(length = 250, nullable = false, unique = true)
@@ -27,17 +31,42 @@ data class Revisar(
     var portugues: String = "",
     @Column(nullable = true)
     var ingles: String = "",
-    @Column(nullable = true)
+    @Column
+    var aparece: Int = 0,
+    @Transient
+    private var _isRevisado: Boolean = false,
+    @Column
     var isAnime: Boolean = false,
-    @Column(nullable = true)
+    @Column
     var isManga: Boolean = false,
-    @Column(nullable = true)
-    var isNovel: Boolean = false,
-    val revisado: CheckBox = CheckBox(),
+    @Column
+    var isNovel: Boolean = false
 ) : EntityBase<UUID?, Revisar>() {
 
+    @Transient
+    val revisado: CheckBox = CheckBox()
+
+    @Transient
+    private lateinit var listener: ChangeListener<Boolean>
+
+    @Column(name = "revisado")
+    var isRevisado: Boolean = _isRevisado
+        set(value) {
+            revisado.isSelected = isRevisado
+            field = value
+        }
+
     init {
-        revisado.isSelected = false
+        revisado.isSelected = isRevisado
+        listener = ChangeListener<Boolean> { _, _, newValue ->
+            try {
+                revisado.selectedProperty().removeListener(listener)
+                isRevisado = newValue
+            } finally {
+                revisado.selectedProperty().addListener(listener)
+            }
+        }
+        revisado.selectedProperty().addListener(listener)
     }
 
     constructor(vocabulario: String) : this(null, vocabulario)
@@ -52,19 +81,12 @@ data class Revisar(
     }
 
     constructor(vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String, revisado: Boolean, isAnime: Boolean, isManga: Boolean, isNovel: Boolean) :
-            this(null, vocabulario, formaBasica, leitura, leituraNovel, "", "", isAnime, isManga, isNovel) {
+            this(null, vocabulario, formaBasica, leitura, leituraNovel, "", "", 0, revisado, isAnime, isManga, isNovel) {
         this.revisado.isSelected = revisado
     }
 
     constructor(vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String, portugues: String, ingles: String) :
             this(null, vocabulario, formaBasica, leitura, leituraNovel, portugues, ingles) {
-    }
-
-    constructor(
-        id: UUID?, vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String, portugues: String, ingles: String,
-        revisado: Boolean, isAnime: Boolean, isManga: Boolean, isNovel: Boolean,
-    ) : this(id, vocabulario, formaBasica, leitura, leituraNovel, portugues, ingles, isAnime, isManga, isNovel) {
-        this.revisado.isSelected = revisado
     }
 
     override fun getId(): UUID? = id
