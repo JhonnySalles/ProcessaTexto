@@ -8,6 +8,8 @@ import jakarta.persistence.Id
 import javafx.scene.control.CheckBox
 import java.util.*
 
+
+@jakarta.persistence.Entity
 data class Revisar(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

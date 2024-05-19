@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.mock
 
-import br.com.fenix.processatexto.model.entities.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.enums.Language
 import org.junit.jupiter.api.Assertions.*
 import java.util.*

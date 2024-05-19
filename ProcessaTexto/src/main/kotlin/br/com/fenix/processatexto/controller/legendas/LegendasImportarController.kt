@@ -5,7 +5,7 @@ import br.com.fenix.processatexto.components.CheckBoxTableCellCustom
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
-import br.com.fenix.processatexto.model.entities.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.ProcessarLegendas
 import br.com.fenix.processatexto.service.LegendasServices
@@ -285,8 +285,10 @@ class LegendasImportarController : Initializable, BaseController {
 
                                     delete = "UPDATE $schema.$base SET Vocabulario = NULL WHERE Vocabulario = '';"
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(FilaSQL("", "", delete, linguagemFilaSql,
-                                            isExporta = false, isLimpeza = true))
+                                        services.insertOrUpdateFila(
+                                            FilaSQL("", "", delete, linguagemFilaSql,
+                                            isExporta = false, isLimpeza = true)
+                                        )
                                 }
 
                                 val pastaMidia = File(arquivo.arquivo.absolutePath.substring(0, arquivo.arquivo.absolutePath.lastIndexOf(".tsv")) + ".media")

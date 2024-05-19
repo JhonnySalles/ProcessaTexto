@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.model.entities
+package br.com.fenix.processatexto.util
 
 data class Triple<A, B, C>(val first: A, val second: B, val third: C) {
     override fun equals(other: Any?): Boolean {

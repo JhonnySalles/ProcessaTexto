@@ -4,7 +4,7 @@ import br.com.fenix.processatexto.Run
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
-import br.com.fenix.processatexto.model.entities.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import br.com.fenix.processatexto.model.enums.Dicionario
 import br.com.fenix.processatexto.model.enums.Language

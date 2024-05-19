@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes
 import java.util.*
 
 
+@jakarta.persistence.Entity
 open class Vocabulario(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

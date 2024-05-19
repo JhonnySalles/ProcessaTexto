@@ -1,7 +1,7 @@
 package br.com.fenix.processatexto.processar.kanjiStatics
 
 import br.com.fenix.processatexto.components.notification.Notificacoes
-import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Notificacao
 import br.com.fenix.processatexto.service.EstatisticaServices
 import javafx.stage.FileChooser

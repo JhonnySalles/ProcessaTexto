@@ -4,7 +4,7 @@ import br.com.fenix.processatexto.controller.EstatisticaController
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.EstatisticaDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
-import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import org.slf4j.LoggerFactory

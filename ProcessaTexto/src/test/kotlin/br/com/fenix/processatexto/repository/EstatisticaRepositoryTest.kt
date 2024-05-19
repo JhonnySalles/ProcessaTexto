@@ -3,7 +3,7 @@ package br.com.fenix.processatexto.repository
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
 import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
 import br.com.fenix.processatexto.mock.MockEstatistica
-import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith

@@ -3,7 +3,7 @@ package br.com.fenix.processatexto.controller
 import br.com.fenix.processatexto.components.animation.Animacao
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.service.EstatisticaServices
 import com.google.common.collect.Sets

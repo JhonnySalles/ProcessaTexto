@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.mock
 
-import br.com.fenix.processatexto.model.entities.processatexto.Estatistica
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import org.junit.jupiter.api.Assertions.*
 import java.util.*
 

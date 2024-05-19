@@ -3,7 +3,7 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
-import br.com.fenix.processatexto.model.entities.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Language

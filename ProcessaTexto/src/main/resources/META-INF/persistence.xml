@@ -3,6 +3,21 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
              version="2.2">
+
+    <persistence-unit name="default">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+
+            <property name="hibernate.hbm2ddl.auto" value="none" />
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="processa_texto">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
@@ -22,19 +37,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
-
-        <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
-            <property name="hibernate.show_sql" value="true" />
-            <property name="hibernate.format_sql" value="true" />
-
-            <property name="hibernate.hbm2ddl.auto" value="none" />
-        </properties>
-    </persistence-unit>
-    <persistence-unit name="default">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
-        <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
@@ -49,6 +52,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
@@ -62,7 +66,9 @@
     <persistence-unit name="texto_ingles">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Revisar</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Vocabulario</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
@@ -76,7 +82,9 @@
     <persistence-unit name="texto_japones">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Revisar</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Vocabulario</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
@@ -90,7 +98,7 @@
     <persistence-unit name="decksubtitle">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>br.com.fenix.processatexto.model.entities.DadosConexao</class>
+        <class>br.com.fenix.processatexto.model.entities.subtitle.FilaSQL</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />

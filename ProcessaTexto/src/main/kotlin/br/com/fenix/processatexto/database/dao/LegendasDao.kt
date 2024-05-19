@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.database.dao
 
-import br.com.fenix.processatexto.model.entities.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import java.sql.SQLException
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda

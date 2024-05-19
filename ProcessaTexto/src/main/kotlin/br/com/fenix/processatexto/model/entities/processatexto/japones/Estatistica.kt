@@ -1,10 +1,11 @@
-package br.com.fenix.processatexto.model.entities.processatexto
+package br.com.fenix.processatexto.model.entities.processatexto.japones
 
 import br.com.fenix.processatexto.model.entities.EntityBase
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.UUID
+
 
 @Entity
 data class Estatistica(

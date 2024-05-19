@@ -1,5 +1,6 @@
-package br.com.fenix.processatexto.model.entities
+package br.com.fenix.processatexto.model.entities.subtitle
 
+import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.enums.Language
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
