@@ -120,9 +120,9 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.arquivo)
             st.setBoolean(++index, obj.processado)
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
-            insertVocabulario(base, obj.id, null, null, obj.vocabularios)
+            insertVocabulario(base, obj.getId(), null, null, obj.vocabularios)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
@@ -151,9 +151,9 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.lingua.sigla)
             st.setBoolean(++index, obj.isExtra)
             st.setString(++index, obj.scan)
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
-            insertVocabulario(base, null, obj.id, null, obj.vocabularios)
+            insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
@@ -183,9 +183,9 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.lingua.sigla)
             st.setBoolean(++index, obj.isExtra)
             st.setString(++index, obj.scan)
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
-            insertVocabulario(base, null, obj.id, null, obj.vocabularios)
+            insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
@@ -281,9 +281,9 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.nomePagina)
             st.setInt(++index, obj.numero)
             st.setString(++index, obj.hash)
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
-            insertVocabulario(base, null, null, obj.id, obj.vocabularios)
+            insertVocabulario(base, null, null, obj.getId(), obj.vocabularios)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
@@ -312,7 +312,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setInt(++index, obj.y1)
             st.setInt(++index, obj.x2)
             st.setInt(++index, obj.y2)
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
@@ -344,7 +344,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             val baos = ByteArrayOutputStream()
             ImageIO.write(obj.imagem, obj.extenssao, baos)
             st.setBinaryStream(++index, ByteArrayInputStream(baos.toByteArray()))
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
@@ -369,7 +369,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(String.format(UPDATE_VOLUMES_CANCEL, base))
-            st.setString(1, obj.id.toString())
+            st.setString(1, obj.getId().toString())
             st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -1007,8 +1007,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var stTexto: PreparedStatement? = null
         try {
             var where = "WHERE "
-            where += if (obj.id != null)
-                " v.id = " + '"' + obj.id.toString() + '"'
+            where += if (obj.getId() != null)
+                " v.id = " + '"' + obj.getId().toString() + '"'
             else
                 " v.manga = '" + obj.manga + "' AND v.volume = " + obj.volume.toString() + " AND v.linguagem = '" + obj.lingua.sigla + "'"
             
@@ -1060,7 +1060,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var stPagina: PreparedStatement? = null
         var stTexto: PreparedStatement? = null
         try {
-            val where = "WHERE c.id = '" + obj.id.toString() + "'"
+            val where = "WHERE c.id = '" + obj.getId().toString() + "'"
             
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where))
             stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where))
@@ -1101,7 +1101,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var stPagina: PreparedStatement? = null
         var stTexto: PreparedStatement? = null
         try {
-            val where = "WHERE p.id = '" + obj.id.toString() + "'"
+            val where = "WHERE p.id = '" + obj.getId().toString() + "'"
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where))
             stPagina = conn.prepareStatement(String.format(DELETE_PAGINAS, base, base, base, where))
             
@@ -1136,7 +1136,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun deleteTexto(base: String, obj: MangaTexto) {
         var stTexto: PreparedStatement? = null
         try {
-            val where = "WHERE t.id = '" + obj.id.toString() + "'"
+            val where = "WHERE t.id = '" + obj.getId().toString() + "'"
             stTexto = conn.prepareStatement(String.format(DELETE_TEXTOS, base, base, base, base, where))
 
             conn.autoCommit = false
@@ -1167,7 +1167,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun deleteCapa(base: String, obj: MangaCapa) {
         var stCapa: PreparedStatement? = null
         try {
-            val where = "WHERE c.id = '" + obj.id.toString() + "'"
+            val where = "WHERE c.id = '" + obj.getId().toString() + "'"
             stCapa = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, where))
             conn.autoCommit = false
             conn.beginRequest()
@@ -1200,7 +1200,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(INSERT_VOLUMES, base), Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, obj.manga)
             st.setInt(++index, obj.volume!!)
             st.setString(++index, obj.lingua.sigla)
@@ -1212,8 +1212,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 LOGGER.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
-                insertVocabulario(base, obj.id, null, null, obj.vocabularios)
-                obj.id!!
+                insertVocabulario(base, obj.getId(), null, null, obj.vocabularios)
+                obj.getId()!!
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -1232,7 +1232,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(INSERT_CAPITULOS, base), Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, idVolume.toString())
             st.setString(++index, obj.manga)
             st.setInt(++index, obj.volume!!)
@@ -1247,8 +1247,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 LOGGER.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
-                insertVocabulario(base, null, obj.id, null, obj.vocabularios)
-                obj.id!!
+                insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
+                obj.getId()!!
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -1267,7 +1267,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(INSERT_PAGINAS, base), Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, idCapitulo.toString())
             st.setString(++index, obj.nomePagina)
             st.setInt(++index, obj.numero)
@@ -1278,8 +1278,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 LOGGER.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
-                insertVocabulario(base, null, null, obj.id, obj.vocabularios)
-                obj.id!!
+                insertVocabulario(base, null, null, obj.getId(), obj.vocabularios)
+                obj.getId()!!
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -1298,7 +1298,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(INSERT_TEXTO, base), Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, idPagina.toString())
             st.setInt(++index, obj.sequencia)
             st.setString(++index, obj.texto)
@@ -1312,7 +1312,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 LOGGER.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
-                obj.id!!
+                obj.getId()!!
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -1335,7 +1335,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             
             st = conn.prepareStatement(String.format(INSERT_CAPA, base), Statement.RETURN_GENERATED_KEYS)
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, idVolume.toString())
             st.setString(++index, obj.manga)
             st.setInt(++index, obj.volume!!)
@@ -1352,7 +1352,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 LOGGER.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
-                obj.id!!
+                obj.getId()!!
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())

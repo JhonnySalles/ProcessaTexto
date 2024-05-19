@@ -42,6 +42,10 @@ class Run : Application() {
         PRIMARY_STAGE.onCloseRequest = EventHandler { exitProcess(0) }
     }
 
+    fun main(args: Array<String>) {
+        launch(*args)
+    }
+
     override fun stop() {
         JdbcFactory.closeConnection()
     }
@@ -49,10 +53,6 @@ class Run : Application() {
     companion object {
         private lateinit var MAIN_SCENE: Scene
         private lateinit var PRIMARY_STAGE: Stage
-
-        fun main(args: Array<String>) {
-            launch(*args)
-        }
 
         fun getMainScene(): Scene {
             return MAIN_SCENE
@@ -62,4 +62,5 @@ class Run : Application() {
             return PRIMARY_STAGE
         }
     }
+
 }

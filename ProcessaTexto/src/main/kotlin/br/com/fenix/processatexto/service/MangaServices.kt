@@ -71,15 +71,15 @@ class MangaServices {
 
     @Throws(SQLException::class)
     fun updateVocabularioVolume(base: String, volume: MangaVolume) {
-        insertVocabularios(base, volume.id!!, null, null, volume.vocabularios)
-        mangaDao!!.updateProcessado(base, volume.id!!)
+        insertVocabularios(base, volume.getId()!!, null, null, volume.vocabularios)
+        mangaDao!!.updateProcessado(base, volume.getId()!!)
     }
 
     @Throws(SQLException::class)
-    fun updateVocabularioCapitulo(base: String, capitulo: MangaCapitulo) = insertVocabularios(base, null, capitulo.id, null, capitulo.vocabularios)
+    fun updateVocabularioCapitulo(base: String, capitulo: MangaCapitulo) = insertVocabularios(base, null, capitulo.getId(), null, capitulo.vocabularios)
 
     @Throws(SQLException::class)
-    fun updateVocabularioPagina(base: String, pagina: MangaPagina) = insertVocabularios(base, null, null, pagina.id, pagina.vocabularios)
+    fun updateVocabularioPagina(base: String, pagina: MangaPagina) = insertVocabularios(base, null, null, pagina.getId(), pagina.vocabularios)
 
     @Throws(SQLException::class)
     fun insertVocabularios(base: String, idVolume: UUID?, idCapitulo: UUID?, idPagina: UUID?, vocabularios: Set<VocabularioExterno>) {
@@ -100,16 +100,16 @@ class MangaServices {
                     limpeza = false
                     mangaDao!!.deletarVocabulario(tabela.base)
                 }
-                if (volume.id == null)
-                    volume.id = mangaDao!!.insertVolume(tabela.base, volume)
+                if (volume.getId() == null)
+                    volume.setId(mangaDao!!.insertVolume(tabela.base, volume))
                 else if (volume.isAlterado) {
                     if (volume.isItemExcluido) {
-                        val aux: Optional<MangaVolume> = mangaDao!!.selectVolume(tabela.base, volume.id!!)
+                        val aux: Optional<MangaVolume> = mangaDao!!.selectVolume(tabela.base, volume.getId()!!)
                         if (aux.isPresent) {
                             aux.get().capitulos.forEach { anterior ->
                                 var existe = false
                                 for (atual in volume.capitulos)
-                                    if (atual.id == anterior.id) {
+                                    if (atual.getId() == anterior.getId()) {
                                         existe = true
                                         break
                                     }
@@ -130,12 +130,12 @@ class MangaServices {
                     for (capitulo in volume.capitulos)
                         if (capitulo.isAlterado) {
                             if (capitulo.isItemExcluido) {
-                                val aux: Optional<MangaCapitulo> = mangaDao!!.selectCapitulo(tabela.base, capitulo.id!!)
+                                val aux: Optional<MangaCapitulo> = mangaDao!!.selectCapitulo(tabela.base, capitulo.getId()!!)
                                 if (aux.isPresent) {
                                     aux.get().paginas.forEach { anterior ->
                                         var existe = false
                                         for (atual in capitulo.paginas)
-                                            if (atual.id == anterior.id) {
+                                            if (atual.getId() == anterior.getId()) {
                                                 existe = true
                                                 break
                                             }
@@ -150,12 +150,12 @@ class MangaServices {
                             }
                             for (pagina in capitulo.paginas)
                                 if (pagina.isItemExcluido) {
-                                    val aux: Optional<MangaPagina> = mangaDao!!.selectPagina(tabela.base, pagina.id!!)
+                                    val aux: Optional<MangaPagina> = mangaDao!!.selectPagina(tabela.base, pagina.getId()!!)
                                     if (aux.isPresent) {
                                         aux.get().textos.forEach { anterior ->
                                             var existe = false
                                             for (atual in pagina.textos)
-                                                if (atual.id == anterior.id) {
+                                                if (atual.getId() == anterior.getId()) {
                                                     existe = true
                                                     break
                                                 }
@@ -167,7 +167,7 @@ class MangaServices {
                                         }
                                     }
                                 }
-                            mangaDao!!.updateCapitulo(tabela.base, volume.id!!, capitulo)
+                            mangaDao!!.updateCapitulo(tabela.base, volume.getId()!!, capitulo)
                         }
             }
     }

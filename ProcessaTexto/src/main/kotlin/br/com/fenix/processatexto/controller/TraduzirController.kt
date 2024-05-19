@@ -34,7 +34,6 @@ import java.net.URL
 import java.sql.SQLException
 import java.util.*
 import java.util.stream.Collectors
-import kotlin.collections.ArrayList
 
 
 class TraduzirController : Initializable {
@@ -159,7 +158,7 @@ class TraduzirController : Initializable {
 
     @FXML
     private fun onBtnMarcarTodos() {
-        tbVocabulario.items.forEach { e -> e.revisado.selectedProperty().set(ckbMarcarTodos.isSelected) }
+        tbVocabulario.items.forEach { e -> e.isRevisado = ckbMarcarTodos.isSelected }
         tbVocabulario.refresh()
     }
 
@@ -435,12 +434,12 @@ class TraduzirController : Initializable {
                 if (e.tableView.items[e.tablePosition.row].portugues.isEmpty()) {
                     try {
                         e.tableView.items[e.tablePosition.row].portugues = Utils.normalize(
-                                ScriptGoogle.translate(
-                                    Language.ENGLISH.sigla,
-                                    Language.PORTUGUESE.sigla, e.newValue.trim(),
-                                    MenuPrincipalController.controller.contaGoogle
-                                )
+                            ScriptGoogle.translate(
+                                Language.ENGLISH.sigla,
+                                Language.PORTUGUESE.sigla, e.newValue.trim(),
+                                MenuPrincipalController.controller.contaGoogle
                             )
+                        )
 
                         tbVocabulario.refresh()
                     } catch (ex: IOException) {

@@ -84,7 +84,7 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
     }
 
     override fun mockEntity(id: UUID?): MangaVolume {
-        val input = ByteArrayInputStream(ByteArray(0))
+        val input = ByteArrayInputStream(ByteArray(1))
         val image: BufferedImage = ImageIO.read(input)
         val capa = MangaCapa(UUID.randomUUID(), "manga", 1, Language.PORTUGUESE, "arquivo", "extensao", image)
 
@@ -105,7 +105,7 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
 
     override fun assertsService(input: MangaVolume?) {
         assertNotNull(input)
-        assertNotNull(input!!.id)
+        assertNotNull(input!!.getId())
 
         assertTrue(input.manga.isNotEmpty())
         assertTrue(input.volume > 0)

@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.model.entities.mangaextractor
 
+import br.com.fenix.processatexto.model.entities.Entity
 import br.com.fenix.processatexto.model.entities.Manga
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
@@ -8,7 +9,7 @@ import java.util.*
 
 
 data class MangaCapitulo(
-    var id: UUID? = null,
+    private var id: UUID? = null,
     @Expose override var manga: String = "",
     @Expose override var volume: Int = 0,
     @Expose override var capitulo: Float = 0f,
@@ -18,7 +19,17 @@ data class MangaCapitulo(
     @Expose var isExtra: Boolean = false,
     @Expose var isRaw: Boolean = false,
     @Expose var vocabularios: MutableSet<VocabularioExterno> = mutableSetOf()
-) : Manga() {
+) : Manga(), Entity<UUID?, MangaCapitulo> {
+
+    override fun getId(): UUID? = id
+
+    fun setId(id: UUID?) {
+        this.id = id
+    }
+
+    override fun create(id: UUID?): MangaCapitulo {
+        TODO("Not yet implemented")
+    }
 
     fun addPaginas(pagina: MangaPagina) = paginas.add(pagina)
 

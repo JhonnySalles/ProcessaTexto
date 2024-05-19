@@ -33,8 +33,8 @@ data class Revisar(
     var ingles: String = "",
     @Column
     var aparece: Int = 0,
-    @Transient
-    private var _isRevisado: Boolean = false,
+    @Column(name = "revisado")
+    var isRevisado: Boolean = false,
     @Column
     var isAnime: Boolean = false,
     @Column
@@ -42,32 +42,6 @@ data class Revisar(
     @Column
     var isNovel: Boolean = false
 ) : EntityBase<UUID?, Revisar>() {
-
-    @Transient
-    val revisado: CheckBox = CheckBox()
-
-    @Transient
-    private lateinit var listener: ChangeListener<Boolean>
-
-    @Column(name = "revisado")
-    var isRevisado: Boolean = _isRevisado
-        set(value) {
-            revisado.isSelected = isRevisado
-            field = value
-        }
-
-    init {
-        revisado.isSelected = isRevisado
-        listener = ChangeListener<Boolean> { _, _, newValue ->
-            try {
-                revisado.selectedProperty().removeListener(listener)
-                isRevisado = newValue
-            } finally {
-                revisado.selectedProperty().addListener(listener)
-            }
-        }
-        revisado.selectedProperty().addListener(listener)
-    }
 
     constructor(vocabulario: String) : this(null, vocabulario)
 
@@ -77,12 +51,12 @@ data class Revisar(
         this.isAnime = isAnime
         this.isManga = isManga
         this.isNovel = isNovel
-        this.revisado.isSelected = revisado
+        this.isRevisado = revisado
     }
 
     constructor(vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String, revisado: Boolean, isAnime: Boolean, isManga: Boolean, isNovel: Boolean) :
             this(null, vocabulario, formaBasica, leitura, leituraNovel, "", "", 0, revisado, isAnime, isManga, isNovel) {
-        this.revisado.isSelected = revisado
+        this.isRevisado = revisado
     }
 
     constructor(vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String, portugues: String, ingles: String) :

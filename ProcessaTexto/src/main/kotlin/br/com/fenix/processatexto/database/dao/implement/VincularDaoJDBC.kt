@@ -134,7 +134,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isOriginalPaginaDupla)
 
             if (pagina.mangaPaginaOriginal != null)
-                st.setString(++index, pagina.mangaPaginaOriginal!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaOriginal!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -145,7 +145,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isVinculadoDireitaPaginaDupla)
 
             if (pagina.mangaPaginaDireita != null)
-                st.setString(++index, pagina.mangaPaginaDireita!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaDireita!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -156,7 +156,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isVinculadoEsquerdaPaginaDupla)
 
             if (pagina.mangaPaginaEsquerda != null)
-                st.setString(++index, pagina.mangaPaginaEsquerda!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaEsquerda!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -194,7 +194,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isVinculadoEsquerdaPaginaDupla)
 
             if (pagina.mangaPaginaEsquerda != null)
-                st.setString(++index, pagina.mangaPaginaEsquerda!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaEsquerda!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -228,10 +228,10 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setInt(++index, obj.volume)
             st.setString(++index, obj.nomeArquivoOriginal)
             st.setString(++index, obj.linguagemOriginal.sigla)
-            st.setString(++index, obj.volumeOriginal!!.id.toString())
+            st.setString(++index, obj.volumeOriginal!!.getId().toString())
             st.setString(++index, obj.nomeArquivoVinculado)
             st.setString(++index, obj.linguagemVinculado!!.sigla)
-            st.setString(++index, obj.volumeVinculado!!.id.toString())
+            st.setString(++index, obj.volumeVinculado!!.getId().toString())
             st.setString(++index, Utils.convertToString(obj.dataCriacao))
             st.setString(++index, Utils.convertToString(obj.ultimaAlteracao))
 
@@ -283,9 +283,9 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
         var pagina: MangaPagina? = null
         if (volume != null) {
             val capitulo = volume.capitulos.stream()
-                .filter { cp -> cp.paginas.stream().anyMatch { pg -> pg.id!!.compareTo(id) === 0 } }.findFirst()
+                .filter { cp -> cp.paginas.stream().anyMatch { pg -> pg.getId()!!.compareTo(id) === 0 } }.findFirst()
             if (capitulo.isPresent)
-                pagina = capitulo.get().paginas.stream().filter { pg -> pg.id!!.compareTo(id) === 0 }.findFirst()
+                pagina = capitulo.get().paginas.stream().filter { pg -> pg.getId()!!.compareTo(id) === 0 }.findFirst()
                     .get()
         }
         if (pagina == null)
@@ -665,7 +665,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isOriginalPaginaDupla)
 
             if (pagina.mangaPaginaOriginal != null)
-                st.setString(++index, pagina.mangaPaginaOriginal!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaOriginal!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -676,7 +676,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isVinculadoDireitaPaginaDupla)
 
             if (pagina.mangaPaginaDireita != null)
-                st.setString(++index, pagina.mangaPaginaDireita!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaDireita!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -687,7 +687,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isVinculadoEsquerdaPaginaDupla)
 
             if (pagina.mangaPaginaEsquerda != null)
-                st.setString(++index, pagina.mangaPaginaEsquerda!!.id.toString())
+                st.setString(++index, pagina.mangaPaginaEsquerda!!.getId().toString())
             else
                 st.setNString(++index, null)
 
@@ -727,10 +727,10 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setInt(++index, obj.volume)
             st.setString(++index, obj.nomeArquivoOriginal)
             st.setString(++index, obj.linguagemOriginal.sigla)
-            st.setString(++index, obj.volumeOriginal!!.id.toString())
+            st.setString(++index, obj.volumeOriginal!!.getId().toString())
             st.setString(++index, obj.nomeArquivoVinculado)
             st.setString(++index, obj.linguagemVinculado!!.sigla)
-            st.setString(++index, obj.volumeVinculado!!.id.toString())
+            st.setString(++index, obj.volumeVinculado!!.getId().toString())
             st.setString(++index, Utils.convertToString(obj.ultimaAlteracao))
             st.setString(++index, obj.getId().toString())
 

@@ -157,14 +157,14 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
         assertDoesNotThrow { service.updateVocabularioCapitulo(entity.base, entity.capitulos.first()) }
         assertDoesNotThrow { service.updateVocabularioPagina(entity.base, entity.capitulos.first().paginas.first()) }
 
-        assertDoesNotThrow { service.insertVocabularios(entity.base, entity.id, null, null, entity.vocabularios) }
-        assertDoesNotThrow { service.insertVocabularios(entity.base, null, entity.capitulos.first().id, null, entity.capitulos.first().vocabularios) }
+        assertDoesNotThrow { service.insertVocabularios(entity.base, entity.getId(), null, null, entity.vocabularios) }
+        assertDoesNotThrow { service.insertVocabularios(entity.base, null, entity.capitulos.first().getId(), null, entity.capitulos.first().vocabularios) }
         assertDoesNotThrow {
             service.insertVocabularios(
                 entity.base,
                 null,
                 null,
-                entity.capitulos.first().paginas.first().id,
+                entity.capitulos.first().paginas.first().getId(),
                 entity.capitulos.first().paginas.first().vocabularios
             )
         }

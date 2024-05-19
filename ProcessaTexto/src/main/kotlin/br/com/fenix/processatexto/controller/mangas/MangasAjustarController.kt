@@ -431,11 +431,11 @@ class MangasAjustarController : Initializable {
                             )
                         )
                     destino.addCapitulos(capitulo)
-                    if (destino.id == null)
+                    if (destino.getId() == null)
                         tabela.volumes.add(destino)
                     break
                 }
-            if (destino!!.id != null) {
+            if (destino!!.getId() != null) {
                 for (language in treeLanguage.children) {
                     if (language.value.volumeDestino!! == volume) {
                         treeItem.parent.children.remove(treeItem)
@@ -453,7 +453,7 @@ class MangasAjustarController : Initializable {
                 val itmVolume: TreeItem<Manga> = TreeItem<Manga>(destino)
                 itmVolume.children.add(treeItem)
                 treeLanguage.children.add(itmVolume)
-                destino.id = null
+                destino.setId(null)
             }
 
             setVolumesChildreen(treeItem, volume)

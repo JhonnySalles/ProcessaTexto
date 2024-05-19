@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.model.entities.mangaextractor
 
+import br.com.fenix.processatexto.model.entities.Entity
 import br.com.fenix.processatexto.model.entities.Manga
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import com.google.gson.annotations.Expose
@@ -7,14 +8,24 @@ import java.util.*
 
 
 data class MangaPagina(
-    var id: UUID? = null,
+    private var id: UUID? = null,
     @Expose override var nomePagina: String = "",
     @Expose var numero: Int = 0,
     @Expose var hash: String = "",
     @Expose var textos: MutableList<MangaTexto> = mutableListOf(),
     @Expose var vocabularios: MutableSet<VocabularioExterno> = mutableSetOf(),
     @Expose var sequencia: Int = 0
-) : Manga() {
+) : Manga(), Entity<UUID?, MangaPagina> {
+
+    override fun getId(): UUID? = id
+
+    fun setId(id: UUID?) {
+        this.id = id
+    }
+
+    override fun create(id: UUID?): MangaPagina {
+        TODO("Not yet implemented")
+    }
 
     fun addTexto(texto: MangaTexto) = textos.add(texto)
 

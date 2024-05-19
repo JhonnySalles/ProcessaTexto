@@ -1,18 +1,30 @@
 package br.com.fenix.processatexto.model.entities.mangaextractor
 
+import br.com.fenix.processatexto.model.entities.Entity
 import br.com.fenix.processatexto.model.entities.Manga
 import com.google.gson.annotations.Expose
 import java.util.*
 
+
 data class MangaTexto(
-    var id: UUID? = null,
+    private var id: UUID? = null,
     @Expose override var texto: String = "",
     @Expose var sequencia: Int = 0,
     @Expose var x1: Int = 0,
     @Expose var y1: Int = 0,
     @Expose var x2: Int = 0,
     @Expose var y2: Int = 0
-) : Manga() {
+) : Manga(), Entity<UUID?, MangaTexto> {
+
+    override fun getId(): UUID? = id
+
+    fun setId(id: UUID?) {
+        this.id = id
+    }
+
+    override fun create(id: UUID?): MangaTexto {
+        TODO("Not yet implemented")
+    }
 
     @Override
     override fun toString(): String {
