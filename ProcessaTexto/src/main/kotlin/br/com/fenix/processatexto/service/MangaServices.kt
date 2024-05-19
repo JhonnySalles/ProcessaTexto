@@ -23,12 +23,73 @@ class MangaServices {
     val tabelas: List<String> get() = mangaDao!!.tabelas
 
     @Throws(SQLException::class)
-    fun selectTabelas(todos: Boolean): List<MangaTabela> = mangaDao!!.selectTabelas(todos)
+    fun selectVolume(base: String, manga: String, volume: Int, linguagem: Language): Optional<MangaVolume> = mangaDao!!.selectVolume(base, manga, volume, linguagem)
+
+    @Throws(SQLException::class)
+    fun selectVolume(base: String, id: UUID): Optional<MangaVolume> = mangaDao!!.selectVolume(base, id)
+
+    @Throws(SQLException::class)
+    fun saveVolume(base: String, volumes: List<MangaVolume>) : List<MangaVolume> {
+        val saved = arrayListOf<MangaVolume>()
+        for (volume in volumes)
+            saved.add(saveVolume(base, volume))
+
+        return saved
+    }
+
+    @Throws(SQLException::class)
+    fun saveVolume(base: String, volume: MangaVolume): MangaVolume {
+        if (volume.getId() == null)
+            volume.setId(mangaDao!!.insertVolume(base, volume))
+        else
+            mangaDao!!.updateVolume(base, volume)
+
+        val idVolume = volume.getId()!!
+        for (capitulo in volume.capitulos) {
+            if (capitulo.getId() == null)
+                capitulo.setId(mangaDao.insertCapitulo(base, idVolume, capitulo))
+            else
+                mangaDao.updateCapitulo(base, idVolume, capitulo)
+            val idCapitulo: UUID = capitulo.getId()!!
+
+            for (pagina in capitulo.paginas) {
+                if (capitulo.getId() == null)
+                    pagina.setId(mangaDao.insertPagina(base, idCapitulo, pagina))
+                else
+                    mangaDao.updatePagina(base, pagina)
+                val idPagina: UUID = pagina.getId()!!
+
+                for (texto in pagina.textos) {
+                    if (texto.getId() == null)
+                        texto.setId(mangaDao.insertTexto(base, idPagina, texto))
+                    else
+                        mangaDao.updateTexto(base, texto)
+                }
+            }
+        }
+
+        if (volume.capa != null)
+            mangaDao.insertCapa(base, idVolume, volume.capa!!)
+
+        return volume
+    }
+
+    @Throws(SQLException::class)
+    fun deleteVolume(base: String, volumes: List<MangaVolume>) {
+        for (volume in volumes)
+            deleteVolume(base, volume)
+    }
+
+    @Throws(SQLException::class)
+    fun deleteVolume(base: String, volume: MangaVolume) = mangaDao!!.deleteVolume(base, volume)
 
     @Throws(SQLException::class)
     fun selectAll(base: String, manga: String, volume: Int, capitulo: Float, linguagem: Language?): List<MangaTabela> {
         return mangaDao!!.selectAll(base, manga, volume, capitulo, linguagem)
     }
+
+    @Throws(SQLException::class)
+    fun selectTabelas(todos: Boolean): List<MangaTabela> = mangaDao!!.selectTabelas(todos)
 
     @Throws(SQLException::class)
     fun selectTabelas(todos: Boolean, isLike: Boolean, base: String, linguagem: Language, manga: String): List<MangaTabela> {

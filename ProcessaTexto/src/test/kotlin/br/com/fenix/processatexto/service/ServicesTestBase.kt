@@ -32,13 +32,11 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
 
     abstract fun randomId(): ID
 
-    abstract fun save(entity: E): ID?
-    abstract fun update(entity: E): E
+    abstract fun save(entity: E): E
     abstract fun select(id: ID): E?
     abstract fun delete(entity: E)
 
     abstract fun saveAll(list: List<E>): List<E>
-    abstract fun updateAll(list: List<E>): List<E>
     abstract fun selectAll(): List<E>
     abstract fun deleteAll(list: List<E>)
 
@@ -55,7 +53,7 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @Order(1)
     open fun testeSave() {
         lastEntity = input.mockEntity(null)
-        lastId = save(lastEntity)
+        lastId = save(lastEntity).getId()
         assertNotNull(lastId)
     }
 
@@ -68,9 +66,9 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @Test
     @Order(3)
     open fun testeUpdate() {
-        val entity = input.updateEntity(lastEntity)
-        val saved = update(entity)
-        input.assertsService(entity, saved)
+        lastEntity = input.updateEntity(lastEntity)
+        val saved = save(lastEntity)
+        input.assertsService(lastEntity, saved)
     }
 
     @Test
@@ -104,7 +102,7 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @Order(7)
     open fun testeUpdateAll() {
         lastList = input.updateList(lastList)
-        val updated = updateAll(lastList)
+        val updated = saveAll(lastList)
         assertTrue(updated.isNotEmpty())
         valideList(lastList, updated)
     }

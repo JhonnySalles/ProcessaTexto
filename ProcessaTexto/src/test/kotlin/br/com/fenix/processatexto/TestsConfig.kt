@@ -7,8 +7,13 @@ import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import br.com.fenix.processatexto.util.configuration.Configuracao
+import org.mockito.Mockito
+import org.powermock.api.mockito.PowerMockito
 import org.slf4j.LoggerFactory
+import java.awt.image.BufferedImage
+import java.io.InputStream
 import java.sql.ResultSet
+import javax.imageio.ImageIO
 
 
 class TestsConfig {

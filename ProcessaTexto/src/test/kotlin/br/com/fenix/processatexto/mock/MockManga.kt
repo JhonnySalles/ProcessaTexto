@@ -12,6 +12,10 @@ import javax.imageio.ImageIO
 
 class MockManga : MockBase<UUID?, MangaVolume>() {
 
+    companion object {
+        val LINGUAGEM = Language.PORTUGUESE
+    }
+
     override fun mockEntity(): MangaVolume = mockEntity(null)
 
     override fun randomId(): UUID? = UUID.randomUUID()
@@ -84,9 +88,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
     }
 
     override fun mockEntity(id: UUID?): MangaVolume {
-        val input = ByteArrayInputStream(ByteArray(1))
-        val image: BufferedImage = ImageIO.read(input)
-        val capa = MangaCapa(UUID.randomUUID(), "manga", 1, Language.PORTUGUESE, "arquivo", "extensao", image)
+        val image = BufferedImage(600, 400, BufferedImage.TYPE_INT_RGB)
+        val capa = MangaCapa(UUID.randomUUID(), "manga", 1, LINGUAGEM, "arquivo", "extensao", image)
 
         val texto = MangaTexto(UUID.randomUUID(), "texto", 1, 1, 1, 2, 2)
 
@@ -94,11 +97,11 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         val pagina = MangaPagina(UUID.randomUUID(), "nome", 1, "hash_pagina", mutableListOf(texto), mutableSetOf(vocabulario))
 
         vocabulario = VocabularioExterno(UUID.randomUUID(), "vocabulario capitulo", "forma_basica capitulo", "ingles capitulo", "leitura capitulo", "leitura_novel capitulo", true)
-        val capitulo = MangaCapitulo(UUID.randomUUID(), "manga", 1, 1f, Language.PORTUGUESE, "scan", true, true, mutableSetOf(vocabulario), mutableListOf(pagina))
+        val capitulo = MangaCapitulo(UUID.randomUUID(), "manga", 1, 1f, LINGUAGEM, "scan", true, true, mutableSetOf(vocabulario), mutableListOf(pagina))
 
         vocabulario = VocabularioExterno(UUID.randomUUID(), "vocabulario manga", "forma_basica manga", "ingles manga", "leitura manga", "leitura_novel manga", true)
         return MangaVolume(
-            UUID.randomUUID(), "manga", 1, Language.PORTUGUESE, "arquivo",
+            UUID.randomUUID(), "manga", 1, LINGUAGEM, "arquivo",
             mutableSetOf(vocabulario), mutableListOf(capitulo), capa
         )
     }

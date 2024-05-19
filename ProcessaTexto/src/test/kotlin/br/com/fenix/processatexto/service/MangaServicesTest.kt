@@ -3,6 +3,7 @@ package br.com.fenix.processatexto.service
 import br.com.fenix.processatexto.mock.MockManga
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaTabela
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
+import br.com.fenix.processatexto.model.enums.Language
 import javafx.collections.FXCollections
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -18,7 +19,13 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
 
     private val service = MangaServices()
 
-    private val TABELA = "tabela"
+    private val TABELA = "teste"
+
+    @BeforeAll
+    @Throws(Exception::class)
+    fun praparaTeste() {
+        service.createTabela(TABELA)
+    }
 
     @BeforeEach
     @Throws(Exception::class)
@@ -26,93 +33,24 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
         input = MockManga()
     }
 
-    override fun randomId(): UUID? {
-        TODO("Not yet implemented")
-    }
+    override fun randomId(): UUID? = UUID.randomUUID()
+
+    override fun select(id: UUID?): MangaVolume? = service.selectVolume(TABELA, id!!).orElse(null)
+
+    override fun save(entity: MangaVolume): MangaVolume = service.saveVolume(TABELA, entity)
+
+
+    override fun delete(entity: MangaVolume) = service.deleteVolume(TABELA, entity)
 
     override fun selectAll(): List<MangaVolume> {
-        TODO("Not yet implemented")
+        val tabelas = service.selectAll(TABELA, "", 0,0f, MockManga.LINGUAGEM)
+        return tabelas[0].volumes
     }
 
-    override fun deleteAll(list: List<MangaVolume>) {
-        TODO("Not yet implemented")
-    }
+    override fun saveAll(list: List<MangaVolume>): List<MangaVolume> = service.saveVolume(TABELA, list)
 
-    override fun updateAll(list: List<MangaVolume>): List<MangaVolume> {
-        TODO("Not yet implemented")
-    }
+    override fun deleteAll(list: List<MangaVolume>) = service.deleteVolume(TABELA, list)
 
-    override fun saveAll(list: List<MangaVolume>): List<MangaVolume> {
-        TODO("Not yet implemented")
-    }
-
-    override fun delete(entity: MangaVolume) {
-        TODO("Not yet implemented")
-    }
-
-    override fun select(id: UUID?): MangaVolume? {
-        TODO("Not yet implemented")
-    }
-
-    override fun update(entity: MangaVolume): MangaVolume {
-        TODO("Not yet implemented")
-    }
-
-    override fun save(entity: MangaVolume): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    @Test
-    @Order(1)
-    override fun testeSave() {
-
-    }
-
-    @Test
-    @Order(2)
-    override fun testeSelect() {
-        val entity = input.mockEntity()
-        assertTrue(service.getManga(entity.base, entity.manga, entity.lingua, entity.volume).isPresent)
-        val list = service.selectAll(entity.base, entity.manga, entity.volume, entity.capitulo, entity.lingua)
-        assertTrue(list.isNotEmpty())
-    }
-
-
-    @Test
-    @Order(3)
-    override fun testeUpdate() {
-
-    }
-
-    @Test
-    @Order(4)
-    override fun testeDelete() {
-
-    }
-
-    @Test
-    @Order(5)
-    override fun testeSaveAll() {
-
-    }
-
-    @Test
-    @Order(6)
-    override fun testeSelectAll() {
-
-    }
-
-    @Test
-    @Order(7)
-    override fun testeUpdateAll() {
-
-    }
-
-    @Test
-    @Order(8)
-    override fun testeDeleteAll() {
-
-    }
 
     @Test
     @Order(9)

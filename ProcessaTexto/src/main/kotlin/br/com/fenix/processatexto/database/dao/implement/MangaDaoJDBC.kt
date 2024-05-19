@@ -42,19 +42,19 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
 
-        private const val UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = , volume = , linguagem = , arquivo = , is_processado =  WHERE id = "
-        private const val UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = , volume = , capitulo = , linguagem = , is_extra = , scan =  WHERE id = "
-        private const val UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = , manga = , volume = , capitulo = , linguagem = , is_extra = , scan =  WHERE id = "
-        private const val UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = , numero = , hash_pagina =  WHERE id = "
-        private const val UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = , texto = , posicao_x1 = , posicao_y1 = , posicao_x2 = , posicao_y2 =  WHERE id = "
-        private const val UPDATE_CAPA = "UPDATE %s_capas SET manga = , volume = , linguagem = , arquivo = , extensao = , capa =  WHERE id = "
-        private const val UPDATE_VOLUMES_CANCEL = "UPDATE %s_volumes SET is_processado = 0 WHERE id = "
+        private const val UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, is_processado = ? WHERE id = ?"
+        private const val UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ? WHERE id = ?"
+        private const val UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = ?, manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ? WHERE id = ?"
+        private const val UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ? WHERE id = ?"
+        private const val UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?"
+        private const val UPDATE_CAPA = "UPDATE %s_capas SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, extensao = ?, capa = ? WHERE id = ?"
+        private const val UPDATE_VOLUMES_CANCEL = "UPDATE %s_volumes SET is_processado = 0 WHERE id = ?"
 
-        private const val INSERT_VOLUMES = "INSERT INTO %s_volumes (id, manga, volume, linguagem, arquivo, is_processado) VALUES (,,,,,)"
-        private const val INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw) VALUES (,,,,,,,,)"
-        private const val INSERT_PAGINAS = "INSERT INTO %s_paginas (id, id_capitulo, nome, numero, hash_pagina) VALUES (,,,,)"
-        private const val INSERT_TEXTO = "INSERT INTO %s_textos (id, id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (,,,,,,,)"
-        private const val INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, manga, volume, linguagem, arquivo, extensao, capa) VALUES (,,,,,,,)"
+        private const val INSERT_VOLUMES = "INSERT INTO %s_volumes (id, manga, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?)"
+        private const val INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, manga, volume, capitulo, linguagem, scan, is_extra, is_raw) VALUES (?,?,?,?,?,?,?,?,?)"
+        private const val INSERT_PAGINAS = "INSERT INTO %s_paginas (id, id_capitulo, nome, numero, hash_pagina) VALUES (?,?,?,?,?)"
+        private const val INSERT_TEXTO = "INSERT INTO %s_textos (id, id_pagina, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2) VALUES (?,?,?,?,?,?,?,?)"
+        private const val INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, manga, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)"
 
         private const val DELETE_VOLUMES = "DELETE v FROM %s_volumes AS v %s"
         private const val DELETE_CAPITULOS = "DELETE c FROM %s_capitulos AS c INNER JOIN %s_volumes AS v ON v.id = c.id_volume %s"
@@ -66,17 +66,16 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
         private const val SELECT_VOLUMES = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL %s WHERE %s GROUP BY VOL.id ORDER BY VOL.manga, VOL.linguagem, VOL.volume"
         private const val SELECT_CAPITULOS = ("SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw "
-                + "FROM %s_capitulos CAP %s WHERE id_volume =  AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume, CAP.is_extra, CAP.capitulo")
-        private const val SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina FROM %s_paginas WHERE id_capitulo =  AND %s "
-        private const val SELECT_TEXTOS = "SELECT id, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2 FROM %s_textos WHERE id_pagina =  "
-        private const val SELECT_CAPAS = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id_volume =  "
-        private const val FIND_VOLUME =
-            "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE manga =  AND volume =  AND linguagem =  LIMIT 1"
-        private const val SELECT_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE id = "
+                + "FROM %s_capitulos CAP %s WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume, CAP.is_extra, CAP.capitulo")
+        private const val SELECT_PAGINAS = "SELECT id, nome, numero, hash_pagina FROM %s_paginas WHERE id_capitulo = ? AND %s "
+        private const val SELECT_TEXTOS = "SELECT id, sequencia, texto, posicao_x1, posicao_y1, posicao_x2, posicao_y2 FROM %s_textos WHERE id_pagina = ? "
+        private const val SELECT_CAPAS = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id_volume = ? "
+        private const val FIND_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE manga = ? AND volume = ? AND linguagem = ? LIMIT 1"
+        private const val SELECT_VOLUME = "SELECT VOL.id, VOL.manga, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?"
         private const val SELECT_CAPITULO = ("SELECT CAP.id, CAP.manga, CAP.volume, CAP.capitulo, CAP.linguagem, CAP.scan, CAP.is_extra, CAP.is_raw "
-                + "FROM %s_capitulos CAP WHERE id = ")
-        private const val SELECT_PAGINA = "SELECT id, nome, numero, hash_pagina FROM %s_paginas WHERE id = "
-        private const val SELECT_CAPA = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id =  "
+                + "FROM %s_capitulos CAP WHERE id = ?")
+        private const val SELECT_PAGINA = "SELECT id, nome, numero, hash_pagina FROM %s_paginas WHERE id = ?"
+        private const val SELECT_CAPA = "SELECT id, manga, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id = ?"
         private const val SELECT_TABELAS = ("SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
                 + "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
                 + "AND Table_Name LIKE '%%_volumes' AND %s GROUP BY Tabela ")
@@ -84,11 +83,11 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         private const val SELECT_LISTA_TABELAS = ("SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
                 + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
                 + " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ")
-        private const val DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ;"
+        private const val DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ?;"
         private const val INSERT_VOCABULARIO = ("INSERT INTO %s_vocabularios (%s, id_vocabulario) "
-                + " VALUES (,);")
+                + " VALUES (?,?);")
         private const val SELECT_VOCABUALARIO = "SELECT id_vocabulario FROM %s_vocabularios WHERE %s "
-        private const val UPDATE_PROCESSADO = "UPDATE %s_volumes SET is_processado = 1 WHERE id = "
+        private const val UPDATE_PROCESSADO = "UPDATE %s_volumes SET is_processado = 1 WHERE id = ?"
     }
 
     private val conn: Connection = JdbcFactory.getFactory(conexao)
