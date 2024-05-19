@@ -415,7 +415,7 @@ class MangasTraducaoController : Initializable {
     }
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {

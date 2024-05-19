@@ -536,7 +536,7 @@ class LegendasImportarController : Initializable, BaseController {
     private fun linkaCelulas() = editaColunas()
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         linkaCelulas()
         btnProcessar.accessibleText = "PROCESSAR"
         Validadores.setComboBoxNotEmpty(cbLinguagemFilaSql, false)

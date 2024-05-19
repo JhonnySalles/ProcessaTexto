@@ -455,7 +455,7 @@ class RevisarController : Initializable {
     private var listenerCorrecao: ChangeListener<Boolean>? = null
     private var listenerReplace: ChangeListener<in String>? = null
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         cbLinguagem.items.addAll(Language.JAPANESE, Language.ENGLISH)
         cbLinguagem.selectionModel.selectFirst()
         cbLinguagem.setOnAction {

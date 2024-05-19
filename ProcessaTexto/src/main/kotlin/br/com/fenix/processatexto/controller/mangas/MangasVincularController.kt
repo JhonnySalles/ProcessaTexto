@@ -1591,7 +1591,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     }
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         Run.getPrimaryStage().setOnCloseRequest { onClose() }
         service.setListener(this)
         try {

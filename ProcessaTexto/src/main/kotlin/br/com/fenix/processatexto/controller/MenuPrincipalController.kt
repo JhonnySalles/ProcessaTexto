@@ -373,7 +373,7 @@ class MenuPrincipalController : Initializable {
         return this
     }
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         controller = this
         scpBarraProgress.managedProperty().bind(scpBarraProgress.visibleProperty())
         progressBarVisible(false)

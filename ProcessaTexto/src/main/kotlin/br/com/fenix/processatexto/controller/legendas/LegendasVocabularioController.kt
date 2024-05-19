@@ -608,7 +608,7 @@ class LegendasVocabularioController : Initializable, BaseController {
     private lateinit var exportaListenner: ChangeListener<Boolean>
     private lateinit var limpezaListenner: ChangeListener<Boolean>
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         cbLinguagem.items.addAll(Language.TODOS, Language.JAPANESE, Language.ENGLISH)
         cbLinguagem.selectionModel.selectFirst()
         linkaCelulas()

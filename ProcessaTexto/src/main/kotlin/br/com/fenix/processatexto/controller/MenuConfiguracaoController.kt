@@ -109,7 +109,7 @@ class MenuConfiguracaoController : Initializable {
     }
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         Validadores.setTextFieldNotEmpty(txtServer)
         Validadores.setTextFieldNotEmpty(txtPorta)
         Validadores.setTextFieldNotEmpty(txtDataBase)

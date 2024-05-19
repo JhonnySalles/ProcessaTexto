@@ -395,7 +395,7 @@ class MangasProcessarController : Initializable {
     }
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         cbLinguagem.items.addAll(Language.JAPANESE, Language.ENGLISH)
         cbLinguagem.selectionModel.selectFirst()
 

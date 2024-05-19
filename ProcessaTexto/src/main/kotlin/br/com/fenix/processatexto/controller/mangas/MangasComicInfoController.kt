@@ -684,7 +684,7 @@ class MangasComicInfoController : Initializable {
     }
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         ProcessaComicInfo.setPai(this)
         cbLinguagem.items.addAll(Language.PORTUGUESE, Language.ENGLISH, Language.JAPANESE)
         cbLinguagem.selectionModel.selectedItemProperty().addListener { _, _, newValue ->

@@ -25,7 +25,7 @@ object Menu {
             val scena = Scene(scPnTelaPrincipal) // Carrega a scena
             scena.fill = Color.BLACK
             primaryStage.scene = scena // Seta a cena principal
-            primaryStage.title = "Processar textos japonês"
+            primaryStage.title = "Processar textos"
             primaryStage.icons.add(Image(Menu::class.java.getResourceAsStream(FrasesAnkiController.iconLocate)))
             primaryStage.minWidth = 300.0
             primaryStage.minHeight = 200.0

@@ -414,7 +414,7 @@ open class FrasesAnkiController : Initializable {
         }
     }
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         linkaCelulas()
         configuraListenert()
         cbTipo.items.addAll(Tipo.values())

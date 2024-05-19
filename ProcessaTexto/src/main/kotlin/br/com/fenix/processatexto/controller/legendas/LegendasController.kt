@@ -30,7 +30,7 @@ class LegendasController : Initializable {
     
     val root: AnchorPane get() = apConteinerRoot
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         importarController.controllerPai = this
         processarController.controllerPai = this
         marcasController.controllerPai = this

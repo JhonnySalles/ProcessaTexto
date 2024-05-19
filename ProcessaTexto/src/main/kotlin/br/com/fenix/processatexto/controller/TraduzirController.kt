@@ -465,7 +465,7 @@ class TraduzirController : Initializable {
         editaColunas()
     }
 
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         txtQuantidadeRegistros.textProperty().addListener { _, oldValue, newValue ->
             if (newValue != null && !newValue.matches("\\d*".toRegex()))
                 txtQuantidadeRegistros.text = oldValue

@@ -83,7 +83,7 @@ class LegendasMarcasController : Initializable {
     }
 
     private val robot: Robot = Robot()
-    override fun initialize(arg0: URL, arg1: ResourceBundle) {
+    override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         txtAreaOriginal.focusedProperty().addListener { _, oldValue, _ -> if (oldValue) onBtnGerar() }
         txtPipe.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
     }
