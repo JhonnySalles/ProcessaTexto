@@ -23,15 +23,6 @@ CREATE TABLE revisar (
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8mb3;
 
-CREATE TABLE sincronizacao (
-    id          INT NOT NULL AUTO_INCREMENT,
-    conexao     enum ('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-    envio       datetime DEFAULT NULL,
-    recebimento datetime DEFAULT NULL,
-    PRIMARY KEY ( id, conexao )
-) ENGINE = INNODB
-  DEFAULT CHARSET = utf8mb3;
-
 CREATE TABLE valido (
     id          VARCHAR(36) DEFAULT NULL,
     palavra     VARCHAR(250) NOT NULL,

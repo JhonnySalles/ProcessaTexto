@@ -27,3 +27,11 @@ CREATE TABLE conexoes (
     PRIMARY KEY ( id ),
     UNIQUE KEY tipo (tipo)
 ) ENGINE=INNODB DEFAULT CHARSET=latin1;
+
+CREATE TABLE sincronizacao (
+    conexao     enum('MANGA_EXTRACTOR','NOVEL_EXTRACTOR','TEXTO_INGLES','TEXTO_JAPONES','DECKSUBTITLE','FIREBASE') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+    envio       datetime DEFAULT NULL,
+    recebimento datetime DEFAULT NULL,
+    PRIMARY KEY ( conexao )
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb3;

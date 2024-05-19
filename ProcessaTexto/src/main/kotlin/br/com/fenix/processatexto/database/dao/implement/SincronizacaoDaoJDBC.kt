@@ -15,7 +15,7 @@ import java.sql.Statement
 import java.util.*
 
 
-class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Long, Sincronizacao>(conexao) {
+class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Conexao, Sincronizacao>(conexao) {
 
     private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
 
@@ -54,7 +54,6 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
             if (rs.next())
                 Optional.of(
                     Sincronizacao(
-                        rs.getLong("id"),
                         Conexao.valueOf(rs.getString("conexao")),
                         Utils.convertToDateTime(rs.getString("envio")),
                         Utils.convertToDateTime(rs.getString("recebimento"))
@@ -70,7 +69,7 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
         }
     }
 
-    override fun toEntity(rs: ResultSet): Sincronizacao = Sincronizacao(rs.getLong("id"),
+    override fun toEntity(rs: ResultSet): Sincronizacao = Sincronizacao(
         Conexao.valueOf(rs.getString("conexao")), Utils.convertToDateTime(rs.getString("envio")),
         Utils.convertToDateTime(rs.getString("recebimento"))
     )
