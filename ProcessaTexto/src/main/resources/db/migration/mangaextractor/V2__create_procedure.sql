@@ -3,7 +3,7 @@ DELIMITER $$
 CREATE DEFINER=`admin`@`%` PROCEDURE `create_table`(IN _tablename VARCHAR(100))
 BEGIN
 
-	SET @sql = CONCAT('CREATE TABLE ',_tablename,'_volumes (
+	SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_volumes (
 	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 	  manga VARCHAR(250) DEFAULT NULL,
 	  volume INT(4) DEFAULT NULL,
@@ -18,7 +18,7 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 
-    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_capas (
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_capas (
           id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           id_volume VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           manga VARCHAR(250) DEFAULT NULL,
@@ -36,7 +36,7 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 
-    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_capitulos (
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_capitulos (
           id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
           id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
           manga VARCHAR(250) DEFAULT NULL,
@@ -57,7 +57,7 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
 
-    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_paginas (
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_paginas (
           id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           id_capitulo VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           nome VARCHAR(250) DEFAULT NULL,
@@ -74,7 +74,7 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
 
-    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_textos (
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_textos (
           id VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
           id_pagina VARCHAR(36) COLLATE utf8mb4_unicode_ci NOT NULL,
           sequencia INT(4) DEFAULT NULL,
@@ -93,7 +93,7 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 
-    SET @sql = CONCAT('CREATE TABLE ',_tablename,'_vocabularios (
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_vocabularios (
           id_vocabulario VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
           id_volume VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
           id_capitulo VARCHAR(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -113,6 +113,43 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
 END$$
+
+
+CREATE DEFINER=`admin`@`%` PROCEDURE `drop_table`(IN _tablename VARCHAR(100))
+BEGIN
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_textos;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_paginas;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_capitulos;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_capas;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_volumes;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_vocabularios;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+END$$
+
 
 CREATE DEFINER=`admin`@`%` PROCEDURE `delete_volume`(IN _tablename VARCHAR(100), _IdsVolume VARCHAR(900))
 BEGIN
