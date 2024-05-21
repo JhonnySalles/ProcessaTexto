@@ -39,30 +39,34 @@ class MangaServices {
 
     @Throws(SQLException::class)
     fun saveVolume(base: String, volume: MangaVolume): MangaVolume {
-        if (volume.getId() == null)
-            volume.setId(mangaDao!!.insertVolume(base, volume))
-        else
+        if (volume.getId() == null) {
+            volume.setId(UUID.randomUUID())
+            mangaDao!!.insertVolume(base, volume)
+        } else
             mangaDao!!.updateVolume(base, volume)
 
         val idVolume = volume.getId()!!
         for (capitulo in volume.capitulos) {
-            if (capitulo.getId() == null)
-                capitulo.setId(mangaDao.insertCapitulo(base, idVolume, capitulo))
-            else
+            if (capitulo.getId() == null) {
+                capitulo.setId(UUID.randomUUID())
+                mangaDao.insertCapitulo(base, idVolume, capitulo)
+            } else
                 mangaDao.updateCapitulo(base, idVolume, capitulo)
             val idCapitulo: UUID = capitulo.getId()!!
 
             for (pagina in capitulo.paginas) {
-                if (capitulo.getId() == null)
-                    pagina.setId(mangaDao.insertPagina(base, idCapitulo, pagina))
-                else
+                if (pagina.getId() == null) {
+                    pagina.setId(UUID.randomUUID())
+                    mangaDao.insertPagina(base, idCapitulo, pagina)
+                } else
                     mangaDao.updatePagina(base, pagina)
                 val idPagina: UUID = pagina.getId()!!
 
                 for (texto in pagina.textos) {
-                    if (texto.getId() == null)
-                        texto.setId(mangaDao.insertTexto(base, idPagina, texto))
-                    else
+                    if (texto.getId() == null) {
+                        texto.setId(UUID.randomUUID())
+                        mangaDao.insertTexto(base, idPagina, texto)
+                    } else
                         mangaDao.updateTexto(base, texto)
                 }
             }
@@ -149,6 +153,9 @@ class MangaServices {
 
     @Throws(SQLException::class)
     fun createTabela(base: String) = mangaDao!!.createTabela(base)
+
+    @Throws(SQLException::class)
+    fun deleteTabela(base: String) = mangaDao!!.deleteTabela(base)
 
     private var limpeza = true
 

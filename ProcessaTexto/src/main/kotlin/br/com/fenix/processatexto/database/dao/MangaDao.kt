@@ -113,6 +113,9 @@ interface MangaDao {
     @Throws(SQLException::class)
     fun createTabela(base: String)
 
+    @Throws(SQLException::class)
+    fun deleteTabela(base: String)
+
     @get:Throws(SQLException::class)
     val tabelas: List<String>
 }

@@ -1,5 +1,7 @@
 package br.com.fenix.processatexto.service
 
+import br.com.fenix.processatexto.TestsConfig
+import br.com.fenix.processatexto.database.dao.implement.VincularDaoJDBC
 import br.com.fenix.processatexto.mock.MockManga
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaTabela
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.slf4j.LoggerFactory
 import java.util.*
 
 
@@ -17,6 +20,8 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
 
+    private val LOGGER = LoggerFactory.getLogger(ServicesTestBase::class.java)
+
     private val service = MangaServices()
 
     private val TABELA = "teste"
@@ -24,7 +29,11 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
     @BeforeAll
     @Throws(Exception::class)
     fun praparaTeste() {
-        service.createTabela(TABELA)
+        try {
+            service.createTabela(TABELA)
+        } catch (E : Exception) {
+            LOGGER.warn("Não foi possível criar a tabela temporária. Possível existência.", E)
+        }
     }
 
     @BeforeEach
@@ -51,20 +60,22 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
 
     override fun deleteAll(list: List<MangaVolume>) = service.deleteVolume(TABELA, list)
 
-
     @Test
     @Order(9)
     fun tabelas() {
-        val entity = input.mockEntity()
-
         assertTrue(service.tabelas.isNotEmpty())
 
-        assertDoesNotThrow { service.createTabela(entity.base) }
+        val tabela = TABELA + "_criada"
+        assertDoesNotThrow { service.createTabela(tabela) }
+        assertDoesNotThrow { service.deleteTabela(tabela) }
+
         assertTrue(service.selectTabelas(true).isNotEmpty())
 
-        assertTrue(service.selectTabelas(true, false, entity.base, entity.lingua, entity.manga).isNotEmpty())
-        assertTrue(service.selectTabelas(true, false, entity.base, entity.lingua, entity.manga, entity.volume, entity.capitulo).isNotEmpty())
-        assertTrue(service.selectTabelasJson(entity.base, entity.manga, entity.volume, entity.capitulo, entity.lingua, true).isNotEmpty())
+        val entity = input.mockEntity()
+        assertTrue(service.selectTabelas(true, false, TABELA, entity.lingua, entity.manga).isNotEmpty())
+        assertTrue(service.selectTabelas(true, false, TABELA, entity.lingua, entity.manga, entity.volume, entity.capitulo).isNotEmpty())
+        assertTrue(service.selectTabelasJson(TABELA, entity.manga, entity.volume, entity.capitulo, entity.lingua, true).isNotEmpty())
+
     }
 
     @Test
@@ -72,34 +83,34 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
     fun dadosTransferir() {
         val entity = input.mockEntity()
 
-        assertDoesNotThrow { service.insertDadosTransferir(entity.base, entity) }
+        assertDoesNotThrow { service.insertDadosTransferir(TABELA, entity) }
 
-        assertTrue(service.selectDadosTransferir(entity.base, TABELA).isNotEmpty())
-        assertTrue(service.getTabelasTransferir(entity.base, TABELA).isNotEmpty())
+        assertTrue(service.selectDadosTransferir(TABELA, TABELA).isNotEmpty())
+        assertTrue(service.getTabelasTransferir(TABELA, TABELA).isNotEmpty())
 
-        assertDoesNotThrow { service.salvarTraducao(entity.base, entity) }
+        assertDoesNotThrow { service.salvarTraducao(TABELA, entity) }
     }
 
     @Test
     @Order(3)
     fun updateCancel() {
         val entity = input.mockEntity()
-        assertDoesNotThrow { service.updateCancel(entity.base, entity) }
+        assertDoesNotThrow { service.updateCancel(TABELA, entity) }
     }
 
     @Test
     @Order(4)
     fun vocabulario() {
         val entity = input.mockEntity()
-        assertDoesNotThrow { service.updateVocabularioVolume(entity.base, entity) }
-        assertDoesNotThrow { service.updateVocabularioCapitulo(entity.base, entity.capitulos.first()) }
-        assertDoesNotThrow { service.updateVocabularioPagina(entity.base, entity.capitulos.first().paginas.first()) }
+        assertDoesNotThrow { service.updateVocabularioVolume(TABELA, entity) }
+        assertDoesNotThrow { service.updateVocabularioCapitulo(TABELA, entity.capitulos.first()) }
+        assertDoesNotThrow { service.updateVocabularioPagina(TABELA, entity.capitulos.first().paginas.first()) }
 
-        assertDoesNotThrow { service.insertVocabularios(entity.base, entity.getId(), null, null, entity.vocabularios) }
-        assertDoesNotThrow { service.insertVocabularios(entity.base, null, entity.capitulos.first().getId(), null, entity.capitulos.first().vocabularios) }
+        assertDoesNotThrow { service.insertVocabularios(TABELA, entity.getId(), null, null, entity.vocabularios) }
+        assertDoesNotThrow { service.insertVocabularios(TABELA, null, entity.capitulos.first().getId(), null, entity.capitulos.first().vocabularios) }
         assertDoesNotThrow {
             service.insertVocabularios(
-                entity.base,
+                TABELA,
                 null,
                 null,
                 entity.capitulos.first().paginas.first().getId(),
@@ -113,6 +124,16 @@ class MangaServicesTest : ServicesTestBase<UUID?, MangaVolume>() {
         val entity = input.mockEntity()
         val tabela = FXCollections.observableList(mutableListOf(MangaTabela(entity.base, arrayListOf(entity))))
         assertDoesNotThrow { service.salvarAjustes(tabela) }
+    }
+
+    @AfterAll
+    override fun clear() {
+        if (TestsConfig.LIMPA_LISTA) {
+            for (entity in lastList)
+                delete(entity)
+
+            service.deleteTabela(TABELA)
+        }
     }
 
 }

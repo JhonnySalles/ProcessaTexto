@@ -24,6 +24,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
     companion object {
         private const val CREATE_TABELA = "CALL create_table('%s');"
+        private const val DROP_TABELA = "CALL drop_table('%s');"
         private const val TABELA_VOLUME = "_volumes"
         private const val TABELA_CAPITULO = "_capitulos"
         private const val TABELA_PAGINA = "_paginas"
@@ -257,7 +258,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             rs = st.executeQuery()
             val list: MutableSet<VocabularioExterno> = mutableSetOf()
             while (rs.next())
-                list.add(vocab.select(rs.getString("id_vocabulario")) as VocabularioExterno)
+                list.add(vocab.select(rs.getString("id_vocabulario")).get() as VocabularioExterno)
             list
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -984,7 +985,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stVocabulario.toString())
             println(stVolume.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1037,7 +1038,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stCapa.toString())
             println(stVolume.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1081,7 +1082,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stPagina.toString())
             println(stCapitulo.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1118,7 +1119,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stTexto.toString())
             println(stPagina.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1150,7 +1151,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             println(stTexto.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1180,7 +1181,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             println(stCapa.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -1337,7 +1338,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.getId().toString())
             st.setString(++index, idVolume.toString())
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
+            st.setInt(++index, obj.volume)
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.arquivo)
             st.setString(++index, obj.extenssao)
@@ -1447,7 +1448,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     @Throws(SQLException::class)
     override fun createTabela(baseDestino: String) {
         var nome: String = baseDestino.trim()
-        if (nome.contains(".")) nome = baseDestino.substring(baseDestino.indexOf(".")).replace(".", "")
+        if (nome.contains("."))
+            nome = baseDestino.substring(baseDestino.indexOf(".")).replace(".", "")
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(String.format(CREATE_TABELA, nome))
@@ -1466,6 +1468,24 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         createTriggers(nome + TABELA_CAPA)
         try {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome + TABELA_VOCABULARIO, nome + TABELA_VOCABULARIO))
+            st.execute()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            LOGGER.info(st.toString())
+            throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
+        } finally {
+            JdbcFactory.closeStatement(st)
+        }
+    }
+
+    @Throws(SQLException::class)
+    override fun deleteTabela(base: String) {
+        var nome: String = base.trim()
+        if (nome.contains("."))
+            nome = base.substring(base.indexOf(".")).replace(".", "")
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(String.format(DROP_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)

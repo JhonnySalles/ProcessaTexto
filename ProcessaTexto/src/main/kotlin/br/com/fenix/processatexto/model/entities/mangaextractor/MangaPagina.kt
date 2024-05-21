@@ -35,6 +35,7 @@ data class MangaPagina(
         setInitial("", 0, 0f, numero, nomePagina)
         this.id = id
         this.hash = hash
+        this.numero = numero
     }
 
     constructor(id: UUID?, nomePagina: String, numero: Int, hash: String, textos: MutableList<MangaTexto>) : this() {
@@ -42,6 +43,7 @@ data class MangaPagina(
         this.id = id
         this.hash = hash
         this.textos = textos
+        this.numero = numero
     }
 
     constructor(id: UUID?, nomePagina: String, numero: Int, hash: String, textos: MutableList<MangaTexto>, vocabularios: MutableSet<VocabularioExterno>) : this() {
@@ -50,6 +52,7 @@ data class MangaPagina(
         this.hash = hash
         this.vocabularios = vocabularios
         this.textos = textos
+        this.numero = numero
     }
 
     override fun toString(): String {

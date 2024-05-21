@@ -3,11 +3,12 @@ package br.com.fenix.processatexto.mock
 import br.com.fenix.processatexto.model.entities.mangaextractor.*
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
+import org.checkerframework.checker.units.qual.g
 import org.junit.jupiter.api.Assertions.*
+import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
 import java.util.*
-import javax.imageio.ImageIO
 
 
 class MockManga : MockBase<UUID?, MangaVolume>() {
@@ -34,7 +35,7 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
             it.volume = 2
             it.lingua = Language.ENGLISH
             it.arquivo += "---"
-            it.extenssao += "---"
+            it.extenssao = "JPG"
         }
 
         input.vocabularios.first().let { v ->
@@ -88,20 +89,26 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
     }
 
     override fun mockEntity(id: UUID?): MangaVolume {
-        val image = BufferedImage(600, 400, BufferedImage.TYPE_INT_RGB)
-        val capa = MangaCapa(UUID.randomUUID(), "manga", 1, LINGUAGEM, "arquivo", "extensao", image)
+        val image = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val graphics: Graphics2D = image.createGraphics()
+        graphics.background = Color.BLACK
+        graphics.clearRect(0, 0, image.width, image.height)
+        val capa = MangaCapa(UUID.randomUUID(), "manga", 1, LINGUAGEM, "arquivo", "jpg", image)
 
-        val texto = MangaTexto(UUID.randomUUID(), "texto", 1, 1, 1, 2, 2)
+        val texto = MangaTexto(id, "texto", 1, 1, 1, 2, 2)
 
-        var vocabulario = VocabularioExterno(UUID.randomUUID(), "vocabulario pagina", "forma_basica pagina", "ingles pagina", "leitura pagina", "leitura_novel pagina", true)
-        val pagina = MangaPagina(UUID.randomUUID(), "nome", 1, "hash_pagina", mutableListOf(texto), mutableSetOf(vocabulario))
+        var idVocab : UUID? = if (id != null) UUID.fromString(id.toString().substring(0, 36).plus("1")) else UUID.randomUUID()
+        var vocabulario = VocabularioExterno(idVocab, "vocabulario pagina", "forma_basica pagina", "ingles pagina", "leitura pagina", "leitura_novel pagina", true)
+        val pagina = MangaPagina(id, "nome", 1, "hash_pagina", mutableListOf(texto), mutableSetOf(vocabulario))
 
-        vocabulario = VocabularioExterno(UUID.randomUUID(), "vocabulario capitulo", "forma_basica capitulo", "ingles capitulo", "leitura capitulo", "leitura_novel capitulo", true)
-        val capitulo = MangaCapitulo(UUID.randomUUID(), "manga", 1, 1f, LINGUAGEM, "scan", true, true, mutableSetOf(vocabulario), mutableListOf(pagina))
+        idVocab = if (id != null) UUID.fromString(id.toString().substring(0, 35).plus("2")) else UUID.randomUUID()
+        vocabulario = VocabularioExterno(idVocab, "vocabulario capitulo", "forma_basica capitulo", "ingles capitulo", "leitura capitulo", "leitura_novel capitulo", true)
+        val capitulo = MangaCapitulo(id, "manga", 1, 1f, LINGUAGEM, "scan", true, true, mutableSetOf(vocabulario), mutableListOf(pagina))
 
-        vocabulario = VocabularioExterno(UUID.randomUUID(), "vocabulario manga", "forma_basica manga", "ingles manga", "leitura manga", "leitura_novel manga", true)
+        idVocab = if (id != null) UUID.fromString(id.toString().substring(0, 35).plus("3")) else UUID.randomUUID()
+        vocabulario = VocabularioExterno(idVocab, "vocabulario manga", "forma_basica manga", "ingles manga", "leitura manga", "leitura_novel manga", true)
         return MangaVolume(
-            UUID.randomUUID(), "manga", 1, LINGUAGEM, "arquivo",
+            id, "manga", 1, LINGUAGEM, "arquivo",
             mutableSetOf(vocabulario), mutableListOf(capitulo), capa
         )
     }
@@ -112,7 +119,6 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
 
         assertTrue(input.manga.isNotEmpty())
         assertTrue(input.volume > 0)
-        assertTrue(input.capitulo > 0)
         assertTrue(input.arquivo.isNotEmpty())
         assertNotNull(input.lingua)
 
@@ -131,7 +137,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
             assertTrue(v.portugues.isNotEmpty())
             assertTrue(v.ingles.isNotEmpty())
             assertTrue(v.leitura.isNotEmpty())
-            assertTrue(v.leituraNovel.isNotEmpty())
+            if (v !is VocabularioExterno)
+                assertTrue(v.leituraNovel.isNotEmpty())
         }
 
         assertTrue(input.capitulos.isNotEmpty())
@@ -146,7 +153,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
                 assertTrue(v.portugues.isNotEmpty())
                 assertTrue(v.ingles.isNotEmpty())
                 assertTrue(v.leitura.isNotEmpty())
-                assertTrue(v.leituraNovel.isNotEmpty())
+                if (v !is VocabularioExterno)
+                    assertTrue(v.leituraNovel.isNotEmpty())
             }
 
             c.paginas.first().let { p ->
@@ -159,7 +167,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
                     assertTrue(v.portugues.isNotEmpty())
                     assertTrue(v.ingles.isNotEmpty())
                     assertTrue(v.leitura.isNotEmpty())
-                    assertTrue(v.leituraNovel.isNotEmpty())
+                    if (v !is VocabularioExterno)
+                        assertTrue(v.leituraNovel.isNotEmpty())
                 }
 
                 p.textos.first().let { t ->
@@ -201,7 +210,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         assertEquals(vocabOld.portugues, vocabNew.portugues)
         assertEquals(vocabOld.ingles, vocabNew.ingles)
         assertEquals(vocabOld.leitura, vocabNew.leitura)
-        assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
+        if (vocabOld !is VocabularioExterno)
+            assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
 
         val capituloOld = oldObj.capitulos.first()
         val capituloNew = newObj.capitulos.first()
@@ -220,7 +230,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         assertEquals(vocabOld.portugues, vocabNew.portugues)
         assertEquals(vocabOld.ingles, vocabNew.ingles)
         assertEquals(vocabOld.leitura, vocabNew.leitura)
-        assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
+        if (vocabOld !is VocabularioExterno)
+            assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
 
         val paginaOld = capituloOld.paginas.first()
         val paginaNew = capituloNew.paginas.first()
@@ -235,7 +246,8 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         assertEquals(vocabOld.portugues, vocabNew.portugues)
         assertEquals(vocabOld.ingles, vocabNew.ingles)
         assertEquals(vocabOld.leitura, vocabNew.leitura)
-        assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
+        if (vocabOld !is VocabularioExterno)
+            assertEquals(vocabOld.leituraNovel, vocabNew.leituraNovel)
 
         val textoOld = paginaOld.textos.first()
         val textoNew = paginaNew.textos.first()

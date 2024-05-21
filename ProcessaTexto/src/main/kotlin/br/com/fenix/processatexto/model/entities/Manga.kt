@@ -57,6 +57,7 @@ open class Manga(
     fun setInitial(manga: String, volume: Int, capitulo: Float?) {
         this.manga = manga
         this.volume = volume
+        this.capitulo = capitulo ?: 0f
         volumeDestino = volume
         capituloDestino = capitulo
     }

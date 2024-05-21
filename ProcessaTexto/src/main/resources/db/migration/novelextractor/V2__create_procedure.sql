@@ -95,6 +95,11 @@ END$$
 CREATE DEFINER=`admin`@`%` PROCEDURE `drop_table`(IN _tablename VARCHAR(100))
 BEGIN
 
+    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_vocabularios;');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
     SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_textos;');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
@@ -116,11 +121,6 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
     SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_volumes;');
-    PREPARE stmt FROM @sql;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-
-    SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_vocabularios;');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
