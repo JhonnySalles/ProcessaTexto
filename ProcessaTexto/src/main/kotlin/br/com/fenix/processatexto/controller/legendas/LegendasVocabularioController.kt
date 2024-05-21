@@ -659,6 +659,6 @@ class LegendasVocabularioController : Initializable, BaseController {
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(LegendasVocabularioController::class.java)
         private var desativar = false
-        val fxmlLocate: URL get() = LegendasVocabularioController::class.java.getResource("/view/legendas/LegendasVocabulario.fxml")
+        val fxmlLocate: URL get() = LegendasVocabularioController::class.java.getResource("/view/legendas/LegendasVocabulario.fxml") as URL
     }
 }

@@ -482,6 +482,6 @@ class TraduzirController : Initializable {
         private var desativar = false
         private var desmembrar = false
 
-        val fxmlLocate: URL get() = TraduzirController::class.java.getResource("/view/Traduzir.fxml")
+        val fxmlLocate: URL get() = TraduzirController::class.java.getResource("/view/Traduzir.fxml") as URL
     }
 }

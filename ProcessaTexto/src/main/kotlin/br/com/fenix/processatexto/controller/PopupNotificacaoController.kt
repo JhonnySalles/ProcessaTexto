@@ -73,6 +73,6 @@ class PopupNotificacaoController : Initializable {
     }
 
     companion object {
-        val fxmlLocate: URL get() = PopupNotificacaoController::class.java.getResource("/view/PopupNotificacao.fxml")
+        val fxmlLocate: URL get() = PopupNotificacaoController::class.java.getResource("/view/PopupNotificacao.fxml") as URL
     }
 }

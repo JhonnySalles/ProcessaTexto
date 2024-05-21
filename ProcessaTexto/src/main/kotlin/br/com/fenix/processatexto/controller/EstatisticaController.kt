@@ -444,7 +444,7 @@ open class EstatisticaController : Initializable {
         val imgAnimaBancoConectado: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoDataConectado_48.png"))
 
         private val FOLHA: PseudoClass = PseudoClass.getPseudoClass("leaf")
-        val fxmlLocate: URL get() = EstatisticaController::class.java.getResource("/view/Estatistica.fxml")
+        val fxmlLocate: URL get() = EstatisticaController::class.java.getResource("/view/Estatistica.fxml") as URL
         val iconLocate: String get() = "/images/icoTextoJapones_128.png"
     }
 }

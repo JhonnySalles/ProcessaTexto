@@ -118,6 +118,6 @@ class MenuConfiguracaoController : Initializable {
     }
 
     companion object {
-        val fxmlLocate: URL get() = MenuConfiguracaoController::class.java.getResource("/view/MenuConfiguracao.fxml")
+        val fxmlLocate: URL get() = MenuConfiguracaoController::class.java.getResource("/view/MenuConfiguracao.fxml") as URL
     }
 }

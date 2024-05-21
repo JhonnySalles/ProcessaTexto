@@ -295,6 +295,6 @@ class NovelsProcessarController : Initializable, BaseController {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(NovelsProcessarController::class.java)
-        val fxmlLocate: URL get() = NovelsProcessarController::class.java.getResource("/view/novels/NovelProcessar.fxml")
+        val fxmlLocate: URL get() = NovelsProcessarController::class.java.getResource("/view/novels/NovelProcessar.fxml") as URL
     }
 }

@@ -7,13 +7,14 @@ import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import br.com.fenix.processatexto.util.configuration.Configuracao
-import org.mockito.Mockito
-import org.powermock.api.mockito.PowerMockito
+import javafx.fxml.FXMLLoader
+import javafx.scene.Scene
+import javafx.scene.image.Image
+import javafx.scene.layout.AnchorPane
+import javafx.scene.paint.Color
 import org.slf4j.LoggerFactory
-import java.awt.image.BufferedImage
-import java.io.InputStream
+import java.net.URL
 import java.sql.ResultSet
-import javax.imageio.ImageIO
 
 
 class TestsConfig {
@@ -59,5 +60,16 @@ class TestsConfig {
                 Driver.valueOf(rs.getString("driver"))
             )
         }
+
+        fun <T> createScene(fxml: URL): Pair<Scene, T> {
+            val loader = FXMLLoader(fxml)
+            val panel = loader.load<AnchorPane>()
+            val scene = Scene(panel)
+            scene.fill = Color.BLACK
+            scene.stylesheets.add(TestsConfig::class.java.getResource("/css/Dark_Theme.css")!!.toExternalForm())
+            return Pair(scene, loader.getController())
+        }
+
+        fun getIcon(url: String): Image = Image(TestsConfig::class.java.getResourceAsStream(url))
     }
 }

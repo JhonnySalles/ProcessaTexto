@@ -90,6 +90,6 @@ class LegendasMarcasController : Initializable {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(LegendasMarcasController::class.java)
-        val fxmlLocate: URL get() = LegendasMarcasController::class.java.getResource("/view/legendas/LegendasMarcas.fxml")
+        val fxmlLocate: URL get() = LegendasMarcasController::class.java.getResource("/view/legendas/LegendasMarcas.fxml") as URL
     }
 }

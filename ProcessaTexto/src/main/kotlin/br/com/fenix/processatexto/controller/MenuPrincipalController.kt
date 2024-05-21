@@ -441,7 +441,7 @@ class MenuPrincipalController : Initializable {
         val imgAnimaCompartilhaErro: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoCompartilhamentoErro_48.png"))
         val imgAnimaCompartilhaEnvio: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoCompartilhamentoEnvio_48.png"))
 
-        val fxmlLocate: URL get() = MenuPrincipalController::class.java.getResource("/view/MenuPrincipal.fxml")
+        val fxmlLocate: URL get() = MenuPrincipalController::class.java.getResource("/view/MenuPrincipal.fxml") as URL
         val iconLocate: String get() = "/images/icoTextoJapones_128.png"
     }
 }

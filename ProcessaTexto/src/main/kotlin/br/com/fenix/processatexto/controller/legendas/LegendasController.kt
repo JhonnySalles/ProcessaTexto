@@ -37,6 +37,6 @@ class LegendasController : Initializable {
     }
 
     companion object {
-        val fxmlLocate: URL get() = LegendasController::class.java.getResource("/view/legendas/Legendas.fxml")
+        val fxmlLocate: URL get() = LegendasController::class.java.getResource("/view/legendas/Legendas.fxml") as URL
     }
 }

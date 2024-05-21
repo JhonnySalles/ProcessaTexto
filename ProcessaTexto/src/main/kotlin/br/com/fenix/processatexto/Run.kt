@@ -28,9 +28,9 @@ class Run : Application() {
             val scPnTelaPrincipal = loader.load<AnchorPane>()
             MAIN_SCENE = Scene(scPnTelaPrincipal) // Carrega a scena
             MAIN_SCENE.fill = Color.BLACK
-            MAIN_SCENE.stylesheets.add(Run::class.java.getResource("/css/Dark_Theme.css").toExternalForm())
+            MAIN_SCENE.stylesheets.add(Run::class.java.getResource("/css/Dark_Theme.css")!!.toExternalForm())
             PRIMARY_STAGE.scene = MAIN_SCENE // Seta a cena principal
-            PRIMARY_STAGE.title = "Processar textos japonês"
+            PRIMARY_STAGE.title = "Processar Textos"
             PRIMARY_STAGE.icons.add(Image(Run::class.java.getResourceAsStream(MenuPrincipalController.iconLocate)))
             PRIMARY_STAGE.initStyle(StageStyle.DECORATED)
             PRIMARY_STAGE.minWidth = 900.0

@@ -51,6 +51,6 @@ class MangasController : Initializable {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(MangasController::class.java)
-        val fxmlLocate: URL get() = MangasController::class.java.getResource("/view/mangas/Manga.fxml")
+        val fxmlLocate: URL get() = MangasController::class.java.getResource("/view/mangas/Manga.fxml") as URL
     }
 }

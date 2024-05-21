@@ -731,6 +731,6 @@ class MangasJsonController : Initializable {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(MangasJsonController::class.java)
-        val fxmlLocate: URL get() = MangasJsonController::class.java.getResource("/view/mangas/MangaJson.fxml")
+        val fxmlLocate: URL get() = MangasJsonController::class.java.getResource("/view/mangas/MangaJson.fxml") as URL
     }
 }

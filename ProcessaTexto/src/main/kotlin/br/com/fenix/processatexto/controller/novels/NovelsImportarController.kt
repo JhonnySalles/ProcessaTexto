@@ -267,6 +267,6 @@ class NovelsImportarController : Initializable, BaseController {
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(NovelsImportarController::class.java)
         private const val CONFIG = "processa.config"
-        val fxmlLocate: URL get() = NovelsImportarController::class.java.getResource("/view/novels/NovelImportar.fxml")
+        val fxmlLocate: URL get() = NovelsImportarController::class.java.getResource("/view/novels/NovelImportar.fxml") as URL
     }
 }

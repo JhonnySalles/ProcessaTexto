@@ -604,6 +604,6 @@ class LegendasImportarController : Initializable, BaseController {
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(LegendasImportarController::class.java)
         private const val ARQUIVO_FULL = "processados.tsv"
-        val fxmlLocate: URL get() = LegendasImportarController::class.java.getResource("/view/legendas/LegendasImportar.fxml")
+        val fxmlLocate: URL get() = LegendasImportarController::class.java.getResource("/view/legendas/LegendasImportar.fxml") as URL
     }
 }

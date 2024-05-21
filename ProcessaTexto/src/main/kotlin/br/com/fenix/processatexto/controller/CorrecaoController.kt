@@ -176,6 +176,6 @@ class CorrecaoController : Initializable {
             }
         }
 
-        val fxmlLocate: URL get() = CorrecaoController::class.java.getResource("/view/Correcao.fxml")
+        val fxmlLocate: URL get() = CorrecaoController::class.java.getResource("/view/Correcao.fxml") as URL
     }
 }

@@ -132,6 +132,6 @@ class MangasComicInfoMalId : Initializable {
             }
         }
 
-        val fxmlLocate: URL get() = MangasComicInfoMalId::class.java.getResource("/view/mangas/MangaComicInfoMalId.fxml")
+        val fxmlLocate: URL get() = MangasComicInfoMalId::class.java.getResource("/view/mangas/MangaComicInfoMalId.fxml") as URL
     }
 }

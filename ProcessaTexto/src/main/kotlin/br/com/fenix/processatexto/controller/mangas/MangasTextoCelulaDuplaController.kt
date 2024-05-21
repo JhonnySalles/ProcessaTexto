@@ -86,6 +86,6 @@ class MangasTextoCelulaDuplaController : Initializable {
     }
 
     companion object {
-        val fxmlLocate: URL get() = MangasTextoCelulaDuplaController::class.java.getResource("/view/mangas/MangaTextoCelulaDupla.fxml")
+        val fxmlLocate: URL get() = MangasTextoCelulaDuplaController::class.java.getResource("/view/mangas/MangaTextoCelulaDupla.fxml") as URL
     }
 }

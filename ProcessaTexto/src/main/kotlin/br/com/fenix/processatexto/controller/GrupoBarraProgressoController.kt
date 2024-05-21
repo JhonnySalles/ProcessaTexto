@@ -35,6 +35,6 @@ class GrupoBarraProgressoController : Initializable {
     override fun initialize(arg0: URL?, arg1: ResourceBundle?) {}
 
     companion object {
-        val fxmlLocate: URL get() = MenuPrincipalController::class.java.getResource("/view/GrupoBarraProgresso.fxml")
+        val fxmlLocate: URL get() = MenuPrincipalController::class.java.getResource("/view/GrupoBarraProgresso.fxml") as URL
     }
 }
