@@ -75,7 +75,7 @@ class MangasTextoCelulaDuplaController : Initializable {
     }
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         esquerdaImagem.fitWidthProperty().bind(esquerdaRoot.widthProperty())
         esquerdaImagem.fitHeightProperty().bind(esquerdaRoot.heightProperty())
         esquerdaImagem.isPreserveRatio = true

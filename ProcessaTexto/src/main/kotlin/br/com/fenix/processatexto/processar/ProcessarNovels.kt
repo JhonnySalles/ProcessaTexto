@@ -376,7 +376,7 @@ class ProcessarNovels(controller: BaseController) {
                 if (pos >= 0) {
                     capitulo.sequencia = textos[0].sequencia
                     for (i in 0..pos)
-                        capitulo.addTexto(textos.removeAt(0))
+                        capitulo.addTexto(textos.removeFirst())
                 }
                 lastCap = cap
                 volume.addCapitulos(capitulo)
@@ -384,7 +384,7 @@ class ProcessarNovels(controller: BaseController) {
             if (textos.isNotEmpty()) {
                 val capitulo: NovelCapitulo = volume.capitulos.last()
                 for (i in 0 until textos.size)
-                    capitulo.addTexto(textos.removeAt(i))
+                    capitulo.addTexto(textos.removeFirst())
             }
         } else {
             val capitulo = NovelCapitulo(UUID.randomUUID(), volume.novel, volume.volume, 0f, "", 0, volume.lingua)
@@ -479,7 +479,7 @@ class ProcessarNovels(controller: BaseController) {
                                     BufferedReader(fr).use { br ->
                                         var seq = 0
                                         var line: String
-                                        while (br.readLine().also { line = it } != null) {
+                                        while (br.readLine().also { line = it ?: "" } != null) {
                                             if (line.trim().isEmpty()) continue
                                             seq++
                                             textos.add(NovelTexto(UUID.randomUUID(), line, seq))
@@ -858,7 +858,7 @@ class ProcessarNovels(controller: BaseController) {
         for (m in tokenizer.tokenize(mode, texto)) {
             if (m.surface().matches(pattern)) {
                 if (validaHistorico.contains(m.dictionaryForm())) {
-                    val vocabulario: VocabularioExterno = vocabHistorico.stream()
+                    val vocabulario: VocabularioExterno? = vocabHistorico.stream()
                         .filter { vocab -> m.dictionaryForm().equals(vocab.palavra, true) }
                         .findFirst().orElse(null)
 

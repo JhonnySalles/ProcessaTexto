@@ -395,7 +395,7 @@ class MangasTextoController : Initializable, VinculoTextoListener {
     private val robot: Robot = Robot()
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         preparaCelulas()
         txtMangaOriginal.focusTraversableProperty().addListener { _, oldValue, _ -> if (oldValue) txtMangaOriginal.unFocusColor = Color.web("#106ebe") }
         txtMangaOriginal.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }

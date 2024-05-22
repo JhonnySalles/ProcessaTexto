@@ -217,7 +217,7 @@ class NovelsImportarController : Initializable, BaseController {
         }
     }
 
-    fun addLog(text: String) = txtLog.appendText("$text")
+    fun addLog(text: String) = txtLog.appendText("$text".plus("\n"))
 
     @get:Override
     override val root: AnchorPane get() = apRoot

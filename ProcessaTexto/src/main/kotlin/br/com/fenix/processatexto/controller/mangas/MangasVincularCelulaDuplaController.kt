@@ -176,7 +176,7 @@ class MangasVincularCelulaDuplaController : Initializable {
     }
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         esquerdaImagem.fitWidthProperty().bind(esquerdaContainer.widthProperty())
         esquerdaImagem.fitHeightProperty().bind(esquerdaContainer.heightProperty())
         esquerdaImagem.isPreserveRatio = true

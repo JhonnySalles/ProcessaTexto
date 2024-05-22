@@ -76,7 +76,7 @@ class ListaExecucoes {
         if (!list.isEmpty()) {
             try {
                 isProcessed = true
-                val action = list.removeAt(0)
+                val action = list.removeFirst()
                 val isAwait = action.call(abort)
                 if (!isAwait)
                     endProcess()

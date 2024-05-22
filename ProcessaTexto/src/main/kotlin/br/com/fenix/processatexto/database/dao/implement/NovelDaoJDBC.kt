@@ -222,9 +222,9 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             while (rs.next())
                 list.add(
                     NovelVolume(
-                        UUID.fromString(rs.getString("id")), rs.getString("novel"),
-                        rs.getString("titulo"), rs.getString("titulo_alternativo"), rs.getString("serie"), rs.getString("descricao"),
-                        rs.getString("arquivo"), rs.getString("editora"), rs.getString("autor"), rs.getFloat("volume"),
+                        UUID.fromString(rs.getString("id")), rs.getString("novel") ?: "",
+                        rs.getString("titulo") ?: "", rs.getString("titulo_alternativo") ?: "", rs.getString("serie") ?: "", rs.getString("descricao"),
+                        rs.getString("arquivo"), rs.getString("editora") ?: "", rs.getString("autor") ?: "", rs.getFloat("volume") ?: 0F,
                         Language.getEnum(rs.getString("linguagem"))!!, rs.getBoolean("is_favorito"),
                         selectCapa(base, UUID.fromString(rs.getString("id"))).orElse(null), rs.getBoolean("is_processado"),
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), linguagem),
@@ -308,7 +308,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st.setString(1, idNovel.toString())
             rs = st.executeQuery()
             if (rs.next()) {
-                val input: InputStream = ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes())
+                val input = ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes())
                 val image: BufferedImage = ImageIO.read(input)
                 Optional.of(
                     NovelCapa(

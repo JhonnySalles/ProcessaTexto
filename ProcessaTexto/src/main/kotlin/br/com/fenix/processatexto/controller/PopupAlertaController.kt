@@ -58,7 +58,7 @@ class PopupAlertaController : Initializable {
     }
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
     }
 
     companion object {

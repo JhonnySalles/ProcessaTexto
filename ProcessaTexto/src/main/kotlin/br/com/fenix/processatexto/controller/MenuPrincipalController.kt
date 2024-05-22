@@ -297,11 +297,10 @@ class MenuPrincipalController : Initializable {
 
             @Override
             override fun succeeded() {
-                if (!value) Notificacoes.notificacao(
-                    Notificacao.ERRO,
-                    "Compartilhamento de alterações da Database.",
-                    "Não foi possível sincronizar os dados com a cloud."
-                ) else Notificacoes.notificacao(Notificacao.SUCESSO, "Compartilhamento de alterações da Database.", "Sincronização de dados com a cloud concluída com sucesso.")
+                if (!value)
+                    Notificacoes.notificacao(Notificacao.ERRO,"Compartilhamento de alterações da Database.","Não foi possível sincronizar os dados com a cloud.")
+                else
+                    Notificacoes.notificacao(Notificacao.SUCESSO, "Compartilhamento de alterações da Database.", "Sincronização de dados com a cloud concluída com sucesso.")
             }
         }
         val t = Thread(compartilhaDatabase)

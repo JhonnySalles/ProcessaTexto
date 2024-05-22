@@ -361,7 +361,7 @@ open class EstatisticaController : Initializable {
     }
 
     @Override
-    override fun initialize(location: URL, resources: ResourceBundle) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera)
         linkaCelulas()
         configuraListenert()

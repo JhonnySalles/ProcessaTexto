@@ -303,17 +303,17 @@ class VincularServices {
                     continue
 
                 if (pagina.vinculadoEsquerdaPagina !== VinculoPagina.PAGINA_VAZIA)
-                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeAt(0))
+                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeFirst())
                 else if (isUsePaginaDuplaCalculada) {
-                    val notLinked: VinculoPagina = paginasNaoVinculado.removeAt(0)
+                    val notLinked: VinculoPagina = paginasNaoVinculado.removeFirst()
                     pagina.addVinculoDireita(notLinked)
                     if (notLinked.isVinculadoEsquerdaPaginaDupla) continue
                     if (paginasNaoVinculado.isEmpty()) break
-                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeAt(0))
+                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeFirst())
                 } else {
-                    pagina.addVinculoDireita(paginasNaoVinculado.removeAt(0))
+                    pagina.addVinculoDireita(paginasNaoVinculado.removeFirst())
                     if (paginasNaoVinculado.isEmpty()) break
-                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeAt(0))
+                    pagina.addVinculoDireitaApartirEsquerda(paginasNaoVinculado.removeFirst())
                 }
             }
             naoVinculado.clear()
