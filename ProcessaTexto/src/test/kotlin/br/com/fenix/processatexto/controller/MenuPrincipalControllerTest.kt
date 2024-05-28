@@ -21,6 +21,10 @@ import org.testfx.matcher.control.LabeledMatchers
 @ExtendWith(ApplicationExtension::class)
 class MenuPrincipalControllerTest {
 
+    init {
+        TestsConfig.prepareDatabase()
+    }
+
     private lateinit var scene: Scene
     private lateinit var stage: Stage
     private lateinit var controller: MenuPrincipalController

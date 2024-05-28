@@ -9,6 +9,11 @@ import kotlin.random.Random
 
 class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
 
+    companion object {
+        const val KANJI = "出遭っ"
+        const val WORD = "Cat"
+    }
+
     override fun mockEntity(): Revisar = mockEntity(null)
 
     override fun randomId(): UUID? = UUID.randomUUID()
@@ -16,22 +21,26 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
     override fun updateEntity(input: Revisar): Revisar = updateEntityById(input.getId())
 
     override fun updateEntityById(lastId: UUID?): Revisar {
-        val ingles = if (conexao == Conexao.TEXTO_INGLES) "" else "ingles" + "---"
-        val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica" + "---"
-        val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel" + "---"
+        val vocabulario = if (conexao == Conexao.TEXTO_INGLES) WORD else "$KANJI---"
+        val ingles = if (conexao == Conexao.TEXTO_INGLES) "" else "To meet (by chance), to come across, to run across." + "---"
+        val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "出遭う" + "---"
+        val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "デアッ" + "---"
+        val portugues = if (conexao == Conexao.TEXTO_INGLES) "Gato." else "Conhecer (acaso), se deparar com, atravessar."
         return Revisar(
-            lastId, "vocabulario" + Random.nextInt().toString() + "---", formaBasica, "leitura" + "---", leituraNovel,
-            "portugues" + "---", ingles, 9999, false, isAnime = false, isManga = false, isNovel = false
+            lastId, vocabulario + Random.nextInt().toString() + "---", formaBasica, "デアッ" + "---", leituraNovel,
+            "$portugues---", ingles, 1, isRevisado = true, isAnime = true, isManga = true, isNovel = true
         )
     }
 
     override fun mockEntity(id: UUID?): Revisar {
-        val ingles = if (conexao == Conexao.TEXTO_INGLES) "" else "ingles"
-        val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica"
-        val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel"
+        val vocabulario = if (conexao == Conexao.TEXTO_INGLES) WORD else KANJI
+        val ingles = if (conexao == Conexao.TEXTO_INGLES) "" else "To meet (by chance), to come across, to run across."
+        val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "出遭う"
+        val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "デアッ"
+        val portugues = if (conexao == Conexao.TEXTO_INGLES) "Gato." else "Conhecer (acaso), se deparar com, atravessar."
         return Revisar(
-            id, "vocabulario" + Random.nextInt().toString(), formaBasica, "leitura", leituraNovel, "portugues",
-            ingles, 1, true, isAnime = true, isManga = true, isNovel = true
+            id, vocabulario + Random.nextInt().toString(), formaBasica, "デアッ", leituraNovel,
+            "$portugues---", ingles, 999999999, isRevisado = false, isAnime = false, isManga = false, isNovel = false
         )
     }
 
@@ -40,11 +49,14 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         assertNotNull(input!!.getId())
 
         assertTrue(input.vocabulario.isNotEmpty())
-        assertTrue(input.formaBasica.isNotEmpty())
-        assertTrue(input.leitura.isNotEmpty())
-        assertTrue(input.leituraNovel.isNotEmpty())
         assertTrue(input.portugues.isNotEmpty())
-        assertTrue(input.ingles.isNotEmpty())
+
+        if (conexao != Conexao.TEXTO_INGLES) {
+            assertTrue(input.formaBasica.isNotEmpty())
+            assertTrue(input.leitura.isNotEmpty())
+            assertTrue(input.leituraNovel.isNotEmpty())
+            assertTrue(input.ingles.isNotEmpty())
+        }
     }
 
     override fun assertsService(oldObj: Revisar?, newObj: Revisar?) {

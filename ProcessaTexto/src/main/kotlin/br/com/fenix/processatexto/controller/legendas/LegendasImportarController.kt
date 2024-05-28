@@ -561,9 +561,10 @@ class LegendasImportarController : Initializable, BaseController {
         autoCompletePopup.setSelectionHandler { event -> cbBase.setValue(event.getObject()) }
         cbBase.editor.textProperty().addListener { _, _, _ ->
             autoCompletePopup.filter { item -> item.lowercase(Locale.getDefault()).contains(cbBase.editor.text.lowercase(Locale.getDefault())) }
-            if (autoCompletePopup.filteredSuggestions.isEmpty() || cbBase.showingProperty().get()
-                || cbBase.editor.text.isEmpty()
-            ) autoCompletePopup.hide() else autoCompletePopup.show(cbBase.editor)
+            if (autoCompletePopup.filteredSuggestions.isEmpty() || cbBase.showingProperty().get() || cbBase.editor.text.isEmpty())
+                autoCompletePopup.hide()
+            else
+                autoCompletePopup.show(cbBase.editor)
         }
         cbBase.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         cbBase.focusedProperty().addListener { _, oldValue, _ ->

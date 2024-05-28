@@ -138,8 +138,16 @@ class RevisarController : Initializable {
     private var corrigindo: Vocabulario? = null
 
     private val robot: Robot = Robot()
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://bilingual-reader-272ac-default-rtdb.firebaseio.com/")
+    private var database: FirebaseDatabase? = null
     private var reference: DatabaseReference? = null
+
+    init {
+        try {
+            database = FirebaseDatabase.getInstance("https://bilingual-reader-272ac-default-rtdb.firebaseio.com/")
+        } catch (E: Exception) {
+            LOGGER.error("Erro ao carregar a instância do firebase ", E)
+        }
+    }
 
     @FXML
     private fun onBtnSalvar() {
@@ -153,7 +161,7 @@ class RevisarController : Initializable {
         var error = false
         if (revisando != null) {
             revisando!!.portugues = texto
-            revisando!!.ingles = Utils.removeDuplicate(revisando!!.ingles)
+            revisando!!.ingles = Utils.removeDuplicate(txtAreaIngles.text)
 
             val palavra: Vocabulario = Revisar.toVocabulario(revisando!!)
 
@@ -405,8 +413,11 @@ class RevisarController : Initializable {
     }
 
     fun iniciaFirebase() {
+        if (database == null)
+            return
+
         if (reference == null) {
-            reference = database.getReference("anki")
+            reference = database!!.getReference("anki")
             reference!!.addValueEventListener(object : ValueEventListener {
                 @Override
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
