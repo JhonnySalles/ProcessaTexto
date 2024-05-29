@@ -3,7 +3,10 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.NovelDao
 import br.com.fenix.processatexto.database.dao.VocabularioDao
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapa
 import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapitulo
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelTexto
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Language
@@ -14,7 +17,6 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.sql.*
 import java.util.*
 import javax.imageio.ImageIO
@@ -353,7 +355,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), getLinguagem(linguagem)),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"')
                     )
-                ) else
+                )
+            else
                 Optional.empty()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -383,7 +386,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                         Language.getEnum(rs.getString("linguagem"))!!, rs.getBoolean("is_favorito"),
                         selectCapa(base, UUID.fromString(rs.getString("id"))).orElse(null), rs.getBoolean("is_processado"), mutableListOf(), mutableSetOf()
                     )
-                ) else
+                )
+            else
                 Optional.empty()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -414,7 +418,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), listOf()),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"')
                     )
-                ) else
+                )
+            else
                 Optional.empty()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -441,7 +446,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                         rs.getFloat("capitulo"), rs.getString("descricao"), rs.getInt("sequencia"), Language.getEnum(rs.getString("linguagem"))!!,
                         selectTextos(base, UUID.fromString(rs.getString("id"))), selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"')
                     )
-                ) else
+                )
+            else
                 Optional.empty()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -451,6 +457,10 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             JdbcFactory.closeStatement(st)
             JdbcFactory.closeResultSet(rs)
         }
+    }
+
+    override fun selectAll(base: String, novel: String, volume: Int, linguagem: Language): MutableList<NovelVolume> {
+        TODO("Not yet implemented")
     }
 
     @Throws(SQLException::class)
@@ -523,7 +533,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(String.format(UPDATE_VOLUMES_CANCEL, base))
-            st.setString(1, obj.id.toString())
+            st.setString(1, obj.getId().toString())
             st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -538,7 +548,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
     override fun deleteVolume(base: String, obj: NovelVolume) {
         var stVolume: PreparedStatement? = null
         try {
-            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, base, '"' + obj.id.toString() + '"'))
+            stVolume = conn.prepareStatement(String.format(DELETE_VOLUMES, base, '"' + obj.getId().toString() + '"'))
             stVolume.executeUpdate()
         } catch (e: SQLException) {
             println(stVolume.toString())
@@ -556,7 +566,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(INSERT_VOLUMES, base), Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
-            st.setString(++index, obj.id.toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, obj.novel)
             st.setString(++index, obj.titulo)
             st.setString(++index, obj.tituloAlternativo)
@@ -573,12 +583,12 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 obj.capa?.let {
-                    it.id = insertCapa(base, obj.id!!, it)
+                    it.id = insertCapa(base, obj.getId()!!, it)
                 }
-                insertVocabulario(base, obj.id, null, obj.vocabularios)
+                insertVocabulario(base, obj.getId(), null, obj.vocabularios)
                 for (capitulo in obj.capitulos)
-                    insertCapitulo(base, obj.id!!, capitulo)
-                obj.id!!
+                    insertCapitulo(base, obj.getId()!!, capitulo)
+                obj.getId()!!
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -651,8 +661,24 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
         }
     }
 
+    override fun updateVolume(base: String, obj: NovelVolume) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateCapitulo(base: String, obj: NovelCapitulo) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateTexto(base: String, obj: NovelTexto) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateCapa(base: String, obj: NovelCapa) {
+        TODO("Not yet implemented")
+    }
+
     @Throws(SQLException::class)
-    fun insertCapa(base: String?, idVolume: UUID, obj: NovelCapa): UUID {
+    override fun insertCapa(base: String, idVolume: UUID, obj: NovelCapa): UUID {
         var st: PreparedStatement? = null
         return try {
             st = conn.prepareStatement(String.format(INSERT_CAPA, base), Statement.RETURN_GENERATED_KEYS)
@@ -783,6 +809,10 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             JdbcFactory.closeStatement(st)
             JdbcFactory.closeResultSet(rs)
         }
+    }
+
+    override fun deleteTabela(base: String) {
+        TODO("Not yet implemented")
     }
 
     @get:Throws(SQLException::class)

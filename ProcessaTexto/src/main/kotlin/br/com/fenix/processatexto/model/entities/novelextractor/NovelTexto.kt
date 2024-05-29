@@ -1,7 +1,8 @@
-package org.jisho.textosJapones.model.entities.novelextractor
+package br.com.fenix.processatexto.model.entities.novelextractor
 
 import com.google.gson.annotations.Expose
 import java.util.*
+
 
 data class NovelTexto(
     var id: UUID? = null,

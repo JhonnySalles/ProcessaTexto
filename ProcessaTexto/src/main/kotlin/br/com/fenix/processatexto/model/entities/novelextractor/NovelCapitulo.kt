@@ -4,8 +4,8 @@ import br.com.fenix.processatexto.model.entities.Novel
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
 import com.google.gson.annotations.Expose
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTexto
 import java.util.*
+
 
 data class NovelCapitulo(
     var id: UUID? = null,

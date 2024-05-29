@@ -1,14 +1,15 @@
-package org.jisho.textosJapones.model.entities.novelextractor
+package br.com.fenix.processatexto.model.entities.novelextractor
 
+import br.com.fenix.processatexto.model.entities.Entity
 import br.com.fenix.processatexto.model.entities.Novel
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapitulo
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
 import com.google.gson.annotations.Expose
 import java.util.*
 
+
 data class NovelVolume(
-    var id: UUID? = null,
+    private var id: UUID? = null,
     @Expose override var novel: String = "",
     @Expose var titulo: String = "",
     @Expose var tituloAlternativo: String = "",
@@ -24,8 +25,19 @@ data class NovelVolume(
     @Expose var capitulos: MutableList<NovelCapitulo> = mutableListOf(),
     @Expose var vocabularios: MutableSet<VocabularioExterno> = mutableSetOf(),
     var processado: Boolean = false
-) : Novel() {
+) : Novel(), Entity<UUID?, NovelVolume> {
 
+    override fun getId(): UUID? = id
+
+    fun setId(id: UUID?) {
+        this.id = id
+    }
+
+    override fun create(id: UUID?): NovelVolume {
+        TODO("Not yet implemented")
+    }
+
+    fun addCapitulos(capitulo: NovelCapitulo) = capitulos.add(capitulo)
 
     constructor(
         id: UUID?,
@@ -97,8 +109,6 @@ data class NovelVolume(
         this.processado = processado
         capitulo = 0f
     }
-
-    fun addCapitulos(capitulo: NovelCapitulo) = capitulos.add(capitulo)
 
     override fun toString(): String {
         return "NovelVolume [" + "id=" + id + ", novel=" + novel + ", titulo=" + titulo + ", tituloAlternativo=" + tituloAlternativo + ", descricao=" + descricao +

@@ -82,7 +82,7 @@ abstract class RevisarControllerTest(conexao: Conexao, var linguagem: Language) 
         val ingles = robot.lookup("#txtAreaIngles").queryTextInputControl()
         val portugues = robot.lookup("#txtAreaPortugues").queryTextInputControl()
 
-        robot.sleep(50000)
+        //robot.sleep(50000)
 
         valideRevisao(ingles, portugues)
 

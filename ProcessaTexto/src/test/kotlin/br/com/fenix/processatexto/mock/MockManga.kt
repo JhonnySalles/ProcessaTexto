@@ -98,15 +98,15 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         val texto = MangaTexto(id, "texto", 1, 1, 1, 2, 2)
 
         var idVocab : UUID? = if (id != null) UUID.fromString(id.toString().substring(0, 36).plus("1")) else UUID.randomUUID()
-        var vocabulario = VocabularioExterno(idVocab, "vocabulario pagina", "forma_basica pagina", "ingles pagina", "leitura pagina", "leitura_novel pagina", true)
+        var vocabulario = VocabularioExterno(idVocab, "vocabulario pagina", "português pagina", "ingles pagina", "leitura pagina", "leitura novel pagina", true)
         val pagina = MangaPagina(id, "nome", 1, "hash_pagina", mutableListOf(texto), mutableSetOf(vocabulario))
 
         idVocab = if (id != null) UUID.fromString(id.toString().substring(0, 35).plus("2")) else UUID.randomUUID()
-        vocabulario = VocabularioExterno(idVocab, "vocabulario capitulo", "forma_basica capitulo", "ingles capitulo", "leitura capitulo", "leitura_novel capitulo", true)
-        val capitulo = MangaCapitulo(id, "manga", 1, 1f, LINGUAGEM, "scan", true, true, mutableSetOf(vocabulario), mutableListOf(pagina))
+        vocabulario = VocabularioExterno(idVocab, "vocabulario capitulo", "português capitulo", "ingles capitulo", "leitura capitulo", "leitura novel capitulo", true)
+        val capitulo = MangaCapitulo(id, "manga", 1, 1f, LINGUAGEM, "scan", extra = true, raw = true, vocabularios = mutableSetOf(vocabulario), paginas = mutableListOf(pagina))
 
         idVocab = if (id != null) UUID.fromString(id.toString().substring(0, 35).plus("3")) else UUID.randomUUID()
-        vocabulario = VocabularioExterno(idVocab, "vocabulario manga", "forma_basica manga", "ingles manga", "leitura manga", "leitura_novel manga", true)
+        vocabulario = VocabularioExterno(idVocab, "vocabulario manga", "português manga", "ingles manga", "leitura manga", "leitura novel manga", true)
         return MangaVolume(
             id, "manga", 1, LINGUAGEM, "arquivo",
             mutableSetOf(vocabulario), mutableListOf(capitulo), capa

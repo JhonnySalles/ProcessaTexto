@@ -3,6 +3,7 @@ package br.com.fenix.processatexto.model.entities.processatexto
 import com.google.gson.annotations.Expose
 import java.util.*
 
+
 data class VocabularioExterno(
     @Expose private var _palavra: String = "",
     @Expose var revisado: Boolean = false

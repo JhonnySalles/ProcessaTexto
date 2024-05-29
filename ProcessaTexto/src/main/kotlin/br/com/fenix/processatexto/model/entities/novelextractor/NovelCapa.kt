@@ -1,8 +1,9 @@
-package org.jisho.textosJapones.model.entities.novelextractor
+package br.com.fenix.processatexto.model.entities.novelextractor
 
 import br.com.fenix.processatexto.model.enums.Language
 import java.awt.image.BufferedImage
 import java.util.*
+
 
 data class NovelCapa(
     var id: UUID? = null,

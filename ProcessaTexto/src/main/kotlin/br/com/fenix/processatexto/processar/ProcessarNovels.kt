@@ -26,10 +26,10 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.concurrent.Task
 import javafx.util.Callback
-import org.jisho.textosJapones.model.entities.novelextractor.NovelCapa
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapa
 import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTexto
-import org.jisho.textosJapones.model.entities.novelextractor.NovelVolume
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelTexto
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
