@@ -631,7 +631,7 @@ object ProcessaComicInfo {
                                         LOGGER.error(e.message, e)
                                     }
                                 }
-                                if (page.imageWidth != null || page.imageHeight != null)
+                                if (page.imageWidth != null && page.imageHeight != null && page.imageHeight!! > 0)
                                     if (page.imageWidth!! / page.imageHeight!! > 0.9)
                                         page.doublePage = true
                             }
