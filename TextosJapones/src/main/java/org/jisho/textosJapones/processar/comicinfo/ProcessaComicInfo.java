@@ -720,7 +720,7 @@ public class ProcessaComicInfo {
                                     }
                                 }
 
-                                if (page.getImageWidth() != null || page.getImageHeight() != null)
+                                if (page.getImageWidth() != null && page.getImageHeight() != null && page.getImageHeight() > 0)
                                     if ((page.getImageWidth() / page.getImageHeight()) > 0.9)
                                         page.setDoublePage(true);
                             }
