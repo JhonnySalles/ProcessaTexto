@@ -13,7 +13,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
-        <kotlin.version>1.8.10</kotlin.version>
+        <kotlin.version>1.8.0</kotlin.version>
         <flyway.version>8.0.0</flyway.version>
         <flyway.mysql.version>8.2.1</flyway.mysql.version>
         <maven.compiler.source>14</maven.compiler.source>
@@ -152,12 +152,6 @@
         </dependency>
 
         <!-- Biblioteca para popup -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>11.0.2</version>
-        </dependency>
-
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
