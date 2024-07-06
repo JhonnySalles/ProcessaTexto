@@ -148,9 +148,8 @@ object Configuracao {
         if (!f.exists()) {
             try {
                 FileOutputStream("secrets.properties").use { os ->
-                    val props = Properties()
-                    props.setProperty("my_anime_list_client_id", "")
-                    props.store(os, "")
+                    secrets.setProperty("my_anime_list_client_id", "")
+                    secrets.store(os, "")
                 }
             } catch (e: IOException) {
                 //Alertas.Tela_Alerta("Erro ao salvar o secrets", e.message )
@@ -159,9 +158,8 @@ object Configuracao {
         }
         try {
             FileInputStream("secrets.properties").use { fs ->
-                val props = Properties()
-                props.load(fs)
-                return props
+                secrets.load(fs)
+                return secrets
             }
         } catch (e: IOException) {
             //Alertas.Tela_Alerta("Erro ao carregar o secrets", e.message )

@@ -498,7 +498,8 @@ object ProcessaComicInfo {
                 else if (comic.title != null && !comic.title.equals(comic.series, true))
                     comic.storyArc = comic.title
 
-                if (CONSULTA_MAL) processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
+                if (CONSULTA_MAL)
+                    processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
                 val titulosCapitulo: MutableList<Pair<Float, String>> = mutableListOf()
                 if (comic.summary != null && comic.summary!!.isNotEmpty()) {
                     val sumary = comic.summary!!.lowercase(Locale.getDefault())

@@ -468,7 +468,7 @@ class MangasComicInfoController : Initializable {
         } catch (e: Exception) {
             LOGGER.error(e.message, e)
         }
-        treeTabela.setRoot(DADOS)
+        treeTabela.root = DADOS
     }
 
     private fun onBtnTrocaId() {

@@ -79,7 +79,7 @@ open class CheckBoxTreeTableCellCustom<S, T> @JvmOverloads constructor(getSelect
             if (booleanProperty is BooleanProperty) {
                 checkBox.selectedProperty().unbindBidirectional(booleanProperty as BooleanProperty)
             }
-            val obsValue: ObservableValue<*> = selectedProperty
+            val obsValue: ObservableValue<*>? = selectedProperty
             if (obsValue is BooleanProperty) {
                 booleanProperty = obsValue as ObservableValue<Boolean>
                 checkBox.selectedProperty().bindBidirectional(booleanProperty as BooleanProperty)
@@ -101,8 +101,7 @@ open class CheckBoxTreeTableCellCustom<S, T> @JvmOverloads constructor(getSelect
         checkBox.setAlignment(if (showLabel) Pos.CENTER_LEFT else Pos.CENTER)
     }
 
-    private val selectedProperty: ObservableValue<*>
-        private get() = if (getSelectedStateCallback() != null) getSelectedStateCallback()!!.call(getIndex()) else getTableColumn().getCellObservableValue(getIndex())
+    private val selectedProperty: ObservableValue<*>? get() = if (getSelectedStateCallback() != null) getSelectedStateCallback()!!.call(index) else tableColumn.getCellObservableValue(index)
 
     companion object {
         fun <S> forTreeTableColumn(

@@ -46,11 +46,12 @@ module br.com.fenix.processatexto {
     exports br.com.fenix.processatexto;
     exports br.com.fenix.processatexto.logback;
     exports br.com.fenix.processatexto.model.entities;
+    exports br.com.fenix.processatexto.model.enums.comicinfo;
 
     opens br.com.fenix.processatexto to javafx.fxml;
 
     opens br.com.fenix.processatexto.model.entities to org.hibernate.orm.core, javafx.base, com.google.gson, google.cloud.firestore;
-    opens br.com.fenix.processatexto.model.entities.comicinfo to org.hibernate.orm.core, java.xml.bind;
+    opens br.com.fenix.processatexto.model.entities.comicinfo to org.hibernate.orm.core, java.xml.bind, jakarta.xml.bind;
     opens br.com.fenix.processatexto.model.entities.mangaextractor to org.hibernate.orm.core, com.google.gson, javafx.base;
     opens br.com.fenix.processatexto.model.entities.novelextractor to org.hibernate.orm.core, com.google.gson, javafx.base;
     opens br.com.fenix.processatexto.model.entities.processatexto to org.hibernate.orm.core, javafx.base;
