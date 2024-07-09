@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
@@ -683,27 +684,30 @@ public class RevisarController implements Initializable {
             if (click.getClickCount() == 1 && !lvProcesssar.getItems().isEmpty()) {
                 Triple<Vocabulario, Database, DatabaseReference> voc = lvProcesssar.getSelectionModel().getSelectedItem();
 
-                if (voc != null) {
-                    switch (voc.second) {
-                        case INGLES -> {
-                            if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
-                                cbLinguagem.getSelectionModel().select(Language.ENGLISH);
+                if (click.getButton() == MouseButton.PRIMARY) {
+                    if (voc != null) {
+                        switch (voc.second) {
+                            case INGLES -> {
+                                if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.ENGLISH))
+                                    cbLinguagem.getSelectionModel().select(Language.ENGLISH);
+                            }
+                            case JAPONES -> {
+                                if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.JAPANESE))
+                                    cbLinguagem.getSelectionModel().select(Language.JAPANESE);
+                            }
                         }
-                        case JAPONES -> {
-                            if (!cbLinguagem.getSelectionModel().getSelectedItem().equals(Language.JAPANESE))
-                                cbLinguagem.getSelectionModel().select(Language.JAPANESE);
-                        }
+
+                        txtPesquisar.setText(voc.first.getVocabulario());
+                        pesquisar();
+                        txtAreaPortugues.setText(voc.first.getPortugues());
+                        onBtnFormatar();
+
+                        Toolkit.getDefaultToolkit()
+                                .getSystemClipboard()
+                                .setContents(new StringSelection(voc.first.getVocabulario()), null);
                     }
-
-                    txtPesquisar.setText(voc.first.getVocabulario());
-                    pesquisar();
-                    txtAreaPortugues.setText(voc.first.getPortugues());
-                    onBtnFormatar();
-
-                    Toolkit.getDefaultToolkit()
-                            .getSystemClipboard()
-                            .setContents(new StringSelection(voc.first.getVocabulario()), null);
-                }
+                } else if (click.getButton() == MouseButton.SECONDARY)
+                    voc.third.removeValueAsync();
             }
         });
 

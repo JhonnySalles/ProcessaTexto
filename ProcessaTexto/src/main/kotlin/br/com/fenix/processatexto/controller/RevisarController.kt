@@ -27,6 +27,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.input.KeyCode
+import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
@@ -595,24 +596,27 @@ class RevisarController : Initializable {
             if (click.clickCount == 1 && !lvProcesssar.items.isEmpty()) {
                 val voc = lvProcesssar.selectionModel.selectedItem
                 if (voc != null) {
-                    when (voc.second) {
-                        Database.INGLES -> {
-                            if (!cbLinguagem.selectionModel.selectedItem.equals(Language.ENGLISH))
-                                cbLinguagem.selectionModel.select(Language.ENGLISH)
+                    if (click.button == MouseButton.PRIMARY) {
+                        when (voc.second) {
+                            Database.INGLES -> {
+                                if (!cbLinguagem.selectionModel.selectedItem.equals(Language.ENGLISH))
+                                    cbLinguagem.selectionModel.select(Language.ENGLISH)
+                            }
+                            Database.JAPONES -> {
+                                if (!cbLinguagem.selectionModel.selectedItem.equals(Language.JAPANESE))
+                                    cbLinguagem.selectionModel.select(Language.JAPANESE)
+                            }
+                            else -> {}
                         }
-                        Database.JAPONES -> {
-                            if (!cbLinguagem.selectionModel.selectedItem.equals(Language.JAPANESE))
-                                cbLinguagem.selectionModel.select(Language.JAPANESE)
-                        }
-                        else -> {}
-                    }
-                    txtPesquisar.text = voc.first.vocabulario
-                    pesquisar()
-                    txtAreaPortugues.text = voc.first.portugues
-                    onBtnFormatar()
-                    Toolkit.getDefaultToolkit()
-                        .systemClipboard
-                        .setContents(StringSelection(voc.first.vocabulario), null)
+                        txtPesquisar.text = voc.first.vocabulario
+                        pesquisar()
+                        txtAreaPortugues.text = voc.first.portugues
+                        onBtnFormatar()
+                        Toolkit.getDefaultToolkit()
+                            .systemClipboard
+                            .setContents(StringSelection(voc.first.vocabulario), null)
+                    } else if (click.button == MouseButton.SECONDARY)
+                        voc.third.removeValueAsync()
                 }
             }
         }
