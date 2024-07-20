@@ -642,14 +642,13 @@ public class ProcessaComicInfo {
                         comic.setScanInformation("");
                     }
 
-                    Map<String, Integer> pastas = parse.getPastas();
-                    int index = 0;
-
                     comic.getPages().forEach( it -> {
                         it.setBookmark(null);
                         it.setType(null);
                     });
 
+                    Map<String, Integer> pastas = parse.getPastas();
+                    int index = 0;
                     for (int i = 0; i < parse.getSize(); i++) {
                         if (index >= comic.getPages().size())
                             continue;

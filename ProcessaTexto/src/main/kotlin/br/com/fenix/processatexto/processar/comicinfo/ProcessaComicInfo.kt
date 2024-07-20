@@ -1,30 +1,30 @@
 package br.com.fenix.processatexto.processar.comicinfo
 
+import br.com.fenix.processatexto.controller.mangas.MangasComicInfoController
+import br.com.fenix.processatexto.fileparse.Parse
+import br.com.fenix.processatexto.fileparse.ParseFactory
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
+import br.com.fenix.processatexto.model.entities.comicinfo.MAL
+import br.com.fenix.processatexto.model.enums.Language
+import br.com.fenix.processatexto.model.enums.comicinfo.ComicPageType
+import br.com.fenix.processatexto.model.enums.comicinfo.Manga
+import br.com.fenix.processatexto.service.ComicInfoServices
+import br.com.fenix.processatexto.util.Utils
+import br.com.fenix.processatexto.util.configuration.Configuracao
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import dev.katsute.mal4j.MyAnimeList
+import jakarta.xml.bind.JAXBContext
+import jakarta.xml.bind.JAXBException
+import jakarta.xml.bind.Marshaller
+import jakarta.xml.bind.Unmarshaller
 import javafx.application.Platform
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.util.Callback
 import javafx.util.Pair
-import br.com.fenix.processatexto.controller.mangas.MangasComicInfoController
-import br.com.fenix.processatexto.fileparse.Parse
-import br.com.fenix.processatexto.fileparse.ParseFactory
-import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
-import br.com.fenix.processatexto.model.enums.Language
-import br.com.fenix.processatexto.model.enums.comicinfo.ComicPageType
-import br.com.fenix.processatexto.service.ComicInfoServices
-import br.com.fenix.processatexto.util.Utils
-import br.com.fenix.processatexto.util.configuration.Configuracao
-import br.com.fenix.processatexto.model.entities.comicinfo.MAL
-import br.com.fenix.processatexto.model.enums.comicinfo.Manga
-import jakarta.xml.bind.JAXBContext
-import jakarta.xml.bind.JAXBException
-import jakarta.xml.bind.Marshaller
-import jakarta.xml.bind.Unmarshaller
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.URI
@@ -559,6 +559,12 @@ object ProcessaComicInfo {
                         comic.translator = ""
                         comic.scanInformation = ""
                     }
+
+                    comic.pages?.forEach {
+                        it.bookmark = null
+                        it.type = null
+                    }
+
                     val pastas: Map<String, Int> = parse.getPastas()
                     var index = 0
                     for (i in 0 until parse.getSize()) {
