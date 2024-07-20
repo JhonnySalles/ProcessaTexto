@@ -644,6 +644,12 @@ public class ProcessaComicInfo {
 
                     Map<String, Integer> pastas = parse.getPastas();
                     int index = 0;
+
+                    comic.getPages().forEach( it -> {
+                        it.setBookmark(null);
+                        it.setType(null);
+                    });
+
                     for (int i = 0; i < parse.getSize(); i++) {
                         if (index >= comic.getPages().size())
                             continue;
