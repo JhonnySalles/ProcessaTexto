@@ -137,6 +137,7 @@ class MenuPrincipalController : Initializable {
     @FXML
     private fun onSelectRevisarChanged(event: Event) {
         SincronizacaoServices.processar = tbRevisar.isSelected
+        RevisarController.selecionado = tbRevisar.isSelected
         revisarController.iniciaFirebase()
     }
 

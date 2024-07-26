@@ -7,17 +7,19 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.util.Callback;
+import javafx.util.Pair;
+import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Triple;
@@ -49,6 +51,8 @@ import java.util.stream.Collectors;
 public class RevisarController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RevisarController.class);
+
+    public static Boolean selecionado = false;
 
     @FXML
     private AnchorPane apRoot;
@@ -137,6 +141,8 @@ public class RevisarController implements Initializable {
     private final RevisarInglesServices revisarIngles = new RevisarInglesServices();
     private final VocabularioInglesServices vocabularioIngles = new VocabularioInglesServices();
 
+    private ArrayDeque<Pair<Vocabulario, Language>> revisados = new ArrayDeque<>();
+
     private List<Revisar> similar;
 
     private ObservableList<Triple<Vocabulario, Database, DatabaseReference>> processsar = FXCollections.observableArrayList();
@@ -183,6 +189,7 @@ public class RevisarController implements Initializable {
                     revisarJapones.delete(similar);
                 }
 
+                revisados.push(new Pair(palavra, cbLinguagem.getSelectionModel().getSelectedItem()));
                 removeFiredac(palavra);
             } catch (ExcessaoBd e) {
                 LOGGER.error(e.getMessage(), e);
@@ -198,6 +205,7 @@ public class RevisarController implements Initializable {
                 else
                     vocabularioJapones.insertOrUpdate(corrigindo);
 
+                revisados.push(new Pair(corrigindo, cbLinguagem.getSelectionModel().getSelectedItem()));
                 removeFiredac(corrigindo);
             } catch (ExcessaoBd e) {
                 LOGGER.error(e.getMessage(), e);
@@ -423,6 +431,18 @@ public class RevisarController implements Initializable {
             LOGGER.error(e.getMessage(), e);
         } finally {
             cbCorrecao.selectedProperty().addListener(listenerCorrecao);
+        }
+    }
+
+    public void retornar() {
+        if (!revisados.isEmpty()) {
+            var revisado = revisados.pop();
+
+            if (cbLinguagem.getSelectionModel().getSelectedItem() == null || !cbLinguagem.getSelectionModel().getSelectedItem().equals(revisado.getValue()))
+                cbLinguagem.getSelectionModel().select(revisado.getValue());
+
+            txtPesquisar.setText(revisado.getKey().getVocabulario());
+            pesquisar();
         }
     }
 
@@ -716,6 +736,17 @@ public class RevisarController implements Initializable {
         lvProcesssar.setItems(processsar);
         lvProcesssar.setVisible(false);
         lvProcesssar.managedProperty().bind(lvProcesssar.visibleProperty());
+
+        Platform.runLater(() -> {
+            KeyCodeCombination kcRetorno = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
+            EventHandler filter = (EventHandler<KeyEvent>) event -> {
+                if (selecionado && kcRetorno.match(event)) {
+                    retornar();
+                    event.consume();
+                }
+            };
+            apRoot.getScene().addEventFilter(KeyEvent.KEY_PRESSED, filter);
+        });
 
         pesquisar();
     }

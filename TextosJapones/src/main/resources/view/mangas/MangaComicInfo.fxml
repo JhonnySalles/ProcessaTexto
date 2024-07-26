@@ -58,9 +58,9 @@
                   </VBox>
                   <VBox prefWidth="350.0" spacing="5.0">
                      <children>
-      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnProcessar" prefWidth="290.0" styleClass="background-White1" text="Processar comic info" />
+      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="290.0" styleClass="background-White1" text="Processar comic info" />
                         <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="290.0" styleClass="background-White1" text="Processar Marcados" />
-                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" defaultButton="true" onAction="#onBtnValidar" prefWidth="290.0" styleClass="background-White1" text="Validar comic info" />
+                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" onAction="#onBtnValidar" prefWidth="290.0" styleClass="background-White1" text="Validar comic info" />
                         <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="290.0" styleClass="background-White1" text="Limpar lista" />
                      </children>
                   </VBox>

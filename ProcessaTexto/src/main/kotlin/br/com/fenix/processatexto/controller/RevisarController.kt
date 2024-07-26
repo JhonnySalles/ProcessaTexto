@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.controller
 
+import br.com.fenix.processatexto.Run
 import br.com.fenix.processatexto.components.notification.Notificacoes
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
@@ -26,12 +27,11 @@ import javafx.fxml.Initializable
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
-import javafx.scene.input.KeyCode
-import javafx.scene.input.MouseButton
-import javafx.scene.input.MouseEvent
+import javafx.scene.input.*
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.robot.Robot
+import javafx.util.Pair
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.*
@@ -133,6 +133,7 @@ class RevisarController : Initializable {
     private val revisarIngles = RevisarInglesServices()
     private val vocabularioIngles = VocabularioInglesServices()
 
+    private val revisados = ArrayDeque<Pair<Vocabulario, Language>>()
     private var similar: MutableList<Revisar> = mutableListOf()
     private val processsar: ObservableList<Triple<Vocabulario, Database, DatabaseReference>> = FXCollections.observableArrayList()
     private var revisando: Revisar? = null
@@ -182,6 +183,8 @@ class RevisarController : Initializable {
                     revisarJapones.delete(revisando!!)
                     revisarJapones.delete(similar)
                 }
+
+                revisados.push(Pair(palavra, cbLinguagem.selectionModel.selectedItem))
                 removeFiredac(palavra)
             } catch (e: SQLException) {
                 LOGGER.error(e.message, e)
@@ -194,6 +197,8 @@ class RevisarController : Initializable {
                     vocabularioIngles.insertOrUpdate(corrigindo!!)
                 else
                     vocabularioJapones.insertOrUpdate(corrigindo!!)
+
+                revisados.push(Pair(corrigindo, cbLinguagem.selectionModel.selectedItem))
                 removeFiredac(corrigindo)
             } catch (e: SQLException) {
                 LOGGER.error(e.message, e)
@@ -413,6 +418,18 @@ class RevisarController : Initializable {
         }
     }
 
+    fun retornar() {
+        if (revisados.isNotEmpty()) {
+            val revisado = revisados.pop()
+
+            if (cbLinguagem.selectionModel.selectedItem == null || !cbLinguagem.selectionModel.selectedItem.equals(revisado.value))
+                cbLinguagem.selectionModel.select(revisado.value)
+
+            txtPesquisar.text = revisado.key.vocabulario
+            pesquisar()
+        }
+    }
+
     fun iniciaFirebase() {
         if (database == null)
             return
@@ -626,10 +643,22 @@ class RevisarController : Initializable {
         lvProcesssar.items = processsar
         lvProcesssar.isVisible = false
         lvProcesssar.managedProperty().bind(lvProcesssar.visibleProperty())
+
+        Platform.runLater {
+            val kcRetorno: KeyCombination = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
+            apRoot.getScene().addEventFilter(KeyEvent.KEY_PRESSED) { ke: KeyEvent ->
+                if (selecionado && kcRetorno.match(ke)) {
+                    retornar()
+                    ke.consume()
+                }
+            }
+        }
+
         pesquisar()
     }
 
     companion object {
+        public var selecionado : Boolean = false
         private val LOGGER: Logger = LoggerFactory.getLogger(RevisarController::class.java)
         val fxmlLocate: URL
             get() = RevisarController::class.java.getResource("/view/Revisar.fxml")

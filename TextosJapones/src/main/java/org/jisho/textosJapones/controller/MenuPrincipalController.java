@@ -185,6 +185,7 @@ public class MenuPrincipalController implements Initializable {
     @FXML
     private void onSelectRevisarChanged(Event event) {
         SincronizacaoServices.processar = tbRevisar.isSelected();
+        RevisarController.selecionado = tbRevisar.isSelected();
         revisarController.iniciaFirebase();
     }
 
