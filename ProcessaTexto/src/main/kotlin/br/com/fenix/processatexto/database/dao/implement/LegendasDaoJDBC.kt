@@ -41,10 +41,10 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
                 "  FOR EACH ROW BEGIN" +
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
-        private const val INSERT_FILA = "INSERT INTO fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-        private const val UPDATE_FILA = "UPDATE fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?"
-        private const val SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM fila_sql"
-        private const val EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM fila_sql WHERE delete_sql = ?"
+        private const val INSERT_FILA = "INSERT INTO _fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+        private const val UPDATE_FILA = "UPDATE _fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?"
+        private const val SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql"
+        private const val EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql WHERE delete_sql = ?"
     }
 
     private val connDeckSubtitle = JdbcFactory.getFactory(Conexao.DECKSUBTITLE)

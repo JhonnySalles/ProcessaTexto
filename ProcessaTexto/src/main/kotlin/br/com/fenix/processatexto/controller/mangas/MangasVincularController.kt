@@ -1425,10 +1425,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     private fun selectionaManga(autoComplete: JFXAutoCompletePopup<String>, linguagem: JFXComboBox<Language>, manga: JFXTextField) {
         try {
             autoComplete.suggestions.clear()
-            val mangas: List<String> = service.getMangas(
-                cbBase.selectionModel.selectedItem,
-                linguagem.selectionModel.selectedItem
-            )
+            val mangas: List<String> = service.getMangas(cbBase.selectionModel.selectedItem ?: "", linguagem.selectionModel.selectedItem)
             autoComplete.suggestions.addAll(mangas)
             manga.text = ""
         } catch (e: SQLException) {
@@ -1627,11 +1624,9 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         setAutoCompleteListener(false)
         spnVolume.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         cbLinguagemOrigem.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        cbLinguagemOrigem.selectionModel.selectedItemProperty()
-            .addListener { _, _, _ -> selectionaManga(autoCompleteMangaOriginal, cbLinguagemOrigem, txtMangaOriginal) }
+        cbLinguagemOrigem.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(autoCompleteMangaOriginal, cbLinguagemOrigem, txtMangaOriginal) }
         cbLinguagemVinculado.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        cbLinguagemVinculado.selectionModel.selectedItemProperty()
-            .addListener { _, _, _ -> selectionaManga(autoCompleteMangaVinculado, cbLinguagemVinculado, txtMangaVinculado) }
+        cbLinguagemVinculado.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(autoCompleteMangaVinculado, cbLinguagemVinculado, txtMangaVinculado) }
         txtArquivoOriginal.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         txtArquivoVinculado.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         preparaCelulas()

@@ -438,7 +438,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 list.add(
                     MangaVolume(
                         UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
-                        Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo"),
+                        Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo") ?: "",
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"'),
                         selectCapitulos(base, UUID.fromString(rs.getString("id")), capitulo, linguagem, inverterTexto),
                         selectCapas(base, UUID.fromString(rs.getString("id")))

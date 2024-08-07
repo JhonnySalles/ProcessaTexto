@@ -260,7 +260,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
                 list.add(
                     Revisar(
                         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-                        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
+                        rs.getString("leitura"), rs.getString("leitura_novel") ?: "", rs.getString("portugues"), rs.getString("ingles"),
                         rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
                     )
                 )
