@@ -298,6 +298,7 @@
             <artifactId>kuromoji</artifactId>
             <version>0.9.0</version>
             <scope>system</scope>
+            <type>jar</type>
             <systemPath>${basedir}/src/lib/kuromoji-core-0.9.0.jar</systemPath>
         </dependency>
 
@@ -306,6 +307,7 @@
             <artifactId>kuromoji</artifactId>
             <version>0.9.0</version>
             <scope>system</scope>
+            <type>jar</type>
             <systemPath>${basedir}/src/lib/kuromoji-ipadic-0.9.0.jar</systemPath>
         </dependency>
 
@@ -421,6 +423,60 @@
                 <configuration>
                     <jvmTarget>11</jvmTarget>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.jisho.textosJapones.App</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-files-on-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>../App/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/</directory>
+                                    <include>*.jar</include>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
