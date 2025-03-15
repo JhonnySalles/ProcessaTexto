@@ -1,1 +1,2 @@
+chcp 65001
 java -Dfile.encoding=utf-8 --add-opens java.base/java.lang.reflect=ALL-UNNAMED -jar TextosJapones-0.1.3-SNAPSHOT-jar-with-dependencies.jar 
