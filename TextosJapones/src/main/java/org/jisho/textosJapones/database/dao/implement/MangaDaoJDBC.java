@@ -132,12 +132,7 @@ public class MangaDaoJDBC implements MangaDao {
 
             insertVocabulario(base, obj.getId(), null, null, obj.getVocabularios());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                System.out.println("Nenhum registro atualizado.");
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -165,12 +160,7 @@ public class MangaDaoJDBC implements MangaDao {
 
             insertVocabulario(base, null, obj.getId(), null, obj.getVocabularios());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                System.out.println("Nenhum registro atualizado.");
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -200,12 +190,7 @@ public class MangaDaoJDBC implements MangaDao {
 
             insertVocabulario(base, null, obj.getId(), null, obj.getVocabularios());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                System.out.println("Nenhum registro atualizado.");
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -301,12 +286,7 @@ public class MangaDaoJDBC implements MangaDao {
 
             insertVocabulario(base, null, null, obj.getId(), obj.getVocabularios());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -330,12 +310,7 @@ public class MangaDaoJDBC implements MangaDao {
             st.setInt(6, obj.getY2());
             st.setString(7, obj.getId().toString());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -364,17 +339,11 @@ public class MangaDaoJDBC implements MangaDao {
             st.setBinaryStream(++index, new ByteArrayInputStream(baos.toByteArray()));
             st.setString(++index, obj.getId().toString());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-            }
-            ;
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(e);
@@ -1539,12 +1508,7 @@ public class MangaDaoJDBC implements MangaDao {
             st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, base), Statement.RETURN_GENERATED_KEYS);
 
             st.setString(1, id.toString());
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());

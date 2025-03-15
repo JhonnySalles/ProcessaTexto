@@ -515,7 +515,7 @@ public class NovelDaoJDBC implements NovelDao {
             System.out.println(stVolume.toString());
 
             LOGGER.error(e.getMessage(), e);
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             try {
                 conn.setAutoCommit(true);
@@ -773,12 +773,7 @@ public class NovelDaoJDBC implements NovelDao {
             st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, base), Statement.RETURN_GENERATED_KEYS);
 
             st.setString(1, id.toString());
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());

@@ -94,12 +94,7 @@ public class RevisarJaponesDaoJDBC implements RevisarDao {
             st.setBoolean(++index, obj.isNovel());
             st.setString(++index, obj.getVocabulario());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());

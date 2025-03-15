@@ -139,7 +139,7 @@ public class LegendasDaoJDBC implements LegendasDao {
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_DELETE);
         } finally {
             DB.closeStatement(st);
         }
@@ -159,7 +159,12 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setString(++index, obj.getTexto());
             st.setString(++index, obj.getTraducao());
             st.setString(++index, obj.getVocabulario());
-            st.executeUpdate();
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString());
+                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -186,16 +191,11 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setString(++index, obj.getVocabulario());
             st.setString(++index, obj.getId().toString());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
-            };
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
-            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
         } finally {
             DB.closeStatement(st);
         }
@@ -210,12 +210,7 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setString(1, obj.getVocabulario());
             st.setString(2, obj.getId());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
@@ -269,12 +264,12 @@ public class LegendasDaoJDBC implements LegendasDao {
 
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+                throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
-            throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
+            throw new ExcessaoBd(Mensagens.BD_ERRO_INSERT);
         } finally {
             DB.closeStatement(st);
         }
@@ -296,12 +291,7 @@ public class LegendasDaoJDBC implements LegendasDao {
             st.setBoolean(7, fila.isLimpeza());
             st.setString(8, fila.getId().toString());
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString());
-                throw new ExcessaoBd(Mensagens.BD_ERRO_UPDATE);
-            }
+            st.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             LOGGER.info(st.toString());
