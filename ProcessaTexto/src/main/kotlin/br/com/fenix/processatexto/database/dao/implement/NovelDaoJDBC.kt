@@ -516,7 +516,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             println(stVocabulario.toString())
             println(stVolume.toString())
             LOGGER.error(e.message, e)
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
@@ -776,11 +776,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
         try {
             st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, base), Statement.RETURN_GENERATED_KEYS)
             st.setString(1, id.toString())
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())

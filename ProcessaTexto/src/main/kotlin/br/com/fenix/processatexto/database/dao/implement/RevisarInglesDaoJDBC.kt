@@ -74,11 +74,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setBoolean(4, obj.isAnime)
             st.setBoolean(5, obj.isManga)
             st.setString(6, obj.vocabulario)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())

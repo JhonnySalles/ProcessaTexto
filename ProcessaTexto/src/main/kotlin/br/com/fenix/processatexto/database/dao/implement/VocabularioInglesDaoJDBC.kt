@@ -64,11 +64,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
             st.setString(1, obj.leitura)
             st.setString(2, obj.portugues)
             st.setString(3, obj.vocabulario)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())

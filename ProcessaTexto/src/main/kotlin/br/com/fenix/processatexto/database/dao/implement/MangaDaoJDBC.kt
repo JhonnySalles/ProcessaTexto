@@ -123,11 +123,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.getId().toString())
 
             insertVocabulario(base, obj.getId(), null, null, obj.vocabularios)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                println("Nenhum registro atualizado.")
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -154,11 +150,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.getId().toString())
 
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                println("Nenhum registro atualizado.")
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -186,11 +178,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.getId().toString())
 
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                println("Nenhum registro atualizado.")
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -349,12 +337,12 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_INSERT)
+                throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } catch (e: IOException) {
             LOGGER.error(e.message, e)
             throw RuntimeException(e)
@@ -1503,11 +1491,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         try {
             st = conn.prepareStatement(String.format(UPDATE_PROCESSADO, base), Statement.RETURN_GENERATED_KEYS)
             st.setString(1, id.toString())
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())

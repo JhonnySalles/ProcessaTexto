@@ -128,7 +128,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
         }
@@ -147,7 +147,11 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             st.setString(++index, obj.texto)
             st.setString(++index, obj.traducao)
             st.setString(++index, obj.vocabulario)
-            st.executeUpdate()
+            val rowsAffected: Int = st.executeUpdate()
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString())
+                throw SQLException(Mensagens.BD_ERRO_INSERT)
+            }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -172,15 +176,11 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             st.setString(++index, obj.traducao)
             st.setString(++index, obj.vocabulario)
             st.setString(++index, obj.getId().toString())
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_INSERT)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
-            throw SQLException(Mensagens.BD_ERRO_INSERT)
+            throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
         }
@@ -193,11 +193,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             st = conn.prepareStatement(update, Statement.RETURN_GENERATED_KEYS)
             st.setString(1, obj.vocabulario)
             st.setString(2, obj.id)
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -247,12 +243,12 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
+                throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
-            throw SQLException(Mensagens.BD_ERRO_UPDATE)
+            throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
         }
@@ -274,11 +270,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             st.setBoolean(++index, fila.isLimpeza)
             st.setString(++index, fila.getId().toString())
 
-            val rowsAffected: Int = st.executeUpdate()
-            if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
-            }
+            st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
@@ -346,7 +338,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             LOGGER.info(st.toString())
-            throw SQLException(Mensagens.BD_ERRO_UPDATE)
+            throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
         }
