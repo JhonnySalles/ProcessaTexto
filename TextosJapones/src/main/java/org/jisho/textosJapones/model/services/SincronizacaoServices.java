@@ -411,7 +411,7 @@ public class SincronizacaoServices extends TimerTask {
                     comic.merge(sinc);
                     daoComicInfo.update(comic);
                 } else
-                    daoComicInfo.insert(comic);
+                    daoComicInfo.insert(sinc);
 
                 comicInfo += sinc.getComic() + ", ";
             }
@@ -442,8 +442,6 @@ public class SincronizacaoServices extends TimerTask {
             List<ComicInfo> sinc = sincronizarComicInfo.parallelStream().sorted((o1, o2) -> o2.getComic().compareTo(o1.getComic())).distinct().collect(Collectors.toList());
             try {
                 sincronizarComicInfo.clear();
-                String envio = LocalDateTime.now().format(formaterDataHora);
-
                 if (!sinc.isEmpty()) {
                     CollectionReference document = DB.collection("COMICINFO");
                     DocumentSnapshot docIndex = document.document("_INDEX").get().get();
@@ -551,7 +549,7 @@ public class SincronizacaoServices extends TimerTask {
     }
 
     public Integer listSize() {
-        return sincronizarVocabulario.size();
+        return sincronizarVocabulario.size() + sincronizarComicInfo.size();
     }
 
 }

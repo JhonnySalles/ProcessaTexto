@@ -56,7 +56,7 @@ public class MangasController implements Initializable {
 	}
 
 	@FXML
-	public void onSelectComicInfoChanged(Event event) {
+	private void onSelectComicInfoChanged(Event event) {
 		SincronizacaoServices.processarComicInfo = tbComicInfo.isSelected();
 		MangasComicInfoController.selecionado = tbComicInfo.isSelected();
 	}
