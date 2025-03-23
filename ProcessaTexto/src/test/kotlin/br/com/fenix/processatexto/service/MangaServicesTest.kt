@@ -1,11 +1,9 @@
 package br.com.fenix.processatexto.service
 
 import br.com.fenix.processatexto.TestsConfig
-import br.com.fenix.processatexto.database.dao.implement.VincularDaoJDBC
 import br.com.fenix.processatexto.mock.MockManga
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaTabela
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
-import br.com.fenix.processatexto.model.enums.Language
 import javafx.collections.FXCollections
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue

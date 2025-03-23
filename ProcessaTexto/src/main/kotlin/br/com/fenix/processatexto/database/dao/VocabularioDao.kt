@@ -43,5 +43,8 @@ interface VocabularioDao : RepositoryDao<UUID?, Vocabulario> {
     fun selectExclusao(): Set<String>
 
     @Throws(SQLException::class)
-    fun selectEnvio(ultimo: LocalDateTime): List<Vocabulario>
+    fun selectEnvioVocabulario(ultimo: LocalDateTime): List<Vocabulario>
+
+    @Throws(SQLException::class)
+    fun selectExclusaoEnvio(ultimo: LocalDateTime): List<String>
 }

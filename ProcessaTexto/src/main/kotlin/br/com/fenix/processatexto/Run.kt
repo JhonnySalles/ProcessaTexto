@@ -9,6 +9,7 @@ import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
+import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.slf4j.LoggerFactory
@@ -33,8 +34,19 @@ class Run : Application() {
             PRIMARY_STAGE.title = "Processar Textos"
             PRIMARY_STAGE.icons.add(Image(Run::class.java.getResourceAsStream(MenuPrincipalController.iconLocate)))
             PRIMARY_STAGE.initStyle(StageStyle.DECORATED)
-            PRIMARY_STAGE.minWidth = 900.0
-            PRIMARY_STAGE.minHeight = 700.0
+
+            if (Screen.getScreens()[0].bounds.height > 800) {
+                PRIMARY_STAGE.minWidth = 800.0
+                PRIMARY_STAGE.minHeight = 600.0
+                PRIMARY_STAGE.width = 900.0
+                PRIMARY_STAGE.height = 700.0
+            } else {
+                PRIMARY_STAGE.minWidth = 700.0
+                PRIMARY_STAGE.minHeight = 600.0
+                PRIMARY_STAGE.width = 700.0
+                PRIMARY_STAGE.height = 600.0
+            }
+
             PRIMARY_STAGE.show() // Mostra a tela.
         } catch (e: Exception) {
             LOGGER.error(e.message, e)

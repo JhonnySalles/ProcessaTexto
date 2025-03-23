@@ -3,12 +3,14 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.ComicInfoDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
+import br.com.fenix.processatexto.model.entities.comicinfo.AgeRating
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
-import br.com.fenix.processatexto.model.entities.comicinfo.AgeRating
+import br.com.fenix.processatexto.util.Utils
 import org.slf4j.LoggerFactory
 import java.sql.*
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -18,6 +20,8 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
         private const val INSERT = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
         private const val SELECT = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? AND language = ? ;"
+        private const val SELECT_BY_ID_OR_COMIC = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE id = ? OR (language = ? AND (UPPER(comic) LIKE ? or UPPER(series) LIKE ? or UPPER(title) LIKE ?));"
+        private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao = ?"
     }
 
     private val LOGGER = LoggerFactory.getLogger(ComicInfoJDBC::class.java)
@@ -120,6 +124,51 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
                 Optional.of(toEntity(rs))
             else
                 Optional.empty<ComicInfo>()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            throw SQLException(Mensagens.BD_ERRO_SELECT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+            JdbcFactory.closeResultSet(rs)
+        }
+    }
+
+    override fun select(id: UUID, comic: String, linguagem: String): Optional<ComicInfo> {
+        var st: PreparedStatement? = null
+        var rs: ResultSet? = null
+        try {
+            st = conn.prepareStatement(SELECT_BY_ID_OR_COMIC)
+            var index = 0
+            st.setString(++index, id.toString())
+            st.setString(++index, linguagem)
+            st.setString(++index, comic.uppercase(Locale.getDefault()))
+            st.setString(++index, comic.uppercase(Locale.getDefault()))
+            st.setString(++index, comic.uppercase(Locale.getDefault()))
+            rs = st.executeQuery()
+            return if (rs.next())
+                Optional.of(toEntity(rs))
+            else
+                Optional.empty<ComicInfo>()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            throw SQLException(Mensagens.BD_ERRO_SELECT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+            JdbcFactory.closeResultSet(rs)
+        }
+    }
+
+    override fun selectEnvio(ultimo: LocalDateTime): List<ComicInfo> {
+        var st: PreparedStatement? = null
+        var rs: ResultSet? = null
+        return try {
+            st = conn.prepareStatement(SELECT_ENVIO)
+            st.setString(1, Utils.convertToString(ultimo))
+            rs = st.executeQuery()
+            val list: MutableList<ComicInfo> = mutableListOf()
+            while (rs.next())
+                list.add(toEntity(rs))
+            list
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)

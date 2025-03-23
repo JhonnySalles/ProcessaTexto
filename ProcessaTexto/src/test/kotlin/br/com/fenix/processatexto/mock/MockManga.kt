@@ -3,7 +3,6 @@ package br.com.fenix.processatexto.mock
 import br.com.fenix.processatexto.model.entities.mangaextractor.*
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
-import org.checkerframework.checker.units.qual.g
 import org.junit.jupiter.api.Assertions.*
 import java.awt.Color
 import java.awt.Graphics2D

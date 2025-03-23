@@ -3,7 +3,6 @@ package br.com.fenix.processatexto.processar
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
-import br.com.fenix.processatexto.controller.legendas.LegendasImportarController
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Dicionario

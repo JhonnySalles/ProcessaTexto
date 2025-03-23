@@ -1,8 +1,8 @@
 package br.com.fenix.processatexto.database.jpa
 
 import br.com.fenix.processatexto.model.entities.EntityBase
-import java.util.*
 import jakarta.transaction.Transactional
+import java.util.*
 
 
 interface RepositoryJpa<ID, E : EntityBase<ID, E>> {

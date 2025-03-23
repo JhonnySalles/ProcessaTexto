@@ -2,10 +2,10 @@ package br.com.fenix.processatexto.service
 
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.JdbcFactory
-import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
-import br.com.fenix.processatexto.model.enums.Conexao
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
+import br.com.fenix.processatexto.model.enums.Conexao
 import java.sql.SQLException
 
 

@@ -1,9 +1,9 @@
 package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
+import br.com.fenix.processatexto.model.entities.mangaextractor.MangaPagina
 import br.com.fenix.processatexto.model.enums.Pagina
 import javafx.scene.image.Image
-import br.com.fenix.processatexto.model.entities.mangaextractor.MangaPagina
 import java.io.Serializable
 import java.util.*
 

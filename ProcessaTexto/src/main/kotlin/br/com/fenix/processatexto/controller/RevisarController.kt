@@ -1,6 +1,5 @@
 package br.com.fenix.processatexto.controller
 
-import br.com.fenix.processatexto.Run
 import br.com.fenix.processatexto.components.notification.Notificacoes
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario

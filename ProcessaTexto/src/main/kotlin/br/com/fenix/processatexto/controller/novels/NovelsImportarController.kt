@@ -10,7 +10,6 @@ import br.com.fenix.processatexto.service.NovelServices
 import br.com.fenix.processatexto.util.constraints.Validadores
 import com.jfoenix.controls.*
 import com.nativejavafx.taskbar.TaskbarProgressbar
-import javafx.beans.value.ChangeListener
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.ProgressBar
@@ -23,7 +22,10 @@ import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.net.URL
 import java.util.*
 

@@ -48,7 +48,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.robot.Robot
 import javafx.stage.FileChooser
-import br.com.fenix.processatexto.controller.mangas.MangasVincularCelulaSimplesController
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File

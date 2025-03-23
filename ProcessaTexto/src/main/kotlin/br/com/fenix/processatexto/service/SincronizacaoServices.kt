@@ -3,20 +3,25 @@ package br.com.fenix.processatexto.service
 import br.com.fenix.processatexto.components.notification.Notificacoes
 import br.com.fenix.processatexto.controller.MenuPrincipalController
 import br.com.fenix.processatexto.database.DaoFactory
+import br.com.fenix.processatexto.database.dao.ComicInfoDao
 import br.com.fenix.processatexto.database.dao.RevisarDao
 import br.com.fenix.processatexto.database.dao.SincronizacaoDao
 import br.com.fenix.processatexto.database.dao.VocabularioDao
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Database
 import br.com.fenix.processatexto.model.enums.Notificacao
-import com.google.api.core.ApiFuture
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.Timestamp
 import com.google.cloud.firestore.*
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.cloud.FirestoreClient
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
@@ -34,11 +39,14 @@ import java.util.stream.Collectors
 
 class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
+    private val daoComicInfo: ComicInfoDao
     private val daoVocabulario: List<VocabularioDao>
     private val daoRevisar: List<RevisarDao>
     private val dao: SincronizacaoDao
+
     private var sincronizacao: Sincronizacao? = null
-    private var DB: Firestore? = null
+    private var mDB: Firestore? = null
+
     private val formaterData: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val formaterDataHora: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
@@ -50,38 +58,47 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
         this.controller = controller
         val timer = Timer(true)
         timer.scheduleAtFixedRate(this, 0, 5 * 60 * 1000)
+
         daoVocabulario = ArrayList()
         daoVocabulario.add(DaoFactory.createVocabularioJaponesDao())
         daoVocabulario.add(DaoFactory.createVocabularioInglesDao())
+
         daoRevisar = ArrayList()
         daoRevisar.add(DaoFactory.createRevisarJaponesDao())
         daoRevisar.add(DaoFactory.createRevisarInglesDao())
+
+        daoComicInfo = DaoFactory.createComicInfoDao()
         dao = DaoFactory.createSincronizacaoDao()
+
         try {
             val serviceAccount: InputStream = FileInputStream("secrets-firebase.json")
             val credentials: GoogleCredentials = GoogleCredentials.fromStream(serviceAccount)
             val options: FirebaseOptions = FirebaseOptions.builder().setCredentials(credentials).build()
             FirebaseApp.initializeApp(options)
-            DB = FirestoreClient.getFirestore()
+            mDB = FirestoreClient.getFirestore()
             sincronizacao = dao.select(Conexao.FIREBASE).get()
         } catch (ex: Exception) {
             LOGGER.error(ex.message, ex)
         }
+
         consultar()
     }
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(SincronizacaoServices::class.java)
-        var processar = false
-        private val sincronizar: ObservableList<Pair<Database, Vocabulario>> = FXCollections.observableArrayList()
+        var processarRevisar = false
+        var processarComicInfo = false
 
-        fun enviar(database: Database, vocabulario: Vocabulario) = sincronizar.add(Pair(database, vocabulario))
+        private val sincronizarVocabulario: ObservableList<Pair<Database, Vocabulario>> = FXCollections.observableArrayList()
+        private val sincronizarComicInfo: ObservableList<ComicInfo> = FXCollections.observableArrayList()
+
+        fun enviar(database: Database, vocabulario: Vocabulario) = sincronizarVocabulario.add(Pair(database, vocabulario))
     }
 
-    fun setObserver(listener: ListChangeListener<in Pair<Database, Vocabulario>>) = sincronizar.addListener(listener)
+    fun setObserver(listener: ListChangeListener<in Pair<Database, Vocabulario>>) = sincronizarVocabulario.addListener(listener)
 
     override fun run() {
-        if (processar && !isSincronizando)
+        if ((processarRevisar || processarComicInfo) && !isSincronizando)
             sincroniza()
     }
 
@@ -91,139 +108,349 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
         for (vocab in daoVocabulario) {
             try {
-                val sinc: List<Pair<Database, Vocabulario>> = vocab.selectEnvio(sincronizacao!!.envio).parallelStream()
-                    .filter { i -> sincronizar.parallelStream().noneMatch { s -> s.first.equals(vocab.tipo) && s.second.equals(i) } }
+                val sinc: List<Pair<Database, Vocabulario>> = vocab.selectEnvioVocabulario(sincronizacao!!.envio).parallelStream()
+                    .filter { i -> sincronizarVocabulario.parallelStream().noneMatch { s -> s.first == vocab.tipo && s.second == i } }
                     .map { i -> Pair(vocab.tipo, i) }.collect(Collectors.toList())
-
                 if (sinc.isNotEmpty())
-                    sincronizar.addAll(sinc)
+                    sincronizarVocabulario.addAll(sinc)
             } catch (ex: SQLException) {
                 LOGGER.error(ex.message, ex)
             }
         }
+
+        try {
+            val sinc: List<ComicInfo> = daoComicInfo.selectEnvio(sincronizacao!!.envio).parallelStream()
+                .filter { i -> sincronizarComicInfo.parallelStream().noneMatch { s: ComicInfo -> s.comic == i.comic } }
+                .collect(Collectors.toList())
+            if (sinc.isNotEmpty())
+                sincronizarComicInfo.addAll(sinc)
+        } catch (ex: SQLException) {
+            LOGGER.error(ex.message, ex)
+        }
     }
 
-    var registros = 0
-    var vocabularios: String = ""
-    var processados: String = ""
-
+    private var registros = 0
+    private var vocabularios: String = ""
+    private var processados: String = ""
 
     @Throws(Exception::class)
-    private fun envia(): Boolean {
+    private fun enviaVocabulario(): Boolean {
         var processado = false
         vocabularios = ""
         registros = 0
-        if (!sincronizar.isEmpty()) {
-            LOGGER.info("Enviando dados a cloud... ")
-            val sinc: List<Pair<Database, Vocabulario>> = sincronizar.parallelStream().sorted { o1, o2 -> o2.first.compareTo(o1.first) }
+
+        if (!sincronizarVocabulario.isEmpty()) {
+            LOGGER.info("Enviando Vocabulário para cloud... ")
+            val sinc = sincronizarVocabulario.parallelStream()
+                .sorted { o1, o2 -> o2.first.compareTo(o1.first)  }
                 .distinct().collect(Collectors.toList())
             try {
-                sincronizar.clear()
-                val envio: String = LocalDateTime.now().format(formaterDataHora)
-                val bases = sinc.parallelStream().map { it.first }.distinct().collect(Collectors.toList())
+                sincronizarVocabulario.clear()
+                val envio = LocalDateTime.now().format(formaterDataHora)
+                val bases: List<Database> = sinc.parallelStream().map { it.first }.distinct().toList()
                 for (db in bases) {
-                    val env = sinc.parallelStream().filter { i -> i.first == db }.map { it.second }.collect(Collectors.toList())
+                    val env: List<Vocabulario> = sinc.parallelStream().filter { it.first == db }.map { it.second }.toList()
                     if (env.isNotEmpty()) {
-                        val docRef: DocumentReference = DB!!.collection(db.toString()).document(formaterData.format(LocalDate.now()))
-                        val data: MutableMap<String, Any> = mutableMapOf()
+                        val docRef = mDB!!.collection("VOCABULARIO $db").document(formaterData.format(LocalDate.now()))
+                        val data: MutableMap<String, Any?> = HashMap()
                         for (voc in env) {
                             voc.sincronizacao = envio
                             data[voc.getId().toString()] = voc
+                            vocabularios += voc.vocabulario + ", "
                         }
-                        val result: ApiFuture<WriteResult> = docRef.set(data)
+
+                        val document = docRef.get().get()
+                        val olds = document.data
+                        if (olds != null && olds.isNotEmpty()) {
+                            for (key in olds.keys)
+                                if (!data.containsKey(key))
+                                    data[key] = olds[key]
+                        }
+
+                        val result = docRef.set(data)
                         result.get()
                         registros += env.size
-                        LOGGER.info("Enviado dados a cloud: " + env.size + " registros (" + db + "). ")
+                        LOGGER.info("Enviado Vocabulário para cloud: " + env.size + " registros (" + db + "). ")
                     }
                 }
                 if (registros > 0) {
                     processados += "Enviado $registros registro(s). "
-                    if (!vocabularios.isEmpty())
-                        vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim()
-                    Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído o envio de $registros registros para cloud.", "Sincronizado: $vocabularios") }
+                    if (vocabularios.isNotEmpty())
+                        vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim { it <= ' ' }
+                    Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído o envio de $registros registro(s) para cloud.", "Vocabulário: $vocabularios") }
                 }
-                LOGGER.info("Concluído envio de dados a cloud.")
+                LOGGER.info("Concluído envio de Vocabulário para cloud.")
                 processado = true
             } catch (e: Exception) {
-                sincronizar.addAll(sinc)
-                LOGGER.error("Erro ao enviar dados a cloud, adicionado arquivos para novo ciclo. ${e.message}", e)
+                sincronizarVocabulario.addAll(sinc)
+                LOGGER.error("Erro ao enviar Vocabulários a cloud, adicionado arquivos para novo ciclo. ${e.message}", e)
                 throw e
             }
         }
+
         return processado
     }
 
     @Throws(Exception::class)
-    private fun receber(): Boolean {
+    private fun receberVocabulario(): Boolean {
         var processado: Boolean
         try {
-            LOGGER.info("Recebendo dados a cloud.... ")
-            val lista: MutableList<Pair<Database, Vocabulario>> = mutableListOf()
-            val atual: String = LocalDate.now().format(formaterData)
+            LOGGER.info("Recebendo Vocabulário da cloud.... ")
+            val lista: MutableList<Pair<Database, Vocabulario>> = ArrayList()
+            val atual = LocalDate.now().format(formaterData)
             for (vocab in daoVocabulario) {
-                val query: ApiFuture<QuerySnapshot> = DB!!.collection(vocab.tipo.toString()).get()
-                val querySnapshot: QuerySnapshot = query.get()
-                val documents: List<QueryDocumentSnapshot> = querySnapshot.documents
+                val query = mDB!!.collection("VOCABULARIO " + vocab.tipo.toString()).get()
+                val querySnapshot = query.get()
+                val documents = querySnapshot.documents
                 for (document in documents) {
                     val data = LocalDate.parse(document.id, formaterData)
-
                     if (sincronizacao!!.recebimento.toLocalDate().isAfter(data) && !atual.equals(document.id, ignoreCase = true))
                         continue
 
                     for (key in document.data.keys) {
-                        val obj: HashMap<String, String> = document.data[key] as HashMap<String, String>
+                        val obj = document.data[key] as HashMap<String, String>
                         val sinc = LocalDateTime.parse(obj["sincronizacao"], formaterDataHora)
                         if (sinc.isAfter(sincronizacao!!.recebimento))
                             lista.add(Pair(vocab.tipo, Vocabulario(key, obj)))
                     }
                 }
             }
-            LOGGER.info("Processando retorno dados a cloud: " + lista.size + " registros.")
+            LOGGER.info("Processando retorno de Vocabulário da cloud: " + lista.size + " registros.")
             vocabularios = ""
             registros = lista.size
             for (sinc in lista) {
-                for (voc in daoVocabulario) if (voc.tipo.equals(sinc.first)) {
-                    var vocab = voc.select(sinc.second.getId()).orElseGet { null }
+                for (voc in daoVocabulario) if (voc.tipo == sinc.first) {
+                    var vocab: Optional<Vocabulario> = voc.select(sinc.second.getId())
+                    if (vocab.isEmpty)
+                        vocab = voc.select(sinc.second.vocabulario, sinc.second.formaBasica)
 
-                    if (vocab == null)
-                        vocab = voc.select(sinc.second.vocabulario, sinc.second.formaBasica).orElseGet { null }
-
-                    if (vocab != null) {
-                        vocab.merge(sinc.second)
-                        voc.update(vocab)
+                    if (vocab.isPresent) {
+                        vocab.get().merge(sinc.second)
+                        voc.update(vocab.get())
                     } else {
-                        vocab = sinc.second
-                        voc.insert(vocab)
+                        vocab = Optional.of(sinc.second)
+                        voc.insert(vocab.get())
                     }
-                    vocabularios += vocab.vocabulario + ", "
+
+                    vocabularios += vocab.get().vocabulario + ", "
+
                     for (rev in daoRevisar)
                         if (rev.tipo == sinc.first) {
-                            var revisar = rev.select(vocab.getId()!!)
+                            var revisar = rev.select(vocab.get().getId()!!)
+                            if (revisar.isPresent)
+                                rev.delete(revisar.get())
 
-                            revisar.ifPresent { rev.delete(it) }
-
-                            revisar = rev.select(vocab.vocabulario, vocab.formaBasica)
-
-                            revisar.ifPresent { rev.delete(it) }
+                            revisar = rev.select(vocab.get().vocabulario, vocab.get().formaBasica)
+                            if (revisar.isPresent)
+                                rev.delete(revisar.get())
                         }
                 }
             }
             if (registros > 0) {
                 processados += "Recebido $registros registro(s). "
-                if (!vocabularios.isEmpty()) vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim()
-                Platform.runLater {
-                    Notificacoes.notificacao(
-                        Notificacao.SUCESSO,
-                        "Concluído recebimento de " + lista.size + " registros da cloud.",
-                        "Sincronizado: $vocabularios"
-                    )
+                if (vocabularios.isNotEmpty())
+                    vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim { it <= ' ' }
+                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size + " registros(s) da cloud.", "Vocabulário: $vocabularios") }
+            }
+            processado = true
+            LOGGER.info("Concluído recebimento de vocabulários da cloud.")
+        } catch (e: Exception) {
+            LOGGER.error("Erro ao receber dados a cloud. ${e.message}", e)
+            throw e
+        }
+        return processado
+    }
+
+    @Throws(Exception::class)
+    private fun enviaExclusao(): Boolean {
+        var processado = false
+        vocabularios = ""
+        registros = 0
+
+        val enviar: MutableList<Pair<Database, String>> = ArrayList()
+
+        for (vocab in daoVocabulario) {
+            try {
+                val sinc: List<Pair<Database, String>> = vocab.selectExclusaoEnvio(sincronizacao!!.envio).parallelStream()
+                    .filter(Objects::nonNull).filter { it.isNotEmpty() }
+                    .map { i -> Pair(vocab.tipo, i) }.toList()
+                if (sinc.isNotEmpty()) 
+                    enviar.addAll(sinc)
+            } catch (ex: SQLException) {
+                LOGGER.error(ex.message, ex)
+            }
+        }
+
+        if (enviar.isNotEmpty()) {
+            LOGGER.info("Enviando exclusões de Vocabulário para cloud... ")
+            try {
+                val envio = LocalDateTime.now().format(formaterDataHora)
+                val bases: List<Database> = enviar.parallelStream().map { it.first }.distinct().toList()
+
+                for (db in bases) {
+                    val env = enviar.parallelStream().filter { it.first == db }.map { it.second }.toList()
+
+                    if (env.isNotEmpty()) {
+                        val docRef = mDB!!.collection("EXCLUSAO $db").document(formaterData.format(LocalDate.now()))
+
+                        val data: MutableMap<String, String> = HashMap()
+                        for (exc in env)
+                            data[exc] = envio
+
+                        val document = docRef.get().get()
+                        val olds = document.data
+                        if (olds != null && olds.isNotEmpty()) {
+                            for (key in olds.keys)
+                                if (!data.containsKey(key))
+                                    data[key] = olds[key].toString()
+                        }
+                        val result = docRef.set(data as Map<String, Any>)
+                        result.get()
+                        registros += env.size
+                        LOGGER.info("Enviado exclusões de Vocabulário para cloud: " + env.size + " registros (" + db + "). ")
+                    }
+                }
+                if (registros > 0) {
+                    if (vocabularios.isNotEmpty())
+                        vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim { it <= ' ' }
+                }
+                LOGGER.info("Concluído envio de exclusões de Vocabulário para cloud.")
+                processado = true
+            } catch (e: Exception) {
+                LOGGER.error("Erro ao enviar exclusões de Vocabulário para cloud. ${e.message}", e)
+                throw e
+            }
+        }
+
+        return processado
+    }
+
+    @Throws(Exception::class)
+    private fun receberExclusao(): Boolean {
+        var processado: Boolean
+        try {
+            LOGGER.info("Recebendo exclusões de Vocabulário da cloud.... ")
+            val atual = LocalDate.now().format(formaterData)
+            for (vocab in daoVocabulario) {
+                val query = mDB!!.collection("EXCLUSAO " + vocab.tipo.toString()).get()
+                val querySnapshot = query.get()
+                val documents = querySnapshot.documents
+                for (document in documents) {
+                    val data = LocalDate.parse(document.id, formaterData)
+                    if (sincronizacao!!.recebimento.toLocalDate().isAfter(data) && !atual.equals(document.id, ignoreCase = true))
+                        continue
+
+                    for (key in document.data.keys) {
+                        val sinc = LocalDateTime.parse(document.data[key] as String, formaterDataHora)
+                        if (sinc.isAfter(sincronizacao!!.recebimento))
+                            vocab.insertExclusao(key)
+                    }
                 }
             }
             processado = true
-            LOGGER.info("Concluído recebimento de dados a cloud.")
+            LOGGER.info("Concluído recebimento de exclusão de Vocabulário da cloud.")
         } catch (e: Exception) {
-            LOGGER.error("Erro ao receber dados a cloud. ${e.message}".trimIndent(), e)
+            LOGGER.error("Erro ao receber exclusões de Vocabulário da cloud. ${e.message}", e)
             throw e
+        }
+        return processado
+    }
+
+    private var comicInfo: String = ""
+    @Throws(Exception::class)
+    private fun receberComicInfo(): Boolean {
+        var processado: Boolean
+        try {
+            LOGGER.info("Recebendo ComicInfo da cloud.... ")
+            val lista: MutableList<ComicInfo> = ArrayList<ComicInfo>()
+            val document = mDB!!.collection("COMICINFO")
+            val index = document.document("_INDEX").get().get()
+            if (index.data != null) for (item in index.data!!.keys) {
+                val data = index.data!![item] as Timestamp?
+                val sinc = data!!.toSqlTimestamp().toLocalDateTime()
+                if (sinc.isAfter(sincronizacao!!.recebimento)) {
+                    val comic = document.document(item).get().get()
+                    if (comic.data != null)
+                        lista.add(ComicInfo(comic.data as HashMap<String, Any?>))
+                }
+            }
+
+            LOGGER.info("Processando retorno do ComicInfo da cloud: " + lista.size + " registros.")
+            comicInfo = ""
+            registros = lista.size
+            for (sinc in lista) {
+                val comic = daoComicInfo.select(sinc.getId()!!, sinc.comic, sinc.languageISO!!)
+                if (comic.isPresent) {
+                    comic.get().merge(sinc)
+                    daoComicInfo.update(comic.get())
+                } else
+                    daoComicInfo.insert(sinc)
+                comicInfo += sinc.comic + ", "
+            }
+
+            if (registros > 0) {
+                processados += "ComicInfo recebido $registros registro(s). "
+                if (comicInfo.isNotEmpty())
+                    comicInfo = comicInfo.substring(0, comicInfo.lastIndexOf(",")).trim { it <= ' ' }
+                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size + " registro(s) da cloud.", "ComicInfo: $comicInfo") }
+            }
+            processado = true
+            LOGGER.info("Concluído recebimento de ComicInfo da cloud.")
+        } catch (e: Exception) {
+            LOGGER.error("Erro ao receber dados a cloud. ${e.message}", e)
+            throw e
+        }
+        return processado
+    }
+
+    @Throws(Exception::class)
+    private fun enviaComicInfo(): Boolean {
+        var processado = false
+        vocabularios = ""
+        registros = 0
+        if (!sincronizarComicInfo.isEmpty()) {
+            LOGGER.info("Enviando ComicInfo para cloud... ")
+            val sinc: List<ComicInfo> = sincronizarComicInfo.parallelStream()
+                .sorted { o1, o2 -> o2.comic.compareTo(o1.comic) }.distinct().toList()
+            try {
+                sincronizarComicInfo.clear()
+                if (sinc.isNotEmpty()) {
+                    val document = mDB!!.collection("COMICINFO")
+                    val docIndex = document.document("_INDEX").get().get()
+                    val index: MutableMap<String, Date> = HashMap()
+                    if (docIndex.exists() && docIndex.data != null) {
+                        for (key in docIndex.data!!.keys)
+                            index[key] = docIndex.data!![key] as Date
+                    }
+
+                    comicInfo = ""
+                    val gson = GsonBuilder().create()
+                    for (comic in sinc) {
+                        val id: String = comic.comic
+                        index[id] = Date()
+                        val item: Map<String, Any> = Gson().fromJson(gson.toJson(comic), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
+                        document.document(id).set(item).get()
+                        comicInfo += comic.comic + ", "
+                    }
+                    document.document("_INDEX").set(index as Map<String, Any>).get()
+                    registros += sinc.size
+                    LOGGER.info("Enviado ComicInfo para cloud: " + sinc.size + " registros. ")
+                }
+
+                if (registros > 0) {
+                    processados += "Enviado $registros registro(s). "
+                    if (comicInfo.isNotEmpty())
+                        comicInfo = comicInfo.substring(0, comicInfo.lastIndexOf(",")).trim { it <= ' ' }
+
+                    Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído o envio de $registros registro(s) para cloud.", "ComicInfo: $comicInfo") }
+                }
+                LOGGER.info("Concluído envio de ComicInfo para cloud.")
+                processado = true
+            } catch (e: Exception) {
+                sincronizarComicInfo.addAll(sinc)
+                LOGGER.error("Erro ao enviar ComicInfo a cloud, adicionado arquivos para novo ciclo. ${e.message}", e)
+                throw e
+            }
         }
         return processado
     }
@@ -236,10 +463,23 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
         try {
             isSincronizando = true
-            controller.animacaoSincronizacaoDatabase(true, false)
+            controller.animacaoSincronizacaoDatabase(isProcessando = true, isErro = false)
             processados = ""
-            val recebido = receber()
-            val enviado = envia()
+            var recebido = false
+            var enviado = false
+
+            if (processarRevisar) {
+                recebido = receberVocabulario()
+                enviado = enviaVocabulario()
+
+                recebido = receberExclusao() || recebido
+                enviado = enviaExclusao() || enviado
+            }
+
+            if (processarComicInfo) {
+                recebido = receberComicInfo() || recebido
+                enviado = enviaComicInfo() || enviado
+            }
 
             if (enviado)
                 sincronizacao!!.envio = LocalDateTime.now()
@@ -253,9 +493,9 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
             } else
                 Platform.runLater { controller.setLblLog("") }
             sincronizado = true
-            controller.animacaoSincronizacaoDatabase(false, false)
+            controller.animacaoSincronizacaoDatabase(isProcessando = false, isErro = false)
         } catch (e: Exception) {
-            controller.animacaoSincronizacaoDatabase(false, true)
+            controller.animacaoSincronizacaoDatabase(isProcessando = false, isErro = true)
         } finally {
             isSincronizando = false
         }
@@ -264,5 +504,5 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
     val isConfigurado: Boolean get() = sincronizacao != null
 
-    fun listSize(): Int = sincronizar.size
+    fun listSize(): Int = sincronizarVocabulario.size + sincronizarComicInfo.size
 }

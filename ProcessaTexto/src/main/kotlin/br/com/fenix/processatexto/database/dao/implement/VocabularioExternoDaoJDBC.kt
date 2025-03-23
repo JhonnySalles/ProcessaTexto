@@ -151,7 +151,12 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     override fun selectExclusao(): Set<String> = setOf()
 
     @Throws(SQLException::class)
-    override fun selectEnvio(ultimo: LocalDateTime): List<Vocabulario> = listOf()
+    override fun selectEnvioVocabulario(ultimo: LocalDateTime): List<Vocabulario> = listOf()
+
+    @Throws(SQLException::class)
+    override fun selectExclusaoEnvio(ultimo: LocalDateTime): List<String> {
+        TODO("Not yet implemented")
+    }
 
     override fun insertExclusao(palavra: String) {
         TODO("Not yet implemented")

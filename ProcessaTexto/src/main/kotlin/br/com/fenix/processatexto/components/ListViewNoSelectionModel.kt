@@ -1,7 +1,6 @@
 package br.com.fenix.processatexto.components
 
 import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import javafx.scene.control.MultipleSelectionModel
 
 

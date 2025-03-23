@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.components.notification.Notificacoes
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Notificacao
 import br.com.fenix.processatexto.model.enums.Tipo
+import br.com.fenix.processatexto.processar.kanjiStatics.ImportaEstatistica
 import br.com.fenix.processatexto.service.RevisarJaponesServices
 import br.com.fenix.processatexto.service.VocabularioJaponesServices
 import br.com.fenix.processatexto.tokenizers.SudachiTokenizer
@@ -29,7 +30,6 @@ import javafx.scene.robot.Robot
 import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import br.com.fenix.processatexto.processar.kanjiStatics.ImportaEstatistica
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException

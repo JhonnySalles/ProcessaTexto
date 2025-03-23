@@ -24,19 +24,19 @@ data class ComicInfo(
     @Column(name = "idMal", nullable = true)
     var idMal: Long? = null,
     @Column(name = "comic", length = 250, nullable = true)
-    var comic: String? = null,
+    var comic: String = "",
     @Column(name = "title", length = 900, nullable = true)
     @XmlElement(name = "Title")
-    var title: String? = null,
+    var title: String = "",
     @Column(name = "series", length = 900, nullable = true)
     @XmlElement(name = "Series")
-    var series: String? = null,
+    var series: String = "",
     @Transient
     @XmlElement(name = "Number")
-    var number: Float? = null,
+    var number: Float = 0f,
     @Transient
     @XmlElement(name = "Volume")
-    var volume: Int? = null,
+    var volume: Int = 0,
     @Transient
     @XmlElement(name = "Notes")
     var notes: String? = null,
@@ -137,7 +137,7 @@ data class ComicInfo(
     var blackAndWhite: YesNo? = null,
     @Transient
     @XmlElement(name = "Manga")
-    var manga: Manga? = null,
+    var manga: Manga = Manga.Yes,
     @Transient
     @XmlElement(name = "Characters")
     var characters: String? = null,
@@ -159,7 +159,7 @@ data class ComicInfo(
 ) : EntityBase<UUID?, ComicInfo>() {
 
     constructor(
-        id: UUID?, idMal: Long?, comic: String?, title: String?, series: String?, publisher: String?, alternateSeries: String?,
+        id: UUID?, idMal: Long?, comic: String, title: String, series: String, publisher: String?, alternateSeries: String?,
         storyArc: String?, seriesGroup: String?, imprint: String?, genre: String?, languageISO: String?,
         ageRating: AgeRating?,
     ) : this(id, idMal, comic, title, series) {
@@ -173,6 +173,22 @@ data class ComicInfo(
         this.ageRating = ageRating
     }
 
+    constructor(obj: HashMap<String, Any?>) : this(UUID.fromString(obj["id"] as String), null, obj["comic"] as String, obj["title"] as String, obj["series"] as String)   {
+        id = UUID.fromString(obj["id"] as String)
+        publisher = obj["publisher"] as String?
+        alternateSeries = obj["alternateSeries"] as String?
+        storyArc = obj["storyArc"] as String?
+        seriesGroup = obj["seriesGroup"] as String?
+        imprint = obj["imprint"] as String?
+        genre = obj["genre"] as String?
+        languageISO = obj["languageISO"] as String?
+
+        if (obj.containsKey("idMal"))
+            idMal = (obj["idMal"] as Double).toLong()
+        if (obj.containsKey("ageRating"))
+            ageRating = AgeRating.valueOf((obj["ageRating"] as String))
+    }
+
     override fun getId(): UUID? = id
 
     override fun create(id: UUID?): ComicInfo = ComicInfo(id)
@@ -180,5 +196,23 @@ data class ComicInfo(
     fun setId(id: UUID?) {
         this.id = id
     }
+
+    fun merge(comic: ComicInfo) {
+        this.id = comic.id
+        this.idMal = comic.idMal
+        this.comic = comic.comic
+        this.title = comic.title
+        this.series = comic.series
+        this.publisher = comic.publisher
+        this.alternateSeries = comic.alternateSeries
+        this.storyArc = comic.storyArc
+        this.seriesGroup = comic.seriesGroup
+        this.imprint = comic.imprint
+        this.genre = comic.genre
+        this.languageISO = comic.languageISO
+        this.ageRating = comic.ageRating
+    }
+
+
 
 }

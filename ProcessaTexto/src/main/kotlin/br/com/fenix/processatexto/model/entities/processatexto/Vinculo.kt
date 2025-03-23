@@ -1,8 +1,8 @@
 package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
-import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
+import br.com.fenix.processatexto.model.enums.Language
 import java.time.LocalDateTime
 import java.util.*
 

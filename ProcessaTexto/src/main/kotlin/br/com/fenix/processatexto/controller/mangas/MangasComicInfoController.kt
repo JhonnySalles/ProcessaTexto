@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.Run
 import br.com.fenix.processatexto.components.CheckBoxTreeTableCellCustom
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.MenuPrincipalController
+import br.com.fenix.processatexto.model.entities.comicinfo.BaseLista
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.comicinfo.ProcessaComicInfo
@@ -34,7 +35,6 @@ import javafx.scene.robot.Robot
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
 import javafx.util.Callback
-import br.com.fenix.processatexto.model.entities.comicinfo.BaseLista
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.*
@@ -707,5 +707,6 @@ class MangasComicInfoController : Initializable {
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(MangasComicInfoController::class.java)
         val fxmlLocate: URL get() = MangasComicInfoController::class.java.getResource("/view/mangas/MangaComicInfo.fxml") as URL
+        var selecionado = false
     }
 }

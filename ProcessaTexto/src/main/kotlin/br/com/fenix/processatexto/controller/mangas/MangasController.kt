@@ -1,7 +1,10 @@
 package br.com.fenix.processatexto.controller.mangas
 
+import br.com.fenix.processatexto.service.SincronizacaoServices
+import javafx.event.Event
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
+import javafx.scene.control.Tab
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.StackPane
 import org.slf4j.Logger
@@ -16,6 +19,9 @@ class MangasController : Initializable {
 
     @FXML
     lateinit var stackPane: StackPane
+
+    @FXML
+    lateinit var tbComicInfo: Tab
 
     @FXML
     protected lateinit var apConteinerRoot: AnchorPane
@@ -37,6 +43,12 @@ class MangasController : Initializable {
 
     @FXML
     private lateinit var comicinfoController: MangasComicInfoController
+
+    @FXML
+    private fun onSelectComicInfoChanged(event: Event) {
+        SincronizacaoServices.processarComicInfo = tbComicInfo.isSelected
+        MangasComicInfoController.selecionado = tbComicInfo.isSelected
+    }
 
     val root: AnchorPane get() = apConteinerRoot
 

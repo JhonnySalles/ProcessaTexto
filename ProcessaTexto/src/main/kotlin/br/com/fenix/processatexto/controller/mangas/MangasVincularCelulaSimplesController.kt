@@ -9,7 +9,7 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
 
 
 class MangasVincularCelulaSimplesController : Initializable {

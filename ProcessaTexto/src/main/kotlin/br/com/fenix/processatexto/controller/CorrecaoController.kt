@@ -9,7 +9,6 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import com.jfoenix.controls.JFXTextField
-import com.jfoenix.controls.events.JFXDialogEvent
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable

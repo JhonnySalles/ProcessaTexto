@@ -203,7 +203,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
     }
 
     @Throws(SQLException::class)
-    override fun selectEnvio(ultimo: LocalDateTime): List<Vocabulario> {
+    override fun selectEnvioVocabulario(ultimo: LocalDateTime): List<Vocabulario> {
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {
@@ -219,6 +219,27 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
                     )
                 )
             }
+            list
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            throw SQLException(Mensagens.BD_ERRO_SELECT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+            JdbcFactory.closeResultSet(rs)
+        }
+    }
+
+    @Throws(SQLException::class)
+    override fun selectExclusaoEnvio(ultimo: LocalDateTime): List<String> {
+        var st: PreparedStatement? = null
+        var rs: ResultSet? = null
+        return try {
+            st = conn.prepareStatement(SELECT_ENVIO)
+            st.setString(1, Utils.convertToString(ultimo))
+            rs = st.executeQuery()
+            val list: MutableList<String> = mutableListOf()
+            while (rs.next())
+                list.add(rs.getString(1))
             list
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)

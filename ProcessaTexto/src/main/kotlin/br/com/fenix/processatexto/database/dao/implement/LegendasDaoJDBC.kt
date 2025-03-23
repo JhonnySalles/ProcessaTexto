@@ -3,12 +3,12 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
-import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
+import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.messages.Mensagens
-import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import org.slf4j.LoggerFactory
 import java.sql.PreparedStatement
 import java.sql.ResultSet
