@@ -4,6 +4,7 @@ import org.jisho.textosJapones.model.enums.comicinfo.Manga;
 import org.jisho.textosJapones.model.enums.comicinfo.YesNo;
 
 import javax.xml.bind.annotation.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -469,6 +470,22 @@ public class ComicInfo {
 		this.review = review;
 	}
 
+	public void merge(ComicInfo comic) {
+		this.id = comic.id;
+		this.idMal = comic.idMal;
+		this.comic = comic.comic;
+		this.title = comic.title;
+		this.series = comic.series;
+		this.publisher = comic.publisher;
+		this.alternateSeries = comic.alternateSeries;
+		this.storyArc = comic.storyArc;
+		this.seriesGroup = comic.seriesGroup;
+		this.imprint = comic.imprint;
+		this.genre = comic.genre;
+		this.languageISO = comic.languageISO;
+		this.ageRating = comic.ageRating;
+	}
+
 	public ComicInfo() {
 	}
 
@@ -541,6 +558,26 @@ public class ComicInfo {
 		this.genre = genre;
 		this.languageISO = languageISO;
 		this.ageRating = ageRating;
+	}
+
+	public ComicInfo(HashMap<String, Object> obj) {
+		this.id = UUID.fromString((String) obj.get("id"));
+		this.comic = (String) obj.get("comic");
+		this.title = (String) obj.get("title");
+		this.series = (String) obj.get("series");
+		this.publisher = (String) obj.get("publisher");
+		this.alternateSeries = (String) obj.get("alternateSeries");
+		this.storyArc = (String) obj.get("storyArc");
+		this.seriesGroup = (String) obj.get("seriesGroup");
+		this.imprint = (String) obj.get("imprint");
+		this.genre = (String) obj.get("genre");
+		this.languageISO = (String) obj.get("languageISO");
+
+		if (obj.containsKey("idMal"))
+			this.idMal = ((Double) obj.get("idMal")).longValue();
+
+		if (obj.containsKey("ageRating"))
+			this.ageRating = AgeRating.valueOf((String) obj.get("ageRating"));
 	}
 
 }

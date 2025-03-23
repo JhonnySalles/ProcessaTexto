@@ -60,6 +60,8 @@ public class MangasComicInfoController implements Initializable {
     final PseudoClass comicRoot = PseudoClass.getPseudoClass("comic-info");
     final PseudoClass comicSelecionado = PseudoClass.getPseudoClass("comic-selected");
 
+    public static Boolean selecionado = false;
+
     @FXML
     private AnchorPane apRoot;
 

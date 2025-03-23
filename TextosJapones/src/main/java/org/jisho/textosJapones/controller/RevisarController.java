@@ -19,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.util.Callback;
 import javafx.util.Pair;
-import org.jisho.textosJapones.Run;
 import org.jisho.textosJapones.components.notification.Notificacoes;
 import org.jisho.textosJapones.model.entities.Revisar;
 import org.jisho.textosJapones.model.entities.Triple;

@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -57,42 +56,26 @@ public class MenuPrincipalController implements Initializable {
     private static MenuPrincipalController CONTROLLER;
 
     final static Image imgAnimaBanco = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataBase_48.png"));
-    final static Image imgAnimaBancoEspera = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoDataEspera_48.png"));
-    final static Image imgAnimaBancoErro = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoDataSemConexao_48.png"));
-    final static Image imgAnimaBancoConectado = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoDataConectado_48.png"));
+    final static Image imgAnimaBancoEspera = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataEspera_48.png"));
+    final static Image imgAnimaBancoErro = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataSemConexao_48.png"));
+    final static Image imgAnimaBancoConectado = new Image(Animacao.class.getResourceAsStream("/images/bd/icoDataConectado_48.png"));
 
-    final static Image imgAnimaBackup = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_48.png"));
+    final static Image imgAnimaBackup = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_48.png"));
 
-    final static Image imgAnimaExporta = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_48.png"));
-    final static Image imgAnimaExportaEspera = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Espera_48.png"));
-    final static Image imgAnimaExportaErro = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Erro_48.png"));
-    final static Image imgAnimaExportaConcluido = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Concluido_48.png"));
+    final static Image imgAnimaExporta = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_48.png"));
+    final static Image imgAnimaExportaEspera = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Espera_48.png"));
+    final static Image imgAnimaExportaErro = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Erro_48.png"));
+    final static Image imgAnimaExportaConcluido = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Exportando_Concluido_48.png"));
 
-    final static Image imgAnimaImporta = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_48.png"));
-    final static Image imgAnimaImportaEspera = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Espera_48.png"));
-    final static Image imgAnimaImportaErro = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Erro_48.png"));
-    final static Image imgAnimaImportaConcluido = new Image(
-            Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Concluido_48.png"));
+    final static Image imgAnimaImporta = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_48.png"));
+    final static Image imgAnimaImportaEspera = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Espera_48.png"));
+    final static Image imgAnimaImportaErro = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Erro_48.png"));
+    final static Image imgAnimaImportaConcluido = new Image(Animacao.class.getResourceAsStream("/images/export/icoBDBackup_Importando_Concluido_48.png"));
 
-    final static Image imgAnimaCompartilha = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamento_48.png"));
-    final static Image imgAnimaCompartilhaEspera = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEspera_48.png"));
-    final static Image imgAnimaCompartilhaErro = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoErro_48.png"));
-    final static Image imgAnimaCompartilhaEnvio = new Image(
-            Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEnvio_48.png"));
+    final static Image imgAnimaCompartilha = new Image(Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamento_48.png"));
+    final static Image imgAnimaCompartilhaEspera = new Image(Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEspera_48.png"));
+    final static Image imgAnimaCompartilhaErro = new Image(Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoErro_48.png"));
+    final static Image imgAnimaCompartilhaEnvio = new Image(Animacao.class.getResourceAsStream("/images/bd/icoCompartilhamentoEnvio_48.png"));
 
     @FXML
     private AnchorPane apGlobal;
@@ -184,7 +167,7 @@ public class MenuPrincipalController implements Initializable {
 
     @FXML
     private void onSelectRevisarChanged(Event event) {
-        SincronizacaoServices.processar = tbRevisar.isSelected();
+        SincronizacaoServices.processarRevisar = tbRevisar.isSelected();
         RevisarController.selecionado = tbRevisar.isSelected();
         revisarController.iniciaFirebase();
     }

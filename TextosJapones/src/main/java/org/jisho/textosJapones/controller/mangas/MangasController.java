@@ -1,9 +1,12 @@
 package org.jisho.textosJapones.controller.mangas;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import org.jisho.textosJapones.model.services.SincronizacaoServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,9 @@ public class MangasController implements Initializable {
 
 	@FXML
 	protected AnchorPane apConteinerRoot;
+
+	@FXML
+	private Tab tbComicInfo;
 
 	@FXML
 	private MangasJsonController jsonController;
@@ -49,6 +55,12 @@ public class MangasController implements Initializable {
 		return stackPane;
 	}
 
+	@FXML
+	public void onSelectComicInfoChanged(Event event) {
+		SincronizacaoServices.processarComicInfo = tbComicInfo.isSelected();
+		MangasComicInfoController.selecionado = tbComicInfo.isSelected();
+	}
+
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		jsonController.setControllerPai(this);
 		processarController.setControllerPai(this);
@@ -61,5 +73,4 @@ public class MangasController implements Initializable {
 	public static URL getFxmlLocate() {
 		return MangasController.class.getResource("/view/mangas/Manga.fxml");
 	}
-
 }

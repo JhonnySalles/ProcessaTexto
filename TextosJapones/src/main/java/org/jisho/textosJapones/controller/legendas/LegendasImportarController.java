@@ -34,7 +34,6 @@ import org.jisho.textosJapones.model.entities.subtitle.Legenda;
 import org.jisho.textosJapones.model.enums.Dicionario;
 import org.jisho.textosJapones.model.enums.Language;
 import org.jisho.textosJapones.model.enums.Modo;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.LegendasServices;
 import org.jisho.textosJapones.processar.ProcessarLegendas;
 import org.jisho.textosJapones.util.constraints.Validadores;

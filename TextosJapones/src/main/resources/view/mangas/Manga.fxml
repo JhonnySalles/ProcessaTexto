@@ -61,7 +61,7 @@
                               </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab text="ComicInfo">
+                        <Tab fx:id="tbComicInfo" onSelectionChanged="#onSelectComicInfoChanged" text="ComicInfo">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>

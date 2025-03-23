@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.jisho.textosJapones.controller.MenuPrincipalController;
@@ -37,8 +38,19 @@ public class Run extends Application {
             PRIMARY_STAGE.setTitle("Processar textos japonês");
             PRIMARY_STAGE.getIcons().add(new Image(Run.class.getResourceAsStream(MenuPrincipalController.getIconLocate())));
             PRIMARY_STAGE.initStyle(StageStyle.DECORATED);
-            PRIMARY_STAGE.setMinWidth(900);
-            PRIMARY_STAGE.setMinHeight(700);
+
+            if (Screen.getScreens().get(0).getBounds().getHeight() > 800) {
+                PRIMARY_STAGE.setMinWidth(800);
+                PRIMARY_STAGE.setMinHeight(600);
+                PRIMARY_STAGE.setWidth(900);
+                PRIMARY_STAGE.setHeight(700);
+            } else {
+                PRIMARY_STAGE.setMinWidth(700);
+                PRIMARY_STAGE.setMinHeight(600);
+                PRIMARY_STAGE.setWidth(700);
+                PRIMARY_STAGE.setHeight(600);
+            }
+
             PRIMARY_STAGE.show(); // Mostra a tela.
 
         } catch (Exception e) {

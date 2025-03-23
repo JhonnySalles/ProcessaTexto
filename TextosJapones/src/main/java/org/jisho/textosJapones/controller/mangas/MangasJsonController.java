@@ -39,7 +39,6 @@ import org.jisho.textosJapones.model.entities.mangaextractor.MangaTabela;
 import org.jisho.textosJapones.model.entities.mangaextractor.MangaVinculo;
 import org.jisho.textosJapones.model.entities.mangaextractor.MangaVolume;
 import org.jisho.textosJapones.model.enums.Language;
-import org.jisho.textosJapones.model.exceptions.ExcessaoBd;
 import org.jisho.textosJapones.model.services.MangaServices;
 import org.jisho.textosJapones.model.services.VincularServices;
 import org.jisho.textosJapones.util.configuration.Configuracao;
