@@ -12,6 +12,7 @@ CREATE TABLE comicinfo (
     maturityrating    VARCHAR(100) DEFAULT NULL,
     alternativeseries VARCHAR(900) DEFAULT NULL,
     language          varbinary(3) DEFAULT NULL,
+    atualizacao       datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ( id ),
     key               campos (comic, LANGUAGE)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb3;
