@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
 import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
@@ -10,7 +10,7 @@ import org.mockito.InjectMocks
 import java.util.*
 
 
-abstract class RevisarRepositoryTest(var conexao: Conexao) : RepositoryTestBase<UUID?, Revisar>() {
+abstract class RevisarRepositoryJpaTest(var conexao: Conexao) : RepositoryTestBaseJpa<UUID?, Revisar>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<UUID?, Revisar> = object : RepositoryJpaBase<UUID?, Revisar>(conexao) {}

@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
 import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class SincronizacaoRepositoryTest() : RepositoryTestBase<Conexao, Sincronizacao>() {
+class SincronizacaoRepositoryJpaTest() : RepositoryTestBaseJpa<Conexao, Sincronizacao>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<Conexao, Sincronizacao> = object : RepositoryJpaBase<Conexao, Sincronizacao>(Conexao.PROCESSA_TEXTO) {}

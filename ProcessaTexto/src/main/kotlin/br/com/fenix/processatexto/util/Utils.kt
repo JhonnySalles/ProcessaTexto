@@ -24,6 +24,7 @@ import java.io.InputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -322,7 +323,9 @@ class Utils {
 
         private val dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         fun convertToDateTime(str: String): LocalDateTime = LocalDateTime.parse(str, dateTime)
-
         fun convertToString(ldt: LocalDateTime): String = ldt.format(dateTime)
+
+        private val date = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        fun convertToString(ldt: LocalDate): String = ldt.format(date)
     }
 }

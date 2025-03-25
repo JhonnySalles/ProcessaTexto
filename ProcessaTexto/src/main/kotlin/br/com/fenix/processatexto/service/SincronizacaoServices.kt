@@ -119,7 +119,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
         }
 
         try {
-            val sinc: List<ComicInfo> = daoComicInfo.selectEnvio(sincronizacao!!.envio).parallelStream()
+            val sinc: List<ComicInfo> = daoComicInfo.findEnvio(sincronizacao!!.envio).parallelStream()
                 .filter { i -> sincronizarComicInfo.parallelStream().noneMatch { s: ComicInfo -> s.comic == i.comic } }
                 .collect(Collectors.toList())
             if (sinc.isNotEmpty())
@@ -226,10 +226,10 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
                     if (vocab.isPresent) {
                         vocab.get().merge(sinc.second)
-                        voc.update(vocab.get())
+                        voc.updateOld(vocab.get())
                     } else {
                         vocab = Optional.of(sinc.second)
-                        voc.insert(vocab.get())
+                        voc.insertOld(vocab.get())
                     }
 
                     vocabularios += vocab.get().vocabulario + ", "
@@ -379,7 +379,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
             comicInfo = ""
             registros = lista.size
             for (sinc in lista) {
-                val comic = daoComicInfo.select(sinc.getId()!!, sinc.comic, sinc.languageISO!!)
+                val comic = daoComicInfo.find(sinc.getId()!!, sinc.comic, sinc.languageISO!!)
                 if (comic.isPresent) {
                     comic.get().merge(sinc)
                     daoComicInfo.update(comic.get())

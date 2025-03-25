@@ -10,10 +10,10 @@ interface RevisarDao {
     val tipo: Database
 
     @Throws(SQLException::class)
-    fun insert(obj: Revisar)
+    fun insertOld(obj: Revisar)
 
     @Throws(SQLException::class)
-    fun update(obj: Revisar)
+    fun updateOld(obj: Revisar)
 
     @Throws(SQLException::class)
     fun delete(obj: Revisar)

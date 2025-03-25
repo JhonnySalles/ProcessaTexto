@@ -38,8 +38,16 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
         rs.getFloat("percentual_medio"), rs.getInt("cor_sequencial")
     )
 
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
     @Throws(SQLException::class)
-    override fun insert(obj: Estatistica) {
+    override fun insertOld(obj: Estatistica) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)

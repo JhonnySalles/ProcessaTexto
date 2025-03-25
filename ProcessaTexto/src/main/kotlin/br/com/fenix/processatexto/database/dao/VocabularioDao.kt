@@ -11,10 +11,10 @@ interface VocabularioDao : RepositoryDao<UUID?, Vocabulario> {
     val tipo: Database
 
     @Throws(SQLException::class)
-    fun insert(obj: Vocabulario)
+    fun insertOld(obj: Vocabulario)
 
     @Throws(SQLException::class)
-    fun update(obj: Vocabulario)
+    fun updateOld(obj: Vocabulario)
 
     @Throws(SQLException::class)
     fun delete(obj: Vocabulario)

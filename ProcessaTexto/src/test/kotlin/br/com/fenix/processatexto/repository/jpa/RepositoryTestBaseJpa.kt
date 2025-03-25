@@ -1,13 +1,11 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
+import br.com.fenix.processatexto.TestsConfig
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
-import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
-import br.com.fenix.processatexto.mock.MockDadosConexao
-import br.com.fenix.processatexto.model.entities.DadosConexao
-import br.com.fenix.processatexto.model.enums.Conexao
+import br.com.fenix.processatexto.mock.Mock
+import br.com.fenix.processatexto.model.entities.EntityBase
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
 
@@ -15,22 +13,38 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
+abstract class RepositoryTestBaseJpa<ID, E : EntityBase<ID, E>> {
 
-    @InjectMocks
-    override var repository: RepositoryJpa<Long?, DadosConexao> = object : RepositoryJpaBase<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {}
+    init {
+        TestsConfig.prepareDatabase()
+    }
+
+    protected lateinit var input: Mock<ID, E>
+
+    abstract var repository: RepositoryJpa<ID, E>
+
+    protected lateinit var lastEntity: E
+    protected lateinit var lastList: List<E>
 
     @BeforeEach
     @Throws(Exception::class)
-    override fun setUpMocks() {
-        input = MockDadosConexao()
-    }
+    abstract fun setUpMocks()
 
-    override var lastId: Long? = null
+    protected open var lastId: ID? = null
+
+
+    private fun valideList(oldList: List<E>, newList : List<E>) {
+        val listOld = oldList.sortedBy { it.getId()?.toString() ?: "" }
+        val listNew = newList.sortedBy { it.getId()?.toString() ?: "" }
+
+        input.assertsService(listOld[0], listNew[0])
+        input.assertsService(listOld[listOld.size / 2], listNew[listNew.size / 2])
+        input.assertsService(listOld[listOld.size - 1], listNew[listNew.size - 1])
+    }
 
     @Test
     @Order(1)
-    override fun testCreate() {
+    open fun testCreate() {
         lastId = null
         lastEntity = input.mockEntity(lastId)
         val persisted = repository.save(lastEntity)
@@ -41,14 +55,14 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
 
     @Test
     @Order(2)
-    override fun testFindById() {
+    open fun testFindById() {
         val persisted = repository.find(lastId!!).get()
         input.assertsService(persisted, lastEntity)
     }
 
     @Test
     @Order(3)
-    override fun testUpdate() {
+    open fun testUpdate() {
         val entity = input.updateEntity(lastEntity)
         repository.save(entity)
         val persisted = repository.find(lastId!!)
@@ -57,7 +71,10 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
 
     @Test
     @Order(4)
-    override fun testDeleteById() {
+    open fun testDeleteById() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         repository.delete(lastId!!)
         val persisted = repository.find(lastId!!)
         Assertions.assertTrue(persisted.isEmpty)
@@ -65,43 +82,40 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
 
     @Test
     @Order(5)
-    override fun testSaveAll() {
+    open fun testSaveAll() {
         lastList = input.mockEntityList()
         val persisteds = repository.saveAll(lastList)
 
         Assertions.assertTrue(persisteds.isNotEmpty())
-
-        input.assertsService(persisteds[persisteds.size - 2], lastList[lastList.size - 2])
-        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
+        valideList(lastList, persisteds)
     }
 
     @Test
     @Order(6)
-    override fun testFindAll() {
+    open fun testFindAll() {
         val entities = repository.findAll()
 
         Assertions.assertTrue(entities.isNotEmpty())
-
-        input.assertsService(entities[entities.size - 2], lastList[lastList.size - 2])
-        input.assertsService(entities[entities.size - 1], lastList[lastList.size - 1])
+        valideList(lastList, entities)
     }
 
     @Test
     @Order(7)
-    override fun testUpdateAll() {
+    open fun testUpdateAll() {
         lastList = input.updateList(lastList)
         repository.saveAll(lastList)
         val persisteds = repository.findAll()
 
         Assertions.assertTrue(persisteds.isNotEmpty())
-
-        input.assertsService(persisteds[persisteds.size - 2], lastList[lastList.size - 2])
-        input.assertsService(persisteds[persisteds.size - 1], lastList[lastList.size - 1])
+        valideList(lastList, persisteds)
     }
 
     @Test
     @Order(8)
-    override fun deleteByEntity() {
+    open fun deleteByEntity() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         val entity = lastList[0]
         Assertions.assertNotNull(entity)
         val id = entity.getId()!!
@@ -112,18 +126,23 @@ class DadosConexaoRepositoryTest : RepositoryTestBase<Long?, DadosConexao>() {
 
     @Test
     @Order(9)
-    override fun deleteList() {
+    open fun deleteList() {
+        if (!TestsConfig.TESTA_EXCLUIR)
+            throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
+
         for (entity in lastList)
             repository.delete(entity)
 
         val persisteds = repository.findAll()
-        for (entity in lastList)
-            Assertions.assertFalse(persisteds.contains(entity))
+        Assertions.assertTrue(persisteds.isEmpty())
     }
 
-    @AfterAll
-    override fun clear() {
 
+    @AfterAll
+    open fun clear() {
+        if (TestsConfig.LIMPA_LISTA)
+            for (entity in lastList)
+                repository.delete(entity)
     }
 
 }

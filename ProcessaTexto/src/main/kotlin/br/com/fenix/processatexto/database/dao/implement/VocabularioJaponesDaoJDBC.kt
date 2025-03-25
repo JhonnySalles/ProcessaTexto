@@ -19,8 +19,6 @@ import java.util.*
 
 class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDaoBase<UUID?, Vocabulario>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(VocabularioJaponesDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles) VALUES (?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, leitura_novel = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;"
@@ -36,11 +34,13 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         private const val SELECT_ENVIO = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE atualizacao >= ?;"
     }
 
+    private val LOGGER = LoggerFactory.getLogger(VocabularioJaponesDaoJDBC::class.java)
+
     @get:Override
     override val tipo: Database get() = Database.JAPONES
 
     @Throws(SQLException::class)
-    override fun insert(obj: Vocabulario) {
+    override fun insertOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -63,7 +63,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Vocabulario) {
+    override fun updateOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -335,5 +335,13 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 
 }

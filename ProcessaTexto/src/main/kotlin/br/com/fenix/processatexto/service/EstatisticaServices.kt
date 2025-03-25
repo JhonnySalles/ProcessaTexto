@@ -29,7 +29,7 @@ class EstatisticaServices {
         if (obj.kanji.isNotEmpty()) {
             if (obj.getId() == null)
                 obj.setId(UUID.randomUUID())
-            dao.insert(obj)
+            dao.insertOld(obj)
         }
     }
 

@@ -16,8 +16,6 @@ import java.util.*
 
 class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDaoBase<UUID?, Vocabulario>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(VocabularioExternoDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT IGNORE INTO _vocabularios (id, palavra, leitura, portugues, ingles, revisado) VALUES (?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE _vocabularios SET palavra = ?, leitura = ?, portugues = ?, ingles = ?, revisado = ? WHERE id = ?;"
@@ -27,11 +25,13 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         private const val EXIST = "SELECT id FROM _vocabularios WHERE id = ?;"
     }
 
+    private val LOGGER = LoggerFactory.getLogger(VocabularioExternoDaoJDBC::class.java)
+
     @get:Override
     override val tipo: Database get() = Database.EXTERNO
 
     @Throws(SQLException::class)
-    override fun insert(obj: Vocabulario) {
+    override fun insertOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -53,7 +53,7 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Vocabulario) {
+    override fun updateOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -197,4 +197,12 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         rs.getString("palavra"), rs.getString("portugues"), rs.getString("ingles"),
         rs.getString("leitura"), rs.getBoolean("revisado")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 }

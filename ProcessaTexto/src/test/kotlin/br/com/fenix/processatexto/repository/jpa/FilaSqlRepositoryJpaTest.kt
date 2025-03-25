@@ -1,9 +1,9 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
 import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
-import br.com.fenix.processatexto.mock.MockComicInfo
-import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
+import br.com.fenix.processatexto.mock.MockFilaSql
+import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.enums.Conexao
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,15 +15,15 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class ComicInfoRepositoryTest : RepositoryTestBase<UUID?, ComicInfo>() {
+class FilaSqlRepositoryJpaTest : RepositoryTestBaseJpa<UUID?, FilaSQL>() {
 
     @InjectMocks
-    override var repository: RepositoryJpa<UUID?, ComicInfo> = object : RepositoryJpaBase<UUID?, ComicInfo>(Conexao.PROCESSA_TEXTO) {}
+    override var repository: RepositoryJpa<UUID?, FilaSQL> = object : RepositoryJpaBase<UUID?, FilaSQL>(Conexao.DECKSUBTITLE) {}
 
     @BeforeEach
     @Throws(Exception::class)
     override fun setUpMocks() {
-        input = MockComicInfo()
+        input = MockFilaSql()
     }
 
 }

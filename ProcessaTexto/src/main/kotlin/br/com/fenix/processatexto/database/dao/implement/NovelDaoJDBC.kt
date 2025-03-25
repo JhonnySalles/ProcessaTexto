@@ -172,7 +172,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
     @Throws(SQLException::class)
     private fun insertNotExists(vocabulario: VocabularioExterno) {
         if (!vocab.exist(vocabulario.getId().toString()))
-            vocab.insert(vocabulario)
+            vocab.insertOld(vocabulario)
     }
 
     @Throws(SQLException::class)

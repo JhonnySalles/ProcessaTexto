@@ -25,6 +25,14 @@ class KanjiDaoJDBC(conexao: Conexao) : KanjiDao, RepositoryDaoBase<UUID?, Kanji>
         rs.getString("kanji"), rs.getString("palavra"), rs.getString("significado")
     )
 
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
     @Throws(SQLException::class)
     override fun select(kanji: String): Optional<Kanji> {
         var st: PreparedStatement? = null

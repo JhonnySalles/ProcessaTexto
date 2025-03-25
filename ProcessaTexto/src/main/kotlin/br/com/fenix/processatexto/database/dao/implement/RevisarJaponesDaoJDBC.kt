@@ -17,8 +17,6 @@ import java.util.*
 
 class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUID?, Revisar>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(RevisarJaponesDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles, revisado, isAnime, isManga, isNovel) VALUES (?,?,?,?,?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE revisar SET forma_basica = ?, leitura = ?, leitura_novel = ?, portugues = ?, ingles = ?, revisado = ?, isAnime = ?, isManga = ?, isNovel = ? WHERE vocabulario = ?;"
@@ -39,11 +37,13 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
         private const val SET_ISNOVEL = "UPDATE revisar SET isNovel = ? WHERE vocabulario = ?;"
     }
 
+    private val LOGGER = LoggerFactory.getLogger(RevisarJaponesDaoJDBC::class.java)
+
     @get:Override
     override val tipo: Database get() = Database.JAPONES
 
     @Throws(SQLException::class)
-    override fun insert(obj: Revisar) {
+    override fun insertOld(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -72,7 +72,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Revisar) {
+    override fun updateOld(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -452,5 +452,13 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
         rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
         rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 
 }

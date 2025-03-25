@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
 import br.com.fenix.processatexto.model.enums.Conexao
 import org.junit.jupiter.api.*
@@ -10,4 +10,4 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class RevisarJaponesRepositoryTest : RevisarRepositoryTest(Conexao.TEXTO_JAPONES) {}
+class VocabularioJaponesRepositoryJpaTest : VocabularioRepositoryJpaTest(Conexao.TEXTO_JAPONES) {}

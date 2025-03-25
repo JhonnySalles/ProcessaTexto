@@ -9,17 +9,23 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import org.slf4j.LoggerFactory
+import java.math.BigDecimal
 import java.sql.*
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
+import java.util.Date
 
 
 class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
 
     companion object {
-        private const val INSERT = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        private const val UPDATE = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
-        private const val SELECT = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? AND language = ? ;"
+        val INSERT: String = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        val UPDATE: String = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
+        val SELECT: String = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo"
+        val DELETE: String = "DELETE FROM comicinfo WHERE id = ?;"
+        private const val SELECT_BY_COMIC_AND_LANGUAGE = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? AND language = ? ;"
         private const val SELECT_BY_ID_OR_COMIC = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE id = ? OR (language = ? AND (UPPER(comic) LIKE ? or UPPER(series) LIKE ? or UPPER(title) LIKE ?));"
         private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao = ?"
     }
@@ -32,8 +38,14 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
         rs.getString("genre"), rs.getString("language"), if (rs.getString("maturityRating") != null) AgeRating.valueOf(rs.getString("maturityRating")) else null
     )
 
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
+
+    override fun getCustomParam(param: Objects): String {
+        return ""
+    }
+
     @Throws(SQLException::class)
-    override fun insert(obj: ComicInfo) {
+    fun insertOld(obj: ComicInfo) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -112,11 +124,11 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
     }
 
     @Throws(SQLException::class)
-    override fun select(comic: String, linguagem: String): Optional<ComicInfo> {
+    override fun find(comic: String, linguagem: String): Optional<ComicInfo> {
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         try {
-            st = conn.prepareStatement(SELECT)
+            st = conn.prepareStatement(SELECT_BY_COMIC_AND_LANGUAGE)
             st.setString(1, comic)
             st.setString(2, linguagem)
             rs = st.executeQuery()
@@ -133,7 +145,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
         }
     }
 
-    override fun select(id: UUID, comic: String, linguagem: String): Optional<ComicInfo> {
+    override fun find(id: UUID, comic: String, linguagem: String): Optional<ComicInfo> {
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         try {
@@ -158,7 +170,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
         }
     }
 
-    override fun selectEnvio(ultimo: LocalDateTime): List<ComicInfo> {
+    override fun findEnvio(ultimo: LocalDateTime): List<ComicInfo> {
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {

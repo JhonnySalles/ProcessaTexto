@@ -6,19 +6,13 @@ import java.time.LocalDateTime
 import java.util.*
 
 
-interface ComicInfoDao {
+interface ComicInfoDao : RepositoryDao<UUID?, ComicInfo> {
     @Throws(SQLException::class)
-    fun insert(obj: ComicInfo)
+    fun find(comic: String, linguagem: String): Optional<ComicInfo>
 
     @Throws(SQLException::class)
-    fun update(obj: ComicInfo)
+    fun find(id: UUID, comic: String, linguagem: String): Optional<ComicInfo>
 
     @Throws(SQLException::class)
-    fun select(comic: String, linguagem: String): Optional<ComicInfo>
-
-    @Throws(SQLException::class)
-    fun select(id: UUID, comic: String, linguagem: String): Optional<ComicInfo>
-
-    @Throws(SQLException::class)
-    fun selectEnvio(ultimo: LocalDateTime): List<ComicInfo>
+    fun findEnvio(ultimo: LocalDateTime): List<ComicInfo>
 }

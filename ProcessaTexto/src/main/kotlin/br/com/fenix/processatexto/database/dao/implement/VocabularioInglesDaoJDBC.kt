@@ -19,8 +19,6 @@ import java.util.*
 
 class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDaoBase<UUID?, Vocabulario>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(VocabularioInglesDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, leitura, portugues) VALUES (?,?,?,?);"
         private const val UPDATE = "UPDATE vocabulario SET leitura = ?, portugues = ? WHERE vocabulario = ?;"
@@ -34,11 +32,13 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
         private const val SELECT_ENVIO = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE atualizacao >= ?;"
     }
 
+    private val LOGGER = LoggerFactory.getLogger(VocabularioInglesDaoJDBC::class.java)
+
     @get:Override
     override val tipo: Database get() = Database.INGLES
 
     @Throws(SQLException::class)
-    override fun insert(obj: Vocabulario) {
+    override fun insertOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -57,7 +57,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Vocabulario) {
+    override fun updateOld(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -275,5 +275,13 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
         UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
         rs.getString("leitura"), "", "", rs.getString("portugues")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 
 }

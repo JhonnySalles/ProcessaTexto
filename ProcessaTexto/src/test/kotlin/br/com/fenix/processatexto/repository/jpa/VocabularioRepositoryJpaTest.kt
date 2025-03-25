@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.repository
+package br.com.fenix.processatexto.repository.jpa
 
 import br.com.fenix.processatexto.database.jpa.RepositoryJpa
 import br.com.fenix.processatexto.database.jpa.RepositoryJpaBase
@@ -10,7 +10,7 @@ import org.mockito.InjectMocks
 import java.util.*
 
 
-abstract class VocabularioRepositoryTest(var conexao: Conexao) : RepositoryTestBase<UUID?, Vocabulario>() {
+abstract class VocabularioRepositoryJpaTest(var conexao: Conexao) : RepositoryTestBaseJpa<UUID?, Vocabulario>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<UUID?, Vocabulario> = object : RepositoryJpaBase<UUID?, Vocabulario>(conexao) {}

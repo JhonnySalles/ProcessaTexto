@@ -23,8 +23,6 @@ import java.util.stream.Collectors
 
 class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, Vinculo>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(VincularDaoJDBC::class.java)
-
     companion object {
         private const val INSERT_VINCULO =
             "INSERT INTO %s_vinculo (volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
@@ -115,6 +113,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                 + "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
                 + "AND Table_Name LIKE '%%_vinculo' AND %s GROUP BY Tabela ")
     }
+
+    private val LOGGER = LoggerFactory.getLogger(VincularDaoJDBC::class.java)
 
     private val BASE_MANGA: String
     private val mangaDao = DaoFactory.createMangaDao()
@@ -949,6 +949,14 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
     }
 
     override fun toEntity(rs: ResultSet): Vinculo {
+        TODO("Not yet implemented")
+    }
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
         TODO("Not yet implemented")
     }
 

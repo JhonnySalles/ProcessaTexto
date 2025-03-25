@@ -17,12 +17,12 @@ import java.util.*
 
 class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Conexao, Sincronizacao>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
-
     companion object {
         private const val UPDATE = "UPDATE sincronizacao SET envio = ?, recebimento = ? WHERE conexao = ?;"
         private const val SELECT = "SELECT conexao, envio, recebimento FROM sincronizacao WHERE conexao = ?;"
     }
+
+    private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
 
     @Throws(SQLException::class)
     override fun update(obj: Sincronizacao) {
@@ -73,5 +73,13 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
         Conexao.valueOf(rs.getString("conexao")), Utils.convertToDateTime(rs.getString("envio")),
         Utils.convertToDateTime(rs.getString("recebimento"))
     )
+
+    override fun toID(id: String?): Conexao {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 
 }

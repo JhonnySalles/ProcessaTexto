@@ -19,8 +19,6 @@ import java.util.*
 
 class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryDaoBase<UUID?, FilaSQL>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT INTO %s (Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE = "UPDATE %s SET Episodio = ?, Linguagem = ?, TempoInicial = ?, TempoFinal = ?, Texto = ?, Traducao = ?, Vocabulario = ? WHERE id = ?;"
@@ -46,6 +44,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         private const val SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql"
         private const val EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql WHERE delete_sql = ?"
     }
+
+    private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
 
     private val connDeckSubtitle = JdbcFactory.getFactory(Conexao.DECKSUBTITLE)
 
@@ -350,4 +350,12 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         Language.getEnum(rs.getString("linguagem").lowercase(Locale.getDefault()))!!,
         rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 }

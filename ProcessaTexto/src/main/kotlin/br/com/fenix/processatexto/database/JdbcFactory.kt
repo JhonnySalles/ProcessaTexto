@@ -1,6 +1,7 @@
 package br.com.fenix.processatexto.database
 
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
+import br.com.fenix.processatexto.database.dao.RepositoryDaoSimples
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
@@ -90,7 +91,7 @@ object JdbcFactory {
             }
     }
 
-    class RepositoryDao(conexao: Conexao) : RepositoryDaoBase<Long?, DadosConexao>(conexao) {
+    class RepositoryDao(conexao: Conexao) : RepositoryDaoSimples<Long?, DadosConexao>(conexao) {
         override fun toEntity(rs: ResultSet): DadosConexao = DadosConexao(
             rs.getLong("id"),
             Conexao.valueOf(rs.getString("tipo")),
@@ -100,6 +101,10 @@ object JdbcFactory {
             rs.getString("password"),
             Driver.valueOf(rs.getString("driver"))
         )
+
+        override fun toID(id: String?): Long? {
+            return id?.toLong()
+        }
     }
 
     fun testaConexao(conexao: Conexao): String {

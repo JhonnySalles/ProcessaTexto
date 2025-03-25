@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.*
-import java.util.List
 
 
 @Entity
@@ -121,7 +120,7 @@ data class ComicInfo(
     var genre: String? = null,
     @Column(name = "LANGUAGE", length = 3, nullable = true)
     @XmlElement(name = "LanguageISO")
-    var languageISO: String? = null,
+    var languageISO: String = "",
     @Transient
     @XmlElement(name = "Format")
     var format: String? = null,
@@ -160,7 +159,7 @@ data class ComicInfo(
 
     constructor(
         id: UUID?, idMal: Long?, comic: String, title: String, series: String, publisher: String?, alternateSeries: String?,
-        storyArc: String?, seriesGroup: String?, imprint: String?, genre: String?, languageISO: String?,
+        storyArc: String?, seriesGroup: String?, imprint: String?, genre: String?, languageISO: String,
         ageRating: AgeRating?,
     ) : this(id, idMal, comic, title, series) {
         this.publisher = publisher
@@ -181,7 +180,7 @@ data class ComicInfo(
         seriesGroup = obj["seriesGroup"] as String?
         imprint = obj["imprint"] as String?
         genre = obj["genre"] as String?
-        languageISO = obj["languageISO"] as String?
+        languageISO = obj["languageISO"] as String
 
         if (obj.containsKey("idMal"))
             idMal = (obj["idMal"] as Double).toLong()
@@ -212,7 +211,5 @@ data class ComicInfo(
         this.languageISO = comic.languageISO
         this.ageRating = comic.ageRating
     }
-
-
 
 }

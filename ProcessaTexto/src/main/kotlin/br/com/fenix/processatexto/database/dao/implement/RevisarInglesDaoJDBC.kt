@@ -17,8 +17,6 @@ import java.util.*
 
 class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUID?, Revisar>(conexao) {
 
-    private val LOGGER = LoggerFactory.getLogger(RevisarInglesDaoJDBC::class.java)
-
     companion object {
         private const val INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, leitura, portugues, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE revisar SET leitura = ?, portugues = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;"
@@ -38,11 +36,13 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
         private const val SET_ISNOVEL = "UPDATE revisar SET isNovel = ? WHERE vocabulario = ?;"
     }
 
+    private val LOGGER = LoggerFactory.getLogger(RevisarInglesDaoJDBC::class.java)
+
     @get:Override
     override val tipo: Database get() = Database.INGLES
 
     @Throws(SQLException::class)
-    override fun insert(obj: Revisar) {
+    override fun insertOld(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -64,7 +64,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Revisar) {
+    override fun updateOld(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -410,5 +410,13 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
         rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"),
         rs.getBoolean("isNovel")
     )
+
+    override fun toID(id: String?): UUID? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
 
 }

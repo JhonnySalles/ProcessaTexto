@@ -8,7 +8,7 @@ import java.util.*
 
 interface EstatisticaDao {
     @Throws(SQLException::class)
-    fun insert(obj: Estatistica)
+    fun insertOld(obj: Estatistica)
 
     @Throws(SQLException::class)
     fun update(obj: Estatistica)

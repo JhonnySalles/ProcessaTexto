@@ -11,7 +11,7 @@ class ComicInfoServices {
     private val comicInfoDao: ComicInfoDao = DaoFactory.createComicInfoDao()
 
     @Throws(SQLException::class)
-    fun select(comic: String, linguagem: String): Optional<ComicInfo> = comicInfoDao.select(comic, linguagem)
+    fun select(comic: String, linguagem: String): Optional<ComicInfo> = comicInfoDao.find(comic, linguagem)
 
     @Throws(SQLException::class)
     fun save(comic: ComicInfo) {

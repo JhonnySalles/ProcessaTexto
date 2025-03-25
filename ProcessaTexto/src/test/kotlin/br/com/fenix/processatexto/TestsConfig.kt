@@ -3,6 +3,7 @@ package br.com.fenix.processatexto
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.JpaFactory
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
+import br.com.fenix.processatexto.database.dao.RepositoryDaoSimples
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
@@ -49,7 +50,7 @@ class TestsConfig {
             }
         }
 
-        private class RepositoryDao() : RepositoryDaoBase<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {
+        private class RepositoryDao() : RepositoryDaoSimples<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {
             override fun toEntity(rs: ResultSet): DadosConexao = DadosConexao(
                 rs.getLong("id"),
                 Conexao.valueOf(rs.getString("tipo")),
