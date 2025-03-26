@@ -43,7 +43,7 @@ object DaoFactory {
 
     fun createKanjiDao(): KanjiDao = KanjiDaoJDBC(Conexao.TEXTO_JAPONES)
 
-    fun createComicInfoDao(): ComicInfoDao = ComicInfoJDBC(Conexao.PROCESSA_TEXTO)
+    fun createComicInfoDao(): ComicInfoDao = ComicInfoDaoJDBC(Conexao.PROCESSA_TEXTO)
 
     fun createSincronizacaoDao(): SincronizacaoDao = SincronizacaoDaoJDBC(Conexao.PROCESSA_TEXTO)
 

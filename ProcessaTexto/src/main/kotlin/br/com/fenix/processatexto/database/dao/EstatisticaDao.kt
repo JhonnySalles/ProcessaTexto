@@ -1,17 +1,15 @@
 package br.com.fenix.processatexto.database.dao
 
 import br.com.fenix.processatexto.controller.EstatisticaController.Tabela
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import java.sql.SQLException
 import java.util.*
 
 
-interface EstatisticaDao {
+interface EstatisticaDao : RepositoryDao<UUID?, Estatistica> {
     @Throws(SQLException::class)
-    fun insertOld(obj: Estatistica)
-
-    @Throws(SQLException::class)
-    fun update(obj: Estatistica)
+    fun save(obj: Estatistica)
 
     @Throws(SQLException::class)
     fun delete(obj: Estatistica)

@@ -9,16 +9,12 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import org.slf4j.LoggerFactory
-import java.math.BigDecimal
 import java.sql.*
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
-import java.util.Date
 
 
-class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
+class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
 
     companion object {
         private const val INSERT: String = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
@@ -31,7 +27,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
         private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao >= ?"
     }
 
-    private val LOGGER = LoggerFactory.getLogger(ComicInfoJDBC::class.java)
+    private val LOGGER = LoggerFactory.getLogger(ComicInfoDaoJDBC::class.java)
 
     override fun toEntity(rs: ResultSet): ComicInfo = ComicInfo(
         UUID.fromString(rs.getString("id")), rs.getLong("idMal"), rs.getString("comic"), rs.getString("title"), rs.getString("series"), rs.getString("publisher"),
@@ -42,7 +38,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
     override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
 
     override fun getCustomParam(param: Objects): String {
-        return ""
+        TODO("Not yet implemented")
     }
 
     @Throws(SQLException::class)
@@ -123,7 +119,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
+                //throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)

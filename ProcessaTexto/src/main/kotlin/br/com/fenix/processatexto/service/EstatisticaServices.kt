@@ -26,11 +26,8 @@ class EstatisticaServices {
 
     @Throws(SQLException::class)
     fun insert(obj: Estatistica) {
-        if (obj.kanji.isNotEmpty()) {
-            if (obj.getId() == null)
-                obj.setId(UUID.randomUUID())
-            dao.insertOld(obj)
-        }
+        if (obj.kanji.isNotEmpty())
+            dao.save(obj)
     }
 
     @Throws(SQLException::class)

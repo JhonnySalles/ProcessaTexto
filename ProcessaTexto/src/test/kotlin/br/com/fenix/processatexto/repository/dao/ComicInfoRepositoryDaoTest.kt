@@ -1,8 +1,8 @@
 package br.com.fenix.processatexto.repository.dao
 
 import br.com.fenix.processatexto.database.DaoFactory
+import br.com.fenix.processatexto.database.dao.ComicInfoDao
 import br.com.fenix.processatexto.database.dao.RepositoryDao
-import br.com.fenix.processatexto.database.dao.implement.ComicInfoJDBC
 import br.com.fenix.processatexto.mock.MockComicInfo
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import org.junit.jupiter.api.*
@@ -34,13 +34,13 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
     fun testSave() {
         lastEntity = input.mockEntity()
         lastEntity.setId(null)
-        (repository as ComicInfoJDBC).save(lastEntity)
+        (repository as ComicInfoDao).save(lastEntity)
         lastId = lastEntity.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(lastEntity)
 
-        input.updateEntity(lastEntity)
-        (repository as ComicInfoJDBC).save(lastEntity)
+        lastEntity = input.updateEntity(lastEntity)
+        (repository as ComicInfoDao).save(lastEntity)
         input.assertsService(lastEntity)
         lastList.add(lastEntity)
     }
@@ -49,7 +49,7 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
     @Test
     @Order(11)
     fun testFindByIdOrComicOrLanguage() {
-        val persisted = (repository as ComicInfoJDBC).find(lastId!!, lastEntity.comic, lastEntity.languageISO).get()
+        val persisted = (repository as ComicInfoDao).find(lastId!!, lastEntity.comic, lastEntity.languageISO).get()
         input.assertsService(persisted, lastEntity)
     }
 
@@ -57,7 +57,7 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
     @Test
     @Order(12)
     fun testFindEnvio() {
-        val entities = (repository as ComicInfoJDBC).findEnvio(inicio)
+        val entities = (repository as ComicInfoDao).findEnvio(inicio)
         Assertions.assertTrue(entities.isNotEmpty())
     }
 

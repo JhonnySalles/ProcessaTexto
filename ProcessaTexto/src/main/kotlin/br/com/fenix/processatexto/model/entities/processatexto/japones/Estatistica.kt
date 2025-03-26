@@ -8,6 +8,7 @@ import java.util.*
 
 
 @Entity
+@Table(name = "estatistica")
 data class Estatistica(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

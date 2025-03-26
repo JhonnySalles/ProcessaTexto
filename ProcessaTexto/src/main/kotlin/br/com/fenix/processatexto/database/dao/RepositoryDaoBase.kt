@@ -266,7 +266,8 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
 
                 val annotation = field.getAnnotation(Column::class.java)
                 field.isAccessible = true
-                paramns[annotation.name] = field.get(obj)
+                val name = annotation.name.ifEmpty { field.name }
+                paramns[name] = field.get(obj)
             }
         }
         return paramns
@@ -307,17 +308,15 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
 
         val sql = String.format(INSERT, getTabela(obj), colunas.substringBeforeLast(","), valores.substringBeforeLast(","))
         LOGGER.info("Gerado SQL Insert: $sql")
-        val id = query(sql, getParametros(obj))
+        val generate = query(sql, getParametros(obj))
+        val id = getIds(obj).values.first()
 
         return if (id != null)
-            toID(id)
-        else {
-            val id = getIds(obj).values.first()
-            if (id != null)
                 id as ID
+            else if (generate != null)
+                toID(generate)
             else
                 null
-        }
     }
 
     /**

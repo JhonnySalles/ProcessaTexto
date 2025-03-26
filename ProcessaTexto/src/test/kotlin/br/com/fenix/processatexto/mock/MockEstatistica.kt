@@ -12,9 +12,7 @@ class MockEstatistica : MockJpaBase<UUID?, Estatistica>() {
     override fun randomId(): UUID? = UUID.randomUUID()
 
     override fun updateEntity(input: Estatistica): Estatistica {
-        input.kanji += "---"
         input.tipo += "---"
-        input.leitura += "---"
         input.quantidade *= 2
         input.percentual *= 2
         input.media *= 2
@@ -25,11 +23,11 @@ class MockEstatistica : MockJpaBase<UUID?, Estatistica>() {
     }
 
     override fun updateEntityById(lastId: UUID?): Estatistica {
-        return Estatistica(lastId, "kanji" + "---", "tipo" + "---", "leitura" + "---", 3.0, 22f, 20.0, 550f, 10)
+        return Estatistica(lastId, "kanji", "tipo" + "---", "leitura", 3.0, 22f, 20.0, 550f, 10)
     }
 
     override fun mockEntity(id: UUID?): Estatistica {
-        return Estatistica(id, "kanji", "tipo", "leitura", 11.0, 12f, 10.0, 35f, 5)
+        return Estatistica(id ?: UUID.randomUUID(), "kanji", "tipo", "leitura", 11.0, 12f, 10.0, 35f, 5)
     }
 
     override fun assertsService(input: Estatistica?) {

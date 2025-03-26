@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.controller.EstatisticaController
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.EstatisticaDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
@@ -18,13 +19,10 @@ import java.util.*
 class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<UUID?, Estatistica>(conexao) {
 
     companion object {
-        private const val INSERT =
-            "INSERT IGNORE INTO estatistica (id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        private const val UPDATE =
-            "UPDATE estatistica SET tipo = ?, quantidade = ?, percentual = ?, media = ?, percentual_medio = ?, cor_sequencial = ? WHERE kanji = ? AND leitura = ? ;"
+        private const val INSERT = "INSERT IGNORE INTO estatistica (id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        private const val UPDATE = "UPDATE estatistica SET tipo = ?, quantidade = ?, percentual = ?, media = ?, percentual_medio = ?, cor_sequencial = ? WHERE kanji = ? AND leitura = ? ;"
         private const val DELETE = "DELETE FROM estatistica WHERE kanji = ? AND leitura = ? ;"
-        private const val SELECT =
-            "SELECT id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial FROM estatistica WHERE kanji = ? AND leitura = ? ;"
+        private const val SELECT = "SELECT id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial FROM estatistica WHERE kanji = ? AND leitura = ? ;"
         private const val SELECT_KANJI = "SELECT id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial FROM estatistica WHERE kanji = ? ;"
         private const val SELECT_ALL = "SELECT id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial FROM estatistica WHERE 1 > 0;"
         private const val PESQUISA = "SELECT id, sequencia, word, read_info, frequency, tabela FROM words_kanji_info WHERE word LIKE "
@@ -38,19 +36,25 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
         rs.getFloat("percentual_medio"), rs.getInt("cor_sequencial")
     )
 
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
 
     override fun getCustomParam(param: Objects): String {
         TODO("Not yet implemented")
     }
 
+    override fun save(obj: Estatistica) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
     @Throws(SQLException::class)
-    override fun insertOld(obj: Estatistica) {
+    private fun insertManual(obj: Estatistica) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
+            obj.setId(UUID.randomUUID())
 
             var index = 0
             st.setString(++index, obj.getId().toString())
@@ -78,7 +82,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: Estatistica) {
+    private fun updateManual(obj: Estatistica) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -96,7 +100,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
                 LOGGER.info(st.toString())
-                throw SQLException(Mensagens.BD_ERRO_UPDATE)
+                //throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
