@@ -24,7 +24,7 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     abstract var repository: RepositoryDao<ID, E>
 
     protected lateinit var lastEntity: E
-    protected lateinit var lastList: List<E>
+    protected lateinit var lastList: MutableList<E>
 
     @BeforeEach
     @Throws(Exception::class)
@@ -61,14 +61,24 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(3)
     open fun testUpdate() {
-        val entity = input.updateEntity(lastEntity)
-        repository.update(entity)
+        lastEntity = input.updateEntity(lastEntity)
+        repository.update(lastEntity)
         val persisted = repository.find(lastId!!)
-        input.assertsService(entity, persisted.get())
+        input.assertsService(lastEntity, persisted.get())
     }
 
     @Test
     @Order(4)
+    open fun testFindAll() {
+        lastList = mutableListOf(lastEntity)
+        val entities = repository.findAll()
+        Assertions.assertTrue(entities.isNotEmpty())
+        valideList(lastList, entities)
+    }
+
+
+    @Test
+    @Order(5)
     open fun testDeleteById() {
         if (!TestsConfig.TESTA_EXCLUIR)
             throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
@@ -78,21 +88,15 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
         Assertions.assertTrue(persisted.isEmpty)
     }
 
-    @Test
-    @Order(5)
-    open fun testFindAll() {
-        val entities = repository.findAll()
-
-        Assertions.assertTrue(entities.isNotEmpty())
-        valideList(lastList, entities)
-    }
-
     @AfterAll
     open fun clear() {
         if (TestsConfig.LIMPA_LISTA) {
             for (entity in lastList)
                 if (entity.getId() != null)
-                    repository.delete(entity.getId()!!)
+                    try {
+                        repository.delete(entity.getId()!!)
+                    } catch (e: Exception) {
+                    }
         }
     }
 

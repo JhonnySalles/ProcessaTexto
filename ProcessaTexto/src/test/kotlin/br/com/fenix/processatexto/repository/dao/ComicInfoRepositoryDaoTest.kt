@@ -21,6 +21,8 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
     @InjectMocks
     override var repository: RepositoryDao<UUID?, ComicInfo> = DaoFactory.createComicInfoDao()
 
+    private val inicio = LocalDateTime.now()
+
     @BeforeEach
     @Throws(Exception::class)
     override fun setUpMocks() {
@@ -29,6 +31,23 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
 
     @Test
     @Order(10)
+    fun testSave() {
+        lastEntity = input.mockEntity()
+        lastEntity.setId(null)
+        (repository as ComicInfoJDBC).save(lastEntity)
+        lastId = lastEntity.getId()
+        Assertions.assertNotNull(lastId)
+        input.assertsService(lastEntity)
+
+        input.updateEntity(lastEntity)
+        (repository as ComicInfoJDBC).save(lastEntity)
+        input.assertsService(lastEntity)
+        lastList.add(lastEntity)
+    }
+
+
+    @Test
+    @Order(11)
     fun testFindByIdOrComicOrLanguage() {
         val persisted = (repository as ComicInfoJDBC).find(lastId!!, lastEntity.comic, lastEntity.languageISO).get()
         input.assertsService(persisted, lastEntity)
@@ -36,9 +55,9 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
 
 
     @Test
-    @Order(11)
+    @Order(12)
     fun testFindEnvio() {
-        val entities = (repository as ComicInfoJDBC).findEnvio(LocalDateTime.MIN)
+        val entities = (repository as ComicInfoJDBC).findEnvio(inicio)
         Assertions.assertTrue(entities.isNotEmpty())
     }
 

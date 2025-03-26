@@ -118,7 +118,7 @@ data class ComicInfo(
     @Column(name = "genre", length = 900, nullable = true)
     @XmlElement(name = "Genre")
     var genre: String? = null,
-    @Column(name = "LANGUAGE", length = 3, nullable = true)
+    @Column(name = "language", length = 3, nullable = true)
     @XmlElement(name = "LanguageISO")
     var languageISO: String = "",
     @Transient

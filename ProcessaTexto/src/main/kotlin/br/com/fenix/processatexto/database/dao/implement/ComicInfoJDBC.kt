@@ -21,13 +21,14 @@ import java.util.Date
 class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
 
     companion object {
-        val INSERT: String = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        val UPDATE: String = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
-        val SELECT: String = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo"
-        val DELETE: String = "DELETE FROM comicinfo WHERE id = ?;"
+        private const val INSERT: String = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        private const val UPDATE: String = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
+        private const val SELECT: String = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo"
+        private const val DELETE: String = "DELETE FROM comicinfo WHERE id = ?;"
+
         private const val SELECT_BY_COMIC_AND_LANGUAGE = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE comic like ? AND language = ? ;"
         private const val SELECT_BY_ID_OR_COMIC = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE id = ? OR (language = ? AND (UPPER(comic) LIKE ? or UPPER(series) LIKE ? or UPPER(title) LIKE ?));"
-        private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao = ?"
+        private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao >= ?"
     }
 
     private val LOGGER = LoggerFactory.getLogger(ComicInfoJDBC::class.java)
@@ -45,12 +46,22 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
     }
 
     @Throws(SQLException::class)
-    fun insertOld(obj: ComicInfo) {
+    override fun save(obj: ComicInfo) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
+    @Throws(SQLException::class)
+    private fun insertManual(obj: ComicInfo) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
+            obj.setId(UUID.randomUUID())
+
             var index = 0
-            st.setString(++index, UUID.randomUUID().toString())
+            st.setString(++index, obj.getId().toString())
             st.setString(++index, obj.comic)
 
             if (obj.idMal == null)
@@ -65,7 +76,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
             st.setString(++index, obj.imprint)
             st.setString(++index, obj.seriesGroup)
             st.setString(++index, obj.storyArc)
-            st.setNString(++index, if (obj.ageRating == null) null else obj.ageRating.toString())
+            st.setNString(++index, if (obj.ageRating == null) null else obj.ageRating!!.name)
             st.setString(++index, obj.alternateSeries)
             st.setString(++index, obj.languageISO)
 
@@ -84,7 +95,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
     }
 
     @Throws(SQLException::class)
-    override fun update(obj: ComicInfo) {
+    private fun updateManual(obj: ComicInfo) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -104,7 +115,7 @@ class ComicInfoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, C
             st.setString(++index, obj.imprint)
             st.setString(++index, obj.seriesGroup)
             st.setString(++index, obj.storyArc)
-            st.setNString(++index, if (obj.ageRating == null) null else obj.ageRating.toString())
+            st.setNString(++index, if (obj.ageRating == null) null else obj.ageRating!!.name)
             st.setString(++index, obj.alternateSeries)
             st.setString(++index, obj.languageISO)
 

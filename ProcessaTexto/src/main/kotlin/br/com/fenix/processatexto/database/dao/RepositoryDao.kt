@@ -15,7 +15,7 @@ interface RepositoryDao<ID, E : EntityBase<ID, E>> {
     fun queryEntity(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any?>): Optional<E>
     fun queryList(@org.intellij.lang.annotations.Language("sql") sql: String, params: Map<String, Any?>): List<E>
 
-    fun insert(obj: E) : ID
+    fun insert(obj: E) : ID?
     fun update(obj: E)
     fun delete(id: ID, column: String = "id")
 

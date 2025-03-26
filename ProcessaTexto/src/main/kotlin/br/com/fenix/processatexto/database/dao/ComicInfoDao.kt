@@ -8,6 +8,9 @@ import java.util.*
 
 interface ComicInfoDao : RepositoryDao<UUID?, ComicInfo> {
     @Throws(SQLException::class)
+    fun save(obj: ComicInfo)
+
+    @Throws(SQLException::class)
     fun find(comic: String, linguagem: String): Optional<ComicInfo>
 
     @Throws(SQLException::class)

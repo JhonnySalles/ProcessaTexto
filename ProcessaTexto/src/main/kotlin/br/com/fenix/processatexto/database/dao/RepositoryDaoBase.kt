@@ -6,6 +6,7 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import jakarta.persistence.Column
+import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.transaction.Transactional
@@ -90,7 +91,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                     is LocalDateTime -> st.setString(++index, Utils.convertToString(params[p] as LocalDateTime))
                     is LocalDate -> st.setString(++index, Utils.convertToString(params[p] as LocalDate))
                     is LocalTime -> st.setString(++index, (params[p] as LocalTime).toString())
-                    is Enum<*> -> st.setString(++index, params[p].toString())
+                    is Enum<*> -> st.setString(++index, (params[p] as Enum<*>).name)
                     is Blob -> st.setBlob(++index, params[p] as Blob)
                     is Objects -> st.setString(++index, getCustomParam(params[p] as Objects))
                 }
@@ -255,11 +256,14 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         }
     }
 
-    private fun getParametros(obj: E) : Map<String, Any?> {
+    private fun getParametros(obj: E, isWithoutId: Boolean = false) : Map<String, Any?> {
         val paramns = mutableMapOf<String, Any?>()
         val fields = clazzEntity.declaredFields
         for (field in fields) {
             if (field.isAnnotationPresent(Column::class.java)) {
+                if (isWithoutId && field.isAnnotationPresent(Id::class.java))
+                    continue
+
                 val annotation = field.getAnnotation(Column::class.java)
                 field.isAccessible = true
                 paramns[annotation.name] = field.get(obj)
@@ -292,17 +296,28 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @return retorna um id do registro gerado
      * @throws SQLException caso o sql esteja errado ou não tenha nenhuma linha alterada
      */
-    override fun insert(obj: E) : ID {
+    override fun insert(obj: E) : ID? {
         val parametros = getParametros(obj)
-        var campos = ""
+        var colunas = ""
         var valores = ""
         for (param in parametros.keys) {
-            campos += "$param,"
+            colunas += "$param,"
             valores += "?,"
         }
-        val sql = String.format(INSERT, getTabela(obj), campos.substringBeforeLast(","), valores.substringBeforeLast(","))
+
+        val sql = String.format(INSERT, getTabela(obj), colunas.substringBeforeLast(","), valores.substringBeforeLast(","))
         LOGGER.info("Gerado SQL Insert: $sql")
-        return toID(query(sql, getParametros(obj)))
+        val id = query(sql, getParametros(obj))
+
+        return if (id != null)
+            toID(id)
+        else {
+            val id = getIds(obj).values.first()
+            if (id != null)
+                id as ID
+            else
+                null
+        }
     }
 
     /**
@@ -311,19 +326,21 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @throws SQLException caso o sql esteja errado ou não tenha nenhuma linha alterada
      */
     override fun update(obj: E) {
-        val parametros = getParametros(obj)
-        var valores = ""
+        val parametros = getParametros(obj, true).toMutableMap()
+        var colunas = ""
         for (param in parametros.keys)
-            valores += "$param = ?,"
+            colunas += "$param = ?,"
 
         val ids = getIds(obj)
         var chaves = ""
-        for (param in ids.keys)
+        for (param in ids.keys) {
             chaves += "$param = ? AND "
+            parametros["id_$param"] = ids[param]
+        }
 
-        val sql = String.format(UPDATE, getTabela(obj), valores.substringBeforeLast(","), chaves.substringBeforeLast(" AND "))
+        val sql = String.format(UPDATE, getTabela(obj), colunas.substringBeforeLast(","), chaves.substringBeforeLast(" AND "))
         LOGGER.info("Gerado SQL Update: $sql")
-        toID(query(sql, getParametros(obj)))
+        toID(query(sql, parametros))
     }
 
     /**
@@ -335,14 +352,14 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
     override fun delete(id: ID, column: String) {
         val entity = clazzEntity.newInstance()
         var condicao = Pair(column, id)
-        var chaves = "$column = ?"
+        var chave = "$column = ?"
         if (column.isEmpty()) {
             val ids = getIds(entity)
             val campo = ids.keys.first()
-            chaves = "$campo = ?"
+            chave = "$campo = ?"
             condicao = Pair(campo, id)
         }
-        val sql = String.format(DELETE, getTabela(entity), chaves)
+        val sql = String.format(DELETE, getTabela(entity), chave)
         LOGGER.info("Gerado SQL Delete: $sql")
         query(sql, mapOf(condicao))
     }
@@ -358,21 +375,18 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         val entity = clazzEntity.newInstance()
         val parametros = getParametros(entity)
         var campos = ""
-        var valores = ""
-        for (param in parametros.keys) {
+        for (param in parametros.keys)
             campos += "$param,"
-            valores += "?,"
-        }
 
         var condicao = Pair(column, id)
-        var chaves = "$column = ?"
+        var chave = "$column = ?"
         if (column.isEmpty()) {
             val ids = getIds(entity)
             val campo = ids.keys.first()
-            chaves = "$campo = ?"
+            chave = "$campo = ?"
             condicao = Pair(campo, id)
         }
-        val sql = String.format(SELECT_BY_ID, getTabela(entity), chaves)
+        val sql = String.format(SELECT_BY_ID, campos.substringBeforeLast(","), getTabela(entity), chave)
         LOGGER.info("Gerado SQL Select By Id: $sql")
         return queryEntity(sql, mapOf(condicao))
     }
@@ -389,7 +403,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         for (param in parametros.keys)
             campos += "$param,"
 
-        val sql = String.format(SELECT, campos, getTabela(entity))
+        val sql = String.format(SELECT, campos.substringBeforeLast(","), getTabela(entity))
         LOGGER.info("Gerado SQL Select: $sql")
         return queryList(sql, mapOf())
     }
