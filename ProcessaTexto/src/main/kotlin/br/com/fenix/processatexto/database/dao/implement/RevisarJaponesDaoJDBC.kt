@@ -4,6 +4,7 @@ import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.RevisarDao
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Database
 import br.com.fenix.processatexto.model.messages.Mensagens
@@ -42,8 +43,27 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
     @get:Override
     override val tipo: Database get() = Database.JAPONES
 
+    override fun toEntity(rs: ResultSet): Revisar = Revisar(
+        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
+        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
+    )
+
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun save(obj: Revisar) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
     @Throws(SQLException::class)
-    override fun insertOld(obj: Revisar) {
+    override fun insertManual(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -72,7 +92,7 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
     }
 
     @Throws(SQLException::class)
-    override fun updateOld(obj: Revisar) {
+    override fun updateManual(obj: Revisar) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -445,20 +465,6 @@ class RevisarJaponesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UU
         } finally {
             JdbcFactory.closeStatement(st)
         }
-    }
-
-    override fun toEntity(rs: ResultSet): Revisar = Revisar(
-        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("portugues"), rs.getString("ingles"),
-        rs.getInt("aparece"), rs.getBoolean("revisado"), rs.getBoolean("isAnime"), rs.getBoolean("isManga"), rs.getBoolean("isNovel")
-    )
-
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCustomParam(param: Objects): String {
-        TODO("Not yet implemented")
     }
 
 }

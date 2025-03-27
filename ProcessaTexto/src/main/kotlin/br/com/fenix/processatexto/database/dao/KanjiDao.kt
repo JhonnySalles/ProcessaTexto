@@ -5,7 +5,7 @@ import java.sql.SQLException
 import java.util.*
 
 
-interface KanjiDao {
+interface KanjiDao : RepositoryDao<UUID?, Kanji> {
     @Throws(SQLException::class)
     fun select(kanji: String): Optional<Kanji>
 }

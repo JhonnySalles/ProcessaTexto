@@ -1,16 +1,14 @@
 package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
-import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.*
 
 
-@jakarta.persistence.Entity
+@Entity
+@Table(name = "revisar")
 data class Revisar(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,11 +31,11 @@ data class Revisar(
     var aparece: Int = 0,
     @Column(name = "revisado")
     var isRevisado: Boolean = false,
-    @Column
+    @Column(name = "isAnime")
     var isAnime: Boolean = false,
-    @Column
+    @Column(name = "isManga")
     var isManga: Boolean = false,
-    @Column
+    @Column(name = "isNovel")
     var isNovel: Boolean = false
 ) : EntityBase<UUID?, Revisar>() {
 

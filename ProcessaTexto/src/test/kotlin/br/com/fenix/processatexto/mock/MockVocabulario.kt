@@ -30,7 +30,7 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
         val formaBasica = if (conexao == Conexao.TEXTO_INGLES) "" else "formaBasica"
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "leituraNovel"
         return Vocabulario(
-            id, "vocabulario" + Random.nextInt().toString(), formaBasica, "leitura", leituraNovel, ingles, "portugues"
+            id ?: randomId(), "vocabulario" + Random.nextInt().toString(), formaBasica, "leitura", leituraNovel, ingles, "portugues"
         )
     }
 

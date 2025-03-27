@@ -15,7 +15,7 @@ data class FilaSQL(
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false, unique = true, length = 36)
-    private val id: UUID? = null,
+    private var id: UUID? = null,
     var sequencial: Long = 0,
     @Column(name = "select_sql", nullable = true)
     var select: String = "",
@@ -39,6 +39,10 @@ data class FilaSQL(
     }
 
     override fun getId(): UUID? = id
+
+    fun setId(id: UUID?) {
+        this.id = id
+    }
 
     override fun create(id: UUID?): FilaSQL = FilaSQL(id)
 

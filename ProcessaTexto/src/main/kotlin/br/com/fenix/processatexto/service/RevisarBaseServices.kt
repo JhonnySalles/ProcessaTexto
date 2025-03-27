@@ -44,7 +44,7 @@ abstract class RevisarBaseServices {
     @Throws(SQLException::class)
     fun insertOrUpdate(obj: Revisar): RevisarBaseServices {
         if (revisarDao.exist(obj.vocabulario))
-            revisarDao.updateOld(obj)
+            revisarDao.updateManual(obj)
         else
             insert(obj)
         updateExterno(obj)
@@ -55,7 +55,7 @@ abstract class RevisarBaseServices {
     fun insert(obj: Revisar): RevisarBaseServices {
         if (obj.getId() == null)
             obj.setId(UUID.randomUUID())
-        revisarDao.insertOld(obj)
+        revisarDao.insertManual(obj)
         return this
     }
 
@@ -68,7 +68,7 @@ abstract class RevisarBaseServices {
 
     @Throws(SQLException::class)
     fun update(obj: Revisar) {
-        revisarDao.updateOld(obj)
+        revisarDao.updateManual(obj)
         updateExterno(obj)
     }
 

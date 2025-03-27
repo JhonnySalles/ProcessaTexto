@@ -18,7 +18,7 @@ class MockKanji : MockJpaBase<UUID?, Kanji>() {
     }
 
     override fun mockEntity(id: UUID?): Kanji {
-        return Kanji(id, "kanji", "palavra", "significado")
+        return Kanji(id ?: randomId(), "kanji", "palavra", "significado")
     }
 
     override fun assertsService(input: Kanji?) {

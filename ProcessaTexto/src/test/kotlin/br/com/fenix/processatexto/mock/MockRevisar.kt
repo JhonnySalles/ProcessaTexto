@@ -28,7 +28,7 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         val portugues = if (conexao == Conexao.TEXTO_INGLES) "Gato." else "Conhecer (acaso), se deparar com, atravessar."
         return Revisar(
             lastId, vocabulario + Random.nextInt().toString() + "---", formaBasica, "デアッ" + "---", leituraNovel,
-            "$portugues---", ingles, 1, isRevisado = true, isAnime = true, isManga = true, isNovel = true
+            "$portugues---", ingles, 1, isRevisado = true, isAnime = false, isManga = false, isNovel = false
         )
     }
 
@@ -39,7 +39,7 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         val leituraNovel = if (conexao == Conexao.TEXTO_INGLES) "" else "デアッ"
         val portugues = if (conexao == Conexao.TEXTO_INGLES) "Gato." else "Conhecer (acaso), se deparar com, atravessar."
         return Revisar(
-            id, vocabulario + Random.nextInt().toString(), formaBasica, "デアッ", leituraNovel,
+            id ?: randomId(), vocabulario + Random.nextInt().toString(), formaBasica, "デアッ", leituraNovel,
             "$portugues---", ingles, 999999999, isRevisado = false, isAnime = false, isManga = false, isNovel = false
         )
     }

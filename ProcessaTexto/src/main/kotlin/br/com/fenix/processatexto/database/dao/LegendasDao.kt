@@ -1,9 +1,12 @@
 package br.com.fenix.processatexto.database.dao
 
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
+import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import java.sql.SQLException
+import java.util.*
 
 
 interface LegendasDao {
@@ -21,6 +24,9 @@ interface LegendasDao {
 
     @Throws(SQLException::class)
     fun update(tabela: String, obj: Legenda)
+
+    @Throws(SQLException::class)
+    fun select(tabela: String, id: UUID) : Optional<Legenda>
 
     @Throws(SQLException::class)
     fun comandoUpdate(update: String, obj: Processar)

@@ -12,7 +12,7 @@ import java.sql.SQLException
 import java.util.*
 
 
-interface NovelDao {
+interface NovelDao  {
 
     @Throws(SQLException::class)
     fun selectAll(base: String, novel: String, volume: Int, linguagem: Language): MutableList<NovelVolume>

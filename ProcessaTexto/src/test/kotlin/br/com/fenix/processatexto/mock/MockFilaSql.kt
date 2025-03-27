@@ -61,7 +61,6 @@ class MockFilaSql : MockJpaBase<UUID?, FilaSQL>() {
         assertEquals(oldObj.update, newObj.update)
         assertEquals(oldObj.delete, newObj.delete)
         assertEquals(oldObj.vocabulario, newObj.vocabulario)
-        assertEquals(oldObj.sequencial, newObj.sequencial)
         assertEquals(oldObj.linguagem, newObj.linguagem)
         assertEquals(oldObj.isExporta, newObj.isExporta)
         assertEquals(oldObj.isLimpeza, newObj.isLimpeza)

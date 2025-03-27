@@ -27,7 +27,7 @@ CREATE TABLE exclusao (
 
 CREATE TABLE kanjax_pt (
     id                VARCHAR(36)                                                   DEFAULT NULL,
-    sequencia         INT                                                          NOT NULL,
+    sequencia         INT                                                          NOT NULL AUTO_INCREMENT,
     kanji             VARCHAR(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
     keyword           VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
     meaning           VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,

@@ -1,19 +1,24 @@
 package br.com.fenix.processatexto.database.dao
 
+import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.processatexto.Revisar
+import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import br.com.fenix.processatexto.model.enums.Database
 import java.sql.SQLException
 import java.util.*
 
 
-interface RevisarDao {
+interface RevisarDao : RepositoryDao<UUID?, Revisar> {
     val tipo: Database
 
     @Throws(SQLException::class)
-    fun insertOld(obj: Revisar)
+    fun save(obj: Revisar)
 
     @Throws(SQLException::class)
-    fun updateOld(obj: Revisar)
+    fun insertManual(obj: Revisar)
+
+    @Throws(SQLException::class)
+    fun updateManual(obj: Revisar)
 
     @Throws(SQLException::class)
     fun delete(obj: Revisar)

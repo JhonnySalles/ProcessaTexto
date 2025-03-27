@@ -3,26 +3,25 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
+import br.com.fenix.processatexto.model.entities.processatexto.Kanji
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
+import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.messages.Mensagens
 import org.slf4j.LoggerFactory
-import java.sql.PreparedStatement
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Statement
+import java.sql.*
 import java.util.*
 
 
-class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryDaoBase<UUID?, FilaSQL>(conexao) {
+class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
 
     companion object {
-        private const val INSERT = "INSERT INTO %s (Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?);"
+        private const val INSERT = "INSERT INTO %s (ID, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE = "UPDATE %s SET Episodio = ?, Linguagem = ?, TempoInicial = ?, TempoFinal = ?, Texto = ?, Traducao = ?, Vocabulario = ? WHERE id = ?;"
-        private const val SELECT = "SELECT id, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario FROM %s WHERE 1 > 0 ;"
+        private const val SELECT = "SELECT id, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario FROM %s WHERE id = ?;"
         private const val DELETE = "DELETE FROM %s WHERE Episodio = ? AND Linguagem = ?;"
 
         private const val SELECT_LISTA_TABELAS = ("SELECT Table_Name AS Tabela "
@@ -39,6 +38,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
                 "  FOR EACH ROW BEGIN" +
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
+
         private const val INSERT_FILA = "INSERT INTO _fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE_FILA = "UPDATE _fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?"
         private const val SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql"
@@ -46,6 +46,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
     }
 
     private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
+
+    private val conn: Connection = JdbcFactory.getFactory(conexao)
 
     private val connDeckSubtitle = JdbcFactory.getFactory(Conexao.DECKSUBTITLE)
 
@@ -140,6 +142,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         try {
             st = connDeckSubtitle.prepareStatement(String.format(INSERT, tabela), Statement.RETURN_GENERATED_KEYS)
             var index = 0
+            st.setString(++index, obj.getId().toString())
             st.setInt(++index, obj.episodio)
             st.setString(++index, obj.linguagem.sigla.uppercase(Locale.getDefault()))
             st.setString(++index, obj.tempo)
@@ -167,7 +170,6 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         try {
             st = connDeckSubtitle.prepareStatement(String.format(UPDATE, tabela), Statement.RETURN_GENERATED_KEYS)
             var index = 0
-            st.setString(++index, obj.getId().toString())
             st.setInt(++index, obj.episodio)
             st.setString(++index, obj.linguagem.sigla.uppercase(Locale.getDefault()))
             st.setString(++index, obj.tempo)
@@ -183,6 +185,32 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
+        }
+    }
+
+    override fun select(tabela: String, id: UUID): Optional<Legenda> {
+        var st: PreparedStatement? = null
+        var rs: ResultSet? = null
+        try {
+            st = conn.prepareStatement(String.format(SELECT, tabela))
+            st.setString(1, id.toString())
+            rs = st.executeQuery()
+            return if (rs.next())
+                Optional.of(Legenda(
+                    UUID.fromString(rs.getString("id")), 0, rs.getInt("episodio"),
+                    Language.getEnum(rs.getString("linguagem").lowercase(Locale.getDefault()))!!,
+                    rs.getString("tempoinicial"), rs.getString("texto"), rs.getString("traducao"),
+                    rs.getString("vocabulario"), "", ""
+                ))
+            else
+                Optional.empty<Legenda>()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            LOGGER.info(st.toString())
+            throw SQLException(Mensagens.BD_ERRO_SELECT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+            JdbcFactory.closeResultSet(rs)
         }
     }
 
@@ -229,9 +257,10 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT_FILA, Statement.RETURN_GENERATED_KEYS)
+            fila.setId(UUID.randomUUID())
 
             var index = 0
-            st.setString(++index, UUID.randomUUID().toString())
+            st.setString(++index, fila.getId().toString())
             st.setString(++index, fila.select)
             st.setString(++index, fila.update)
             st.setString(++index, fila.delete)
@@ -344,18 +373,4 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao, RepositoryD
         }
     }
 
-    override fun toEntity(rs: ResultSet): FilaSQL = FilaSQL(
-        UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("select_sql"),
-        rs.getString("update_sql"), rs.getString("delete_sql"), rs.getString("vocabulario"),
-        Language.getEnum(rs.getString("linguagem").lowercase(Locale.getDefault()))!!,
-        rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")
-    )
-
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCustomParam(param: Objects): String {
-        TODO("Not yet implemented")
-    }
 }
