@@ -33,23 +33,23 @@ class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
     @Order(10)
     fun testSave() {
         lastEntity = input.mockEntity()
-        lastEntity.setId(null)
-        (repository as ComicInfoDao).save(lastEntity)
-        lastId = lastEntity.getId()
+        lastEntity!!.setId(null)
+        (repository as ComicInfoDao).save(lastEntity!!)
+        lastId = lastEntity!!.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(lastEntity)
 
-        lastEntity = input.updateEntity(lastEntity)
-        (repository as ComicInfoDao).save(lastEntity)
+        lastEntity = input.updateEntity(lastEntity!!)
+        (repository as ComicInfoDao).save(lastEntity!!)
         input.assertsService(lastEntity)
-        lastList.add(lastEntity)
+        lastList.add(lastEntity!!)
     }
 
 
     @Test
     @Order(11)
     fun testFindByIdOrComicOrLanguage() {
-        val persisted = (repository as ComicInfoDao).find(lastId!!, lastEntity.comic, lastEntity.languageISO).get()
+        val persisted = (repository as ComicInfoDao).find(lastId!!, lastEntity!!.comic, lastEntity!!.languageISO).get()
         input.assertsService(persisted, lastEntity)
     }
 

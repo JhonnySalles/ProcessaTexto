@@ -23,8 +23,17 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
 
     abstract var repository: RepositoryDao<ID, E>
 
-    protected lateinit var lastEntity: E
-    protected lateinit var lastList: MutableList<E>
+    protected var lastEntity: E? = null
+        set(value) {
+            field = value
+            value?.run { clear.add(this)  }
+        }
+    protected var lastList: MutableList<E> = mutableListOf()
+        set(value) {
+            field = value
+            clear.addAll(value)
+        }
+    protected val clear: MutableList<E> = mutableListOf()
 
     @BeforeEach
     @Throws(Exception::class)
@@ -33,7 +42,7 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     protected open var lastId: ID? = null
 
 
-    private fun valideList(oldList: List<E>, newList : List<E>) {
+    protected fun valideList(oldList: List<E>, newList : List<E>) {
         val listOld = oldList.sortedBy { it.getId()?.toString() ?: "" }
         val listNew = newList.sortedBy { it.getId()?.toString() ?: "" }
 
@@ -47,7 +56,7 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     open fun testInsert() {
         lastId = null
         lastEntity = input.mockEntity(lastId)
-        lastId = repository.insert(lastEntity)
+        lastId = repository.insert(lastEntity!!)
         Assertions.assertNotNull(lastId)
     }
 
@@ -61,8 +70,8 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(3)
     open fun testUpdate() {
-        lastEntity = input.updateEntity(lastEntity)
-        repository.update(lastEntity)
+        lastEntity = input.updateEntity(lastEntity!!)
+        repository.update(lastEntity!!)
         val persisted = repository.find(lastId!!)
         input.assertsService(lastEntity, persisted.get())
     }
@@ -70,7 +79,7 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(4)
     open fun testFindAll() {
-        lastList = mutableListOf(lastEntity)
+        lastList = mutableListOf(lastEntity!!)
         val entities = repository.findAll()
         Assertions.assertTrue(entities.isNotEmpty())
         valideList(lastList, entities)
@@ -91,11 +100,11 @@ abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
     @AfterAll
     open fun clear() {
         if (TestsConfig.LIMPA_LISTA) {
-            for (entity in lastList)
+            for (entity in clear)
                 if (entity.getId() != null)
                     try {
                         repository.delete(entity.getId()!!)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                     }
         }
     }

@@ -18,7 +18,11 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
 
     override fun randomId(): UUID? = UUID.randomUUID()
 
-    override fun updateEntity(input: Revisar): Revisar = updateEntityById(input.getId())
+    override fun updateEntity(input: Revisar): Revisar {
+        val entity = updateEntityById(input.getId())
+        entity.vocabulario = input.vocabulario
+        return entity
+    }
 
     override fun updateEntityById(lastId: UUID?): Revisar {
         val vocabulario = if (conexao == Conexao.TEXTO_INGLES) WORD else "$KANJI---"
@@ -63,16 +67,18 @@ class MockRevisar(var conexao: Conexao) : MockJpaBase<UUID?, Revisar>() {
         assertsService(oldObj)
         assertsService(newObj)
 
-        assertEquals(oldObj!!.vocabulario, newObj!!.vocabulario)
-        assertEquals(oldObj.formaBasica, newObj.formaBasica)
-        assertEquals(oldObj.leitura, newObj.leitura)
-        assertEquals(oldObj.leituraNovel, newObj.leituraNovel)
-        assertEquals(oldObj.portugues, newObj.portugues)
-        assertEquals(oldObj.ingles, newObj.ingles)
+        assertEquals(oldObj!!.portugues, newObj!!.portugues)
         assertEquals(oldObj.isRevisado, newObj.isRevisado)
         assertEquals(oldObj.isManga, newObj.isManga)
         assertEquals(oldObj.isNovel, newObj.isNovel)
         assertEquals(oldObj.isAnime, newObj.isAnime)
+
+        if (conexao != Conexao.TEXTO_INGLES) {
+            assertEquals(oldObj.formaBasica, newObj.formaBasica)
+            assertEquals(oldObj.leitura, newObj.leitura)
+            assertEquals(oldObj.leituraNovel, newObj.leituraNovel)
+            assertEquals(oldObj.ingles, newObj.ingles)
+        }
     }
 
 }

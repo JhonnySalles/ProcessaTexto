@@ -33,22 +33,22 @@ class EstatisticaRepositoryDaoTest : RepositoryTestBaseDao<UUID?, Estatistica>()
     @Order(10)
     fun testSave() {
         lastEntity = input.mockEntity()
-        lastEntity.setId(null)
-        (repository as EstatisticaDao).save(lastEntity)
-        lastId = lastEntity.getId()
+        lastEntity!!.setId(null)
+        (repository as EstatisticaDao).save(lastEntity!!)
+        lastId = lastEntity!!.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(lastEntity)
 
-        lastEntity = input.updateEntity(lastEntity)
-        (repository as EstatisticaDao).save(lastEntity)
+        lastEntity = input.updateEntity(lastEntity!!)
+        (repository as EstatisticaDao).save(lastEntity!!)
         input.assertsService(lastEntity)
-        lastList.add(lastEntity)
+        lastList.add(lastEntity!!)
     }
 
     @Test
     @Order(11)
     fun testSelectKanjiLeitura() {
-        val entitie = (repository as EstatisticaDao).select(lastEntity.kanji, lastEntity.leitura)
+        val entitie = (repository as EstatisticaDao).select(lastEntity!!.kanji, lastEntity!!.leitura)
         Assertions.assertTrue(entitie.isPresent)
         lastEntity = entitie.get()
         input.assertsService(lastEntity)
@@ -57,7 +57,7 @@ class EstatisticaRepositoryDaoTest : RepositoryTestBaseDao<UUID?, Estatistica>()
     @Test
     @Order(12)
     fun testSelectKanji() {
-        val entitie = (repository as EstatisticaDao).select(lastEntity.kanji)
+        val entitie = (repository as EstatisticaDao).select(lastEntity!!.kanji)
         Assertions.assertTrue(entitie.isNotEmpty())
     }
 
@@ -71,7 +71,7 @@ class EstatisticaRepositoryDaoTest : RepositoryTestBaseDao<UUID?, Estatistica>()
     @Test
     @Order(14)
     fun testDelete() {
-        (repository as EstatisticaDao).delete(lastEntity)
+        (repository as EstatisticaDao).delete(lastEntity!!)
     }
 
 }
