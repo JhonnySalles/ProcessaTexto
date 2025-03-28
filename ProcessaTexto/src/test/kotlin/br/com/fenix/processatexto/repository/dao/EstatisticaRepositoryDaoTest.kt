@@ -1,17 +1,14 @@
 package br.com.fenix.processatexto.repository.dao
 
-import br.com.fenix.processatexto.controller.EstatisticaController
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.dao.EstatisticaDao
 import br.com.fenix.processatexto.database.dao.RepositoryDao
-import br.com.fenix.processatexto.database.dao.implement.ComicInfoDaoJDBC
 import br.com.fenix.processatexto.mock.MockEstatistica
 import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatistica
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.junit.jupiter.MockitoExtension
-import java.sql.SQLException
 import java.util.*
 
 

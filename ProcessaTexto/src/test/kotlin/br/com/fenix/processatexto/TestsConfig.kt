@@ -2,7 +2,6 @@ package br.com.fenix.processatexto
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.JpaFactory
-import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.RepositoryDaoSimples
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao

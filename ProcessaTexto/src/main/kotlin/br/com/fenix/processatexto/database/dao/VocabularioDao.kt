@@ -1,6 +1,5 @@
 package br.com.fenix.processatexto.database.dao
 
-import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Database
 import java.sql.SQLException
