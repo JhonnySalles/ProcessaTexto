@@ -30,8 +30,27 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     @get:Override
     override val tipo: Database get() = Database.EXTERNO
 
+    override fun toEntity(rs: ResultSet): Vocabulario = VocabularioExterno(
+        UUID.fromString(rs.getString("id")),
+        rs.getString("palavra"), rs.getString("portugues"), rs.getString("ingles"),
+        rs.getString("leitura"), rs.getBoolean("revisado")
+    )
+
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun save(obj: Vocabulario) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
     @Throws(SQLException::class)
-    override fun insertOld(obj: Vocabulario) {
+    override fun insertManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -53,7 +72,7 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     }
 
     @Throws(SQLException::class)
-    override fun updateOld(obj: Vocabulario) {
+    override fun updateManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -192,17 +211,4 @@ class VocabularioExternoDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         }
     }
 
-    override fun toEntity(rs: ResultSet): Vocabulario = VocabularioExterno(
-        UUID.fromString(rs.getString("id")),
-        rs.getString("palavra"), rs.getString("portugues"), rs.getString("ingles"),
-        rs.getString("leitura"), rs.getBoolean("revisado")
-    )
-
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCustomParam(param: Objects): String {
-        TODO("Not yet implemented")
-    }
 }

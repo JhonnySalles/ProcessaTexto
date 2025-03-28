@@ -1,5 +1,6 @@
 package br.com.fenix.processatexto.database.dao
 
+import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Database
 import java.sql.SQLException
@@ -11,10 +12,13 @@ interface VocabularioDao : RepositoryDao<UUID?, Vocabulario> {
     val tipo: Database
 
     @Throws(SQLException::class)
-    fun insertOld(obj: Vocabulario)
+    fun save(obj: Vocabulario)
 
     @Throws(SQLException::class)
-    fun updateOld(obj: Vocabulario)
+    fun insertManual(obj: Vocabulario)
+
+    @Throws(SQLException::class)
+    fun updateManual(obj: Vocabulario)
 
     @Throws(SQLException::class)
     fun delete(obj: Vocabulario)

@@ -13,7 +13,11 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
 
     override fun randomId(): UUID? = UUID.randomUUID()
 
-    override fun updateEntity(input: Vocabulario): Vocabulario = updateEntityById(input.getId())
+    override fun updateEntity(input: Vocabulario): Vocabulario {
+        val entity = updateEntityById(input.getId())
+        entity.vocabulario = input.vocabulario
+        return entity
+    }
 
     override fun updateEntityById(lastId: UUID?): Vocabulario {
         val ingles = if (conexao == Conexao.TEXTO_INGLES) "" else "ingles" + "---"
@@ -39,11 +43,14 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
         assertNotNull(input!!.getId())
 
         assertTrue(input.vocabulario.isNotEmpty())
-        assertTrue(input.formaBasica.isNotEmpty())
-        assertTrue(input.leitura.isNotEmpty())
-        assertTrue(input.leituraNovel.isNotEmpty())
         assertTrue(input.portugues.isNotEmpty())
-        assertTrue(input.ingles.isNotEmpty())
+
+        if (conexao != Conexao.TEXTO_INGLES) {
+            assertTrue(input.formaBasica.isNotEmpty())
+            assertTrue(input.leitura.isNotEmpty())
+            assertTrue(input.leituraNovel.isNotEmpty())
+            assertTrue(input.ingles.isNotEmpty())
+        }
     }
 
     override fun assertsService(oldObj: Vocabulario?, newObj: Vocabulario?) {
@@ -51,11 +58,14 @@ class MockVocabulario(var conexao: Conexao) : MockJpaBase<UUID?, Vocabulario>() 
         assertsService(newObj)
 
         assertEquals(oldObj!!.vocabulario, newObj!!.vocabulario)
-        assertEquals(oldObj.formaBasica, newObj.formaBasica)
-        assertEquals(oldObj.leitura, newObj.leitura)
-        assertEquals(oldObj.leituraNovel, newObj.leituraNovel)
         assertEquals(oldObj.portugues, newObj.portugues)
-        assertEquals(oldObj.ingles, newObj.ingles)
+
+        if (conexao != Conexao.TEXTO_INGLES) {
+            assertEquals(oldObj.formaBasica, newObj.formaBasica)
+            assertEquals(oldObj.leitura, newObj.leitura)
+            assertEquals(oldObj.leituraNovel, newObj.leituraNovel)
+            assertEquals(oldObj.ingles, newObj.ingles)
+        }
     }
 
 }

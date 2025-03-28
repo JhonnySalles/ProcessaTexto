@@ -8,7 +8,13 @@ import java.util.*
 
 interface SincronizacaoDao {
     @Throws(SQLException::class)
+    fun insert(obj: Sincronizacao) : Conexao
+
+    @Throws(SQLException::class)
     fun update(obj: Sincronizacao)
+
+    @Throws(SQLException::class)
+    fun delete(obj: Sincronizacao)
 
     @Throws(SQLException::class)
     fun select(tipo: Conexao): Optional<Sincronizacao>

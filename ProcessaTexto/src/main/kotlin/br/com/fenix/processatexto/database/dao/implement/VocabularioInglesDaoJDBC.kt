@@ -3,6 +3,7 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.VocabularioDao
+import br.com.fenix.processatexto.model.entities.processatexto.Revisar
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Database
@@ -37,8 +38,26 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
     @get:Override
     override val tipo: Database get() = Database.INGLES
 
+    override fun toEntity(rs: ResultSet): Vocabulario = Vocabulario(
+        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
+        rs.getString("leitura"), "", "", rs.getString("portugues")
+    )
+
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun save(obj: Vocabulario) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
     @Throws(SQLException::class)
-    override fun insertOld(obj: Vocabulario) {
+    override fun insertManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -57,7 +76,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
     }
 
     @Throws(SQLException::class)
-    override fun updateOld(obj: Vocabulario) {
+    override fun updateManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -270,18 +289,5 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
 
     @Throws(SQLException::class)
     override fun selectAll(): MutableList<Vocabulario> = mutableListOf()
-
-    override fun toEntity(rs: ResultSet): Vocabulario = Vocabulario(
-        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), "",
-        rs.getString("leitura"), "", "", rs.getString("portugues")
-    )
-
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCustomParam(param: Objects): String {
-        TODO("Not yet implemented")
-    }
 
 }

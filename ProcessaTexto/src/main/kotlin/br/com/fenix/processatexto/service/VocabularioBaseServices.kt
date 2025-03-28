@@ -18,7 +18,7 @@ abstract class VocabularioBaseServices {
         SincronizacaoServices.enviar(Database.JAPONES, vocab)
         val vocabulario = VocabularioExterno(vocab.getId(), vocab.vocabulario, vocab.portugues, vocab.ingles, vocab.leitura, vocab.leituraNovel, true)
         for (dao in externos)
-            dao.updateOld(vocabulario)
+            dao.updateManual(vocabulario)
     }
 
     @Throws(SQLException::class)
@@ -34,7 +34,7 @@ abstract class VocabularioBaseServices {
     @Throws(SQLException::class)
     fun insertOrUpdate(obj: Vocabulario): VocabularioBaseServices {
         if (vocabularioDao.exist(obj.vocabulario))
-            vocabularioDao.updateOld(obj)
+            vocabularioDao.updateManual(obj)
         else
             save(obj)
         updateExterno(obj)
@@ -45,7 +45,7 @@ abstract class VocabularioBaseServices {
     protected fun save(obj: Vocabulario) {
         if (obj.getId() == null)
             obj.setId(UUID.randomUUID())
-        vocabularioDao.insertOld(obj)
+        vocabularioDao.insertManual(obj)
         updateExterno(obj)
     }
 
@@ -54,7 +54,7 @@ abstract class VocabularioBaseServices {
         if (obj.portugues.isNotEmpty()) {
             if (obj.getId() == null)
                 obj.setId(UUID.randomUUID())
-            vocabularioDao.insertOld(obj)
+            vocabularioDao.insertManual(obj)
             updateExterno(obj)
         }
         return this
@@ -90,7 +90,7 @@ abstract class VocabularioBaseServices {
 
     @Throws(SQLException::class)
     fun update(obj: Vocabulario) {
-        vocabularioDao.updateOld(obj)
+        vocabularioDao.updateManual(obj)
         updateExterno(obj)
     }
 

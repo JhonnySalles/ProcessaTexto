@@ -39,8 +39,26 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     @get:Override
     override val tipo: Database get() = Database.JAPONES
 
+    override fun toEntity(rs: ResultSet): Vocabulario = Vocabulario(
+        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
+        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues")
+    )
+
+    override fun toID(id: String?): UUID? = if (id != null) UUID.fromString(id) else null
+
+    override fun getCustomParam(param: Objects): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun save(obj: Vocabulario) {
+        if (obj.getId() == null)
+            insertManual(obj)
+        else
+            updateManual(obj)
+    }
+
     @Throws(SQLException::class)
-    override fun insertOld(obj: Vocabulario) {
+    override fun insertManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
@@ -63,7 +81,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
     }
 
     @Throws(SQLException::class)
-    override fun updateOld(obj: Vocabulario) {
+    override fun updateManual(obj: Vocabulario) {
         var st: PreparedStatement? = null
         try {
             st = conn.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
@@ -329,19 +347,6 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             JdbcFactory.closeStatement(st)
             JdbcFactory.closeResultSet(rs)
         }
-    }
-
-    override fun toEntity(rs: ResultSet): Vocabulario = Vocabulario(
-        UUID.fromString(rs.getString("id")), rs.getString("vocabulario"), rs.getString("forma_basica"),
-        rs.getString("leitura"), rs.getString("leitura_novel"), rs.getString("ingles"), rs.getString("portugues")
-    )
-
-    override fun toID(id: String?): UUID? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCustomParam(param: Objects): String {
-        TODO("Not yet implemented")
     }
 
 }

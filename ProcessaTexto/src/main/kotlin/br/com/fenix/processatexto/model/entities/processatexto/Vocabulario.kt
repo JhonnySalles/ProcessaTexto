@@ -2,15 +2,14 @@ package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
 import com.google.gson.annotations.Expose
-import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.*
+import kotlin.jvm.Transient
 
 
+@Table(name = "vocabulario")
 @jakarta.persistence.Entity
 open class Vocabulario(
     @Id

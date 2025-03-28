@@ -234,7 +234,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     @Throws(SQLException::class)
     private fun insertNotExists(vocabulario: VocabularioExterno) {
         if (!vocab.exist(vocabulario.getId().toString()))
-            vocab.insertOld(vocabulario)
+            vocab.insertManual(vocabulario)
     }
 
     @Throws(SQLException::class)

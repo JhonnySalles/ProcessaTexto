@@ -1,6 +1,5 @@
 package br.com.fenix.processatexto.database
 
-import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
 import br.com.fenix.processatexto.database.dao.RepositoryDaoSimples
 import br.com.fenix.processatexto.model.entities.DadosConexao
 import br.com.fenix.processatexto.model.enums.Conexao

@@ -25,7 +25,7 @@ abstract class RevisarBaseServices {
             revisar.isRevisado
         )
         for (dao in externos)
-            dao.updateOld(vocabulario)
+            dao.updateManual(vocabulario)
     }
 
     @Throws(SQLException::class)

@@ -226,10 +226,10 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
                     if (vocab.isPresent) {
                         vocab.get().merge(sinc.second)
-                        voc.updateOld(vocab.get())
+                        voc.updateManual(vocab.get())
                     } else {
                         vocab = Optional.of(sinc.second)
-                        voc.insertOld(vocab.get())
+                        voc.insertManual(vocab.get())
                     }
 
                     vocabularios += vocab.get().vocabulario + ", "

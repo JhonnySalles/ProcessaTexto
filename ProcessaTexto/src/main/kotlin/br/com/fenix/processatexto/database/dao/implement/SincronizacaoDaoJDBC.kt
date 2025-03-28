@@ -18,11 +18,38 @@ import java.util.*
 class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Conexao, Sincronizacao>(conexao) {
 
     companion object {
+        private const val INSERT = "INSERT INTO sincronizacao (conexao, envio, recebimento) VALUES (?,?,?);"
         private const val UPDATE = "UPDATE sincronizacao SET envio = ?, recebimento = ? WHERE conexao = ?;"
         private const val SELECT = "SELECT conexao, envio, recebimento FROM sincronizacao WHERE conexao = ?;"
+        private const val DELETE = "DELETE FROM sincronizacao WHERE conexao = ?;"
     }
 
     private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
+
+    @Throws(SQLException::class)
+    override fun insert(obj: Sincronizacao) : Conexao {
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)
+            var index = 0
+            st.setString(++index, obj.conexao.toString())
+            st.setString(++index, Utils.convertToString(obj.envio))
+            st.setString(++index, Utils.convertToString(obj.recebimento))
+
+            val rowsAffected: Int = st.executeUpdate()
+            if (rowsAffected < 1) {
+                LOGGER.info(st.toString())
+                throw SQLException(Mensagens.BD_ERRO_INSERT)
+            }
+            return obj.conexao
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            LOGGER.info(st.toString())
+            throw SQLException(Mensagens.BD_ERRO_INSERT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+        }
+    }
 
     @Throws(SQLException::class)
     override fun update(obj: Sincronizacao) {
@@ -33,6 +60,22 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
             st.setString(++index, Utils.convertToString(obj.envio))
             st.setString(++index, Utils.convertToString(obj.recebimento))
             st.setString(++index, obj.conexao.toString())
+            st.executeUpdate()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            LOGGER.info(st.toString())
+            throw SQLException(Mensagens.BD_ERRO_INSERT)
+        } finally {
+            JdbcFactory.closeStatement(st)
+        }
+    }
+
+    @Throws(SQLException::class)
+    override fun delete(obj: Sincronizacao) {
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(DELETE)
+            st.setString(1, obj.conexao.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)

@@ -6,7 +6,6 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.transaction.Transactional
