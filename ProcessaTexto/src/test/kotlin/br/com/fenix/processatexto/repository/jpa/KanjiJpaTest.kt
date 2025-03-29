@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class KanjiRepositoryJpaTest : RepositoryTestBaseJpa<UUID?, Kanji>() {
+class KanjiJpaTest : TestBaseJpa<UUID?, Kanji>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<UUID?, Kanji> = object : RepositoryJpaBase<UUID?, Kanji>(Conexao.TEXTO_JAPONES) {}

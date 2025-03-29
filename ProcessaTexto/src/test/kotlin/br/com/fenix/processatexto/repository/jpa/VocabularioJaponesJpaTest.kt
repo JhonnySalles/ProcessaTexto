@@ -10,4 +10,4 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class VocabularioJaponesRepositoryJpaTest : VocabularioRepositoryJpaTest(Conexao.TEXTO_JAPONES) {}
+class VocabularioJaponesJpaTest : VocabularioJpaTest(Conexao.TEXTO_JAPONES) {}

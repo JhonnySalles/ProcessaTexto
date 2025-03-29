@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class DadosConexaoRepositoryJpaTest : RepositoryTestBaseJpa<Long?, DadosConexao>() {
+class DadosConexaoJpaTest : TestBaseJpa<Long?, DadosConexao>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<Long?, DadosConexao> = object : RepositoryJpaBase<Long?, DadosConexao>(Conexao.PROCESSA_TEXTO) {}

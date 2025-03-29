@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class SincronizacaoRepositoryJpaTest() : RepositoryTestBaseJpa<Conexao, Sincronizacao>() {
+class SincronizacaoJpaTest() : TestBaseJpa<Conexao, Sincronizacao>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<Conexao, Sincronizacao> = object : RepositoryJpaBase<Conexao, Sincronizacao>(Conexao.PROCESSA_TEXTO) {}

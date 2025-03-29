@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class ComicInfoRepositoryJpaTest : RepositoryTestBaseJpa<UUID?, ComicInfo>() {
+class ComicInfoJpaTest : TestBaseJpa<UUID?, ComicInfo>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<UUID?, ComicInfo> = object : RepositoryJpaBase<UUID?, ComicInfo>(Conexao.PROCESSA_TEXTO) {}

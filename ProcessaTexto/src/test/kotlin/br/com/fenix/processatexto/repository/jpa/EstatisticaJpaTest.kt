@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class EstatisticaRepositoryJpaTest : RepositoryTestBaseJpa<UUID?, Estatistica>() {
+class EstatisticaJpaTest : TestBaseJpa<UUID?, Estatistica>() {
 
     @InjectMocks
     override var repository: RepositoryJpa<UUID?, Estatistica> = object : RepositoryJpaBase<UUID?, Estatistica>(Conexao.TEXTO_JAPONES) { }
