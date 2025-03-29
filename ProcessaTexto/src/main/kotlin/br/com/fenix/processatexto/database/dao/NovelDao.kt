@@ -45,7 +45,7 @@ interface NovelDao  {
     fun insertCapitulo(base: String, idVolume: UUID, obj: NovelCapitulo): UUID
 
     @Throws(SQLException::class)
-    fun insertTexto(base: String, idPagina: UUID, obj: NovelTexto): UUID
+    fun insertTexto(base: String, idCapitulo: UUID, obj: NovelTexto): UUID
 
     @Throws(SQLException::class)
     fun updateVolume(base: String, obj: NovelVolume)

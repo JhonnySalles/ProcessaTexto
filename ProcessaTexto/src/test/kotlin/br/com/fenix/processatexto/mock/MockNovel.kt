@@ -19,7 +19,7 @@ class MockNovel : MockBase<UUID?, NovelVolume>() {
         val LINGUAGEM = Language.PORTUGUESE
     }
 
-    override fun mockEntity(): NovelVolume = mockEntity(null)
+    override fun mockEntity(): NovelVolume = mockEntity(randomId())
 
     override fun randomId(): UUID? = UUID.randomUUID()
 

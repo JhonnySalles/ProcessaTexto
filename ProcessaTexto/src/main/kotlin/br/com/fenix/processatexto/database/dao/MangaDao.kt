@@ -105,6 +105,9 @@ interface MangaDao  {
     fun insertVocabulario(base: String, idVolume: UUID?, idCapitulo: UUID?, idPagina: UUID?, vocabulario: Set<VocabularioExterno>)
 
     @Throws(SQLException::class)
+    fun updateVocabulario(vocabulario: Set<VocabularioExterno>)
+
+    @Throws(SQLException::class)
     fun selectDadosTransferir(base: String, tabela: String): MutableList<MangaVolume>
 
     @Throws(SQLException::class)

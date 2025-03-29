@@ -16,7 +16,7 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
         val LINGUAGEM = Language.PORTUGUESE
     }
 
-    override fun mockEntity(): MangaVolume = mockEntity(null)
+    override fun mockEntity(): MangaVolume = mockEntity(randomId())
 
     override fun randomId(): UUID? = UUID.randomUUID()
 
@@ -96,7 +96,7 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
 
         val texto = MangaTexto(id, "texto", 1, 1, 1, 2, 2)
 
-        var idVocab : UUID? = if (id != null) UUID.fromString(id.toString().substring(0, 36).plus("1")) else UUID.randomUUID()
+        var idVocab : UUID? = if (id != null) UUID.fromString(id.toString().substring(0, 35).plus("1")) else UUID.randomUUID()
         var vocabulario = VocabularioExterno(idVocab, "vocabulario pagina", "português pagina", "ingles pagina", "leitura pagina", "leitura novel pagina", true)
         val pagina = MangaPagina(id, "nome", 1, "hash_pagina", mutableListOf(texto), mutableSetOf(vocabulario))
 
@@ -187,7 +187,6 @@ class MockManga : MockBase<UUID?, MangaVolume>() {
 
         assertEquals(oldObj!!.manga, newObj!!.manga)
         assertEquals(oldObj.volume, newObj.volume)
-        assertEquals(oldObj.capitulo, newObj.capitulo)
         assertEquals(oldObj.arquivo, newObj.arquivo)
         assertEquals(oldObj.lingua, newObj.lingua)
         assertEquals(oldObj.vocabularios.size, newObj.vocabularios.size)

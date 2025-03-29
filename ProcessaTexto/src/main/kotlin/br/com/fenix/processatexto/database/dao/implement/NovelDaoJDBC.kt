@@ -29,6 +29,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
     companion object {
         private const val CREATE_TABELA = "CALL create_table('%s');"
+        private const val DROP_TABELA = "CALL drop_table('%s');"
         private const val TABELA_VOLUME = "_volumes"
         private const val TABELA_CAPITULO = "_capitulos"
         private const val TABELA_TEXTO = "_textos"
@@ -45,7 +46,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
         private const val INSERT_VOLUMES =
-            "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, descricao, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?)"
+            "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, serie, descricao, autor, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
         private const val INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem) VALUES (?,?,?,?,?,?,?,?)"
         private const val INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)"
         private const val INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)"
@@ -184,7 +185,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             rs = st.executeQuery()
             val list: MutableSet<VocabularioExterno> = mutableSetOf()
             while (rs.next())
-                list.add(vocab.select(rs.getString("id_vocabulario")) as VocabularioExterno)
+                vocab.select(rs.getString("id_vocabulario")).ifPresent { list.add(it as VocabularioExterno) }
             list
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -570,7 +571,9 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st.setString(++index, obj.novel)
             st.setString(++index, obj.titulo)
             st.setString(++index, obj.tituloAlternativo)
+            st.setString(++index, obj.serie)
             st.setString(++index, obj.descricao)
+            st.setString(++index, obj.autor)
             st.setString(++index, obj.editora)
             st.setFloat(++index, obj.volume)
             st.setString(++index, obj.lingua.sigla)
@@ -808,7 +811,20 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
     }
 
     override fun deleteTabela(base: String) {
-        TODO("Not yet implemented")
+        var nome: String = base.trim()
+        if (nome.contains("."))
+            nome = base.substring(base.indexOf(".")).replace(".", "")
+        var st: PreparedStatement? = null
+        try {
+            st = conn.prepareStatement(String.format(DROP_TABELA, nome))
+            st.execute()
+        } catch (e: SQLException) {
+            LOGGER.error(e.message, e)
+            LOGGER.info(st.toString())
+            throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
+        } finally {
+            JdbcFactory.closeStatement(st)
+        }
     }
 
     @get:Throws(SQLException::class)

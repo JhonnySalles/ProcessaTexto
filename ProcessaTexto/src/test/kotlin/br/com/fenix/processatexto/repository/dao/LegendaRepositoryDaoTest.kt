@@ -24,7 +24,7 @@ class LegendaRepositoryDaoTest {
     }
 
     @InjectMocks
-    var repository: LegendasDao? = DaoFactory.createLegendasDao()
+    private var repository: LegendasDao? = DaoFactory.createLegendasDao()
 
     private var inputLegenda = MockLegenda()
     private var inputFila = MockFilaSql()

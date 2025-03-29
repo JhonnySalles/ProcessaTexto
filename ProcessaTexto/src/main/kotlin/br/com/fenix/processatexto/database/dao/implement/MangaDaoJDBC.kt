@@ -44,8 +44,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 "  END"
 
         private const val UPDATE_VOLUMES = "UPDATE %s_volumes SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, is_processado = ? WHERE id = ?"
-        private const val UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ? WHERE id = ?"
-        private const val UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = ?, manga = ?, volume = ?, capitulo = ?, linguagem = ?, is_extra = ?, scan = ? WHERE id = ?"
+        private const val UPDATE_CAPITULOS = "UPDATE %s_capitulos SET manga = ?, volume = ?, capitulo = ?, linguagem = ?, scan = ?, is_extra = ?, is_raw = ? WHERE id = ?"
+        private const val UPDATE_CAPITULOS_COM_VOLUME = "UPDATE %s_capitulos SET id_volume = ?, manga = ?, volume = ?, capitulo = ?, linguagem = ?, scan = ?, is_extra = ?, is_raw = ? WHERE id = ?"
         private const val UPDATE_PAGINAS = "UPDATE %s_paginas SET nome = ?, numero = ?, hash_pagina = ? WHERE id = ?"
         private const val UPDATE_TEXTO = "UPDATE %s_textos SET sequencia = ?, texto = ?, posicao_x1 = ?, posicao_y1 = ?, posicao_x2 = ?, posicao_y2 = ? WHERE id = ?"
         private const val UPDATE_CAPA = "UPDATE %s_capas SET manga = ?, volume = ?, linguagem = ?, arquivo = ?, extensao = ?, capa = ? WHERE id = ?"
@@ -112,11 +112,11 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updateVolume(base: String, obj: MangaVolume) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_VOLUMES, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_VOLUMES, base))
 
             var index = 0
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
+            st.setInt(++index, obj.volume)
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.arquivo)
             st.setBoolean(++index, obj.processado)
@@ -138,15 +138,16 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updateCapitulo(base: String, obj: MangaCapitulo) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_CAPITULOS, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_CAPITULOS, base))
 
             var index = 0
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
-            st.setFloat(++index, obj.capitulo!!)
+            st.setInt(++index, obj.volume)
+            st.setFloat(++index, obj.capitulo)
             st.setString(++index, obj.lingua.sigla)
-            st.setBoolean(++index, obj.isExtra)
             st.setString(++index, obj.scan)
+            st.setBoolean(++index, obj.isExtra)
+            st.setBoolean(++index, obj.isRaw)
             st.setString(++index, obj.getId().toString())
 
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
@@ -165,16 +166,17 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updateCapitulo(base: String, IdVolume: UUID, obj: MangaCapitulo) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_CAPITULOS_COM_VOLUME, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_CAPITULOS_COM_VOLUME, base))
 
             var index = 0
             st.setString(++index, IdVolume.toString())
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
-            st.setFloat(++index, obj.capitulo!!)
+            st.setInt(++index, obj.volume)
+            st.setFloat(++index, obj.capitulo)
             st.setString(++index, obj.lingua.sigla)
-            st.setBoolean(++index, obj.isExtra)
             st.setString(++index, obj.scan)
+            st.setBoolean(++index, obj.isExtra)
+            st.setBoolean(++index, obj.isRaw)
             st.setString(++index, obj.getId().toString())
 
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
@@ -201,7 +203,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             for (vocab in vocabulario) {
                 insertNotExists(vocab)
-                st = conn.prepareStatement(String.format(INSERT_VOCABULARIO, base, campo), Statement.RETURN_GENERATED_KEYS)
+                st = conn.prepareStatement(String.format(INSERT_VOCABULARIO, base, campo))
                 st.setString(1, id.toString())
                 st.setString(2, vocab.getId().toString())
                 st.executeUpdate()
@@ -213,6 +215,11 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         } finally {
             JdbcFactory.closeStatement(st)
         }
+    }
+
+    override fun updateVocabulario(vocabulario: Set<VocabularioExterno>) {
+        for (vc in vocabulario)
+            vocab.updateManual(vc)
     }
 
     @Throws(SQLException::class)
@@ -263,7 +270,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updatePagina(base: String, obj: MangaPagina) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_PAGINAS, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_PAGINAS, base))
 
             var index = 0
             st.setString(++index, obj.nomePagina)
@@ -291,7 +298,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updateTexto(base: String, obj: MangaTexto) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_TEXTO, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_TEXTO, base))
 
             var index = 0
             st.setInt(++index, obj.sequencia)
@@ -321,10 +328,10 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     override fun updateCapa(base: String, obj: MangaCapa) {
         var st: PreparedStatement? = null
         try {
-            st = conn.prepareStatement(String.format(UPDATE_CAPA, base), Statement.RETURN_GENERATED_KEYS)
+            st = conn.prepareStatement(String.format(UPDATE_CAPA, base))
             var index = 0
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
+            st.setInt(++index, obj.volume)
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.arquivo)
             st.setString(++index, obj.extenssao)
@@ -474,7 +481,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     }
 
     @Throws(SQLException::class)
-    fun selectCapitulos(base: String, idVolume: UUID, apenasJapones: Boolean): MutableList<MangaCapitulo> {
+    fun selectCapitulos(base: String, idVolume: UUID, apenasJapones: Boolean, isVocabulario: Boolean = false): MutableList<MangaCapitulo> {
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {
@@ -494,7 +501,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                         rs.getFloat("capitulo"), Language.getEnum(rs.getString("linguagem"))!!, rs.getString("scan"),
                         rs.getBoolean("is_extra"), rs.getBoolean("is_raw"),
                         selectVocabulario(base, "id_capitulo = " + '"' + UUID.fromString(rs.getString("id")) + '"'),
-                        selectPaginas(base, UUID.fromString(rs.getString("id")), inverterTexto = false, selectVocabulario = false)
+                        selectPaginas(base, UUID.fromString(rs.getString("id")), inverterTexto = false, selectVocabulario = isVocabulario)
                     )
                 )
             list
@@ -744,7 +751,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                         UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                         Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo"),
                         selectVocabulario(base, "id_volume = " + '"' + UUID.fromString(rs.getString("id")) + '"'),
-                        selectCapitulos(base, UUID.fromString(rs.getString("id")), false),
+                        selectCapitulos(base, UUID.fromString(rs.getString("id")), apenasJapones = false, isVocabulario = true),
                         selectCapas(base, UUID.fromString(rs.getString("id")))
                     )
                 )
@@ -957,7 +964,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var stVolume: PreparedStatement? = null
         var stVocabulario: PreparedStatement? = null
         try {
-            stVocabulario = conn.prepareStatement(String.format("DELETE FROM %s_vocabulario", base))
+            stVocabulario = conn.prepareStatement(String.format("DELETE FROM %s_vocabularios", base))
             stVolume = conn.prepareStatement(String.format("UPDATE %s_volumes SET is_processado = 0", base))
             conn.autoCommit = false
             conn.beginRequest()
@@ -1190,7 +1197,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             var index = 0
             st.setString(++index, obj.getId().toString())
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
+            st.setInt(++index, obj.volume)
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.arquivo)
             st.setBoolean(++index, obj.processado)
@@ -1223,8 +1230,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(++index, obj.getId().toString())
             st.setString(++index, idVolume.toString())
             st.setString(++index, obj.manga)
-            st.setInt(++index, obj.volume!!)
-            st.setFloat(++index, obj.capitulo!!)
+            st.setInt(++index, obj.volume)
+            st.setFloat(++index, obj.capitulo)
             st.setString(++index, obj.lingua.sigla)
             st.setString(++index, obj.scan)
             st.setBoolean(++index, obj.isExtra)
@@ -1316,11 +1323,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
         var st: PreparedStatement? = null
         return try {
             st = conn.prepareStatement(String.format(DELETE_CAPAS, base, base, "WHERE c.id_volume = '$idVolume'"))
-            conn.autoCommit = false
-            conn.beginRequest()
             st.executeUpdate()
-            conn.commit()
-            
+
             st = conn.prepareStatement(String.format(INSERT_CAPA, base), Statement.RETURN_GENERATED_KEYS)
             var index = 0
             st.setString(++index, obj.getId().toString())

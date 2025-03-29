@@ -23,7 +23,7 @@ class SincronizacaoRepositoryDaoTest {
     }
 
     @InjectMocks
-    var repository: SincronizacaoDao? = DaoFactory.createSincronizacaoDao()
+    private var repository: SincronizacaoDao? = DaoFactory.createSincronizacaoDao()
 
     private var input = MockSincronizacao()
 
