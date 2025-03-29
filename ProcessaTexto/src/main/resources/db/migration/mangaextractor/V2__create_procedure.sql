@@ -203,4 +203,77 @@ BEGIN
 
 END$$
 
+
+CREATE DEFINER=`admin`@`%` PROCEDURE `delete_capitulos`(IN _tablename VARCHAR(100), _IdsCapitulo VARCHAR(900))
+BEGIN
+
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    DECLARE id VARCHAR(36);
+    DECLARE cur CURSOR FOR SELECT Caps FROM viewcap;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        DROP VIEW IF EXISTS viewcap;
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    DROP VIEW IF EXISTS viewcap;
+
+    SET @sql = CONCAT('CREATE VIEW viewcap AS SELECT Cap.ID AS Caps FROM ',_tablename,'_capitulos AS reg INNER JOIN ',_tablename, "_capitulos AS cap ON reg.id_volume = cap.id_volume ",
+        " AND (cap.capitulo >= reg.capitulo OR cap.is_extra = 1) WHERE reg.id IN (", _IdsCapitulo, ") ORDER BY cap.is_Extra, cap.Capitulo;");
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+
+
+    SET @cnt = FOUND_ROWS();
+    IF @cnt > 0 THEN
+        START TRANSACTION;
+        OPEN cur;
+            read_loop: LOOP
+                FETCH cur INTO id;
+                IF done THEN
+                    LEAVE read_loop;
+                END IF;
+
+                SET @sql = CONCAT('DELETE vol FROM ',_tablename,'_vocabularios AS vol INNER JOIN ',_tablename, "_paginas AS p ON p.id = vol.id_pagina INNER JOIN ",
+                            _tablename, "_capitulos AS c ON c.id = p.id_capitulo WHERE c.id IN (", '"', id, '"', ");");
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+
+                SET @sql = CONCAT('DELETE vol FROM ',_tablename,'_vocabularios AS vol INNER JOIN ',_tablename, "_capitulos AS c ON c.id = vol.id_capitulo WHERE c.id IN (", '"', id, '"', ");");
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+
+
+                SET @sql = CONCAT('DELETE t FROM ',_tablename,'_textos AS t INNER JOIN  ',_tablename, "_paginas AS p ON p.id = t.id_pagina INNER JOIN ",
+                            _tablename, "_capitulos AS c ON c.id = p.id_capitulo WHERE c.id IN (", '"', id, '"', ");");
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+
+                SET @sql = CONCAT('DELETE p FROM ',_tablename,'_paginas p INNER JOIN ',_tablename, "_capitulos AS c ON c.id = p.id_capitulo WHERE c.id IN (", '"', id, '"', ");");
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+
+
+                SET @sql = CONCAT('DELETE c FROM ',_tablename,'_capitulos AS c WHERE c.id IN (', '"', id, '"', ");");
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+
+            END LOOP read_loop;
+
+        CLOSE cur;
+        COMMIT;
+    END IF;
+
+    DROP VIEW IF EXISTS viewcap;
+
+END$$
+
 DELIMITER ;
