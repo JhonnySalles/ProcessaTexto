@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 
-abstract class VocabularioRepositoryDaoTest(var conexao: Conexao) : RepositoryTestBaseDao<UUID?, Vocabulario>() {
+abstract class VocabularioDaoTest(var conexao: Conexao) : TestBaseDao<UUID?, Vocabulario>() {
 
     abstract fun createRepository() : RepositoryDao<UUID?, Vocabulario>
 

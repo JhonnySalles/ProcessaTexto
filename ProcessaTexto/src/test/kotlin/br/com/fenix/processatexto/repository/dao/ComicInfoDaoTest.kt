@@ -16,7 +16,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class ComicInfoRepositoryDaoTest : RepositoryTestBaseDao<UUID?, ComicInfo>() {
+class ComicInfoDaoTest : TestBaseDao<UUID?, ComicInfo>() {
 
     @InjectMocks
     override var repository: RepositoryDao<UUID?, ComicInfo> = DaoFactory.createComicInfoDao()

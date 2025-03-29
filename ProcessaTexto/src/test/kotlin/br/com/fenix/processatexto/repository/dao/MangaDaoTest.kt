@@ -3,25 +3,19 @@ package br.com.fenix.processatexto.repository.dao
 import br.com.fenix.processatexto.TestsConfig
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.dao.MangaDao
-import br.com.fenix.processatexto.database.dao.SincronizacaoDao
 import br.com.fenix.processatexto.mock.MockManga
-import br.com.fenix.processatexto.mock.MockSincronizacao
 import br.com.fenix.processatexto.model.entities.mangaextractor.*
-import br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao
-import br.com.fenix.processatexto.model.enums.Conexao
-import br.com.fenix.processatexto.model.enums.Language
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.junit.jupiter.MockitoExtension
-import java.sql.SQLException
 import java.util.*
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class MangaRepositoryDaoTest {
+class MangaDaoTest {
 
     init {
         TestsConfig.prepareDatabase()

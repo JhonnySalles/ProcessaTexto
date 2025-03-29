@@ -10,7 +10,7 @@ import org.mockito.InjectMocks
 import java.util.*
 
 
-abstract class RevisarRepositoryDaoTest(var conexao: Conexao) : RepositoryTestBaseDao<UUID?, Revisar>() {
+abstract class RevisarDaoTest(var conexao: Conexao) : TestBaseDao<UUID?, Revisar>() {
 
     abstract fun createRepository() : RepositoryDao<UUID?, Revisar>
 

@@ -14,7 +14,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class RevisarJaponesRepositoryDaoTest : RevisarRepositoryDaoTest(Conexao.TEXTO_JAPONES) {
+class RevisarJaponesDaoTest : RevisarDaoTest(Conexao.TEXTO_JAPONES) {
 
     override fun createRepository(): RepositoryDao<UUID?, Revisar> = DaoFactory.createRevisarJaponesDao()
 

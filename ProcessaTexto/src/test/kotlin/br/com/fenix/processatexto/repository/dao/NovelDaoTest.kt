@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class NovelRepositoryDaoTest {
+class NovelDaoTest {
 
     init {
         TestsConfig.prepareDatabase()

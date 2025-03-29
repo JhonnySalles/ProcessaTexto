@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class KanjiRepositoryDaoTest : RepositoryTestBaseDao<UUID?, Kanji>() {
+class KanjiDaoTest : TestBaseDao<UUID?, Kanji>() {
 
     @InjectMocks
     override var repository: RepositoryDao<UUID?, Kanji> = DaoFactory.createKanjiDao()

@@ -13,7 +13,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-abstract class RepositoryTestBaseDao<ID, E : EntityBase<ID, E>> {
+abstract class TestBaseDao<ID, E : EntityBase<ID, E>> {
 
     init {
         TestsConfig.prepareDatabase()

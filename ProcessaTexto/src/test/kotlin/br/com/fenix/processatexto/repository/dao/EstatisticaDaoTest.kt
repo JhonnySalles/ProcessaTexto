@@ -15,7 +15,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class EstatisticaRepositoryDaoTest : RepositoryTestBaseDao<UUID?, Estatistica>() {
+class EstatisticaDaoTest : TestBaseDao<UUID?, Estatistica>() {
 
     @InjectMocks
     override var repository: RepositoryDao<UUID?, Estatistica> = DaoFactory.createEstatisticaDao()

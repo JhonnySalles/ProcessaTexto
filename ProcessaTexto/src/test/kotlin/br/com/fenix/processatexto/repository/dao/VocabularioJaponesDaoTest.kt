@@ -13,7 +13,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
-class VocabularioJaponesRepositoryDaoTest : VocabularioRepositoryDaoTest(Conexao.TEXTO_JAPONES) {
+class VocabularioJaponesDaoTest : VocabularioDaoTest(Conexao.TEXTO_JAPONES) {
 
     override fun createRepository(): RepositoryDao<UUID?, Vocabulario> = DaoFactory.createVocabularioJaponesDao()
 
