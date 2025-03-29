@@ -3,6 +3,7 @@ package br.com.fenix.processatexto.model.entities
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import jakarta.persistence.*
+import java.util.*
 
 
 @jakarta.persistence.Entity
@@ -11,7 +12,7 @@ data class DadosConexao(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false, unique = true, length = 11)
-    private val id: Long?,
+    private var id: Long?,
     @Enumerated(EnumType.STRING)
     val tipo: Conexao,
     @Column(length = 100, nullable = true)
@@ -33,6 +34,9 @@ data class DadosConexao(
     constructor() : this(0, Conexao.PROCESSA_TEXTO, "", "", "", "", Driver.MYSQL)
 
     override fun getId(): Long? = id
+    override fun setId(id : Long?) {
+        this.id = id
+    }
 
     override fun create(id: Long?): DadosConexao {
         TODO("Not yet implemented")

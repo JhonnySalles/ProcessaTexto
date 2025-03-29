@@ -19,6 +19,10 @@ data class Legenda(
 ) : EntityBase<UUID?, Legenda>() {
 
     override fun getId(): UUID? = id
+    override fun setId(id : UUID?) {
+        this.id = id
+    }
+
     override fun create(id: UUID?): Legenda = Legenda(id, 0, 0, Language.PORTUGUESE, "", "", "", "", "", "")
 
 }

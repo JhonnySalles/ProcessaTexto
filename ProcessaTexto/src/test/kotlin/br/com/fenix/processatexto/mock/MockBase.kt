@@ -9,14 +9,14 @@ abstract class MockBase<ID, E> : Mock<ID, E> {
 
     abstract fun randomId(): ID?
 
-    override fun mockEntityList(): List<E> {
+    override fun mockEntityList(): MutableList<E> {
         val list: MutableList<E> = mutableListOf()
         for (i in 1..3)
             list.add(mockEntity(null))
         return list
     }
 
-    override fun updateList(list: List<E>): List<E> {
+    override fun updateList(list: MutableList<E>): MutableList<E> {
         val updated: MutableList<E> = mutableListOf()
         for (item in list)
             updated.add(updateEntity(item))

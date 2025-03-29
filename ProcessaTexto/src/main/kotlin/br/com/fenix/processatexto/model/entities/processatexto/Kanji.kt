@@ -12,7 +12,7 @@ data class Kanji(
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false)
-    private val id: UUID?,
+    private var id: UUID?,
     @Column(name = "kanji")
     val kanji: String,
     @Column(name = "palavra")
@@ -22,6 +22,9 @@ data class Kanji(
 ) : EntityBase<UUID?, Kanji>() {
 
     override fun getId(): UUID? = id
+    override fun setId(id : UUID?) {
+        this.id = id
+    }
     override fun create(id: UUID?): Kanji = Kanji()
 
     constructor() : this(null, "", "", "")

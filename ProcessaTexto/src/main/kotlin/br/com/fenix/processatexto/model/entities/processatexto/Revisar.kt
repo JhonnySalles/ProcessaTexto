@@ -60,12 +60,11 @@ data class Revisar(
     }
 
     override fun getId(): UUID? = id
-
-    override fun create(id: UUID?): Revisar = Revisar(id)
-
-    fun setId(id: UUID?) {
+    override fun setId(id : UUID?) {
         this.id = id
     }
+
+    override fun create(id: UUID?): Revisar = Revisar(id)
 
     @Override
     override fun toString(): String {

@@ -1,4 +1,4 @@
-package org.jisho.textosJapones.model.entities.subtitle
+package br.com.fenix.processatexto.model.entities.subtitle
 
 import java.io.File
 

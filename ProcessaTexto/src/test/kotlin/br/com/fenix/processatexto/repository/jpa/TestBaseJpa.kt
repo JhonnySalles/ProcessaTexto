@@ -23,8 +23,17 @@ abstract class TestBaseJpa<ID, E : EntityBase<ID, E>> {
 
     abstract var repository: RepositoryJpa<ID, E>
 
-    protected lateinit var lastEntity: E
-    protected lateinit var lastList: List<E>
+    protected var lastEntity: E? = null
+        set(value) {
+            field = value
+            value?.run { clear.add(this)  }
+        }
+    protected var lastList: MutableList<E> = mutableListOf()
+        set(value) {
+            field = value
+            clear.addAll(value)
+        }
+    protected val clear: MutableList<E> = mutableListOf()
 
     @BeforeEach
     @Throws(Exception::class)
@@ -47,7 +56,8 @@ abstract class TestBaseJpa<ID, E : EntityBase<ID, E>> {
     open fun testCreate() {
         lastId = null
         lastEntity = input.mockEntity(lastId)
-        val persisted = repository.save(lastEntity)
+        lastEntity!!.setId(lastId)
+        val persisted = repository.save(lastEntity!!)
         lastId = persisted.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(persisted, lastEntity)
@@ -63,7 +73,7 @@ abstract class TestBaseJpa<ID, E : EntityBase<ID, E>> {
     @Test
     @Order(3)
     open fun testUpdate() {
-        val entity = input.updateEntity(lastEntity)
+        val entity = input.updateEntity(lastEntity!!)
         repository.save(entity)
         val persisted = repository.find(lastId!!)
         input.assertsService(entity, persisted.get())
@@ -141,7 +151,7 @@ abstract class TestBaseJpa<ID, E : EntityBase<ID, E>> {
     @AfterAll
     open fun clear() {
         if (TestsConfig.LIMPA_LISTA)
-            for (entity in lastList)
+            for (entity in clear)
                 repository.delete(entity)
     }
 

@@ -21,8 +21,17 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
 
     protected lateinit var input: Mock<ID, E>
 
-    protected lateinit var lastEntity: E
-    protected lateinit var lastList: List<E>
+    protected var lastEntity: E? = null
+        set(value) {
+            field = value
+            value?.run { clear.add(this)  }
+        }
+    protected var lastList: MutableList<E> = mutableListOf()
+        set(value) {
+            field = value
+            clear.addAll(value)
+        }
+    protected val clear: MutableList<E> = mutableListOf()
 
     @BeforeEach
     @Throws(Exception::class)
@@ -53,7 +62,7 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @Order(1)
     open fun testeSave() {
         lastEntity = input.mockEntity(null)
-        lastId = save(lastEntity).getId()
+        lastId = save(lastEntity!!).getId()
         assertNotNull(lastId)
     }
 
@@ -66,8 +75,8 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @Test
     @Order(3)
     open fun testeUpdate() {
-        lastEntity = input.updateEntity(lastEntity)
-        val saved = save(lastEntity)
+        lastEntity = input.updateEntity(lastEntity!!)
+        val saved = save(lastEntity!!)
         input.assertsService(lastEntity, saved)
     }
 
@@ -77,7 +86,7 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
         if (!TestsConfig.TESTA_EXCLUIR)
             throw Exception(TestsConfig.EXCLUIR_MENSAGEM)
 
-        delete(lastEntity)
+        delete(lastEntity!!)
         assertNull(select(lastId!!))
     }
 
@@ -120,7 +129,7 @@ abstract class ServicesTestBase<ID, E : Entity<ID, E>> {
     @AfterAll
     open fun clear() {
         if (TestsConfig.LIMPA_LISTA)
-            for (entity in lastList)
+            for (entity in clear)
                 delete(entity)
     }
 

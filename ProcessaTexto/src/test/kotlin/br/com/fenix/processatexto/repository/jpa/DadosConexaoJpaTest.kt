@@ -33,7 +33,7 @@ class DadosConexaoJpaTest : TestBaseJpa<Long?, DadosConexao>() {
     override fun testCreate() {
         lastId = null
         lastEntity = input.mockEntity(lastId)
-        val persisted = repository.save(lastEntity)
+        val persisted = repository.save(lastEntity!!)
         lastId = persisted.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(persisted, lastEntity)
@@ -49,7 +49,7 @@ class DadosConexaoJpaTest : TestBaseJpa<Long?, DadosConexao>() {
     @Test
     @Order(3)
     override fun testUpdate() {
-        val entity = input.updateEntity(lastEntity)
+        val entity = input.updateEntity(lastEntity!!)
         repository.save(entity)
         val persisted = repository.find(lastId!!)
         input.assertsService(entity, persisted.get())

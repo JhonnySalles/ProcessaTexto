@@ -17,6 +17,9 @@ data class MangaCapa(
     var imagem: BufferedImage? = null
 ) : Manga(), Entity<UUID?, MangaCapa> {
     override fun getId(): UUID? = id
+    override fun setId(id : UUID?) {
+        this.id = id
+    }
     override fun create(id: UUID?): MangaCapa {
         TODO("Not yet implemented")
     }

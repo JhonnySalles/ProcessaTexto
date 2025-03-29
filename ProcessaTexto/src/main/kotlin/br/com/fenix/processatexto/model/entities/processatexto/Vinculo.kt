@@ -38,7 +38,7 @@ data class Vinculo(
 
     override fun getId(): UUID? = id
 
-    fun setId(id: UUID?) {
+    override fun setId(id: UUID?) {
         this.id = id
     }
 

@@ -192,7 +192,7 @@ data class ComicInfo(
 
     override fun create(id: UUID?): ComicInfo = ComicInfo(id)
 
-    fun setId(id: UUID?) {
+    override fun setId(id: UUID?) {
         this.id = id
     }
 

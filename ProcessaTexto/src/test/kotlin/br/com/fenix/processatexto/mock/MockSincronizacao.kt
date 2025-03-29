@@ -15,7 +15,7 @@ class MockSincronizacao() : MockJpaBase<Conexao, Sincronizacao>() {
 
     override fun randomId(): Conexao = conexoes[Random.nextInt(0, 2)]
 
-    override fun mockEntityList(): List<Sincronizacao> {
+    override fun mockEntityList(): MutableList<Sincronizacao> {
         val list: MutableList<Sincronizacao> = mutableListOf()
         for (i in 0..2)
             list.add(mockEntity(conexoes[i]))

@@ -15,7 +15,7 @@ class MockDadosConexao : MockJpaBase<Long?, DadosConexao>() {
     override fun mockEntity(): DadosConexao = mockEntity(0)
     override fun randomId(): Long? = Random.nextLong()
 
-    override fun mockEntityList(): List<DadosConexao> {
+    override fun mockEntityList(): MutableList<DadosConexao> {
         val list: MutableList<DadosConexao> = mutableListOf()
         for (i in 1..2) {
             val conexao = when(i) {

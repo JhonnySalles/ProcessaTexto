@@ -31,7 +31,7 @@ class SincronizacaoJpaTest() : TestBaseJpa<Conexao, Sincronizacao>() {
     override fun testCreate() {
         lastId = Conexao.FIREBASE
         lastEntity = input.mockEntity(lastId)
-        val persisted = repository.save(lastEntity)
+        val persisted = repository.save(lastEntity!!)
         lastId = persisted.getId()
         Assertions.assertNotNull(lastId)
         input.assertsService(persisted, lastEntity)

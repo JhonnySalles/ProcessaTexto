@@ -39,7 +39,7 @@ import javafx.scene.paint.Color
 import javafx.scene.robot.Robot
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
-import org.jisho.textosJapones.model.entities.subtitle.Arquivo
+import br.com.fenix.processatexto.model.entities.subtitle.Arquivo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*

@@ -11,7 +11,7 @@ import java.util.*
 data class Sincronizacao(
     @Id
     @Enumerated(EnumType.STRING)
-    val conexao: Conexao = Conexao.PROCESSA_TEXTO,
+    var conexao: Conexao = Conexao.PROCESSA_TEXTO,
     var envio: LocalDateTime = LocalDateTime.now(),
     var recebimento: LocalDateTime = LocalDateTime.now()
 ) : EntityBase<Conexao, Sincronizacao>() {
@@ -19,6 +19,7 @@ data class Sincronizacao(
     constructor() : this(Conexao.PROCESSA_TEXTO) {}
 
     override fun getId(): Conexao = conexao
+    override fun setId(id : Conexao?) { }
 
     override fun create(conexao: Conexao): Sincronizacao = Sincronizacao(conexao)
 

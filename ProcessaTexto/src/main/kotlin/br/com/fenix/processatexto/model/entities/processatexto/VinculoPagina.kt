@@ -504,7 +504,7 @@ data class VinculoPagina(
 
     override fun getId(): Long? = id
 
-    fun setId(id: Long?) {
+    override fun setId(id: Long?) {
         this.id = id
     }
 

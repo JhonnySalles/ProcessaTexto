@@ -70,12 +70,11 @@ open class Vocabulario(
     }
 
     override fun getId(): UUID? = id
-
-    override fun create(id: UUID?): Vocabulario = Vocabulario(id)
-
-    open fun setId(id: UUID?) {
+    override fun setId(id : UUID?) {
         this.id = id
     }
+
+    override fun create(id: UUID?): Vocabulario = Vocabulario(id)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
