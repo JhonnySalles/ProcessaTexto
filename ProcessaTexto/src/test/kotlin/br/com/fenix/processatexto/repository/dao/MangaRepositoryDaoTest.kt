@@ -115,7 +115,7 @@ class MangaRepositoryDaoTest {
         Assertions.assertTrue(pag.get().textos.isNotEmpty())
 
         if (lastEntity.capa != null) {
-            val capa = repository!!.selectCapa(base, lastEntity.getId()!!)
+            val capa = repository!!.selectCapa(base, lastEntity.capa!!.getId()!!)
             Assertions.assertTrue(capa.isPresent)
         }
 

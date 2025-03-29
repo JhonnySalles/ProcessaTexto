@@ -841,7 +841,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 Optional.of(
                     MangaCapa(
                         UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
-                        Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo"), rs.getString("extenssao"),
+                        Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo"), rs.getString("extensao"),
                         image
                     )
                 )
