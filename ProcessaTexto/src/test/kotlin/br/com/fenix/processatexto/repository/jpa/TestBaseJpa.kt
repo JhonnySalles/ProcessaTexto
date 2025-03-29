@@ -94,6 +94,7 @@ abstract class TestBaseJpa<ID, E : EntityBase<ID, E>> {
     @Order(5)
     open fun testSaveAll() {
         lastList = input.mockEntityList()
+        lastList.forEach { it.setId(null) }
         val persisteds = repository.saveAll(lastList)
 
         Assertions.assertTrue(persisteds.isNotEmpty())

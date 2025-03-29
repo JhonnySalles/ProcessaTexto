@@ -85,6 +85,7 @@
         <class>br.com.fenix.processatexto.model.entities.processatexto.Sincronizacao</class>
         <class>br.com.fenix.processatexto.model.entities.processatexto.Revisar</class>
         <class>br.com.fenix.processatexto.model.entities.processatexto.Vocabulario</class>
+        <class>br.com.fenix.processatexto.model.entities.processatexto.Kanji</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />

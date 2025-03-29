@@ -15,7 +15,7 @@
         <junit.version>5.10.2</junit.version>
         <kotlin.version>1.8.0</kotlin.version>
         <flyway.version>8.0.0</flyway.version>
-        <flyway.mysql.version>8.2.1</flyway.mysql.version>
+        <flyway-mysql.version>8.2.1</flyway-mysql.version>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
@@ -227,7 +227,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
-            <version>${flyway.mysql.version}</version>
+            <version>${flyway-mysql.version}</version>
         </dependency>
 
         <!-- Sudachi - Japones dictionary -->
