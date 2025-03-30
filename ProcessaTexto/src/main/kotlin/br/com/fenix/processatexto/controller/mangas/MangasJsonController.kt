@@ -147,10 +147,6 @@ class MangasJsonController : Initializable {
             AlertasPopup.AvisoModal("Aviso", "Necessário informar um caminho de destino.")
             return
         }
-        if (ckbInserirArquivos.isSelected && Configuracao.caminhoWinrar.isEmpty()) {
-            AlertasPopup.AvisoModal("Aviso", "Necessário informar o caminho do winrar nas configurações.")
-            return
-        }
         if (btnGerarJson.accessibleText.equals("GERANDO", false)) {
             PAUSAR = true
             return
@@ -262,17 +258,14 @@ class MangasJsonController : Initializable {
         if (arquivo == null)
             arquivo = procuraArquivo(localPasta, nome, volume)
 
-        // Necessário adicionar o winrar no path do windows.
         if (arquivo != null) {
             val json = File(localJson)
-            val comando = ("cmd.exe /C cd \"" + winrar + "\" &&rar a -ep " + '"' + arquivo.path + '"' + " " + '"'
-                    + json.path + '"')
-            println("cmd.exe /C cd \"$winrar\"")
-            println("rar a -ep " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
+            val comando = ("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
+            LOGGER.info("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
             try {
                 val rt: Runtime = Runtime.getRuntime()
                 val proc: Process = rt.exec(comando)
-                println("Resultado: " + proc.waitFor())
+                LOGGER.info("Resultado: " + proc.waitFor())
                 var resultado = ""
                 val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
                 var s: String? = null
@@ -280,18 +273,17 @@ class MangasJsonController : Initializable {
                     resultado += "$s"
 
                 if (resultado.isNotEmpty())
-                    println("Output comand:\n$resultado")
+                    LOGGER.info("Output comand:\n$resultado")
                 s = null
                 resultado = ""
                 val stdError = BufferedReader(InputStreamReader(proc.errorStream))
                 while (stdError.readLine().also { s = it } != null)
                     resultado += "$s".trimIndent()
                 if (resultado.isNotEmpty()) {
-                    println("Error comand: $resultado Necessário adicionar o rar no path e reiniciar a aplicação.")
+                    LOGGER.info("Error comand: $resultado Necessário adicionar o rar no path e reiniciar a aplicação.")
                 } else if (excluirAoInserir)
                     json.delete()
             } catch (e: Exception) {
-                println(e)
                 LOGGER.error(e.message, e)
             }
         }
@@ -303,7 +295,6 @@ class MangasJsonController : Initializable {
     private var destino: String = ""
     private var inserirArquivos: Boolean = false
     private var excluirAoInserir: Boolean = false
-    private var winrar: String = ""
 
     private fun gerar() {
         val progress = MenuPrincipalController.controller.criaBarraProgresso()
@@ -322,7 +313,6 @@ class MangasJsonController : Initializable {
                 try {
                     inserirArquivos = ckbInserirArquivos.isSelected
                     excluirAoInserir = ckbExcluirAoInserirArquivos.isSelected
-                    winrar = Configuracao.caminhoWinrar
                     error = ""
                     updateMessage("Gravando Jsons....")
                     val removeLinguagemCapitulo: ExclusionStrategy = object : ExclusionStrategy {
@@ -430,7 +420,6 @@ class MangasJsonController : Initializable {
             override fun failed() {
                 super.failed()
                 LOGGER.warn("Erro na thread gerar json: " + super.getMessage())
-                println("Erro na thread gerar json: " + super.getMessage())
                 habilitar()
             }
         }
@@ -508,7 +497,6 @@ class MangasJsonController : Initializable {
             override fun failed() {
                 super.failed()
                 LOGGER.warn("Erro na thread de carregamento de itens: " + super.getMessage())
-                println("Erro na thread de carregamento de itens: " + super.getMessage())
                 habilitar()
             }
         }

@@ -82,6 +82,23 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
         }
 
         consultar()
+
+        sincronizarVocabulario.addListener {  observable: ListChangeListener.Change<out Pair<Database, Vocabulario>> ->
+            if(observable.list.isEmpty())
+                sincronizar.removeIf { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.VOCABULARIO }
+            else if (sincronizar.any { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.VOCABULARIO })
+                sincronizar[sincronizar.indexOfFirst { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.VOCABULARIO }] = Pair(br.com.fenix.processatexto.model.enums.Sincronizacao.VOCABULARIO, observable.list.size)
+            else
+                sincronizar.add(Pair(br.com.fenix.processatexto.model.enums.Sincronizacao.VOCABULARIO, observable.list.size))
+        }
+        sincronizarComicInfo.addListener {  observable: ListChangeListener.Change<out ComicInfo> ->
+            if(observable.list.isEmpty())
+                sincronizar.removeIf { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.COMICINFO }
+            else if (sincronizar.any { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.COMICINFO })
+                sincronizar[sincronizar.indexOfFirst { it.first == br.com.fenix.processatexto.model.enums.Sincronizacao.COMICINFO }] = Pair(br.com.fenix.processatexto.model.enums.Sincronizacao.COMICINFO, observable.list.size)
+            else
+                sincronizar.add(Pair(br.com.fenix.processatexto.model.enums.Sincronizacao.COMICINFO, observable.list.size))
+        }
     }
 
     companion object {
@@ -91,11 +108,13 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
 
         private val sincronizarVocabulario: ObservableList<Pair<Database, Vocabulario>> = FXCollections.observableArrayList()
         private val sincronizarComicInfo: ObservableList<ComicInfo> = FXCollections.observableArrayList()
+        private val sincronizar: ObservableList<Pair<br.com.fenix.processatexto.model.enums.Sincronizacao, Int>> = FXCollections.observableArrayList()
 
         fun enviar(database: Database, vocabulario: Vocabulario) = sincronizarVocabulario.add(Pair(database, vocabulario))
+        fun enviar(comic: ComicInfo) = sincronizarComicInfo.add(comic)
     }
 
-    fun setObserver(listener: ListChangeListener<in Pair<Database, Vocabulario>>) = sincronizarVocabulario.addListener(listener)
+    fun setObserver(listener: ListChangeListener<Pair<br.com.fenix.processatexto.model.enums.Sincronizacao, Int>>) = sincronizar.addListener(listener)
 
     override fun run() {
         if ((processarRevisar || processarComicInfo) && !isSincronizando)

@@ -41,7 +41,6 @@ object ProcessaComicInfo {
 
     private val LOGGER = LoggerFactory.getLogger(ProcessaComicInfo::class.java)
 
-    private var WINRAR: String? = null
     private val PATTERN = ".*\\.(zip|cbz|rar|cbr|tar)$".toRegex()
     private const val COMICINFO = "ComicInfo.xml"
     private const val IMAGE_WIDTH = 170.0
@@ -65,8 +64,7 @@ object ProcessaComicInfo {
         CANCELAR_VALIDACAO = true
     }
 
-    fun validar(winrar: String, linguagem: Language, path: String, callback: Callback<Array<Long>, Boolean>) {
-        WINRAR = winrar
+    fun validar(linguagem: Language, path: String, callback: Callback<Array<Long>, Boolean>) {
         CANCELAR_VALIDACAO = false
         val arquivos = File(path)
         val size: Array<Long> = arrayOf(0,0)
@@ -129,8 +127,7 @@ object ProcessaComicInfo {
         }
     }
 
-    fun processa(winrar: String, linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, callback: Callback<Array<Long>, Boolean>) {
-        WINRAR = winrar
+    fun processa(linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, callback: Callback<Array<Long>, Boolean>) {
         CANCELAR_PROCESSAMENTO = false
         MARCACAPITULO = marcaCapitulo
         IGNORAR_VINCULO_SALVO = ignorarVinculoSalvo
@@ -170,8 +167,7 @@ object ProcessaComicInfo {
         }
     }
 
-    fun processa(winrar: String, linguagem: Language, arquivo: String, idMal: Long): Boolean {
-        WINRAR = winrar
+    fun processa(linguagem: Language, arquivo: String, idMal: Long): Boolean {
         CANCELAR_PROCESSAMENTO = false
         MAL = MyAnimeList.withClientID(Configuracao.myAnimeListClient)
         val arquivos = File(arquivo)
@@ -188,8 +184,10 @@ object ProcessaComicInfo {
             LOGGER.error(e.message, e)
             return false
         } finally {
-            if (JAXBC != null) JAXBC = null
-            if (SERVICE != null) SERVICE = null
+            if (JAXBC != null)
+                JAXBC = null
+            if (SERVICE != null)
+                SERVICE = null
         }
         return true
     }
@@ -253,7 +251,7 @@ object ProcessaComicInfo {
             var saved: Optional<ComicInfo> = Optional.empty()
 
             if (IGNORAR_VINCULO_SALVO)
-                saved = SERVICE!!.select(info.comic!!, info.languageISO!!)
+                saved = SERVICE!!.select(info.comic, info.languageISO)
 
             if (id == null)
                 id = getIdMal(info.notes)
@@ -669,9 +667,9 @@ object ProcessaComicInfo {
     private fun extraiInfo(arquivo: File, silent: Boolean): File {
         var comicInfo = File("")
         var proc: Process? = null
-        val comando = "cmd.exe /C cd \"" + WINRAR + "\" &&rar e -y " + '"' + arquivo.path + '"' + " " + '"' + Utils.getCaminho(arquivo.path) + '"' + " " + '"' + COMICINFO + '"'
+        val comando = "rar e -ma4 -y " + '"' + arquivo.path + '"' + " " + '"' + Utils.getCaminho(arquivo.path) + '"' + " " + '"' + COMICINFO + '"'
         if (!silent)
-            LOGGER.info("rar e -y " + '"' + arquivo.path + '"' + " " + '"' + Utils.getCaminho(arquivo.path) + '"' + " " + '"' + COMICINFO + '"')
+            LOGGER.info("rar e -ma4 -y " + '"' + arquivo.path + '"' + " " + '"' + Utils.getCaminho(arquivo.path) + '"' + " " + '"' + COMICINFO + '"')
         try {
             val rt: Runtime = Runtime.getRuntime()
             proc = rt.exec(comando)
@@ -702,8 +700,8 @@ object ProcessaComicInfo {
     }
 
     private fun insereInfo(arquivo: File, info: File) {
-        val comando = ("cmd.exe /C cd \"" + WINRAR + "\" &&rar a -ep " + '"' + arquivo.path + '"' + " " + '"' + info.path + '"')
-        LOGGER.info("rar a -ep " + '"' + arquivo.path + '"' + " " + '"' + info.path + '"')
+        val comando = "rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + info.path + '"'
+        LOGGER.info("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + info.path + '"')
         var proc: Process? = null
         try {
             val rt: Runtime = Runtime.getRuntime()

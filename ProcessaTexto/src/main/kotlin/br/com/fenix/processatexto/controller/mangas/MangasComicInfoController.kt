@@ -234,7 +234,6 @@ class MangasComicInfoController : Initializable {
                         null
                     }
                     ProcessaComicInfo.processa(
-                        Configuracao.caminhoWinrar,
                         cbLinguagem.value,
                         txtCaminho.text,
                         txtDescricaoCapitulo.text,
@@ -304,7 +303,7 @@ class MangasComicInfoController : Initializable {
                         }
                         val registro: Optional<MAL.Registro> = item.myanimelist.stream().filter(BaseLista::isMarcado).findFirst()
                         if (registro.isPresent) {
-                            if (ProcessaComicInfo.processa(Configuracao.caminhoWinrar, cbLinguagem.value, registro.get().parent.arquivo, registro.get().id))
+                            if (ProcessaComicInfo.processa(cbLinguagem.value, registro.get().parent.arquivo, registro.get().id))
                                 REGISTROS.remove(item)
                         }
                         if (PARAR)
@@ -372,7 +371,7 @@ class MangasComicInfoController : Initializable {
                         }
                         null
                     }
-                    ProcessaComicInfo.validar(Configuracao.caminhoWinrar, cbLinguagem.value, txtCaminho.text, callback)
+                    ProcessaComicInfo.validar(cbLinguagem.value, txtCaminho.text, callback)
                 } catch (e: Exception) {
                     LOGGER.error(e.message, e)
                 }
@@ -442,7 +441,7 @@ class MangasComicInfoController : Initializable {
                     processar.styleClass.add("background-White1")
                     processar.setOnAction {
                         val arquivo: String = registro.parent.arquivo
-                        if (ProcessaComicInfo.processa(Configuracao.caminhoWinrar, cbLinguagem.value, arquivo, registro.id)) {
+                        if (ProcessaComicInfo.processa(cbLinguagem.value, arquivo, registro.id)) {
                             REGISTROS.remove(item)
                             itmRoot.children.remove(itmManga)
                             treeTabela.refresh()

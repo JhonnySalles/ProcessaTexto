@@ -126,13 +126,6 @@ object Configuracao {
         }
         get() = properties.getProperty("caminho.legenda", "")
 
-    var caminhoWinrar: String = ""
-        set(value) {
-            properties["caminho.winrar"] = value
-            field = value
-        }
-        get() = properties.getProperty("caminho.winrar", "")
-
     var caminhoSalvoArquivo: String = ""
         set(value) {
             properties["caminho.ultimo_salvo_arquivo"] = value

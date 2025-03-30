@@ -397,14 +397,19 @@ class MenuPrincipalController : Initializable {
         Notificacoes.rootAnchorPane = apGlobal
 
         sincronizacao.setObserver { observable ->
-            if (!sincronizacao.isSincronizando)
+            if (!sincronizacao.isSincronizando) {
+                var sinc = ""
+                for (item in observable.list)
+                    sinc += observable.list.size.toString() + " ${if(item.first == Sincronizacao.VOCABULARIO) "(Vocabulário)" else "(ComicInfo)"} "
+
                 Platform.runLater {
-                    if (!observable.list.isEmpty()) {
-                        lblLog.text = "Pendente de envio " + observable.list.size + " registro(s)."
+                    if (sinc.isNotEmpty()) {
+                        lblLog.text = "Pendente registro(s) para envio: ${sinc.trim()}."
                         imgCompartilhamento.image = imgAnimaCompartilhaEspera
                     } else
                         imgCompartilhamento.image = imgAnimaCompartilha
                 }
+            }
         }
 
         if (!sincronizacao.isConfigurado)
@@ -412,7 +417,8 @@ class MenuPrincipalController : Initializable {
         else if (sincronizacao.listSize() > 0) {
             lblLog.text = "Pendente de envio " + sincronizacao.listSize() + " registro(s)."
             imgCompartilhamento.image = imgAnimaCompartilhaEspera
-        } else imgCompartilhamento.image = imgAnimaCompartilha
+        } else
+            imgCompartilhamento.image = imgAnimaCompartilha
         verificaConexao()
         verificaBases()
     }

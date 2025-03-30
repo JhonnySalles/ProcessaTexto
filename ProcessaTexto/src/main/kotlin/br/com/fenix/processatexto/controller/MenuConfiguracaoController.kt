@@ -34,16 +34,10 @@ class MenuConfiguracaoController : Initializable {
     lateinit var txtCaminhoMysql: JFXTextField
 
     @FXML
-    lateinit var txtCaminhoWinrar: JFXTextField
-
-    @FXML
     lateinit var txtCaminhoCommicTagger: JFXTextField
 
     @FXML
     lateinit var btnCaminhoMysql: JFXButton
-
-    @FXML
-    lateinit var btnCaminhoWinrar: JFXButton
 
     @FXML
     lateinit var btnCaminhoCommicTagger: JFXButton
@@ -55,12 +49,6 @@ class MenuConfiguracaoController : Initializable {
         controller.popPup!!.isDetached = true
         val caminho = selecionaPasta("Selecione a pasta do mysql", txtCaminhoMysql.text)
         txtCaminhoMysql.text = caminho
-    }
-
-    @FXML
-    private fun onBtnCarregarCaminhoWinrar() {
-        controller.popPup!!.isDetached = true
-        txtCaminhoWinrar.text = selecionaPasta("Selecione a pasta do winrar", txtCaminhoWinrar.text)
     }
 
     @FXML
@@ -76,7 +64,6 @@ class MenuConfiguracaoController : Initializable {
         Configuracao.user = txtUsuario.text
         Configuracao.password = pswSenha.text
         Configuracao.caminhoMysql = txtCaminhoMysql.text
-        Configuracao.caminhoWinrar = txtCaminhoWinrar.text
         Configuracao.caminhoCommicTagger = txtCaminhoCommicTagger.text
         Configuracao.saveProperties()
     }
@@ -88,7 +75,6 @@ class MenuConfiguracaoController : Initializable {
         txtUsuario.text = Configuracao.user
         pswSenha.text = Configuracao.password
         txtCaminhoMysql.text = Configuracao.caminhoMysql
-        txtCaminhoWinrar.text = Configuracao.caminhoWinrar
         txtCaminhoCommicTagger.text = Configuracao.caminhoCommicTagger
     }
 

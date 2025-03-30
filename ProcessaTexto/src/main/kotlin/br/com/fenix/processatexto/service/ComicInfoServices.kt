@@ -15,12 +15,14 @@ class ComicInfoServices {
 
     @Throws(SQLException::class)
     fun save(comic: ComicInfo) {
-        val saved = select(comic.comic!!, comic.languageISO!!)
+        val saved = select(comic.comic, comic.languageISO)
         if (saved.isEmpty || saved.get().getId() == null)
             comicInfoDao.insert(comic)
         else {
             comic.setId(saved.get().getId())
             comicInfoDao.update(comic)
         }
+
+        SincronizacaoServices.enviar(comic)
     }
 }
