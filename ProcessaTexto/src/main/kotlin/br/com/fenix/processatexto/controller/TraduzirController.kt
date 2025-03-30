@@ -124,7 +124,7 @@ class TraduzirController : Initializable {
             // service.insertOrUpdate(salvar);
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal("Erro", "Erro ao salvar as atualizações.")
+            AlertasPopup.erroModal("Erro", "Erro ao salvar as atualizações.")
         } finally {
             MenuPrincipalController.controller.getLblLog().text = "Salvamento concluido."
 
@@ -139,7 +139,7 @@ class TraduzirController : Initializable {
             btnTangorin.isDisable = false
             btnKanshudo.isDisable = false
 
-            AlertasPopup.AvisoModal("Salvo", "Salvo com sucesso.")
+            AlertasPopup.avisoModal("Salvo", "Salvo com sucesso.")
             onBtnAtualizar()
         }
     }
@@ -152,7 +152,7 @@ class TraduzirController : Initializable {
             MenuPrincipalController.controller.getLblLog().text = ""
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal("Erro", "Erro ao pesquisar as revisões.")
+            AlertasPopup.erroModal("Erro", "Erro ao pesquisar as revisões.")
         }
     }
 

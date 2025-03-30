@@ -124,7 +124,7 @@ class SudachiTokenizer {
         } catch (e: IOException) {
             LOGGER.error(e.message, e)
             concluiProgresso(true)
-            AlertasPopup.ErroModal("Erro ao processar textos", e.message!!)
+            AlertasPopup.erroModal("Erro ao processar textos", e.message!!)
         }
         controller.setTextoDestino(processado)
         controller.setVocabulario(vocabNovo)
@@ -172,7 +172,7 @@ class SudachiTokenizer {
         } catch (e: IOException) {
             LOGGER.error(e.message, e)
             concluiProgresso(true)
-            AlertasPopup.ErroModal("Erro ao processar textos", e.message!!)
+            AlertasPopup.erroModal("Erro ao processar textos", e.message!!)
         }
         controller.setTextoDestino(processado)
         controller.setVocabulario(vocabNovo)
@@ -224,11 +224,11 @@ class SudachiTokenizer {
                 } catch (e: IOException) {
                     erro = true
                     LOGGER.error(e.message, e)
-                    Platform.runLater { AlertasPopup.ErroModal("Erro ao processar o textos", e.message!!) }
+                    Platform.runLater { AlertasPopup.erroModal("Erro ao processar o textos", e.message!!) }
                 } catch (e: SQLException) {
                     erro = true
                     LOGGER.error(e.message, e)
-                    Platform.runLater { AlertasPopup.ErroModal("Erro de conexao", e.message!!) }
+                    Platform.runLater { AlertasPopup.erroModal("Erro de conexao", e.message!!) }
                 } finally {
                     Platform.runLater {
                         if (erro) TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), 1, 1, Type.ERROR) else {
@@ -383,11 +383,11 @@ class SudachiTokenizer {
                 } catch (e: SQLException) {
                     erro = true
                     LOGGER.error(e.message, e)
-                    Platform.runLater { AlertasPopup.ErroModal("Erro de conexao", e.message!!) }
+                    Platform.runLater { AlertasPopup.erroModal("Erro de conexao", e.message!!) }
                 } catch (e: Exception) {
                     erro = true
                     LOGGER.error(e.message, e)
-                    Platform.runLater { AlertasPopup.ErroModal("Erro ao processar o textos", e.message!!) }
+                    Platform.runLater { AlertasPopup.erroModal("Erro ao processar o textos", e.message!!) }
                 } finally {
                     Platform.runLater {
                         if (erro)
@@ -509,11 +509,11 @@ class SudachiTokenizer {
         } catch (e: IOException) {
             LOGGER.error(e.message, e)
             concluiProgresso(true)
-            AlertasPopup.ErroModal("Erro ao processar textos", e.message!!)
+            AlertasPopup.erroModal("Erro ao processar textos", e.message!!)
         } catch (e: SQLException) {
             concluiProgresso(true)
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal("Erro de conexao", e.message!!)
+            AlertasPopup.erroModal("Erro de conexao", e.message!!)
         }
     }
 

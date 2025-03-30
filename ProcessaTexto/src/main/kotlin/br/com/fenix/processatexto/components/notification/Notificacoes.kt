@@ -23,11 +23,11 @@ import java.io.IOException
 
 object Notificacoes {
     private val LOGGER: Logger = LoggerFactory.getLogger(Notificacoes::class.java)
-    val IMG_ALERTA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAlerta_48.png")))
-    val IMG_AVISO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAviso_48.png")))
-    val IMG_ERRO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoErro_48.png")))
-    val IMG_CONFIRMA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoConfirma_48.png")))
-    val IMG_SUCESSO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/btnConfirma_48.png")))
+    private val IMG_ALERTA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAlerta_48.png")))
+    private val IMG_AVISO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAviso_48.png")))
+    private val IMG_ERRO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoErro_48.png")))
+    private val IMG_CONFIRMA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoConfirma_48.png")))
+    private val IMG_SUCESSO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/btnConfirma_48.png")))
 
     private lateinit var CONTROLLER: PopupNotificacaoController
     private lateinit var NOTIFICACAO: AnchorPane

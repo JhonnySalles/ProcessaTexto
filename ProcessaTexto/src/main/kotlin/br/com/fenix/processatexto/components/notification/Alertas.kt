@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
  */
 object Alertas {
     private val LOGGER: Logger = LoggerFactory.getLogger(Alertas::class.java)
-    fun Tela_Alerta(titulo: String, texto: String) {
+    fun telaAlerta(titulo: String, texto: String) {
         try {
             val loader = FXMLLoader(PopupAlertaController.fxmlLocate)
             val scPnTelaPrincipal: AnchorPane = loader.load()

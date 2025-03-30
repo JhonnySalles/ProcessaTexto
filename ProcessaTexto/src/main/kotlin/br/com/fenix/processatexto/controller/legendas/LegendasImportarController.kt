@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.components.CheckBoxTableCellCustom
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
+import br.com.fenix.processatexto.model.entities.subtitle.Arquivo
 import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import br.com.fenix.processatexto.model.enums.Dicionario
@@ -39,7 +40,6 @@ import javafx.scene.paint.Color
 import javafx.scene.robot.Robot
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
-import br.com.fenix.processatexto.model.entities.subtitle.Arquivo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -384,26 +384,26 @@ class LegendasImportarController : Initializable, BaseController {
         if (cbLinguagemFilaSql.value == null) {
             valido = false
             cbLinguagemFilaSql.unFocusColor = Color.RED
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem de processamento.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem de processamento.")
         }
         if (cbBase.value == null || cbBase.value.isEmpty()) {
             valido = false
             cbBase.unFocusColor = Color.RED
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma base.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma base.")
         }
         if (cbLinguagem.value == null) {
             valido = false
             cbLinguagem.unFocusColor = Color.RED
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem.")
         }
         if (txtNome.text.isEmpty()) {
             valido = false
             txtNome.unFocusColor = Color.RED
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um nome.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um nome.")
         }
         if (ARQUIVOS.isEmpty()) {
             valido = false
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Nenhum arquivo para processar.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Nenhum arquivo para processar.")
         }
         return valido
     }

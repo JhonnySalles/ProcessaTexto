@@ -12,7 +12,6 @@ import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.service.MangaServices
 import br.com.fenix.processatexto.service.VincularServices
-import br.com.fenix.processatexto.util.configuration.Configuracao
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
@@ -144,7 +143,7 @@ class MangasJsonController : Initializable {
     @FXML
     private fun onBtnGerarJson() {
         if (txtCaminhoSalvar.text.isEmpty()) {
-            AlertasPopup.AvisoModal("Aviso", "Necessário informar um caminho de destino.")
+            AlertasPopup.avisoModal("Aviso", "Necessário informar um caminho de destino.")
             return
         }
         if (btnGerarJson.accessibleText.equals("GERANDO", false)) {
@@ -409,9 +408,9 @@ class MangasJsonController : Initializable {
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
                     if (error.isNotEmpty())
-                        AlertasPopup.ErroModal("Erro", error)
+                        AlertasPopup.erroModal("Erro", error)
                     else
-                        AlertasPopup.AvisoModal("Aviso", "Jsons gerado com sucesso.")
+                        AlertasPopup.avisoModal("Aviso", "Jsons gerado com sucesso.")
                     habilitar()
                 }
             }

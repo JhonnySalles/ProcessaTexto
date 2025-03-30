@@ -263,7 +263,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     @FXML
     private fun onBtnVinculado() {
         if (arquivoOriginal == null) {
-            AlertasPopup.AvisoModal("Selecione o arquivo original", "Necessário informar o arquivo original primeiro.")
+            AlertasPopup.avisoModal("Selecione o arquivo original", "Necessário informar o arquivo original primeiro.")
             return
         }
         val pasta = if (arquivoVinculado != null)
@@ -304,7 +304,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                     Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Arquivo deletado com sucesso.")
                 } catch (e: SQLException) {
                     LOGGER.error(e.message, e)
-                    AlertasPopup.ErroModal("Erro ao deletar", e.message!!)
+                    AlertasPopup.erroModal("Erro ao deletar", e.message!!)
                 }
                 return false
             }
@@ -591,7 +591,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     private fun carregarLegendas(): Boolean {
         if (!validaLegendaOriginal() && !validaLegendaVinculado()) {
-            AlertasPopup.AvisoModal("Aviso", "Necessário selecionar a base e o manga.")
+            AlertasPopup.avisoModal("Aviso", "Necessário selecionar a base e o manga.")
             return false
         }
 
@@ -610,11 +610,11 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         vinculo.volumeOriginal = volumeOriginal
         vinculo.volumeVinculado = volumeVinculado
         if (volumeOriginal == null && volumeVinculado == null)
-            AlertasPopup.AvisoModal("Aviso", "Não encontrado nenhum item com as informações repassadas.")
+            AlertasPopup.avisoModal("Aviso", "Não encontrado nenhum item com as informações repassadas.")
         else if (volumeOriginal == null)
-            AlertasPopup.AvisoModal("Aviso", "Manga original não encontrado.")
+            AlertasPopup.avisoModal("Aviso", "Manga original não encontrado.")
         else if (volumeVinculado == null)
-            AlertasPopup.AvisoModal("Aviso", "Manga vinculado não encontrado.")
+            AlertasPopup.avisoModal("Aviso", "Manga vinculado não encontrado.")
 
         return volumeOriginal != null || volumeVinculado != null
     }
@@ -856,7 +856,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
                             TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                             if (error!!.isNotEmpty())
-                                AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", (error)!!)
+                                AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", (error)!!)
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
                             EXECUCOES.endProcess()
@@ -900,7 +900,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             if (cbLinguagemOrigem.selectionModel.selectedItem == null)
                 cbLinguagemOrigem.selectionModel.select(vinculo.linguagemOriginal)
             else if (vinculo.linguagemOriginal != null && cbLinguagemOrigem.selectionModel.selectedItem.compareTo(vinculo.linguagemOriginal) !== 0) {
-                if (AlertasPopup.ConfirmacaoModal("Aviso", "A linguagem selecionada e o manga original são diferentes.\nDeseja recarregar?")) {
+                if (AlertasPopup.confirmacaoModal("Aviso", "A linguagem selecionada e o manga original são diferentes.\nDeseja recarregar?")) {
                     cbLinguagemOrigem.selectionModel.select(vinculo.linguagemOriginal)
                     return selecionarArquivo()
                 }
@@ -909,7 +909,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             if (cbLinguagemVinculado.selectionModel.selectedItem == null)
                 cbLinguagemVinculado.selectionModel.select(vinculo.linguagemVinculado)
             else if (vinculo.linguagemVinculado != null && cbLinguagemVinculado.selectionModel.selectedItem.compareTo(vinculo.linguagemVinculado) !== 0) {
-                if (AlertasPopup.ConfirmacaoModal("Aviso", "A linguagem selecionada e o manga vinculado são diferentes.\nDeseja recarregar?")) {
+                if (AlertasPopup.confirmacaoModal("Aviso", "A linguagem selecionada e o manga vinculado são diferentes.\nDeseja recarregar?")) {
                     cbLinguagemVinculado.selectionModel.select(vinculo.linguagemVinculado)
                     return selecionarArquivo()
                 }
@@ -1116,7 +1116,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
 
                                 if (error.isNotEmpty())
-                                    AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
+                                    AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
 
                                 MenuPrincipalController.controller.getLblLog().text = ""
                                 habilita()
@@ -1276,17 +1276,17 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     private fun valida(): Boolean {
         if (cbBase.selectionModel.selectedItem == null) {
             cbBase.unFocusColor = Color.RED
-            AlertasPopup.AvisoModal("Alerta", "Necessário inforar uma base.")
+            AlertasPopup.avisoModal("Alerta", "Necessário inforar uma base.")
             return false
         }
         if (txtMangaOriginal.text.isEmpty()) {
             txtMangaOriginal.unFocusColor = Color.RED
-            AlertasPopup.AvisoModal("Alerta", "Necessário inforar um manga principal.")
+            AlertasPopup.avisoModal("Alerta", "Necessário inforar um manga principal.")
             return false
         }
         if (txtMangaVinculado.text.isEmpty()) {
             txtMangaVinculado.unFocusColor = Color.RED
-            AlertasPopup.AvisoModal("Alerta", "Necessário inforar um manga vinculado.")
+            AlertasPopup.avisoModal("Alerta", "Necessário inforar um manga vinculado.")
             return false
         }
         return true
@@ -1358,7 +1358,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.")
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal("Erro ao salvar", e.message!!)
+            AlertasPopup.erroModal("Erro ao salvar", e.message!!)
         }
     }
 

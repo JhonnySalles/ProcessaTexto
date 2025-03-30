@@ -183,7 +183,7 @@ class LegendasVocabularioController : Initializable, BaseController {
     @FXML
     private fun onBtnSalvar() {
         if (txtAreaUpdate.text.trim().isEmpty() || txtAreaUpdate.text.trim().equals("UPDATE tabela SET campo3 = ? WHERE id = ?", true)) {
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um update e um delete para prosseguir com o salvamento.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um update e um delete para prosseguir com o salvamento.")
             return
         }
 
@@ -197,11 +197,11 @@ class LegendasVocabularioController : Initializable, BaseController {
                 .filter { revisar -> revisar.vocabulario.trim().isNotEmpty() }
                 .collect(Collectors.toList())
             service.comandoUpdate(txtAreaUpdate.text, update)
-            AlertasPopup.AvisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
+            AlertasPopup.avisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
             onBtnAtualizar()
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
+            AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
         } finally {
             MenuPrincipalController.controller.getLblLog().text = ""
             habilitaBotoes()
@@ -212,7 +212,7 @@ class LegendasVocabularioController : Initializable, BaseController {
     @FXML
     private fun onBtnAtualizar() {
         if (txtAreaSelect.text.trim().isEmpty() || txtAreaSelect.text.trim().equals("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela", true)) {
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select para prosseguir com o salvamento.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select para prosseguir com o salvamento.")
             return
         }
 
@@ -222,14 +222,14 @@ class LegendasVocabularioController : Initializable, BaseController {
             MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Concluido...."
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao realizar a pesquisa.")
+            AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao realizar a pesquisa.")
         }
     }
 
     @FXML
     private fun onBtnDeletar() {
         if (txtAreaDelete.text.trim().isEmpty() || txtAreaDelete.text.trim().equals("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL", true)) {
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um delete para prosseguir com a limpeza.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um delete para prosseguir com a limpeza.")
             return
         }
 
@@ -238,7 +238,7 @@ class LegendasVocabularioController : Initializable, BaseController {
             service.comandoDelete(txtAreaDelete.text)
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
+            AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
         } finally {
             MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Delete do vocabulario concluido."
         }
@@ -365,7 +365,7 @@ class LegendasVocabularioController : Initializable, BaseController {
             txtAreaVocabulario.text = ""
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar a exclusao.")
+            AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar a exclusao.")
         }
     }
 
@@ -373,22 +373,22 @@ class LegendasVocabularioController : Initializable, BaseController {
     private fun onBtnSalvarFila() {
         if (cbLimpeza.isSelected || cbExporta.isSelected) {
             if (cbLimpeza.isSelected && txtAreaDelete.text.trim().isEmpty()) {
-                AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um delete para a limpeza.")
+                AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um delete para a limpeza.")
                 return
             }
 
             if (cbExporta.isSelected && txtAreaSelect.text.trim().isEmpty()) {
-                AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select para a exportação.")
+                AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select para a exportação.")
                 return
             }
         } else if (txtAreaSelect.text.trim().isEmpty() || txtAreaSelect.text.trim().equals("SELECT campo1 AS ID, campo2 AS ORIGINAL FROM tabela", true)
             || txtAreaUpdate.text.trim().isEmpty() || txtAreaUpdate.text.trim().equals("UPDATE tabela SET campo3 = ? WHERE id = ?", true)
             || txtAreaDelete.text.trim().isEmpty() || txtAreaDelete.text.trim().equals("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL", true)
         ) {
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select, update e delete para gravar na lista.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um select, update e delete para gravar na lista.")
             return
         } else if (cbLinguagem.selectionModel.selectedItem == null || cbLinguagem.selectionModel.selectedItem.equals(Language.TODOS)) {
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem para gravar na lista.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem para gravar na lista.")
             return
         }
         try {
@@ -402,10 +402,10 @@ class LegendasVocabularioController : Initializable, BaseController {
                     cbLimpeza.isSelected
                 )
             )
-            AlertasPopup.AvisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
+            AlertasPopup.avisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar ao salvar a fila.")
+            AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar ao salvar a fila.")
         }
     }
 
@@ -413,16 +413,16 @@ class LegendasVocabularioController : Initializable, BaseController {
         var valido = true
         if (txtPipe.text.isEmpty()) {
             valido = false
-            AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um pipe para salvar o arquivo de exportação.")
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um pipe para salvar o arquivo de exportação.")
         }
         if (txtCaminhoExportar.text.isNotEmpty()) {
             val arquivo = File(txtCaminhoExportar.text)
             if (arquivo.isDirectory) {
                 valido = false
-                AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um arquivo.")
+                AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um arquivo.")
             } else if (!File(arquivo.parent).canWrite()) {
                 valido = false
-                AlertasPopup.AlertaModal(stackPane, root, mutableListOf(), "Alerta", "Não é possível gravar no local informado.")
+                AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Não é possível gravar no local informado.")
             }
         }
         return valido

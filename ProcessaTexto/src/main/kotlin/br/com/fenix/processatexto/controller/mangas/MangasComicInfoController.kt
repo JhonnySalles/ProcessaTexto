@@ -8,7 +8,6 @@ import br.com.fenix.processatexto.model.entities.comicinfo.BaseLista
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.comicinfo.ProcessaComicInfo
-import br.com.fenix.processatexto.util.configuration.Configuracao
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXComboBox
@@ -553,7 +552,7 @@ class MangasComicInfoController : Initializable {
 
     private fun remover() {
         if (treeTabela.selectionModel.selectedItem != null)
-            if (AlertasPopup.ConfirmacaoModal("Aviso", "Deseja remover o registro?")) {
+            if (AlertasPopup.confirmacaoModal("Aviso", "Deseja remover o registro?")) {
             val parent: TreeItem<BaseLista> = if (treeTabela.selectionModel.selectedItem.value is MAL)
                 treeTabela.selectionModel.selectedItem else treeTabela.selectionModel.selectedItem.parent
             REGISTROS.remove(parent.value)

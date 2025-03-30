@@ -564,9 +564,9 @@ class ProcessarNovels(controller: BaseController) {
             override fun succeeded() {
                 super.failed()
                 if (error)
-                    AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar as novels.")
+                    AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar as novels.")
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Novels processadas com sucesso.")
+                    AlertasPopup.avisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Novels processadas com sucesso.")
 
                 if (error)
                     addLog("Erro ao processar as novels.")
@@ -708,9 +708,9 @@ class ProcessarNovels(controller: BaseController) {
             override fun succeeded() {
                 super.failed()
                 if (error)
-                    AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar as novels.")
+                    AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar as novels.")
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Novels processadas com sucesso.")
+                    AlertasPopup.avisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Novels processadas com sucesso.")
 
                 if (error)
                     addLog("Erro ao processar as novels.")

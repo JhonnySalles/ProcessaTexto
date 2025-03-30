@@ -127,7 +127,7 @@ class MangasAjustarController : Initializable {
         if (!TABELAS.isEmpty())
             salvar()
         else
-            AlertasPopup.AvisoModal("Aviso", "Nenhum item para salvar.")
+            AlertasPopup.avisoModal("Aviso", "Nenhum item para salvar.")
     }
 
     @FXML
@@ -238,7 +238,7 @@ class MangasAjustarController : Initializable {
                 super.succeeded()
                 Platform.runLater {
                     treeBases.root = DADOS
-                    AlertasPopup.AvisoModal("Aviso", "Alterações salva com sucesso.")
+                    AlertasPopup.avisoModal("Aviso", "Alterações salva com sucesso.")
                     MenuPrincipalController.controller.getLblLog().text = ""
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     ckbMarcarTodos.isSelected = true
@@ -365,7 +365,7 @@ class MangasAjustarController : Initializable {
                     else -> "Deseja remover o texto selecionado? ${treeItem.value.texto}"
                 }
 
-                if (AlertasPopup.ConfirmacaoModal("Apagar", descricao)) {
+                if (AlertasPopup.confirmacaoModal("Apagar", descricao)) {
                     when (treeItem.value) {
                         is MangaCapitulo -> {
                             val volume: MangaVolume = treeItem.parent.value as MangaVolume

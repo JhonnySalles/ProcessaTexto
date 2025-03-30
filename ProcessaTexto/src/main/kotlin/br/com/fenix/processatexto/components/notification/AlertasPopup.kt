@@ -19,13 +19,13 @@ import java.util.*
 import javax.imageio.ImageIO
 
 object AlertasPopup {
-    val ALERTA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAlerta_48.png")))
-    val AVISO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAviso_48.png")))
-    val ERRO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoErro_48.png")))
-    val CONFIRMA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoConfirma_48.png")))
+    private val ALERTA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAlerta_48.png")))
+    private val AVISO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAviso_48.png")))
+    private val ERRO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoErro_48.png")))
+    private val CONFIRMA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoConfirma_48.png")))
 
-    val CSS: String = AlertasPopup::class.java.getResource("/css/Dark_Alerts.css").toExternalForm()
-    val CSS_THEME: String = AlertasPopup::class.java.getResource("/css/Dark_Theme.css").toExternalForm()
+    private val CSS: String = AlertasPopup::class.java.getResource("/css/Dark_Alerts.css").toExternalForm()
+    private val CSS_THEME: String = AlertasPopup::class.java.getResource("/css/Dark_Theme.css").toExternalForm()
     private lateinit var ROOT_STACK_PANE: StackPane
     private lateinit var NODE_BLUR: Node
 
@@ -54,7 +54,7 @@ object AlertasPopup {
      * não informe por padrão irá adicionar um botão ok.
      * @param Campo     **String** que irá conter a mensagem a ser exibida.
      */
-    fun AvisoModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) =
+    fun avisoModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) =
         dialogModern(rootStackPane, nodeBlur, botoes, titulo, texto, AVISO)
 
     /**
@@ -65,7 +65,7 @@ object AlertasPopup {
      *
      *
      */
-    fun AvisoModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, AVISO)
+    fun avisoModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, AVISO)
 
     /**
      *
@@ -81,7 +81,7 @@ object AlertasPopup {
      * não informe por padrão irá adicionar um botão ok.
      * @param Campo     **String** que irá conter a mensagem a ser exibida.
      */
-    fun AlertaModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) = dialogModern(rootStackPane, nodeBlur, botoes, titulo, texto, ALERTA)
+    fun alertaModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) = dialogModern(rootStackPane, nodeBlur, botoes, titulo, texto, ALERTA)
 
     /**
      *
@@ -91,7 +91,7 @@ object AlertasPopup {
      *
      *
      */
-    fun AlertaModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, ALERTA)
+    fun alertaModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, ALERTA)
 
     /**
      *
@@ -107,7 +107,7 @@ object AlertasPopup {
      * não informe por padrão irá adicionar um botão ok.
      * @param Campo     **String** que irá conter a mensagem a ser exibida.
      */
-    fun ErroModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) {
+    fun erroModal(rootStackPane: StackPane, nodeBlur: Node, botoes: MutableList<JFXButton>, titulo: String, texto: String) {
         dialogModern(rootStackPane, nodeBlur, botoes, titulo, texto, ERRO)
     }
 
@@ -119,7 +119,7 @@ object AlertasPopup {
      *
      *
      */
-    fun ErroModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, ERRO)
+    fun erroModal(titulo: String, texto: String) = dialogModern(ROOT_STACK_PANE, NODE_BLUR, mutableListOf(), titulo, texto, ERRO)
 
     /**
      *
@@ -136,7 +136,7 @@ object AlertasPopup {
      * @param Campo     **String** que irá conter a mensagem a ser exibida.
      * @return Resulta o valor referente ao botão cancelar ou confirmar.
      */
-    fun ConfirmacaoModal(rootStackPane: StackPane, nodeBlur: Node, titulo: String, texto: String): Boolean = alertModern(rootStackPane, nodeBlur, titulo, texto, CONFIRMA)
+    fun confirmacaoModal(rootStackPane: StackPane, nodeBlur: Node, titulo: String, texto: String): Boolean = alertModern(rootStackPane, nodeBlur, titulo, texto, CONFIRMA)
 
     /**
      *
@@ -146,7 +146,7 @@ object AlertasPopup {
      *
      *
      */
-    fun ConfirmacaoModal(titulo: String, texto: String): Boolean {
+    fun confirmacaoModal(titulo: String, texto: String): Boolean {
         return alertModern(ROOT_STACK_PANE, NODE_BLUR, titulo, texto, CONFIRMA)
     }
 

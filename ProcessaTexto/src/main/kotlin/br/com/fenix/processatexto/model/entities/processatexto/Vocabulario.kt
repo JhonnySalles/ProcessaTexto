@@ -1,10 +1,8 @@
 package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
-import com.google.cloud.firestore.annotation.PropertyName
 import com.google.gson.annotations.Expose
 import jakarta.persistence.*
-import org.hibernate.Remove
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.*

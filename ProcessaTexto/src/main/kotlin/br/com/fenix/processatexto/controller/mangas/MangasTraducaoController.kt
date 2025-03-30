@@ -107,7 +107,7 @@ class MangasTraducaoController : Initializable {
         }
 
         if (TABELAS.size === 0)
-            AlertasPopup.AvisoModal("Aviso", "Nenhum item informado.")
+            AlertasPopup.avisoModal("Aviso", "Nenhum item informado.")
 
         btnTraduzir.accessibleText = "GERANDO"
         btnTraduzir.text = "Pausar"
@@ -239,9 +239,9 @@ class MangasTraducaoController : Initializable {
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
                     if (error.isNotEmpty())
-                        AlertasPopup.ErroModal("Erro", error)
+                        AlertasPopup.erroModal("Erro", error)
                     else if (!PAUSAR) {
-                        AlertasPopup.AvisoModal("Aviso", "Tradução concluida.")
+                        AlertasPopup.avisoModal("Aviso", "Tradução concluida.")
                         TABELAS.clear()
                         DADOS!!.children.clear()
                     }

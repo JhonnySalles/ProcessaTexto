@@ -89,7 +89,7 @@ object Backup {
             } catch (e: IOException) {
                 LOGGER.error(e.message, e)
                 cnt.importaConcluido(true)
-                AlertasPopup.ErroModal("Erro ao tentar gerar backup da base", e.stackTrace.toString())
+                AlertasPopup.erroModal("Erro ao tentar gerar backup da base", e.stackTrace.toString())
             } catch (e: Exception) {
                 LOGGER.error(e.message, e)
                 cnt.importaConcluido(true)
@@ -114,7 +114,7 @@ object Backup {
             } catch (e: IOException) {
                 LOGGER.error(e.message, e)
                 cnt.exportaConcluido(true)
-                AlertasPopup.ErroModal("Erro ao tentar gerar backup da base", e.stackTrace.toString())
+                AlertasPopup.erroModal("Erro ao tentar gerar backup da base", e.stackTrace.toString())
             } catch (e: Exception) {
                 LOGGER.error(e.message, e)
                 cnt.exportaConcluido(true)

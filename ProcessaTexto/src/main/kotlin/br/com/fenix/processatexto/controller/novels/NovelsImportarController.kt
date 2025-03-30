@@ -193,7 +193,7 @@ class NovelsImportarController : Initializable, BaseController {
                 props.store(os, "")
             }
         } catch (e: IOException) {
-            Alertas.Tela_Alerta("Erro ao salvar o properties de configuração", e.message!!)
+            Alertas.telaAlerta("Erro ao salvar o properties de configuração", e.message!!)
             LOGGER.error(e.message, e)
         }
     }
@@ -213,7 +213,7 @@ class NovelsImportarController : Initializable, BaseController {
                     cbBase.requestFocus()
                 }
             } catch (e: IOException) {
-                Alertas.Tela_Alerta("Erro ao carregar o properties de configuração", e.message!!)
+                Alertas.telaAlerta("Erro ao carregar o properties de configuração", e.message!!)
                 LOGGER.error(e.message, e)
             }
         }

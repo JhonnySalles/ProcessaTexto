@@ -53,7 +53,7 @@ class MenuPrincipalController : Initializable {
     private lateinit var rootStackPane: StackPane
 
     @FXML
-    protected lateinit var root: AnchorPane
+    private lateinit var root: AnchorPane
 
     @FXML
     private lateinit var btnBanco: JFXButton

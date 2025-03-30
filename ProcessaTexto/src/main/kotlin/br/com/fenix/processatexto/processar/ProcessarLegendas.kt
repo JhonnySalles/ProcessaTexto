@@ -86,9 +86,9 @@ class ProcessarLegendas(controller: BaseController) {
             override fun succeeded() {
                 super.succeeded()
                 if (error)
-                    AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
+                    AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
                 else
-                    AlertasPopup.AvisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Lista processada com sucesso.")
+                    AlertasPopup.avisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Lista processada com sucesso.")
                 progress.barraProgresso.progressProperty().unbind()
                 progress.log.textProperty().unbind()
             }
@@ -130,11 +130,11 @@ class ProcessarLegendas(controller: BaseController) {
         } catch (e: IOException) {
             vocab = ""
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
+            AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
         } catch (e: SQLException) {
             vocab = ""
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
+            AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
         }
         return vocab.trim()
     }
@@ -323,7 +323,7 @@ class ProcessarLegendas(controller: BaseController) {
         } catch (e: SQLException) {
             vocab = ""
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
+            AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar a lista.")
         }
         return vocab.trim()
     }

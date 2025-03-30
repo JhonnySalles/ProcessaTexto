@@ -4,10 +4,7 @@ import br.com.fenix.processatexto.Run
 import br.com.fenix.processatexto.components.CheckBoxTreeTableCellCustom
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
-import br.com.fenix.processatexto.model.entities.Manga
 import br.com.fenix.processatexto.model.entities.Novel
-import br.com.fenix.processatexto.model.entities.mangaextractor.MangaTabela
-import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
 import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.ProcessarNovels

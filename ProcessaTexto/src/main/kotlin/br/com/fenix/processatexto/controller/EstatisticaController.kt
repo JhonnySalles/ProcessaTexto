@@ -151,7 +151,7 @@ open class EstatisticaController : Initializable {
                 tbVocabulario.setItems(obsLCombinacoes)
             } catch (e: SQLException) {
                 LOGGER.error(e.message, e)
-                AlertasPopup.ErroModal(rootStackPane, root, mutableListOf(), "Não foi possível realizar a pesquisa.", e.message!!)
+                AlertasPopup.erroModal(rootStackPane, root, mutableListOf(), "Não foi possível realizar a pesquisa.", e.message!!)
             }
         }
     }
@@ -208,7 +208,7 @@ open class EstatisticaController : Initializable {
             treePalavras.setShowRoot(false)
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
-            AlertasPopup.ErroModal(rootStackPane, root, mutableListOf(), "Erro ao processar vocabulario", e.message!!)
+            AlertasPopup.erroModal(rootStackPane, root, mutableListOf(), "Erro ao processar vocabulario", e.message!!)
         }
     }
 
@@ -237,7 +237,7 @@ open class EstatisticaController : Initializable {
 
         val result: Set<MutableList<Estatistica>> = Sets.cartesianProduct(selecao)
         if (result.isEmpty())
-            AlertasPopup.AlertaModal(rootStackPane, root, mutableListOf(), "Lista vazia.", "Necessário selecionar ao menos uma leitura de cada kanji.")
+            AlertasPopup.alertaModal(rootStackPane, root, mutableListOf(), "Lista vazia.", "Necessário selecionar ao menos uma leitura de cada kanji.")
         else {
             for (ls in result)
                 combinacoes.add(Tabela(ls))

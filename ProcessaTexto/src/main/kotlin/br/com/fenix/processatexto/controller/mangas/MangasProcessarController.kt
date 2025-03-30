@@ -169,7 +169,7 @@ class MangasProcessarController : Initializable {
     private var error: String = ""
     private fun transferir() {
         if (txtBaseOrigem.text.trim().equals(txtBaseDestino.text.trim(), true)) {
-            AlertasPopup.AvisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Favor informar outra base de destino.")
+            AlertasPopup.avisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Favor informar outra base de destino.")
             return
         }
 
@@ -245,9 +245,9 @@ class MangasProcessarController : Initializable {
                     barraProgressoVolumes.progress = 0.0
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     if (error.isNotEmpty())
-                        AlertasPopup.ErroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
+                        AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
                     else
-                        AlertasPopup.AvisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Transferência concluida.")
+                        AlertasPopup.avisoModal(controller.stackPane, controller.root, mutableListOf(), "Aviso", "Transferência concluida.")
                 }
             }
         }

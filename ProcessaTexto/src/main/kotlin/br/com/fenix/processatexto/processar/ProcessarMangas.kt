@@ -201,9 +201,9 @@ class ProcessarMangas(controller: MangasProcessarController) {
             override fun succeeded() {
                 super.failed()
                 if (error)
-                    AlertasPopup.ErroModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar os mangas.")
+                    AlertasPopup.erroModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar os mangas.")
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Aviso", "Mangas processadas com sucesso.")
+                    AlertasPopup.avisoModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Aviso", "Mangas processadas com sucesso.")
 
                 progress.barraProgresso.progressProperty().unbind()
                 controller.barraProgressoVolumes.progressProperty().unbind()
@@ -590,9 +590,9 @@ class ProcessarMangas(controller: MangasProcessarController) {
             override fun succeeded() {
                 super.failed()
                 if (error)
-                    AlertasPopup.ErroModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar os mangas.")
+                    AlertasPopup.erroModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Erro", "Erro ao processar os mangas.")
                 else if (!desativar)
-                    AlertasPopup.AvisoModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Aviso", "Mangas processadas com sucesso.")
+                    AlertasPopup.avisoModal(controller.controllerPai.stackPane, controller.root, mutableListOf(), "Aviso", "Mangas processadas com sucesso.")
 
                 progress.barraProgresso.progressProperty().unbind()
                 controller.barraProgressoVolumes.progressProperty().unbind()
