@@ -269,7 +269,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                 processados += "Recebido $registros registro(s). "
                 if (vocabularios.isNotEmpty())
                     vocabularios = vocabularios.substring(0, vocabularios.lastIndexOf(",")).trim { it <= ' ' }
-                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size + " registros(s) da cloud.", "Vocabulário: $vocabularios") }
+                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de $registros registros(s) da cloud.", "Vocabulário: $vocabularios") }
             }
             processado = true
             LOGGER.info("Concluído recebimento de vocabulários da cloud.")
@@ -411,7 +411,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                 processados += "ComicInfo recebido $registros registro(s). "
                 if (comicInfo.isNotEmpty())
                     comicInfo = comicInfo.substring(0, comicInfo.lastIndexOf(",")).trim { it <= ' ' }
-                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de " + lista.size + " registro(s) da cloud.", "ComicInfo: $comicInfo") }
+                Platform.runLater { Notificacoes.notificacao(Notificacao.SUCESSO, "Concluído recebimento de $registros registro(s) da cloud.", "ComicInfo: $comicInfo") }
             }
             processado = true
             LOGGER.info("Concluído recebimento de ComicInfo da cloud.")
@@ -452,7 +452,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                         comicInfo += comic.comic + ", "
                     }
                     document.document("_INDEX").set(index as Map<String, Any>).get()
-                    registros += sinc.size
+                    registros = sinc.size
                     LOGGER.info("Enviado ComicInfo para cloud: " + sinc.size + " registros. ")
                 }
 
