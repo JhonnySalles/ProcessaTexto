@@ -306,7 +306,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         }
 
         val sql = String.format(INSERT, getTabela(obj), colunas.substringBeforeLast(","), valores.substringBeforeLast(","))
-        LOGGER.info("Gerado SQL Insert: $sql")
+        //LOGGER.info("Gerado SQL Insert: $sql")
         val generate = query(sql, getParametros(obj))
         val id = getIds(obj).values.first()
 
@@ -337,7 +337,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         }
 
         val sql = String.format(UPDATE, getTabela(obj), colunas.substringBeforeLast(","), chaves.substringBeforeLast(" AND "))
-        LOGGER.info("Gerado SQL Update: $sql")
+        //LOGGER.info("Gerado SQL Update: $sql")
         toID(query(sql, parametros))
     }
 
@@ -358,7 +358,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             condicao = Pair(campo, id)
         }
         val sql = String.format(DELETE, getTabela(entity), chave)
-        LOGGER.info("Gerado SQL Delete: $sql")
+        //LOGGER.info("Gerado SQL Delete: $sql")
         query(sql, mapOf(condicao))
     }
 
@@ -385,7 +385,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             condicao = Pair(campo, id)
         }
         val sql = String.format(SELECT_BY_ID, campos.substringBeforeLast(","), getTabela(entity), chave)
-        LOGGER.info("Gerado SQL Select By Id: $sql")
+        //LOGGER.info("Gerado SQL Select By Id: $sql")
         return queryEntity(sql, mapOf(condicao))
     }
 
@@ -402,7 +402,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             campos += "$param,"
 
         val sql = String.format(SELECT, campos.substringBeforeLast(","), getTabela(entity))
-        LOGGER.info("Gerado SQL Select: $sql")
+        //LOGGER.info("Gerado SQL Select: $sql")
         return queryList(sql, mapOf())
     }
 

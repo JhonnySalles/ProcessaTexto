@@ -30,6 +30,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
         private const val SELECT_ALL_EXCLUSAO = "SELECT palavra FROM exclusao"
         private const val SELECT_EXCLUSAO = "SELECT palavra FROM exclusao WHERE palavra = ? "
         private const val SELECT_ENVIO = "SELECT id, vocabulario, leitura, portugues FROM vocabulario WHERE atualizacao >= ?;"
+        private const val SELECT_ENVIO_EXCLUSAO = "SELECT palavra FROM exclusao WHERE atualizacao >= ?;"
     }
 
     private val LOGGER = LoggerFactory.getLogger(VocabularioInglesDaoJDBC::class.java)
@@ -252,7 +253,7 @@ class VocabularioInglesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDao
         var st: PreparedStatement? = null
         var rs: ResultSet? = null
         return try {
-            st = conn.prepareStatement(SELECT_ENVIO)
+            st = conn.prepareStatement(SELECT_ENVIO_EXCLUSAO)
             st.setString(1, Utils.convertToString(ultimo))
             rs = st.executeQuery()
             val list: MutableList<String> = mutableListOf()
