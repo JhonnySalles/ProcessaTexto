@@ -23,13 +23,12 @@ open class Manga(
     open var isVinculo: Boolean = false
 ) {
 
-    constructor(base: String, manga: String, linguagem: String) :
-            this(base, manga) {
+    constructor(base: String, manga: String, linguagem: String) : this(base, manga) {
         this.linguagem = linguagem
+        isProcessar = true
     }
 
-    constructor(base: String, manga: String, linguagem: String, isVinculo: Boolean) :
-            this(base, manga) {
+    constructor(base: String, manga: String, linguagem: String, isVinculo: Boolean) : this(base, manga) {
         this.isVinculo = isVinculo
         this.linguagem = linguagem
     }
@@ -86,10 +85,7 @@ open class Manga(
         origem = ""
     }
 
-    fun addOutrasInformacoes(
-        base: String, manga: String, volume: Int, capitulo: Float, lingua: Language,
-        pagina: Int, nomePagina: String, texto: String
-    ) {
+    fun addOutrasInformacoes(base: String, manga: String, volume: Int, capitulo: Float, lingua: Language, pagina: Int, nomePagina: String, texto: String) {
         this.base = base
         this.manga = manga
         this.volume = volume

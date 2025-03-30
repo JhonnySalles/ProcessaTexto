@@ -312,7 +312,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             rs = st.executeQuery()
             if (rs.next()) {
                 val input = ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes())
-                val image: BufferedImage = ImageIO.read(input)
+                val image: BufferedImage? = ImageIO.read(input)
                 Optional.of(
                     NovelCapa(
                         UUID.fromString(rs.getString("id")), rs.getString("novel"),

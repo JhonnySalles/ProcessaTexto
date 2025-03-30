@@ -5,8 +5,7 @@ import br.com.fenix.processatexto.components.CheckBoxTreeTableCellCustom
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.MenuPrincipalController
 import br.com.fenix.processatexto.model.entities.Manga
-import br.com.fenix.processatexto.model.entities.mangaextractor.MangaTabela
-import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
+import br.com.fenix.processatexto.model.entities.mangaextractor.*
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.ProcessarMangas
 import br.com.fenix.processatexto.service.MangaServices
@@ -384,12 +383,47 @@ class MangasProcessarController : Initializable {
 
     private fun linkaCelulas() {
         treecMacado.cellValueFactory = TreeItemPropertyValueFactory("processar")
-        treecBase.setCellValueFactory(TreeItemPropertyValueFactory("base"))
-        treecManga.setCellValueFactory(TreeItemPropertyValueFactory("manga"))
-        treecVolume.setCellValueFactory(TreeItemPropertyValueFactory("volume"))
-        treecCapitulo.setCellValueFactory(TreeItemPropertyValueFactory("capitulo"))
-        treecPagina.setCellValueFactory(TreeItemPropertyValueFactory("pagina"))
-        treecNomePagina.setCellValueFactory(TreeItemPropertyValueFactory("nomePagina"))
+        treecBase.cellValueFactory = TreeItemPropertyValueFactory("base")
+        treecManga.cellValueFactory = TreeItemPropertyValueFactory("manga")
+        treecVolume.cellValueFactory = TreeItemPropertyValueFactory("volume")
+        treecCapitulo.cellValueFactory = TreeItemPropertyValueFactory("capitulo")
+        treecPagina.cellValueFactory = TreeItemPropertyValueFactory("pagina")
+        treecNomePagina.cellValueFactory = TreeItemPropertyValueFactory("nomePagina")
+
+        treecVolume.setCellFactory  {
+            object : TreeTableCell<Manga, Int>() {
+                @Override
+                override fun updateItem(value: Int?, empty: Boolean) {
+                    text = if (empty || value == null || tableRow.treeItem == null)
+                        ""
+                    else {
+                        val item = tableRow.treeItem.value
+                        if (item is MangaTabela || item.linguagem == "...")
+                            ""
+                        else
+                            value.toString()
+                    }
+                }
+            }
+        }
+
+        treecCapitulo.setCellFactory  {
+            object : TreeTableCell<Manga, Float>() {
+                @Override
+                override fun updateItem(value: Float?, empty: Boolean) {
+                    text = if (empty || value == null || tableRow.treeItem == null)
+                        ""
+                    else {
+                        val item = tableRow.treeItem.value
+                        if (item is MangaVolume || item is MangaTabela || item.linguagem == "...")
+                            ""
+                        else
+                            value.toString()
+                    }
+                }
+            }
+        }
+
         treeBases.isShowRoot = false
         editaColunas()
     }

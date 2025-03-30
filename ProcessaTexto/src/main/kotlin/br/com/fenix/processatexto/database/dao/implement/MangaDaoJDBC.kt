@@ -681,7 +681,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             rs = st.executeQuery()
             if (rs.next()) {
                 val input = ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes())
-                val image: BufferedImage = ImageIO.read(input)
+                val image: BufferedImage? = ImageIO.read(input)
                 MangaCapa(
                     UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
                     Language.getEnum(rs.getString("linguagem"))!!, rs.getString("arquivo"), rs.getString("extensao"),
@@ -837,7 +837,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             rs = st.executeQuery()
             if (rs.next()) {
                 val input = ByteArrayInputStream(rs.getBinaryStream("capa").readAllBytes())
-                val image: BufferedImage = ImageIO.read(input)
+                val image: BufferedImage? = ImageIO.read(input)
                 Optional.of(
                     MangaCapa(
                         UUID.fromString(rs.getString("id")), rs.getString("manga"), rs.getInt("volume"),
