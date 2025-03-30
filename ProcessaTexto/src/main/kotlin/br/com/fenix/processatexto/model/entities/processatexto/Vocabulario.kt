@@ -1,8 +1,10 @@
 package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
+import com.google.cloud.firestore.annotation.PropertyName
 import com.google.gson.annotations.Expose
 import jakarta.persistence.*
+import org.hibernate.Remove
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.*
@@ -10,7 +12,7 @@ import kotlin.jvm.Transient
 
 
 @Table(name = "vocabulario")
-@jakarta.persistence.Entity
+@Entity
 open class Vocabulario(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,14 +48,6 @@ open class Vocabulario(
 
     constructor(vocabulario: String, formaBasica: String, leitura: String, leituraNovel: String) : this(null, vocabulario, formaBasica, leitura, leituraNovel)
 
-    constructor(id: String, obj: HashMap<String, String>) : this(UUID.fromString(id)) {
-        vocabulario = obj["vocabulario"]!!
-        formaBasica = obj["formaBasica"]!!
-        leitura = obj["leitura"]!!
-        leituraNovel = obj["leituraNovel"]!!
-        portugues = obj["portugues"]!!
-        ingles = obj["ingles"]!!
-    }
 
     @Override
     override fun toString(): String {

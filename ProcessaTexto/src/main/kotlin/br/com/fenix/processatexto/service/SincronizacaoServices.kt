@@ -155,7 +155,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                         val data: MutableMap<String, Any?> = HashMap()
                         for (voc in env) {
                             voc.sincronizacao = envio
-                            data[voc.getId().toString()] = voc
+                            data[voc.getId().toString()] = br.com.fenix.processatexto.model.entities.firebase.Vocabulario(voc)
                             vocabularios += voc.vocabulario + ", "
                         }
 
@@ -211,7 +211,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                         val obj = document.data[key] as HashMap<String, String>
                         val sinc = LocalDateTime.parse(obj["sincronizacao"], formaterDataHora)
                         if (sinc.isAfter(sincronizacao!!.recebimento))
-                            lista.add(Pair(vocab.tipo, Vocabulario(key, obj)))
+                            lista.add(Pair(vocab.tipo, br.com.fenix.processatexto.model.entities.firebase.Vocabulario.toVocabulario(key, obj)))
                     }
                 }
             }
@@ -371,7 +371,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                 if (sinc.isAfter(sincronizacao!!.recebimento)) {
                     val comic = document.document(item).get().get()
                     if (comic.data != null)
-                        lista.add(ComicInfo(comic.data as HashMap<String, Any?>))
+                        lista.add(br.com.fenix.processatexto.model.entities.firebase.ComicInfo.toComicInfo(comic.data as HashMap<String, Any?>))
                 }
             }
 
@@ -419,8 +419,8 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                     val docIndex = document.document("_INDEX").get().get()
                     val index: MutableMap<String, Date> = HashMap()
                     if (docIndex.exists() && docIndex.data != null) {
-                        for (key in docIndex.data!!.keys)
-                            index[key] = docIndex.data!![key] as Date
+                        val item = docIndex.data ?: mapOf()
+                        index.putAll(item as Map<String, Date>)
                     }
 
                     comicInfo = ""
@@ -428,7 +428,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                     for (comic in sinc) {
                         val id: String = comic.comic
                         index[id] = Date()
-                        val item: Map<String, Any> = Gson().fromJson(gson.toJson(comic), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
+                        val item: Map<String, Any> = Gson().fromJson(gson.toJson(br.com.fenix.processatexto.model.entities.firebase.ComicInfo(comic)), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
                         document.document(id).set(item).get()
                         comicInfo += comic.comic + ", "
                     }
@@ -455,7 +455,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
         return processado
     }
 
-    fun sincroniza(): Boolean {
+    fun sincroniza(isManual : Boolean = false): Boolean {
         var sincronizado = false
 
         if (sincronizacao == null)
@@ -468,15 +468,13 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
             var recebido = false
             var enviado = false
 
-            if (processarRevisar) {
+            if (processarRevisar || processarComicInfo || isManual) {
                 recebido = receberVocabulario()
                 enviado = enviaVocabulario()
 
                 recebido = receberExclusao() || recebido
                 enviado = enviaExclusao() || enviado
-            }
 
-            if (processarComicInfo) {
                 recebido = receberComicInfo() || recebido
                 enviado = enviaComicInfo() || enviado
             }

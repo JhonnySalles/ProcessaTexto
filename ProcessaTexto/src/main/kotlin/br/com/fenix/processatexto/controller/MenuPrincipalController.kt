@@ -293,7 +293,7 @@ class MenuPrincipalController : Initializable {
             @Override
             override fun call(): Boolean {
                 sincronizacao.consultar()
-                return sincronizacao.sincroniza()
+                return sincronizacao.sincroniza(true)
             }
 
             @Override
