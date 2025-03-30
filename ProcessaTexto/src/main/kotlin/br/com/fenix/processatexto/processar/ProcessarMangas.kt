@@ -292,7 +292,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
         for (m in tokenizer.tokenize(mode, frase)) {
             if (m.surface().matches(pattern)) {
                 if (validaHistorico.contains(m.dictionaryForm())) {
-                    val vocabulario: VocabularioExterno = vocabHistorico.stream()
+                    val vocabulario: VocabularioExterno? = vocabHistorico.stream()
                         .filter { vocab -> m.dictionaryForm().equals(vocab.palavra, true) }
                         .findFirst().orElse(null)
 
