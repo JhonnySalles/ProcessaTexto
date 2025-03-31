@@ -42,7 +42,6 @@ object Configuracao {
                 properties.setProperty("connection.password", "")
                 properties.setProperty("connection.database", "")
                 properties.setProperty("caminho.mysql", "")
-                properties.setProperty("caminho.winrar", "")
                 properties.setProperty("caminho.commictagger", "")
                 properties.setProperty("caminho.legenda", "")
                 properties.store(os, "")
