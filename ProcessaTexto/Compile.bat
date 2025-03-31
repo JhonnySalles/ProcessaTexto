@@ -1,1 +1,1 @@
-mvn -Dmaven.test.skip=true clean package install
+mvn -Dmaven.test.skip=true -Dflyway.skip=true clean package install
