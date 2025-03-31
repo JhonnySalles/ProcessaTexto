@@ -406,7 +406,9 @@ object ProcessaComicInfo {
                                 DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA!!.id + "]; "
                             else
                                 note.trim() + "; "
-                    } else
+                    } else if (info.notes!!.lowercase(Locale.getDefault()).contains(DESCRIPTION_MAL.lowercase(Locale.getDefault())))
+                        notes = DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA!!.id + "]; "
+                    else
                         notes += ((info.notes + "; " + DESCRIPTION_MAL + dateTime.format(LocalDateTime.now())) + ". [Issue ID " + MANGA!!.id) + "]; "
                 } else
                     notes += DESCRIPTION_MAL + dateTime.format(LocalDateTime.now()) + ". [Issue ID " + MANGA!!.id + "]; "
