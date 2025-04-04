@@ -242,6 +242,7 @@ class LegendasImportarController : Initializable, BaseController {
                                     for (i in 2 until colunas.size) {
                                         if (colunas[i].equals(som, true) || colunas[i].equals(imagem, true))
                                             continue
+
                                         if (texto.isEmpty())
                                             texto = colunas[i]
                                         else {
@@ -285,10 +286,7 @@ class LegendasImportarController : Initializable, BaseController {
 
                                     delete = "UPDATE $schema.$base SET Vocabulario = NULL WHERE Vocabulario = '';"
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(
-                                            FilaSQL("", "", delete, linguagemFilaSql,
-                                            isExporta = false, isLimpeza = true)
-                                        )
+                                        services.insertOrUpdateFila(FilaSQL("", "", delete, linguagemFilaSql, isExporta = false, isLimpeza = true))
                                 }
 
                                 val pastaMidia = File(arquivo.arquivo.absolutePath.substring(0, arquivo.arquivo.absolutePath.lastIndexOf(".tsv")) + ".media")
@@ -369,6 +367,7 @@ class LegendasImportarController : Initializable, BaseController {
 
     @FXML
     private fun onBtnCarregarArquivo() {
+
         txtCaminho.text = selecionaPasta(txtCaminho.text, true)
         carregaArquivos()
     }
@@ -502,17 +501,17 @@ class LegendasImportarController : Initializable, BaseController {
                 arquivos.add(getArquivo(pasta))
         } finally {
             ARQUIVOS = FXCollections.observableArrayList(arquivos)
-            tbTabela.setItems(ARQUIVOS)
+            tbTabela.items = ARQUIVOS
             ckbMarcarTodos.isSelected = true
             tbTabela.refresh()
         }
     }
 
     private fun editaColunas() {
-        tcMarcado.setCellValueFactory(PropertyValueFactory("processar"))
-        tcArquivo.setCellValueFactory(PropertyValueFactory("nome"))
-        tcEpisodio.setCellValueFactory(PropertyValueFactory("episodio"))
-        tcEpisodio.setCellFactory(TextFieldTableCell.forTableColumn(IntegerConverter()))
+        tcMarcado.cellValueFactory = PropertyValueFactory("processar")
+        tcArquivo.cellValueFactory = PropertyValueFactory("nome")
+        tcEpisodio.cellValueFactory = PropertyValueFactory("episodio")
+        tcEpisodio.cellFactory = TextFieldTableCell.forTableColumn(IntegerConverter())
         tcEpisodio.setOnEditCommit { e ->
             e.tableView.items[e.tablePosition.row].episodio = e.newValue
             tbTabela.requestFocus()
@@ -533,16 +532,20 @@ class LegendasImportarController : Initializable, BaseController {
         }
     }
 
-    private fun linkaCelulas() = editaColunas()
+    private fun linkaCelulas(){
+
+    }
 
     private val robot: Robot = Robot()
     override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         linkaCelulas()
+        editaColunas()
         btnProcessar.accessibleText = "PROCESSAR"
         Validadores.setComboBoxNotEmpty(cbLinguagemFilaSql, false)
         Validadores.setComboBoxNotEmpty(cbLinguagem, false)
         Validadores.setComboBoxNotEmpty(cbBase, true)
         Validadores.setTextFieldNotEmpty(txtNome)
+
         txtNome.focusedProperty().addListener { _, oldPropertyValue, _ ->
             if (oldPropertyValue)
                 if (txtNome.text.contains("\\"))
