@@ -216,10 +216,10 @@ class LegendasImportarController : Initializable, BaseController {
                         BufferedWriter(FileWriter(tmp)).use { writer ->
                             BufferedReader(FileReader(arquivo.arquivo, StandardCharsets.UTF_8)).use { reader ->
                                 var seq = 0
-                                var line: String
+                                var line: String?
                                 val renomear: MutableMap<String, String> = mutableMapOf()
                                 while (reader.readLine().also { line = it } != null) {
-                                    if (line.trim().isEmpty())
+                                    if (line == null || line!!.trim().isEmpty())
                                         continue
 
                                     seq++
@@ -230,7 +230,7 @@ class LegendasImportarController : Initializable, BaseController {
                                     var som = ""
                                     var imagem = ""
                                     var vocabulario = ""
-                                    val colunas = line.split(pipe)
+                                    val colunas = line!!.split(pipe)
                                     tempo = "0" + colunas[1].substring(colunas[1].lastIndexOf("_") + 1)
                                     tempo = (tempo.substring(0, 2) + ":" + tempo.substring(3, 5)) + ":" + tempo.substring(6)
                                     for (i in 2 until colunas.size) {

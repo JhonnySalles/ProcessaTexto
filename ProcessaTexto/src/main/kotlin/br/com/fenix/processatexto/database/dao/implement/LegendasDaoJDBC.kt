@@ -25,13 +25,13 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                 + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
                 + " AND Table_Name != '_sql' GROUP BY Tabela ")
         private const val CREATE_TABELA = "CALL create_table('%s');"
-        private const val CREATE_TRIGGER_INSERT = "CREATE TRIGGER tr_%s_insert BEFORE INSERT ON %s" +
+        private const val CREATE_TRIGGER_INSERT = "CREATE TRIGGER %s_insert BEFORE INSERT ON %s" +
                 "  FOR EACH ROW BEGIN" +
                 "    IF (NEW.id IS NULL OR NEW.id = '') THEN" +
                 "      SET new.id = UUID();" +
                 "    END IF;" +
                 "  END"
-        private const val CREATE_TRIGGER_UPDATE = "CREATE TRIGGER tr_%s_update BEFORE UPDATE ON %s" +
+        private const val CREATE_TRIGGER_UPDATE = "CREATE TRIGGER %s_update BEFORE UPDATE ON %s" +
                 "  FOR EACH ROW BEGIN" +
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
@@ -139,7 +139,10 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
         try {
             st = connDeckSubtitle.prepareStatement(String.format(INSERT, tabela), Statement.RETURN_GENERATED_KEYS)
             var index = 0
-            st.setString(++index, obj.getId().toString())
+            if (obj.getId() == null)
+                st.setNString(++index, null)
+            else
+                st.setString(++index, obj.getId().toString())
             st.setInt(++index, obj.episodio)
             st.setString(++index, obj.linguagem.sigla.uppercase(Locale.getDefault()))
             st.setString(++index, obj.tempo)

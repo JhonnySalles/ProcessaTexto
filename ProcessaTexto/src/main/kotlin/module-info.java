@@ -58,7 +58,7 @@ module br.com.fenix.processatexto {
     opens br.com.fenix.processatexto.model.entities.novelextractor to org.hibernate.orm.core, com.google.gson, javafx.base;
     opens br.com.fenix.processatexto.model.entities.processatexto to org.hibernate.orm.core, javafx.base;
     opens br.com.fenix.processatexto.model.entities.processatexto.japones to org.hibernate.orm.core, javafx.base;
-    opens br.com.fenix.processatexto.model.entities.subtitle to org.hibernate.orm.core, java.xml.bind;
+    opens br.com.fenix.processatexto.model.entities.subtitle to org.hibernate.orm.core, java.xml.bind, javafx.base;
     opens br.com.fenix.processatexto.model.enums.comicinfo to java.xml.bind;
 
     opens br.com.fenix.processatexto.controller to javafx.fxml, javafx.graphics;

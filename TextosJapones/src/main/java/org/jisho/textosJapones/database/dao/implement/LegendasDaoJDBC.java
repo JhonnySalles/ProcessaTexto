@@ -31,7 +31,7 @@ public class LegendasDaoJDBC implements LegendasDao {
     final private String CREATE_TABELA = "CALL create_table('%s');";
 
     final private String CREATE_TRIGGER_INSERT =
-            "CREATE TRIGGER tr_%s_insert BEFORE INSERT ON %s" +
+            "CREATE TRIGGER %s_insert BEFORE INSERT ON %s" +
                     "  FOR EACH ROW BEGIN" +
                     "    IF (NEW.id IS NULL OR NEW.id = '') THEN" +
                     "      SET new.id = UUID();" +
@@ -39,7 +39,7 @@ public class LegendasDaoJDBC implements LegendasDao {
                     "  END";
 
     final private String CREATE_TRIGGER_UPDATE =
-            "CREATE TRIGGER tr_%s_update BEFORE UPDATE ON %s" +
+            "CREATE TRIGGER %s_update BEFORE UPDATE ON %s" +
                     "  FOR EACH ROW BEGIN" +
                     "    SET new.Atualizacao = NOW();" +
                     "  END";
