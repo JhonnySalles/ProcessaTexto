@@ -646,6 +646,6 @@ class MangasAjustarController : Initializable {
         val fxmlLocate: URL
             get() = MangasAjustarController::class.java.getResource("/view/mangas/MangaAjustar.fxml")
         val iconLocate: String
-            get() = "/images/icoTextoJapones_128.png"
+            get() = "/images/icoProcessaTexto_128.png"
     }
 }

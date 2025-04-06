@@ -448,6 +448,6 @@ class MenuPrincipalController : Initializable {
         val imgAnimaCompartilhaEnvio: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoCompartilhamentoEnvio_48.png"))
 
         val fxmlLocate: URL get() = MenuPrincipalController::class.java.getResource("/view/MenuPrincipal.fxml") as URL
-        val iconLocate: String get() = "/images/icoTextoJapones_128.png"
+        val iconLocate: String get() = "/images/icoProcessaTexto_128.png"
     }
 }

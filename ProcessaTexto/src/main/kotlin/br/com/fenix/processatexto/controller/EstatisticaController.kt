@@ -445,6 +445,6 @@ open class EstatisticaController : Initializable {
 
         private val FOLHA: PseudoClass = PseudoClass.getPseudoClass("leaf")
         val fxmlLocate: URL get() = EstatisticaController::class.java.getResource("/view/Estatistica.fxml") as URL
-        val iconLocate: String get() = "/images/icoTextoJapones_128.png"
+        val iconLocate: String get() = "/images/icoProcessaTexto_128.png"
     }
 }

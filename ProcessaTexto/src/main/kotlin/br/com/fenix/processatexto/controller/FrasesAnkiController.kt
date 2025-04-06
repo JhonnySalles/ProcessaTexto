@@ -436,6 +436,6 @@ open class FrasesAnkiController : Initializable {
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(FrasesAnkiController::class.java)
         val fxmlLocate: URL get() = FrasesAnkiController::class.java.getResource("/view/FrasesAnki.fxml") as URL
-        val iconLocate: String get() = "/images/icoTextoJapones_128.png"
+        val iconLocate: String get() = "/images/icoProcessaTexto_128.png"
     }
 }

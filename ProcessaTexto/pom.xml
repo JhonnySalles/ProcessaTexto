@@ -12,12 +12,43 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.10.2</junit.version>
         <kotlin.version>1.8.0</kotlin.version>
-        <flyway.version>8.0.0</flyway.version>
-        <flyway-mysql.version>8.2.1</flyway-mysql.version>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
+
+        <javafx.version>18-ea+2</javafx.version>
+        <controlsjavafx.version>11.1.1</controlsjavafx.version>
+        <animatefx.version>1.2.3</animatefx.version>
+        <jfoenix.version>9.0.10</jfoenix.version>
+        <fxtaskbar.version>v11.2.7</fxtaskbar.version>
+        <hibernate.version>6.4.4.Final</hibernate.version>
+        <jakarta.version>4.0.1</jakarta.version>
+        <jakarta-persistence.version>3.1.0</jakarta-persistence.version>
+        <mysql-connector.version>8.0.24</mysql-connector.version>
+        <jooq.version>3.16.4</jooq.version>
+        <flyway.version>8.0.0</flyway.version>
+        <flyway-mysql.version>8.2.1</flyway-mysql.version>
+        <sudachi.version>0.6.1</sudachi.version>
+        <jsoup.version>1.15.3</jsoup.version>
+        <guava.version>31.1-jre</guava.version>
+        <json.version>20220320</json.version>
+        <gson.version>2.10.1</gson.version>
+        <junrar.version>7.5.2</junrar.version>
+        <apache-commons.version>1.21</apache-commons.version>
+        <jaxb.version>4.0.0</jaxb.version>
+        <mal4j.version>3.0.1</mal4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <logback.version>1.2.0</logback.version>
+        <m3agic.version>0.9.1</m3agic.version>
+        <firebase.version>9.3.0</firebase.version>
+        <grpc.version>1.62.2</grpc.version>
+        <protobuf.version>4.30.1</protobuf.version>
+
+        <junit.version>5.10.2</junit.version>
+        <mockito.version>5.9.0</mockito.version>
+        <powermockito.version>2.0.9</powermockito.version>
+        <testfx.version>4.0.18</testfx.version>
+        <hamcrest.version>2.1</hamcrest.version>
     </properties>
 
     <repositories>
@@ -68,50 +99,49 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.9.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.9.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.9</version>
+            <version>${powermockito.version}</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.9</version>
+            <version>${powermockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-core</artifactId>
-            <version>4.0.18</version>
+            <version>${testfx.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
-            <version>4.0.18</version>
+            <version>${testfx.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
-            <version>2.1</version>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -120,102 +150,102 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
-            <version>18-ea+2</version>
+            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Biblioteca JavaFX Graphics -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
-            <version>18-ea+2</version>
+            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Biblioteca JavaFX Controle -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>18-ea+2</version>
+            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Bibliotecas para animacao no javafx -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>18-ea+2</version>
+            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Biblioteca JavaFX WebView -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>18-ea+2</version>
+            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Biblioteca para popup -->
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>11.1.1</version>
+            <version>${controlsjavafx.version}</version>
         </dependency>
 
         <!-- Barra de progresso do windows -->
         <dependency>
             <groupId>com.github.Dansoftowner</groupId>
             <artifactId>FXTaskbarProgressBar</artifactId>
-            <version>v11.2.7</version>
+            <version>${fxtaskbar.version}</version>
         </dependency>
 
         <!-- Bibliotecas para animacao no javafx -->
         <dependency>
             <groupId>io.github.typhon0</groupId>
             <artifactId>AnimateFX</artifactId>
-            <version>1.2.3</version>
+            <version>${animatefx.version}</version>
         </dependency>
 
         <!-- Botoes e componentes estilizados para o javafx -->
         <dependency>
             <groupId>com.jfoenix</groupId>
             <artifactId>jfoenix</artifactId>
-            <version>9.0.10</version>
+            <version>${jfoenix.version}</version>
         </dependency>
 
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.4.4.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <version>4.0.1</version>
+            <version>${jakarta.version}</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
+            <version>${jakarta-persistence.version}</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.1</version>
+            <version>${jakarta.version}</version>
         </dependency>
 
         <!-- MySQL -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.24</version>
+            <version>${mysql-connector.version}</version>
         </dependency>
 
         <!-- Flyway -->
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>3.16.4</version>
+            <version>${jooq.version}</version>
         </dependency>
 
         <dependency>
@@ -234,68 +264,62 @@
         <dependency>
             <groupId>com.worksap.nlp</groupId>
             <artifactId>sudachi</artifactId>
-            <version>0.6.1</version>
+            <version>${sudachi.version}</version>
         </dependency>
 
         <!-- JSoup, parse html para document -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.15.3</version>
+            <version>${jsoup.version}</version>
         </dependency>
 
         <!-- Guava, usado para o plano cartesiano -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <!-- Json - api jisho -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20220320</version>
+            <version>${json.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>${gson.version}</version>
         </dependency>
 
         <!-- Winrar -->
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
-            <version>7.5.2</version>
+            <version>${junrar.version}</version>
         </dependency>
 
         <!-- 7zip e Tar -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version>
+            <version>${apache-commons.version}</version>
         </dependency>
 
         <!-- XML -->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <version>${jaxb.version}</version>
         </dependency>
 
         <!-- MyAnimeList -->
         <dependency>
             <groupId>dev.katsute</groupId>
             <artifactId>mal4j</artifactId>
-            <version>3.0.1</version>
+            <version>${mal4j.version}</version>
         </dependency>
 
         <!-- Kuromoji -->
@@ -321,39 +345,39 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.0</version>
+            <version>${logback.version}</version>
         </dependency>
 
         <!-- MP3 -->
         <dependency>
             <groupId>com.mpatric</groupId>
             <artifactId>mp3agic</artifactId>
-            <version>0.9.1</version>
+            <version>${m3agic.version}</version>
         </dependency>
 
         <!-- Share DB-->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>9.3.0</version>
+            <version>${firebase.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-core</artifactId>
-            <version>1.62.2</version>
+            <version>${grpc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>4.30.1</version>
+            <version>${protobuf.version}</version>
         </dependency>
 
     </dependencies>
@@ -381,7 +405,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>br.com.fenix.processatexto/br.com.fenix.processatexto.HelloApplication</mainClass>
+                            <mainClass>br.com.fenix.processatexto/br.com.fenix.processatexto.App</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
@@ -457,7 +481,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.jisho.textosJapones.App</mainClass>
+                            <mainClass>br.com.fenix.processatexto.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -14,7 +14,7 @@
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>app.log</file>
+		<file>processaTexto.log</file>
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<charset>UTF-8</charset>
@@ -35,8 +35,16 @@
 		</triggeringPolicy>
 	</appender>
 
+	<logger name="act" level="WARN" additivity="false">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="act2" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
 	</root>
 </configuration>
