@@ -37,7 +37,7 @@ class EstatisticaServices {
     }
 
     @Throws(SQLException::class)
-    fun update(obj: Estatistica) = dao.update(obj)
+    fun update(obj: Estatistica) = dao.update(obj, isThrowsNotUpdate = false)
 
     @Throws(SQLException::class)
     fun delete(obj: Estatistica) = dao.delete(obj)

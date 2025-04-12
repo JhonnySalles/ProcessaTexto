@@ -401,7 +401,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                 val comic = daoComicInfo.find(sinc.getId()!!, sinc.comic, sinc.languageISO!!)
                 if (comic.isPresent) {
                     comic.get().merge(sinc)
-                    daoComicInfo.update(comic.get())
+                    daoComicInfo.update(comic.get(), isThrowsNotUpdate = false)
                 } else
                     daoComicInfo.insert(sinc)
                 comicInfo += sinc.comic + ", "

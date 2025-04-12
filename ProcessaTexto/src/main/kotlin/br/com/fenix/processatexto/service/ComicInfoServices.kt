@@ -20,7 +20,7 @@ class ComicInfoServices {
             comicInfoDao.insert(comic)
         else {
             comic.setId(saved.get().getId())
-            comicInfoDao.update(comic)
+            comicInfoDao.update(comic, isThrowsNotUpdate = false)
         }
 
         SincronizacaoServices.enviar(comic)

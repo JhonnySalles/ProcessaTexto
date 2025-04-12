@@ -323,7 +323,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @param obj query em string
      * @throws SQLException caso o sql esteja errado ou não tenha nenhuma linha alterada
      */
-    override fun update(obj: E) {
+    override fun update(obj: E, isThrowsNotUpdate : Boolean) {
         val parametros = getParametros(obj, true).toMutableMap()
         var colunas = ""
         for (param in parametros.keys)
@@ -338,7 +338,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
 
         val sql = String.format(UPDATE, getTabela(obj), colunas.substringBeforeLast(","), chaves.substringBeforeLast(" AND "))
         //LOGGER.info("Gerado SQL Update: $sql")
-        toID(query(sql, parametros))
+        toID(query(sql, parametros, isThrowsNotUpdate))
     }
 
     /**

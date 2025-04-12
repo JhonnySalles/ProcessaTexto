@@ -645,7 +645,7 @@ class RevisarController : Initializable {
 
         Platform.runLater {
             val kcRetorno: KeyCombination = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
-            apRoot.getScene().addEventFilter(KeyEvent.KEY_PRESSED) { ke: KeyEvent ->
+            apRoot.scene.addEventFilter(KeyEvent.KEY_PRESSED) { ke: KeyEvent ->
                 if (selecionado && kcRetorno.match(ke)) {
                     retornar()
                     ke.consume()

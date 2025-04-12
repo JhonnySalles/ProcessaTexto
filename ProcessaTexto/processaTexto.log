@@ -1,0 +1,4 @@
+#logback.classic pattern: %d{yyyyMMdd HH:mm:ss.SSS} | [%level] | [%thread] - %-25.25logger{25}.%M : %msg%n
+#logback.classic pattern: %d{yyyyMMdd HH:mm:ss.SSS} | [%level] | [%thread] - %-25.25logger{25}.%M : %msg%n
+#logback.classic pattern: %d{yyyyMMdd HH:mm:ss.SSS} | [%level] | [%thread] - %-25.25logger{25}.%M : %msg%n
+#logback.classic pattern: %d{yyyyMMdd HH:mm:ss.SSS} | [%level] | [%thread] - %-25.25logger{25}.%M : %msg%n

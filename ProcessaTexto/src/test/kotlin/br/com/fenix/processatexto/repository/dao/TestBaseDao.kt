@@ -71,7 +71,7 @@ abstract class TestBaseDao<ID, E : EntityBase<ID, E>> {
     @Order(3)
     open fun testUpdate() {
         lastEntity = input.updateEntity(lastEntity!!)
-        repository.update(lastEntity!!)
+        repository.update(lastEntity!!, isThrowsNotUpdate = true)
         val persisted = repository.find(lastId!!)
         input.assertsService(lastEntity, persisted.get())
     }
