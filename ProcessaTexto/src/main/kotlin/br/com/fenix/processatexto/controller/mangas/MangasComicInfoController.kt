@@ -109,7 +109,7 @@ class MangasComicInfoController : Initializable {
     @FXML
     private lateinit var treecImagem: TreeTableColumn<BaseLista, ImageView>
 
-    private val REGISTROS: ObservableList<MAL> = FXCollections.observableArrayList()
+    private val mREGISTROS: ObservableList<MAL> = FXCollections.observableArrayList()
 
     private lateinit var controller: MangasController
     var controllerPai: MangasController
@@ -139,7 +139,7 @@ class MangasComicInfoController : Initializable {
         if (btnProcessarMarcados.accessibleTextProperty().value.equals("PROCESSAR"))
             processarLista(false)
         else
-            PARAR = true
+            mPARAR = true
     }
 
     @FXML
@@ -154,7 +154,7 @@ class MangasComicInfoController : Initializable {
 
     @FXML
     private fun onBtnLimparLista() {
-        REGISTROS.clear()
+        mREGISTROS.clear()
         configuraTabela()
     }
 
@@ -232,13 +232,7 @@ class MangasComicInfoController : Initializable {
                         }
                         null
                     }
-                    ProcessaComicInfo.processa(
-                        cbLinguagem.value,
-                        txtCaminho.text,
-                        txtDescricaoCapitulo.text,
-                        cbIgnorarVinculoSalvo.isSelected,
-                        callback
-                    )
+                    ProcessaComicInfo.processa(cbLinguagem.value, txtCaminho.text, txtDescricaoCapitulo.text, cbIgnorarVinculoSalvo.isSelected, callback)
                 } catch (e: Exception) {
                     LOGGER.error(e.message, e)
                 }
@@ -278,7 +272,7 @@ class MangasComicInfoController : Initializable {
         bloqueiaCampos("PROCESSAR")
     }
 
-    private var PARAR = false
+    private var mPARAR = false
     private fun processarLista(isSelecionado: Boolean) {
         val progress = MenuPrincipalController.controller.criaBarraProgresso()
         if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
@@ -289,10 +283,12 @@ class MangasComicInfoController : Initializable {
             override fun call(): Void? {
                 try {
                     updateMessage("Processando itens....")
-                    PARAR = false
-                    val lista: List<MAL> =
-                        if (isSelecionado) REGISTROS.parallelStream().filter { it.isSelecionado || it.myanimelist.parallelStream().anyMatch(BaseLista::isSelecionado) }
-                            .collect(Collectors.toList()) else REGISTROS.parallelStream().collect(Collectors.toList())
+                    mPARAR = false
+                    val lista: List<MAL> = if (isSelecionado)
+                        mREGISTROS.parallelStream().filter { it.isSelecionado || it.myAnimeList.parallelStream().anyMatch(BaseLista::isSelecionado) }.collect(Collectors.toList())
+                    else
+                        mREGISTROS.parallelStream().collect(Collectors.toList())
+
                     for ((I, item) in lista.withIndex()) {
                         Platform.runLater {
                             updateMessage("Processando itens...." + I + '/' + lista.size + " - Manga: " + item.nome)
@@ -300,12 +296,12 @@ class MangasComicInfoController : Initializable {
                             if (TaskbarProgressbar.isSupported())
                                 TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), I.toLong(), lista.size.toLong(), Type.NORMAL)
                         }
-                        val registro: Optional<MAL.Registro> = item.myanimelist.stream().filter(BaseLista::isMarcado).findFirst()
+                        val registro: Optional<MAL.Registro> = item.myAnimeList.stream().filter(BaseLista::isMarcado).findFirst()
                         if (registro.isPresent) {
                             if (ProcessaComicInfo.processa(cbLinguagem.value, registro.get().parent.arquivo, registro.get().id))
-                                REGISTROS.remove(item)
+                                mREGISTROS.remove(item)
                         }
-                        if (PARAR)
+                        if (mPARAR)
                             break
                     }
                 } catch (e: Exception) {
@@ -421,27 +417,27 @@ class MangasComicInfoController : Initializable {
     }
 
     fun addItem(item: MAL?) {
-        REGISTROS.add(item)
+        mREGISTROS.add(item)
         configuraTabela()
     }
     // ---------------- Mal ---------------- //
 
     // ---------------- Adicionado na tabela ---------------- //
     private val treeData: TreeItem<BaseLista>
-        private get() {
+        get() {
             val itmRoot: TreeItem<BaseLista> = TreeItem<BaseLista>(BaseLista("...", "", -1, false))
-            for (item in REGISTROS) {
+            for (item in mREGISTROS) {
                 val itmManga: TreeItem<BaseLista> = TreeItem<BaseLista>(item)
 
                 // ---------------- Mal ---------------- //
-                for (registro in item.myanimelist) {
+                for (registro in item.myAnimeList) {
                     val reg: TreeItem<BaseLista> = TreeItem<BaseLista>(registro)
                     val processar = JFXButton("Processar")
                     processar.styleClass.add("background-White1")
                     processar.setOnAction {
                         val arquivo: String = registro.parent.arquivo
                         if (ProcessaComicInfo.processa(cbLinguagem.value, arquivo, registro.id)) {
-                            REGISTROS.remove(item)
+                            mREGISTROS.remove(item)
                             itmRoot.children.remove(itmManga)
                             treeTabela.refresh()
                         }
@@ -459,34 +455,34 @@ class MangasComicInfoController : Initializable {
             }
             return itmRoot
         }
-    private var DADOS: TreeItem<BaseLista>? = null
+    private var mDADOS: TreeItem<BaseLista>? = null
     private fun configuraTabela() {
         try {
-            DADOS = treeData
+            mDADOS = treeData
         } catch (e: Exception) {
             LOGGER.error(e.message, e)
         }
-        treeTabela.root = DADOS
+        treeTabela.root = mDADOS
     }
 
     private fun onBtnTrocaId() {
-        if (REGISTROS.parallelStream().noneMatch { it.isSelecionado || it.myanimelist.stream().anyMatch(BaseLista::isSelecionado) } && treeTabela.selectionModelProperty()
+        if (mREGISTROS.parallelStream().noneMatch { it.isSelecionado || it.myAnimeList.stream().anyMatch(BaseLista::isSelecionado) } && treeTabela.selectionModelProperty()
                 .value != null)
             treeTabela.selectionModelProperty().value.selectedItem.value.isSelecionado = true
 
         val callback: Callback<MAL.Registro, Boolean> = Callback<MAL.Registro, Boolean> { param ->
-            REGISTROS.parallelStream().filter { it.isSelecionado || it.myanimelist.stream().anyMatch(BaseLista::isSelecionado) }
+            mREGISTROS.parallelStream().filter { it.isSelecionado || it.myAnimeList.stream().anyMatch(BaseLista::isSelecionado) }
                 .forEach {
                     if (it.isSelecionado) {
-                        it.myanimelist.parallelStream().forEach { re -> re.isMarcado = false }
-                        val reg: MAL.Registro = it.myanimelist[0]
+                        it.myAnimeList.parallelStream().forEach { re -> re.isMarcado = false }
+                        val reg: MAL.Registro = it.myAnimeList[0]
                         reg.isMarcado = true
                         reg.id = param.id
                         reg.nome = param.nome
                         reg.imagem = param.imagem
                     } else {
-                        it.myanimelist.forEach { re -> re.isMarcado = false }
-                        val reg: Optional<MAL.Registro> = it.myanimelist.parallelStream()
+                        it.myAnimeList.forEach { re -> re.isMarcado = false }
+                        val reg: Optional<MAL.Registro> = it.myAnimeList.parallelStream()
                             .filter { re -> re.isSelecionado }.findFirst()
                         if (reg.isPresent) {
                             reg.get().isMarcado = true
@@ -494,7 +490,7 @@ class MangasComicInfoController : Initializable {
                             reg.get().nome = param.nome
                             reg.get().imagem = param.imagem
                         } else {
-                            val aux: MAL.Registro = it.myanimelist[0]
+                            val aux: MAL.Registro = it.myAnimeList[0]
                             aux.isMarcado = true
                             aux.id = param.id
                             aux.nome = param.nome
@@ -502,7 +498,7 @@ class MangasComicInfoController : Initializable {
                         }
                     }
                     it.isSelecionado = false
-                    it.myanimelist.parallelStream().forEach { re -> re.isSelecionado = false }
+                    it.myAnimeList.parallelStream().forEach { re -> re.isSelecionado = false }
                 }
             treeTabela.refresh()
             null
@@ -521,7 +517,7 @@ class MangasComicInfoController : Initializable {
                     item.isMarcado = newValue
                     if (newValue) {
                         val parent: MAL = item.parent
-                        for (aux in parent.myanimelist) {
+                        for (aux in parent.myAnimeList) {
                             if (aux.id != item.id)
                                 aux.isMarcado = false
                         }
@@ -541,11 +537,11 @@ class MangasComicInfoController : Initializable {
 
     private fun limparSelecao() {
         anteriorSelecionado = null
-        REGISTROS.parallelStream()
-            .filter { it.isSelecionado || it.myanimelist.stream().allMatch(BaseLista::isSelecionado) }
+        mREGISTROS.parallelStream()
+            .filter { it.isSelecionado || it.myAnimeList.stream().allMatch(BaseLista::isSelecionado) }
             .forEach {
                 it.isSelecionado = false
-                it.myanimelist.parallelStream().forEach { re -> re.isSelecionado = false }
+                it.myAnimeList.parallelStream().forEach { re -> re.isSelecionado = false }
             }
         treeTabela.refresh()
     }
@@ -555,7 +551,7 @@ class MangasComicInfoController : Initializable {
             if (AlertasPopup.confirmacaoModal("Aviso", "Deseja remover o registro?")) {
             val parent: TreeItem<BaseLista> = if (treeTabela.selectionModel.selectedItem.value is MAL)
                 treeTabela.selectionModel.selectedItem else treeTabela.selectionModel.selectedItem.parent
-            REGISTROS.remove(parent.value)
+            mREGISTROS.remove(parent.value)
             parent.parent.children.remove(parent)
             treeTabela.refresh()
         }
@@ -581,24 +577,24 @@ class MangasComicInfoController : Initializable {
 
                         var index: Int
                         var size: Int
-                        if (REGISTROS.indexOf(parentAnterio) > REGISTROS.indexOf(parentAtual)) {
-                            index = REGISTROS.indexOf(parentAtual)
-                            size = REGISTROS.indexOf(parentAnterio) - 1
+                        if (mREGISTROS.indexOf(parentAnterio) > mREGISTROS.indexOf(parentAtual)) {
+                            index = mREGISTROS.indexOf(parentAtual)
+                            size = mREGISTROS.indexOf(parentAnterio) - 1
                         } else {
-                            index = REGISTROS.indexOf(parentAnterio) + 1
-                            size = REGISTROS.indexOf(parentAtual)
+                            index = mREGISTROS.indexOf(parentAnterio) + 1
+                            size = mREGISTROS.indexOf(parentAtual)
                         }
                         if (index < 0)
                             index = 0
 
-                        if (size > REGISTROS.size)
-                            size = REGISTROS.size
+                        if (size > mREGISTROS.size)
+                            size = mREGISTROS.size
 
                         for (i in index..size)
-                            REGISTROS[i].isSelecionado = !REGISTROS[i].isSelecionado
+                            mREGISTROS[i].isSelecionado = !mREGISTROS[i].isSelecionado
                     }
                 } else {
-                    val item: BaseLista = treeTabela.selectionModel.selectedItem.value
+                    val item: BaseLista? = treeTabela.selectionModel.selectedItem.value
                     if (item != null)
                         item.isSelecionado = !item.isSelecionado
                 }
@@ -646,25 +642,22 @@ class MangasComicInfoController : Initializable {
     }
 
     private fun linkaCelulas() {
-        treecMacado.setCellValueFactory(TreeItemPropertyValueFactory("marcado"))
-        treecManga.setCellValueFactory(TreeItemPropertyValueFactory("descricao"))
-        treecNome.setCellValueFactory(TreeItemPropertyValueFactory("nome"))
-        treecMalID.setCellValueFactory(TreeItemPropertyValueFactory("idVisual"))
-        treecProcessar.setCellValueFactory(TreeItemPropertyValueFactory("processar"))
-        treecSite.setCellValueFactory(TreeItemPropertyValueFactory("site"))
-        treecImagem.setCellValueFactory(TreeItemPropertyValueFactory("imagem"))
+        treecMacado.cellValueFactory = TreeItemPropertyValueFactory("isMarcado")
+        treecManga.cellValueFactory = TreeItemPropertyValueFactory("descricao")
+        treecNome.cellValueFactory = TreeItemPropertyValueFactory("nome")
+        treecMalID.cellValueFactory = TreeItemPropertyValueFactory("idVisual")
+        treecProcessar.cellValueFactory = TreeItemPropertyValueFactory("processar")
+        treecSite.cellValueFactory = TreeItemPropertyValueFactory("site")
+        treecImagem.cellValueFactory = TreeItemPropertyValueFactory("imagem")
         treeTabela.isShowRoot = false
-        treecMalID.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn())
+        treecMalID.cellFactory = TextFieldTreeTableCell.forTreeTableColumn()
         treecMalID.setOnEditCommit { e ->
             if (e.newValue != null && e.newValue.isNotEmpty()) {
                 try {
                     val number: String = e.newValue.replace("/[^0-9]+/g".toRegex(), "")
                     if (number.isNotEmpty() && e.treeTableView.getTreeItem(e.treeTablePosition.row).value is MAL.Registro) {
-                        if (!ProcessaComicInfo.getById(
-                                number.toLong(),
-                                e.treeTableView.getTreeItem(e.treeTablePosition.row).value as MAL.Registro
-                            ) && e.oldValue != null && e.oldValue.isNotEmpty()
-                        )
+                        if (!ProcessaComicInfo.getById(number.toLong(), e.treeTableView.getTreeItem(e.treeTablePosition.row).value as MAL.Registro) &&
+                            e.oldValue != null && e.oldValue.isNotEmpty())
                             e.treeTableView.getTreeItem(e.treeTablePosition.row).value.id = e.oldValue.toLong()
                     }
                 } catch (ex: Exception) {

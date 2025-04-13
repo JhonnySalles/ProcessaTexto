@@ -139,13 +139,14 @@ object ProcessaComicInfo {
             SERVICE = ComicInfoServices()
             if (arquivos.isDirectory) {
                 size[0] = 0
-                size[1] = arquivos.listFiles().size.toLong()
+                size[1] = arquivos.listFiles()?.size?.toLong() ?: 1
                 callback.call(size)
-                for (arquivo in arquivos.listFiles()) {
+                for (arquivo in arquivos.listFiles()!!) {
                     processa(linguagem, arquivo, null)
                     size[0]++
                     callback.call(size)
-                    if (CANCELAR_PROCESSAMENTO) break
+                    if (CANCELAR_PROCESSAMENTO)
+                        break
                 }
             } else if (arquivos.isFile) {
                 size[0] = 0
@@ -216,11 +217,10 @@ object ProcessaComicInfo {
         return if (manga != null) {
             registro.nome = manga.title
             registro.id = manga.id
+
             registro.imagem = ImageView(manga.mainPicture.mediumURL)
-            if (registro.imagem != null) {
-                registro.imagem!!.fitWidth = IMAGE_WIDTH
-                registro.imagem!!.fitHeight = IMAGE_HEIGHT
-            }
+            registro.imagem!!.fitWidth = IMAGE_WIDTH
+            registro.imagem!!.fitHeight = IMAGE_HEIGHT
             true
         } else
             false
@@ -268,13 +268,13 @@ object ProcessaComicInfo {
                 if (id != null)
                     MANGA = MAL!!.getManga(id)
                 else {
-                    var search: List<dev.katsute.mal4j.manga.Manga>
+                    var search: List<dev.katsute.mal4j.manga.Manga>?
                     val max = 2
                     var page = 0
                     do {
                         LOGGER.info("Realizando a consulta $page")
                         search = MAL!!.manga.withQuery(nome).withLimit(50).withOffset(page).search()
-                        if (search != null && search.isNotEmpty())
+                        if (!search.isNullOrEmpty())
                             for (item in search) {
                                 LOGGER.info(item.title)
                                 if (item.type === dev.katsute.mal4j.manga.property.MangaType.Manga &&
@@ -285,14 +285,14 @@ object ProcessaComicInfo {
                                 }
                             }
                         if (page == 0 && MANGA == null) {
-                            if (search != null && search.isNotEmpty()) {
+                            if (!search.isNullOrEmpty()) {
                                 val mal = MAL(arquivo, nome)
                                 for (item in search) {
                                     val registro = mal.addRegistro(item.title, item.id, false)
                                     if (item.mainPicture.mediumURL != null)
                                         registro.imagem = ImageView(item.mainPicture.mediumURL)
                                     else if (item.pictures.isNotEmpty() && item.pictures[0].mediumURL != null)
-                                        registro.imagem = ImageView(item.pictures.get(0).mediumURL)
+                                        registro.imagem = ImageView(item.pictures[0].mediumURL)
 
                                     if (registro.imagem != null) {
                                         registro.imagem!!.fitWidth = IMAGE_WIDTH
@@ -309,14 +309,14 @@ object ProcessaComicInfo {
                                 } catch (e: Exception) {
                                     LOGGER.error(e.message, e)
                                 }
-                                mal.myanimelist[0].isMarcado = true
+                                mal.myAnimeList[0].isMarcado = true
                                 Platform.runLater { CONTROLLER.addItem(mal) }
                             }
                         }
                         page++
                         if (page > max)
                             break
-                    } while (MANGA == null && search != null && search.isNotEmpty())
+                    } while (MANGA == null && !search.isNullOrEmpty())
                 }
             }
             if (MANGA != null) {
@@ -493,13 +493,14 @@ object ProcessaComicInfo {
                 comic.manga = Manga.Yes
                 comic.languageISO = linguagem.sigla
 
-                if (comic.title == null || comic.title!!.lowercase(Locale.getDefault()).contains("vol.") || comic.title!!.lowercase(Locale.getDefault()).contains("volume"))
+                if (comic.title.lowercase(Locale.getDefault()).contains("vol.") || comic.title.lowercase(Locale.getDefault()).contains("volume"))
                     comic.title = comic.series
-                else if (comic.title != null && !comic.title.equals(comic.series, true))
+                else if (!comic.title.equals(comic.series, true))
                     comic.storyArc = comic.title
 
                 if (CONSULTA_MAL)
                     processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
+
                 val titulosCapitulo: MutableList<Pair<Float, String>> = mutableListOf()
                 if (comic.summary != null && comic.summary!!.isNotEmpty()) {
                     val sumary = comic.summary!!.lowercase(Locale.getDefault())
@@ -530,7 +531,8 @@ object ProcessaComicInfo {
                                     }
                                 }
                             }
-                            if (number.compareTo(0f) > 0) titulosCapitulo.add(Pair(number, chapter))
+                            if (number.compareTo(0f) > 0)
+                                titulosCapitulo.add(Pair(number, chapter))
                         }
                     }
                 }
@@ -666,8 +668,8 @@ object ProcessaComicInfo {
         }
     }
 
-    private fun extraiInfo(arquivo: File, silent: Boolean): File {
-        var comicInfo = File("")
+    private fun extraiInfo(arquivo: File, silent: Boolean): File? {
+        var comicInfo : File? = null
         var proc: Process? = null
         val comando = "rar e -ma4 -y " + '"' + arquivo.path + '"' + " " + '"' + Utils.getCaminho(arquivo.path) + '"' + " " + '"' + COMICINFO + '"'
         if (!silent)

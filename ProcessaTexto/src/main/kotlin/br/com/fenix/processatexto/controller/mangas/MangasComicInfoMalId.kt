@@ -65,7 +65,7 @@ class MangasComicInfoMalId : Initializable {
                         imagem.image = null
                         txtId.unFocusColor = Color.web("#106ebe")
                         val numero = id.replace("/\\D+/g".toRegex(), "").toLong()
-                        mal.myanimelist.clear()
+                        mal.myAnimeList.clear()
                         consulta = mal.addRegistro("", numero, false)
                         ProcessaComicInfo.getById(numero, consulta)
                         txtNome.text = consulta.nome
