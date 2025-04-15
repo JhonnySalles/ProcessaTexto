@@ -167,8 +167,10 @@ class LegendasVocabularioController : Initializable, BaseController {
             else
                 chooser.initialDirectory = File(initial.path)
         }
-        val arquivo: File = chooser.showOpenDialog(null)
-        return if (arquivo.isDirectory)
+        val arquivo: File? = chooser.showOpenDialog(null)
+        return if (arquivo == null)
+            ""
+        else if (arquivo.isDirectory)
             arquivo.absolutePath + "\\arquivo.csv"
         else
             arquivo.absolutePath
@@ -468,8 +470,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                     fila = service.selectFila()
                     linguegem = cbLinguagem.selectionModel.selectedItem
                     if (linguegem != null && linguegem!! != Language.TODOS)
-                        fila = fila.stream().filter { f -> f.linguagem == linguegem }
-                            .collect(Collectors.toList())
+                        fila = fila.stream().filter { f -> f.linguagem == linguegem }.collect(Collectors.toList())
                     val temp: List<FilaSQL> = fila.stream().filter { f -> !f.isLimpeza && !f.isExporta }.collect(Collectors.toList())
                     for (select in temp) {
                         x++
@@ -544,10 +545,11 @@ class LegendasVocabularioController : Initializable, BaseController {
 
                         Configuracao.caminhoSalvoArquivo = txtCaminhoExportar.text
                     }
-                } catch (e1: SQLException) {
-                    e1.printStackTrace()
+                } catch (e: Exception) {
+                    LOGGER.error("Erro ao processar a fila", e)
                 } finally {
-                    if (!desativar) updateMessage("Concluído....")
+                    if (!desativar)
+                        updateMessage("Concluído....")
                     Platform.runLater {
                         btnExecutarFila.accessibleText = "PROCESSAR"
                         btnExecutarFila.text = "Executar fila"
