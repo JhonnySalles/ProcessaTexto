@@ -19,141 +19,144 @@ data class ComicInfo(
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "ID", nullable = false, unique = true, length = 36)
+    @field:XmlElement(name = "id")
     private var id: UUID? = null,
+    @XmlTransient
     @Column(name = "idMal", nullable = true)
     var idMal: Long? = null,
+    @field:XmlElement(name = "comic")
     @Column(name = "comic", length = 250, nullable = true)
     var comic: String = "",
     @Column(name = "title", length = 900, nullable = true)
-    @XmlElement(name = "Title")
+    @field:XmlElement(name = "Title")
     var title: String = "",
     @Column(name = "series", length = 900, nullable = true)
-    @XmlElement(name = "Series")
+    @field:XmlElement(name = "Series")
     var series: String = "",
     @Transient
-    @XmlElement(name = "Number")
+    @field:XmlElement(name = "Number")
     var number: Float = 0f,
     @Transient
-    @XmlElement(name = "Volume")
+    @field:XmlElement(name = "Volume")
     var volume: Int = 0,
     @Transient
-    @XmlElement(name = "Notes")
+    @field:XmlElement(name = "Notes")
     var notes: String? = null,
     @Transient
-    @XmlElement(name = "Year")
+    @field:XmlElement(name = "Year")
     var year: Int? = null,
     @Transient
-    @XmlElement(name = "Month")
+    @field:XmlElement(name = "Month")
     var month: Int? = null,
     @Transient
-    @XmlElement(name = "Day")
+    @field:XmlElement(name = "Day")
     var day: Int? = null,
     @Transient
-    @XmlElement(name = "Writer")
+    @field:XmlElement(name = "Writer")
     var writer: String? = null,
     @Transient
-    @XmlElement(name = "Penciller")
+    @field:XmlElement(name = "Penciller")
     var penciller: String? = null,
     @Transient
-    @XmlElement(name = "Inker")
+    @field:XmlElement(name = "Inker")
     var inker: String? = null,
     @Transient
-    @XmlElement(name = "CoverArtist")
+    @field:XmlElement(name = "CoverArtist")
     var coverArtist: String? = null,
     @Transient
-    @XmlElement(name = "Colorist")
+    @field:XmlElement(name = "Colorist")
     var colorist: String? = null,
     @Transient
-    @XmlElement(name = "Letterer")
+    @field:XmlElement(name = "Letterer")
     var letterer: String? = null,
     @Column(name = "publisher", length = 300, nullable = true)
-    @XmlElement(name = "Publisher")
+    @field:XmlElement(name = "Publisher")
     var publisher: String? = null,
     @Transient
-    @XmlElement(name = "Tags")
+    @field:XmlElement(name = "Tags")
     var tags: String? = null,
     @Transient
-    @XmlElement(name = "Web")
+    @field:XmlElement(name = "Web")
     var web: String? = null,
     @Transient
-    @XmlElement(name = "Editor")
+    @field:XmlElement(name = "Editor")
     var editor: String? = null,
     @Transient
-    @XmlElement(name = "Translator")
+    @field:XmlElement(name = "Translator")
     var translator: String? = null,
     @Transient
-    @XmlElement(name = "PageCount")
+    @field:XmlElement(name = "PageCount")
     var pageCount: Int? = null,
     @Transient
     @XmlElementWrapper(name = "Pages")
-    @XmlElement(name = "Page")
+    @field:XmlElement(name = "Page")
     var pages: List<Pages>? = null,
     @Transient
-    @XmlElement(name = "Count")
+    @field:XmlElement(name = "Count")
     var count: Int? = null,
     @Column(name = "alternativeSeries", length = 900, nullable = true)
-    @XmlElement(name = "AlternateSeries")
+    @field:XmlElement(name = "AlternateSeries")
     var alternateSeries: String? = null,
     @Transient
-    @XmlElement(name = "AlternateNumber")
+    @field:XmlElement(name = "AlternateNumber")
     var alternateNumber: Float? = null,
     @Column(name = "storyArc", length = 900, nullable = true)
-    @XmlElement(name = "StoryArc")
+    @field:XmlElement(name = "StoryArc")
     var storyArc: String? = null,
     @Transient
-    @XmlElement(name = "StoryArcNumber")
+    @field:XmlElement(name = "StoryArcNumber")
     var storyArcNumber: String? = null,
     @Column(name = "seriesGroup", length = 900, nullable = true)
-    @XmlElement(name = "SeriesGroup")
+    @field:XmlElement(name = "SeriesGroup")
     var seriesGroup: String? = null,
     @Transient
-    @XmlElement(name = "AlternateCount")
+    @field:XmlElement(name = "AlternateCount")
     var alternateCount: Int? = null,
     @Transient
-    @XmlElement(name = "Summary")
+    @field:XmlElement(name = "Summary")
     var summary: String? = null,
     @Column(name = "imprint", length = 300, nullable = true)
-    @XmlElement(name = "Imprint")
+    @field:XmlElement(name = "Imprint")
     var imprint: String? = null,
     @Column(name = "genre", length = 900, nullable = true)
-    @XmlElement(name = "Genre")
+    @field:XmlElement(name = "Genre")
     var genre: String? = null,
     @Column(name = "language", length = 3, nullable = true)
-    @XmlElement(name = "LanguageISO")
+    @field:XmlElement(name = "LanguageISO")
     var languageISO: String = "",
     @Transient
-    @XmlElement(name = "Format")
+    @field:XmlElement(name = "Format")
     var format: String? = null,
     @Enumerated(EnumType.STRING)
     @Column(name = "maturityRating", length = 100, nullable = true)
-    @XmlElement(name = "AgeRating")
+    @field:XmlElement(name = "AgeRating")
     var ageRating: AgeRating? = null,
     @Transient
-    @XmlElement(name = "CommunityRating")
+    @field:XmlElement(name = "CommunityRating")
     var communityRating: Float? = null,
     @Transient
-    @XmlElement(name = "BlackAndWhite")
+    @field:XmlElement(name = "BlackAndWhite")
     var blackAndWhite: YesNo? = null,
     @Transient
-    @XmlElement(name = "Manga")
+    @field:XmlElement(name = "Manga")
     var manga: Manga = Manga.Yes,
     @Transient
-    @XmlElement(name = "Characters")
+    @field:XmlElement(name = "Characters")
     var characters: String? = null,
     @Transient
-    @XmlElement(name = "Teams")
+    @field:XmlElement(name = "Teams")
     var teams: String? = null,
     @Transient
-    @XmlElement(name = "Locations")
+    @field:XmlElement(name = "Locations")
     var locations: String? = null,
     @Transient
-    @XmlElement(name = "ScanInformation")
+    @field:XmlElement(name = "ScanInformation")
     var scanInformation: String? = null,
     @Transient
-    @XmlElement(name = "MainCharacterOrTeam")
+    @field:XmlElement(name = "MainCharacterOrTeam")
     var mainCharacterOrTeam: String? = null,
     @Transient
-    @XmlElement(name = "Review")
+    @field:XmlElement(name = "Review")
     var review: String? = null,
 ) : EntityBase<UUID?, ComicInfo>() {
 
