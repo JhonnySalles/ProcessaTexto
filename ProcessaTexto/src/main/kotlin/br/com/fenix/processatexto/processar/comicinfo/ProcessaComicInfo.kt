@@ -567,6 +567,9 @@ object ProcessaComicInfo {
                         it.type = null
                     }
 
+                    if (comic.pageCount == null || comic.pageCount == 0)
+                        comic.pageCount = comic.pages!!.size
+
                     val pastas: Map<String, Int> = parse.getPastas()
                     var index = 0
                     for (i in 0 until parse.getSize()) {
