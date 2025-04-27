@@ -15,7 +15,8 @@
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>processaTexto.log</file>
-		<encoder>
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<charset>UTF-8</charset>
 			<outputPatternAsHeader>true</outputPatternAsHeader>
 			<pattern>%d{yyyyMMdd HH:mm:ss.SSS} | [%level] | [%thread] - %-25.25logger{25}.%M : %msg%n</pattern>
