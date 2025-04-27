@@ -572,11 +572,6 @@ object ProcessaComicInfo {
                 else if (!comic.title.equals(comic.series, true))
                     comic.storyArc = comic.title
 
-                if (GERAR_REGISTRO_AMAZON) {
-                    Platform.runLater { CONTROLLER.addItem(MAL(arquivo.absolutePath, nome, comic)) }
-                    return
-                }
-
                 if (CONSULTA_MAL)
                     processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
 
