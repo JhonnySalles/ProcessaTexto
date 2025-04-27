@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.String?>
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.fenix.processatexto.controller.mangas.MangasComicInfoController">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.fenix.processatexto.controller.mangas.MangasComicInfoController">
    <children>          
 	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
@@ -53,14 +60,19 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </HBox>
-                        <JFXCheckBox fx:id="cbIgnorarVinculoSalvo" checkedColor="#71afe5" text="Ignorar vinculo salvo" textFill="WHITE" unCheckedColor="#106ebe" />
+                        <HBox spacing="10.0">
+                           <children>
+                              <JFXCheckBox fx:id="cbIgnorarVinculoSalvo" checkedColor="#71afe5" text="Ignorar vinculo salvo" textFill="WHITE" unCheckedColor="#106ebe" />
+                              <JFXCheckBox fx:id="cbGerarRegistroAmazon" checkedColor="#71afe5" selected="true" text="Gerar registro para Amazon" textFill="WHITE" unCheckedColor="#106ebe" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                   <VBox prefWidth="350.0" spacing="5.0">
                      <children>
-      	                <JFXButton fx:id="btnProcessar" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessar" prefWidth="290.0" styleClass="background-White1" text="Processar comic info" />
-                        <JFXButton fx:id="btnProcessarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarMarcados" prefWidth="290.0" styleClass="background-White1" text="Processar Marcados" />
-                        <JFXButton fx:id="btnValidar" accessibleText="VALIDAR" buttonType="RAISED" onAction="#onBtnValidar" prefWidth="290.0" styleClass="background-White1" text="Validar comic info" />
+      	                <JFXButton fx:id="btnProcessarArquivos" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnProcessarArquivos" prefWidth="290.0" styleClass="background-White1" text="Processar arquivos" />
+                        <JFXButton fx:id="btnSalvarMarcados" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnSalvarComicInfo" prefWidth="290.0" styleClass="background-White1" text="Salva comic info" />
+                        <JFXButton fx:id="btnValidarComicInfo" accessibleText="VALIDAR" buttonType="RAISED" onAction="#onBtnValidarComicInfo" prefWidth="290.0" styleClass="background-White1" text="Validar comic info" />
                         <JFXButton fx:id="btnLimparLista" accessibleText="PROCESSAR" buttonType="RAISED" onAction="#onBtnLimparLista" prefWidth="290.0" styleClass="background-White1" text="Limpar lista" />
                      </children>
                   </VBox>
@@ -72,10 +84,24 @@
                 <TreeTableColumn fx:id="treecMacado" prefWidth="27.5" />
                   <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
                   <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
-                  <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
-                  <TreeTableColumn fx:id="treecSite" editable="false" prefWidth="76.5" sortable="false" text="Site" />
-                  <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" sortable="false" text="Processar" />
+                  <TreeTableColumn fx:id="treecMyAnimeList" editable="false" prefWidth="300.0" sortable="false" text="My Anime List">
+                     <columns>
+                        <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
+                        <TreeTableColumn fx:id="treecMyAnimeList" editable="false" prefWidth="76.5" sortable="false" text="Site Mal" />
+                        <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" sortable="false" text="Processar" />
+                     </columns>
+                  </TreeTableColumn>
                   <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" sortable="false" text="Imagem" />
+                  <TreeTableColumn fx:id="treecAmazonTitle" editable="false" prefWidth="300.0" sortable="false" text="Amazon">
+                     <columns>
+                        <TreeTableColumn fx:id="treecAmazon" editable="false" sortable="false" text="Site Amazon" />
+                        <TreeTableColumn fx:id="treecSerie" editable="false" prefWidth="150.0" sortable="false" text="Serie" />
+                        <TreeTableColumn fx:id="treecTitulo" editable="false" prefWidth="150.0" sortable="false" text="Título" />
+                        <TreeTableColumn fx:id="treecEditora" editable="false" prefWidth="100.0" sortable="false" text="Editora" />
+                        <TreeTableColumn fx:id="treecPublicacao" editable="false" prefWidth="100.0" sortable="false" text="Publicação" />
+                        <TreeTableColumn fx:id="treecComentario" editable="false" prefWidth="300.0" sortable="false" text="Comentário" />
+                     </columns>
+                  </TreeTableColumn>
               </columns>
             </TreeTableView>
 	       </children>

@@ -11,6 +11,9 @@ class ComicInfoServices {
     private val comicInfoDao: ComicInfoDao = DaoFactory.createComicInfoDao()
 
     @Throws(SQLException::class)
+    fun get(id: UUID): Optional<ComicInfo> = comicInfoDao.find(id)
+
+    @Throws(SQLException::class)
     fun select(comic: String, linguagem: String): Optional<ComicInfo> = comicInfoDao.find(comic, linguagem)
 
     @Throws(SQLException::class)

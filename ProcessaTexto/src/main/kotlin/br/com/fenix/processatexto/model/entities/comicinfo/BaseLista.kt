@@ -10,7 +10,8 @@ open class BaseLista(
     private var _id: Long,
     var idVisual: String = "",
     var processar: JFXButton? = null,
-    var site: JFXButton? = null,
+    var myanimelist: JFXButton? = null,
+    var amazon: JFXButton? = null,
     var imagem: ImageView? = null,
     var isSelecionado: Boolean = false,
     var isMarcado: Boolean = false
@@ -28,8 +29,12 @@ open class BaseLista(
         this.isMarcado = processar
     }
 
-    fun setButton(processar: JFXButton, site: JFXButton) {
+    fun setMyAnimeListButton(processar: JFXButton, myanimelist: JFXButton) {
         this.processar = processar
-        this.site = site
+        this.myanimelist = myanimelist
+    }
+
+    fun setAmazonButton(amazon: JFXButton) {
+        this.amazon = amazon
     }
 }

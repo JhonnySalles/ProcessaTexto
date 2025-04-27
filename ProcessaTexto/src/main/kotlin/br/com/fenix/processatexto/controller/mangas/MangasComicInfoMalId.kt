@@ -40,7 +40,7 @@ class MangasComicInfoMalId : Initializable {
     @FXML
     lateinit var imagem: ImageView
 
-    private val mal: MAL = MAL("", "")
+    private val mal: MAL = MAL("", "", null)
     private val robot: Robot = Robot()
     private lateinit var consulta: MAL.Registro
 
@@ -92,7 +92,8 @@ class MangasComicInfoMalId : Initializable {
         private lateinit var btnConfirmar: JFXButton
         private lateinit var btnVoltar: JFXButton
         private lateinit var dialog: JFXDialog
-        fun abreTelaCorrecao(rootStackPane: StackPane, nodeBlur: Node, callback: Callback<MAL.Registro, Boolean>) {
+
+        fun abreTelaMal(rootStackPane: StackPane, nodeBlur: Node, callback: Callback<MAL.Registro, Boolean>) {
             try {
                 val blur = BoxBlur(3.0, 3.0, 3)
                 val dialogLayout = JFXDialogLayout()

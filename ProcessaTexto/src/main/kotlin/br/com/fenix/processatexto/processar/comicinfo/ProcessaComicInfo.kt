@@ -51,6 +51,7 @@ object ProcessaComicInfo {
     private lateinit var CONTROLLER: MangasComicInfoController
     private var MARCACAPITULO: String = ""
     private var IGNORAR_VINCULO_SALVO: Boolean = false
+    private var GERAR_REGISTRO_AMAZON: Boolean = false
     private const val CONSULTA_MAL = true
     private const val CONSULTA_JIKAN = true
     private var SERVICE: ComicInfoServices? = null
@@ -127,10 +128,11 @@ object ProcessaComicInfo {
         }
     }
 
-    fun processa(linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, callback: Callback<Array<Long>, Boolean>) {
+    fun processa(linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, gerarRegistroAmazon: Boolean, callback: Callback<Array<Long>, Boolean>) {
         CANCELAR_PROCESSAMENTO = false
         MARCACAPITULO = marcaCapitulo
         IGNORAR_VINCULO_SALVO = ignorarVinculoSalvo
+        GERAR_REGISTRO_AMAZON = gerarRegistroAmazon
         MAL = MyAnimeList.withClientID(Configuracao.myAnimeListClient)
         val arquivos = File(path)
         val size: Array<Long> = arrayOf(0,0)
@@ -181,6 +183,76 @@ object ProcessaComicInfo {
         } catch (e: JAXBException) {
             LOGGER.error(e.message, e)
             return false
+        } catch (e: Exception) {
+            LOGGER.error(e.message, e)
+            return false
+        } finally {
+            if (JAXBC != null)
+                JAXBC = null
+            if (SERVICE != null)
+                SERVICE = null
+        }
+        return true
+    }
+
+    fun atualizar(comicInfo: ComicInfo, arquivo: String): Boolean {
+        val arquivos = File(arquivo)
+        if (!arquivos.exists())
+            return false
+
+        try {
+            if (JAXBC == null)
+                JAXBC = JAXBContext.newInstance(ComicInfo::class.java)
+            SERVICE = ComicInfoServices()
+
+            val comic = if (comicInfo.getId() != null) SERVICE!!.get(comicInfo.getId()!!) else SERVICE!!.select(comicInfo.comic, comicInfo.languageISO)
+            if (comic.isPresent) {
+                comic.get().let {
+                    it.title = comicInfo.title
+                    it.series = comicInfo.series
+                    it.publisher = comicInfo.publisher
+                    SERVICE!!.save(it)
+                }
+            }
+
+            if (arquivos.name.lowercase(Locale.getDefault()).matches(PATTERN)) {
+                var info: File? = null
+                try {
+                    info = extraiInfo(arquivos, false)
+
+                    if (info == null || !info.exists())
+                        return false
+
+                    val comic: ComicInfo = try {
+                        val unmarshaller = JAXBC!!.createUnmarshaller()
+                        unmarshaller.unmarshal(info) as ComicInfo
+                    } catch (e: Exception) {
+                        LOGGER.error(e.message, e)
+                        return false
+                    }
+
+                    comic.title = comicInfo.title
+                    comic.series = comicInfo.series
+                    comic.publisher = comicInfo.publisher
+                    comic.year = comicInfo.year
+                    comic.month = comicInfo.month
+                    comic.day = comicInfo.day
+
+                    try {
+                        val marshaller = JAXBC!!.createMarshaller()
+                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+                        val out = FileOutputStream(info)
+                        marshaller.marshal(comic, out)
+                        out.close()
+                    } catch (e: Exception) {
+                        LOGGER.error(e.message, e)
+                        return false
+                    }
+                    insereInfo(arquivos, info)
+                } finally {
+                    info?.delete()
+                }
+            }
         } catch (e: Exception) {
             LOGGER.error(e.message, e)
             return false
@@ -265,9 +337,11 @@ object ProcessaComicInfo {
             var title: String = nome.replace(MANGA_PATERN, "").trim()
             if (MANGA == null || !title.equals(MANGA!!.title.replace(MANGA_PATERN, "").trim(), ignoreCase = true)) {
                 MANGA = null
-                if (id != null)
+                if (id != null) {
                     MANGA = MAL!!.getManga(id)
-                else {
+                    if (GERAR_REGISTRO_AMAZON)
+                        Platform.runLater { CONTROLLER.addItem(MAL(arquivo, nome, info)) }
+                } else {
                     var search: List<dev.katsute.mal4j.manga.Manga>?
                     val max = 2
                     var page = 0
@@ -286,7 +360,7 @@ object ProcessaComicInfo {
                             }
                         if (page == 0 && MANGA == null) {
                             if (!search.isNullOrEmpty()) {
-                                val mal = MAL(arquivo, nome)
+                                val mal = MAL(arquivo, nome, info)
                                 for (item in search) {
                                     val registro = mal.addRegistro(item.title, item.id, false)
                                     if (item.mainPicture.mediumURL != null)
@@ -497,6 +571,11 @@ object ProcessaComicInfo {
                     comic.title = comic.series
                 else if (!comic.title.equals(comic.series, true))
                     comic.storyArc = comic.title
+
+                if (GERAR_REGISTRO_AMAZON) {
+                    Platform.runLater { CONTROLLER.addItem(MAL(arquivo.absolutePath, nome, comic)) }
+                    return
+                }
 
                 if (CONSULTA_MAL)
                     processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)

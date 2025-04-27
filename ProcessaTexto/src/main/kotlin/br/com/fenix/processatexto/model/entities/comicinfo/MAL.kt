@@ -3,6 +3,7 @@ package br.com.fenix.processatexto.model.entities.comicinfo
 
 data class MAL(
     var arquivo: String = "",
+    var comicInfo: ComicInfo? = null,
     var myAnimeList: MutableList<Registro> = mutableListOf()
 ) : BaseLista(arquivo, "", 0) {
 
@@ -18,9 +19,8 @@ data class MAL(
         return item
     }
 
-    constructor(arquivo: String, nome: String) : this() {
+    constructor(arquivo: String, nome: String, comicInfo: ComicInfo?) : this(arquivo, comicInfo) {
         this.descricao = arquivo
-        this.arquivo = arquivo
         this.nome = nome
         myAnimeList = mutableListOf()
         this.isMarcado = false
