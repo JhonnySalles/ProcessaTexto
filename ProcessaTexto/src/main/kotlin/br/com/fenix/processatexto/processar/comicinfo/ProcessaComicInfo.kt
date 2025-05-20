@@ -340,7 +340,11 @@ object ProcessaComicInfo {
                 if (id != null) {
                     MANGA = MAL!!.getManga(id)
                     if (GERAR_REGISTRO_AMAZON)
-                        Platform.runLater { CONTROLLER.addItem(MAL(arquivo, nome, info)) }
+                        Platform.runLater {
+                            val mal = MAL(arquivo, nome, info)
+                            mal.isMarcado = true
+                            CONTROLLER.addItem(mal)
+                        }
                 } else {
                     var search: List<dev.katsute.mal4j.manga.Manga>?
                     val max = 2
@@ -392,7 +396,13 @@ object ProcessaComicInfo {
                             break
                     } while (MANGA == null && !search.isNullOrEmpty())
                 }
-            }
+            } else if (GERAR_REGISTRO_AMAZON)
+                Platform.runLater {
+                    val mal = MAL(arquivo, nome, info)
+                    mal.isMarcado = true
+                    CONTROLLER.addItem(mal)
+                }
+
             if (MANGA != null) {
                 if (info.getId() == null) {
                     if (saved.isPresent) 
