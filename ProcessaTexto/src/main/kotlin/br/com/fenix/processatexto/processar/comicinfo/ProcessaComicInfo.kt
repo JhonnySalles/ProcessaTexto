@@ -302,6 +302,7 @@ object ProcessaComicInfo {
     private val TITLE_PATERN = "[^\\w\\s]".toRegex()
     private val MANGA_PATERN = " - Volume[\\w\\W]*".toRegex()
     private const val DESCRIPTION_MAL = "Tagged with MyAnimeList on "
+    var ROOT: MAL? = null
     private var MANGA: dev.katsute.mal4j.manga.Manga? = null
     private var MANGA_CHARACTER: Pair<Long, String>? = null
     private fun getIdMal(notas: String?): Long? {
@@ -337,15 +338,9 @@ object ProcessaComicInfo {
             var title: String = nome.replace(MANGA_PATERN, "").trim()
             if (MANGA == null || !title.equals(MANGA!!.title.replace(MANGA_PATERN, "").trim(), ignoreCase = true)) {
                 MANGA = null
-                if (id != null) {
+                if (id != null)
                     MANGA = MAL!!.getManga(id)
-                    if (GERAR_REGISTRO_AMAZON)
-                        Platform.runLater {
-                            val mal = MAL(arquivo, nome, info)
-                            mal.isMarcado = true
-                            CONTROLLER.addItem(mal)
-                        }
-                } else {
+                else {
                     var search: List<dev.katsute.mal4j.manga.Manga>?
                     val max = 2
                     var page = 0
@@ -388,6 +383,10 @@ object ProcessaComicInfo {
                                     LOGGER.error(e.message, e)
                                 }
                                 mal.myAnimeList[0].isMarcado = true
+
+                                if (ROOT == null)
+                                    ROOT = mal
+
                                 Platform.runLater { CONTROLLER.addItem(mal) }
                             }
                         }
@@ -396,12 +395,7 @@ object ProcessaComicInfo {
                             break
                     } while (MANGA == null && !search.isNullOrEmpty())
                 }
-            } else if (GERAR_REGISTRO_AMAZON)
-                Platform.runLater {
-                    val mal = MAL(arquivo, nome, info)
-                    mal.isMarcado = true
-                    CONTROLLER.addItem(mal)
-                }
+            }
 
             if (MANGA != null) {
                 if (info.getId() == null) {
@@ -582,8 +576,18 @@ object ProcessaComicInfo {
                 else if (!comic.title.equals(comic.series, true))
                     comic.storyArc = comic.title
 
+                ROOT = null
                 if (CONSULTA_MAL)
                     processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
+
+                if (GERAR_REGISTRO_AMAZON) {
+                    if (ROOT == null)
+                        ROOT = MAL(arquivo.absolutePath, nome, comic)
+                    ROOT!!.isMarcado = true
+                    Platform.runLater {
+                        CONTROLLER.addItem(ROOT)
+                    }
+                }
 
                 val titulosCapitulo: MutableList<Pair<Float, String>> = mutableListOf()
                 if (comic.summary != null && comic.summary!!.isNotEmpty()) {
