@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.fileparse.Parse
 import br.com.fenix.processatexto.fileparse.ParseFactory
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
+import br.com.fenix.processatexto.model.entities.comicinfo.Pages
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.enums.comicinfo.ComicPageType
 import br.com.fenix.processatexto.model.enums.comicinfo.Manga
@@ -549,16 +550,19 @@ object ProcessaComicInfo {
             try {
                 info = extraiInfo(arquivo, false)
 
-                if (info == null || !info.exists())
-                    return
+                val comic: ComicInfo = if (info == null || !info.exists()) {
+                    if (info == null)
+                        info = File(arquivo.absolutePath + File.separator + COMICINFO)
+                    ComicInfo()
+                } else
+                    try {
+                        val unmarshaller = JAXBC!!.createUnmarshaller()
+                        unmarshaller.unmarshal(info) as ComicInfo
+                    } catch (e: Exception) {
+                        LOGGER.error(e.message, e)
+                        return
+                    }
 
-                val comic: ComicInfo = try {
-                    val unmarshaller = JAXBC!!.createUnmarshaller()
-                    unmarshaller.unmarshal(info) as ComicInfo
-                } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
-                    return
-                }
                 val nome = getNome(arquivo.name)
                 LOGGER.info("Processando o manga $nome")
                 if (nome.contains("-"))
@@ -581,11 +585,12 @@ object ProcessaComicInfo {
                     processaMal(arquivo.absolutePath, nome, comic, linguagem, idMal)
 
                 if (GERAR_REGISTRO_AMAZON) {
-                    if (ROOT == null)
+                    if (ROOT == null) {
                         ROOT = MAL(arquivo.absolutePath, nome, comic)
-                    ROOT!!.isMarcado = true
-                    Platform.runLater {
-                        CONTROLLER.addItem(ROOT)
+                        ROOT!!.isMarcado = true
+                        Platform.runLater {
+                            CONTROLLER.addItem(ROOT)
+                        }
                     }
                 }
 
@@ -650,10 +655,16 @@ object ProcessaComicInfo {
                         comic.scanInformation = ""
                     }
 
-                    comic.pages?.forEach {
-                        it.bookmark = null
-                        it.type = null
-                    }
+                    if (comic.pages == null || comic.pages!!.isEmpty()) {
+                        val pages = mutableListOf<Pages>()
+                        for (i in 0 until parse.getSize())
+                            pages.add(Pages(image = i))
+                        comic.pages = pages
+                    } else
+                        comic.pages?.forEach {
+                            it.bookmark = null
+                            it.type = null
+                        }
 
                     if (comic.pageCount == null || comic.pageCount == 0)
                         comic.pageCount = comic.pages!!.size
