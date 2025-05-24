@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.fenix.processatexto.controller.mangas.MangasComicInfoController">
+<AnchorPane fx:id="apRoot" prefHeight="500.0" prefWidth="800.0" stylesheets="@../../css/Dark_Theme.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.fenix.processatexto.controller.mangas.MangasComicInfoController">
    <children>          
 	    <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
 	       <children>
@@ -63,7 +63,6 @@
                         <HBox spacing="10.0">
                            <children>
                               <JFXCheckBox fx:id="cbIgnorarVinculoSalvo" checkedColor="#71afe5" text="Ignorar vinculo salvo" textFill="WHITE" unCheckedColor="#106ebe" />
-                              <JFXCheckBox fx:id="cbGerarRegistroAmazon" checkedColor="#71afe5" selected="true" text="Gerar registro para Amazon" textFill="WHITE" unCheckedColor="#106ebe" />
                            </children>
                         </HBox>
                      </children>
@@ -84,24 +83,10 @@
                 <TreeTableColumn fx:id="treecMacado" prefWidth="27.5" />
                   <TreeTableColumn fx:id="treecManga" editable="false" prefWidth="263.5" text="Manga" />
                   <TreeTableColumn fx:id="treecNome" editable="false" prefWidth="150.0" text="Nome" />
-                  <TreeTableColumn fx:id="treecMyAnimeList" editable="false" prefWidth="300.0" sortable="false" text="My Anime List">
-                     <columns>
-                        <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
-                        <TreeTableColumn fx:id="treecMyAnimeList" editable="false" prefWidth="76.5" sortable="false" text="Site Mal" />
-                        <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" sortable="false" text="Processar" />
-                     </columns>
-                  </TreeTableColumn>
+                  <TreeTableColumn fx:id="treecMalID" minWidth="0.0" prefWidth="64.5" text="ID" />
+                  <TreeTableColumn fx:id="treecMyAnimeList" editable="false" prefWidth="76.5" sortable="false" text="Site Mal" />
+                  <TreeTableColumn fx:id="treecProcessar" editable="false" prefWidth="76.5" sortable="false" text="Processar" />
                   <TreeTableColumn fx:id="treecImagem" editable="false" prefWidth="200.0" sortable="false" text="Imagem" />
-                  <TreeTableColumn fx:id="treecAmazonTitle" editable="false" prefWidth="300.0" sortable="false" text="Amazon">
-                     <columns>
-                        <TreeTableColumn fx:id="treecAmazon" editable="false" sortable="false" text="Site Amazon" />
-                        <TreeTableColumn fx:id="treecSerie" editable="false" prefWidth="150.0" sortable="false" text="Serie" />
-                        <TreeTableColumn fx:id="treecTitulo" editable="false" prefWidth="150.0" sortable="false" text="Título" />
-                        <TreeTableColumn fx:id="treecEditora" editable="false" prefWidth="100.0" sortable="false" text="Editora" />
-                        <TreeTableColumn fx:id="treecPublicacao" editable="false" prefWidth="100.0" sortable="false" text="Publicação" />
-                        <TreeTableColumn fx:id="treecComentario" editable="false" prefWidth="300.0" sortable="false" text="Comentário" />
-                     </columns>
-                  </TreeTableColumn>
               </columns>
             </TreeTableView>
 	       </children>

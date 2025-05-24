@@ -89,9 +89,6 @@ class MangasComicInfoController : Initializable {
     private lateinit var cbIgnorarVinculoSalvo: JFXCheckBox
 
     @FXML
-    private lateinit var cbGerarRegistroAmazon: JFXCheckBox
-
-    @FXML
     private lateinit var treeTabela: TreeTableView<BaseLista>
 
     @FXML
@@ -116,26 +113,6 @@ class MangasComicInfoController : Initializable {
 
     @FXML
     private lateinit var treecImagem: TreeTableColumn<BaseLista, ImageView>
-
-    // -------------------------------------------- AMAZON -----------------------------------------------------
-
-    @FXML
-    private lateinit var treecAmazon: TreeTableColumn<BaseLista, String>
-
-    @FXML
-    private lateinit var treecSerie: TreeTableColumn<BaseLista, String>
-
-    @FXML
-    private lateinit var treecTitulo: TreeTableColumn<BaseLista, String>
-
-    @FXML
-    private lateinit var treecEditora: TreeTableColumn<BaseLista, String>
-
-    @FXML
-    private lateinit var treecPublicacao: TreeTableColumn<BaseLista, String>
-
-    @FXML
-    private lateinit var treecComentario: TreeTableColumn<BaseLista, String>
 
     private val mREGISTROS: ObservableList<MAL> = FXCollections.observableArrayList()
 
@@ -260,7 +237,7 @@ class MangasComicInfoController : Initializable {
                         }
                         null
                     }
-                    ProcessaComicInfo.processa(cbLinguagem.value, txtCaminho.text, txtDescricaoCapitulo.text, cbIgnorarVinculoSalvo.isSelected, cbGerarRegistroAmazon.isSelected, callback)
+                    ProcessaComicInfo.processa(cbLinguagem.value, txtCaminho.text, txtDescricaoCapitulo.text, cbIgnorarVinculoSalvo.isSelected, callback)
                 } catch (e: Exception) {
                     LOGGER.error(e.message, e)
                 }
@@ -305,7 +282,6 @@ class MangasComicInfoController : Initializable {
         val progress = MenuPrincipalController.controller.criaBarraProgresso()
         if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
         progress!!.titulo.text = "ComicInfo"
-        val gerarRegistroAmazon = cbGerarRegistroAmazon.isSelected
         val gerarJson: Task<Void> = object : Task<Void>() {
             @Override
             @Throws(Exception::class)
@@ -333,11 +309,6 @@ class MangasComicInfoController : Initializable {
                             if (ProcessaComicInfo.processa(cbLinguagem.value, registro.get().parent.arquivo, registro.get().id))
                                 mREGISTROS.remove(item)
                         }
-
-                        if (gerarRegistroAmazon)
-                            item.comicInfo?.run {
-                                ProcessaComicInfo.atualizar(this, item.arquivo)
-                            }
 
                         if (mPARAR)
                             break
@@ -454,15 +425,6 @@ class MangasComicInfoController : Initializable {
         }
     }
 
-    private fun openSiteAmazon(item: MAL) {
-        val callback: Callback<ComicInfo, Boolean> = Callback<ComicInfo, Boolean> { param ->
-            item.comicInfo = param
-            treeTabela.refresh()
-            null
-        }
-        MangasComicInfoAmazon.abreTelaAmazon(controller.stackPane, controller.root, callback, item.comicInfo, cbLinguagem.value)
-    }
-
     fun addItem(item: MAL?) {
         mREGISTROS.add(item)
         configuraTabela()
@@ -494,12 +456,6 @@ class MangasComicInfoController : Initializable {
                     reg.value.setMyAnimeListButton(processar, site)
                     itmManga.children.add(reg)
                 }
-
-                // ---------------- Amazon ---------------- //
-                val site = JFXButton("Importar")
-                site.styleClass.add("background-White1")
-                site.setOnAction { openSiteAmazon(item) }
-                itmManga.value.setAmazonButton(site)
 
                 // ---------------- Adicionado na tabela ---------------- //
                 itmRoot.children.add(itmManga)
@@ -723,49 +679,6 @@ class MangasComicInfoController : Initializable {
                 e.treeTableView.getTreeItem(e.treeTablePosition.row).value.id = e.oldValue.toLong()
             treeTabela.requestFocus()
             treeTabela.refresh()
-        }
-
-        // ---------------- AMAZON ---------------- //
-        treecAmazon.cellValueFactory = TreeItemPropertyValueFactory("amazon")
-
-        treecSerie.setCellValueFactory { param ->
-            val item = param.value.value
-            if (item is MAL && item.comicInfo != null)
-                SimpleStringProperty(item.comicInfo!!.series)
-            else
-                SimpleStringProperty("")
-        }
-
-        treecTitulo.setCellValueFactory { param ->
-            val item = param.value.value
-            if (item is MAL && item.comicInfo != null)
-                SimpleStringProperty(item.comicInfo!!.title)
-            else
-                SimpleStringProperty("")
-        }
-
-        treecEditora.setCellValueFactory { param ->
-            val item = param.value.value
-            if (item is MAL && item.comicInfo != null)
-                SimpleStringProperty(item.comicInfo!!.publisher ?: "")
-            else
-                SimpleStringProperty("")
-        }
-
-        treecPublicacao.setCellValueFactory { param ->
-            val item = param.value.value
-            if (item is MAL && item.comicInfo != null && item.comicInfo!!.year != null)
-                SimpleStringProperty("${item.comicInfo!!.day}/${item.comicInfo!!.month}/${item.comicInfo!!.year}")
-            else
-                SimpleStringProperty("")
-        }
-
-        treecComentario.setCellValueFactory { param ->
-            val item = param.value.value
-            if (item is MAL && item.comicInfo != null)
-                SimpleStringProperty(item.comicInfo!!.review ?: "")
-            else
-                SimpleStringProperty("")
         }
 
         editaColunas()
