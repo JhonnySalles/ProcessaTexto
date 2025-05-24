@@ -19,9 +19,11 @@ class ComicInfoServices {
     @Throws(SQLException::class)
     fun save(comic: ComicInfo) {
         val saved = select(comic.comic, comic.languageISO)
-        if (saved.isEmpty || saved.get().getId() == null)
+        if (saved.isEmpty || saved.get().getId() == null) {
+            if (comic.getId() == null)
+                comic.setId(UUID.randomUUID())
             comicInfoDao.insert(comic)
-        else {
+        } else {
             comic.setId(saved.get().getId())
             comicInfoDao.update(comic, isThrowsNotUpdate = false)
         }

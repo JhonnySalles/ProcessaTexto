@@ -338,7 +338,7 @@ class MangasComicInfoAmazon : Initializable {
             txtPublicacaoSite.text = publicacaoSite
 
             if (dpPublicacao.value == null)
-                dpPublicacao.value = LocalDate.parse(publicacao)
+                dpPublicacao.value = LocalDate.parse(publicacao.trim())
         } catch (e: Exception) {
             LOGGER.error(e.message, e)
             AlertasPopup.erroModal("Erro ao realizar o processamento do site", e.message.toString())

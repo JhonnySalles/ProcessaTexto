@@ -553,7 +553,19 @@ object ProcessaComicInfo {
                 val comic: ComicInfo = if (info == null || !info.exists()) {
                     if (info == null)
                         info = File(arquivo.absolutePath + File.separator + COMICINFO)
-                    ComicInfo()
+
+                    val nome = arquivo.name.substringBeforeLast(".")
+                    val titulo = nome.substringBeforeLast("-").trim()
+                    var vol = nome.lowercase().substringAfterLast("volume")
+                    if (vol.contains("("))
+                        vol = vol.substringBefore("(").trim()
+                    val volume = try {
+                        vol.toInt()
+                    } catch (e: Exception) {
+                        0
+                    }
+
+                    ComicInfo(id = UUID.randomUUID(), comic = titulo, title = titulo, volume = volume)
                 } else
                     try {
                         val unmarshaller = JAXBC!!.createUnmarshaller()
