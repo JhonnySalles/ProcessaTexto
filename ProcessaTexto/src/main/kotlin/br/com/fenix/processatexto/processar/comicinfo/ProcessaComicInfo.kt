@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.fileparse.Parse
 import br.com.fenix.processatexto.fileparse.ParseFactory
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
+import br.com.fenix.processatexto.model.entities.comicinfo.Pages
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.enums.comicinfo.ComicPageType
 import br.com.fenix.processatexto.model.enums.comicinfo.Manga
@@ -51,7 +52,6 @@ object ProcessaComicInfo {
     private lateinit var CONTROLLER: MangasComicInfoController
     private var MARCACAPITULO: String = ""
     private var IGNORAR_VINCULO_SALVO: Boolean = false
-    private var GERAR_REGISTRO_AMAZON: Boolean = false
     private const val CONSULTA_MAL = true
     private const val CONSULTA_JIKAN = true
     private var SERVICE: ComicInfoServices? = null
@@ -128,11 +128,10 @@ object ProcessaComicInfo {
         }
     }
 
-    fun processa(linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, gerarRegistroAmazon: Boolean, callback: Callback<Array<Long>, Boolean>) {
+    fun processa(linguagem: Language, path: String, marcaCapitulo: String, ignorarVinculoSalvo: Boolean, callback: Callback<Array<Long>, Boolean>) {
         CANCELAR_PROCESSAMENTO = false
         MARCACAPITULO = marcaCapitulo
         IGNORAR_VINCULO_SALVO = ignorarVinculoSalvo
-        GERAR_REGISTRO_AMAZON = gerarRegistroAmazon
         MAL = MyAnimeList.withClientID(Configuracao.myAnimeListClient)
         val arquivos = File(path)
         val size: Array<Long> = arrayOf(0,0)
@@ -311,8 +310,12 @@ object ProcessaComicInfo {
                 for (note in notas.split(";"))
                     if (note.lowercase(Locale.getDefault()).contains(DESCRIPTION_MAL.lowercase(Locale.getDefault())))
                         id = note.substring(note.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim().toLong()
+            } else if (notas.contains("\n")) {
+                for (note in notas.split("\n"))
+                    if (note.lowercase(Locale.getDefault()).contains(DESCRIPTION_MAL.lowercase(Locale.getDefault())))
+                        id = note.substring(note.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim().toLong()
             } else if (notas.lowercase(Locale.getDefault()).contains(DESCRIPTION_MAL.lowercase(Locale.getDefault())))
-                id = notas.substring(notas.indexOf("[Issue ID")).replace("[Issue ID", "").replace("]", "").trim().toLong()
+                id = notas.substringAfter("[Issue ID").substringBefore("]").trim().toLong()
         }
         return id
     }
@@ -322,7 +325,7 @@ object ProcessaComicInfo {
             var id = idMal
             var saved: Optional<ComicInfo> = Optional.empty()
 
-            if (IGNORAR_VINCULO_SALVO)
+            if (!IGNORAR_VINCULO_SALVO)
                 saved = SERVICE!!.select(info.comic, info.languageISO)
 
             if (id == null)
@@ -337,11 +340,9 @@ object ProcessaComicInfo {
             var title: String = nome.replace(MANGA_PATERN, "").trim()
             if (MANGA == null || !title.equals(MANGA!!.title.replace(MANGA_PATERN, "").trim(), ignoreCase = true)) {
                 MANGA = null
-                if (id != null) {
+                if (id != null)
                     MANGA = MAL!!.getManga(id)
-                    if (GERAR_REGISTRO_AMAZON)
-                        Platform.runLater { CONTROLLER.addItem(MAL(arquivo, nome, info)) }
-                } else {
+                else {
                     var search: List<dev.katsute.mal4j.manga.Manga>?
                     val max = 2
                     var page = 0
@@ -393,6 +394,7 @@ object ProcessaComicInfo {
                     } while (MANGA == null && !search.isNullOrEmpty())
                 }
             }
+
             if (MANGA != null) {
                 if (info.getId() == null) {
                     if (saved.isPresent) 
@@ -545,16 +547,31 @@ object ProcessaComicInfo {
             try {
                 info = extraiInfo(arquivo, false)
 
-                if (info == null || !info.exists())
-                    return
+                val comic: ComicInfo = if (info == null || !info.exists()) {
+                    if (info == null)
+                        info = File(arquivo.absolutePath + File.separator + COMICINFO)
 
-                val comic: ComicInfo = try {
-                    val unmarshaller = JAXBC!!.createUnmarshaller()
-                    unmarshaller.unmarshal(info) as ComicInfo
-                } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
-                    return
-                }
+                    val nome = arquivo.name.substringBeforeLast(".")
+                    val titulo = nome.substringBeforeLast("-").trim()
+                    var vol = nome.lowercase().substringAfterLast("volume")
+                    if (vol.contains("("))
+                        vol = vol.substringBefore("(").trim()
+                    val volume = try {
+                        vol.toInt()
+                    } catch (e: Exception) {
+                        0
+                    }
+
+                    ComicInfo(id = UUID.randomUUID(), comic = titulo, title = titulo, volume = volume)
+                } else
+                    try {
+                        val unmarshaller = JAXBC!!.createUnmarshaller()
+                        unmarshaller.unmarshal(info) as ComicInfo
+                    } catch (e: Exception) {
+                        LOGGER.error(e.message, e)
+                        return
+                    }
+
                 val nome = getNome(arquivo.name)
                 LOGGER.info("Processando o manga $nome")
                 if (nome.contains("-"))
@@ -640,10 +657,16 @@ object ProcessaComicInfo {
                         comic.scanInformation = ""
                     }
 
-                    comic.pages?.forEach {
-                        it.bookmark = null
-                        it.type = null
-                    }
+                    if (comic.pages == null || comic.pages!!.isEmpty()) {
+                        val pages = mutableListOf<Pages>()
+                        for (i in 0 until parse.getSize())
+                            pages.add(Pages(image = i))
+                        comic.pages = pages
+                    } else
+                        comic.pages?.forEach {
+                            it.bookmark = null
+                            it.type = null
+                        }
 
                     if (comic.pageCount == null || comic.pageCount == 0)
                         comic.pageCount = comic.pages!!.size

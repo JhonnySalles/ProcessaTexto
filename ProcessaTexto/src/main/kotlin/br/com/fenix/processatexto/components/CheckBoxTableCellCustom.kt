@@ -45,7 +45,7 @@ class CheckBoxTableCellCustom<S, T> @JvmOverloads constructor(getSelectedPropert
     )
 
     init {
-        this.styleClass.add("check-box-tree-table-cell")
+        this.styleClass.add("check-box-table-cell")
         checkBox = JFXCheckBox()
         graphic = null
         setSelectedStateCallback(getSelectedProperty)

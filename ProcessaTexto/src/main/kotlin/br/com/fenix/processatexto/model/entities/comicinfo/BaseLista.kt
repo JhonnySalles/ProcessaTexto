@@ -11,7 +11,6 @@ open class BaseLista(
     var idVisual: String = "",
     var processar: JFXButton? = null,
     var myanimelist: JFXButton? = null,
-    var amazon: JFXButton? = null,
     var imagem: ImageView? = null,
     var isSelecionado: Boolean = false,
     var isMarcado: Boolean = false
@@ -34,7 +33,4 @@ open class BaseLista(
         this.myanimelist = myanimelist
     }
 
-    fun setAmazonButton(amazon: JFXButton) {
-        this.amazon = amazon
-    }
 }
