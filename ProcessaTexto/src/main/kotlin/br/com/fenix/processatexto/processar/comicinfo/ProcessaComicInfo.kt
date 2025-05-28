@@ -578,36 +578,40 @@ object ProcessaComicInfo {
                 val titulosCapitulo: MutableList<Pair<Float, String>> = mutableListOf()
                 if (comic.summary != null && comic.summary!!.isNotEmpty()) {
                     val sumary = comic.summary!!.lowercase(Locale.getDefault())
-                    if (sumary.contains("chapter titles") || sumary.contains("chapter list") || sumary.contains("contents")) {
-                        val linhas: List<String> = comic.summary!!.split("\n")
-                        for (linha in linhas) {
-                            var number = 0f
-                            var chapter = ""
-                            if (linha.matches("([\\w. ]+[\\d][:|.][\\w\\W]++)|([\\d][:|.][\\w\\W]++)".toRegex())) {
-                                var aux: List<String> = listOf()
-                                if (linha.contains(":"))
-                                    aux = linha.split(":")
-                                else if (linha.contains(". "))
-                                    aux = linha.replace(". ", ":").split(":")
+                    val linhas: List<String> = if (sumary.contains("*chapter titles manual*"))
+                        comic.summary!!.substring(comic.summary!!.lowercase().indexOf("*chapter titles manual*")).split("\n")
+                    else if (sumary.contains("chapter titles") || sumary.contains("chapter list") || sumary.contains("contents"))
+                         comic.summary!!.split("\n")
+                    else
+                        listOf()
 
-                                if (aux.isNotEmpty()) {
-                                    try {
-                                        number = if (aux[0].matches("[a-zA-Z ]+[.][\\d]".toRegex())) // Ex: Act.1: Spring of the Dead
-                                            aux[0].replace("[^\\d]".toRegex(), "").toFloat()
-                                        else if (aux[0].lowercase(Locale.getDefault()).contains("extra") || aux[0].lowercase(Locale.getDefault()).contains("special"))
-                                            -1f
-                                        else
-                                            aux[0].replace("[^\\d.]".toRegex(), "").toFloat()
+                    for (linha in linhas) {
+                        var number = 0f
+                        var chapter = ""
+                        if (linha.matches("([\\w. ]+[\\d][:|.][\\w\\W]++)|([\\d][:|.][\\w\\W]++)".toRegex())) {
+                            var aux: List<String> = listOf()
+                            if (linha.contains(":"))
+                                aux = linha.split(":")
+                            else if (linha.contains(". "))
+                                aux = linha.replace(". ", ":").split(":")
 
-                                        chapter = aux[1].trim()
-                                    } catch (e: Exception) {
-                                        LOGGER.error(e.message, e)
-                                    }
+                            if (aux.isNotEmpty()) {
+                                try {
+                                    number = if (aux[0].matches("[a-zA-Z ]+[.][\\d]".toRegex())) // Ex: Act.1: Spring of the Dead
+                                        aux[0].replace("[^\\d]".toRegex(), "").toFloat()
+                                    else if (aux[0].lowercase(Locale.getDefault()).contains("extra") || aux[0].lowercase(Locale.getDefault()).contains("special"))
+                                        -1f
+                                    else
+                                        aux[0].replace("[^\\d.]".toRegex(), "").toFloat()
+
+                                    chapter = aux[1].trim()
+                                } catch (e: Exception) {
+                                    LOGGER.error(e.message, e)
                                 }
                             }
-                            if (number.compareTo(0f) > 0)
-                                titulosCapitulo.add(Pair(number, chapter))
                         }
+                        if (number.compareTo(0f) > 0)
+                            titulosCapitulo.add(Pair(number, chapter))
                     }
                 }
                 val parse = ParseFactory.create(arquivo)
