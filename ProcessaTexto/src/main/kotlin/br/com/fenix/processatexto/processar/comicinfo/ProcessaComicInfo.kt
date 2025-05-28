@@ -541,6 +541,25 @@ object ProcessaComicInfo {
         }
     }
 
+    private fun toJapanese(capitulo: String) : String {
+        var numbero = ""
+        for (c in capitulo.lowercase())
+            numbero += when (c) {
+                '0' -> "\uFF10"
+                '1' -> "\uFF11"
+                '2' -> "\uFF12"
+                '3' -> "\uFF13"
+                '4' -> "\uFF14"
+                '5' -> "\uFF15"
+                '6' -> "\uFF16"
+                '7' -> "\uFF17"
+                '8' -> "\uFF18"
+                '9' -> "\uFF19"
+                else -> c
+            }
+        return numbero
+    }
+
     private fun processa(linguagem: Language, arquivo: File, idMal: Long?) {
         if (arquivo.name.lowercase(Locale.getDefault()).matches(PATTERN)) {
             var info: File? = null
@@ -711,7 +730,7 @@ object ProcessaComicInfo {
                                                         capitulo.substring(capitulo.lowercase(Locale.getDefault()).indexOf("capitulo") + 8)
 
                                                     capitulo = if (MARCACAPITULO.lowercase(Locale.getDefault()).contains("%s")) // Japanese
-                                                        MARCACAPITULO.lowercase(Locale.getDefault()).replace("%s", capitulo.trim())
+                                                        MARCACAPITULO.lowercase(Locale.getDefault()).replace("%s", toJapanese(capitulo.trim()))
                                                     else
                                                         MARCACAPITULO + capitulo
                                                 }
