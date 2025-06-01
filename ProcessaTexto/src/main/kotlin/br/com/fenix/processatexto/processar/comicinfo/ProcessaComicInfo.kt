@@ -555,6 +555,27 @@ object ProcessaComicInfo {
                 '7' -> "\uFF17"
                 '8' -> "\uFF18"
                 '9' -> "\uFF19"
+                '.' -> "\uFF0E"
+                else -> c
+            }
+        return numbero
+    }
+
+    fun fromNumberJapanese(capitulo: String) : String {
+        var numbero = ""
+        for (c in capitulo)
+            numbero += when (c) {
+                '\uFF10' -> "0"
+                '\uFF11' -> "1"
+                '\uFF12' -> "2"
+                '\uFF13' -> "3"
+                '\uFF14' -> "4"
+                '\uFF15' -> "5"
+                '\uFF16' -> "6"
+                '\uFF17' -> "7"
+                '\uFF18' -> "8"
+                '\uFF19' -> "9"
+                '\uFF0E' -> "."
                 else -> c
             }
         return numbero
@@ -741,9 +762,9 @@ object ProcessaComicInfo {
                                     if (capitulo.isNotEmpty()) {
                                         if (titulosCapitulo.isNotEmpty()) {
                                             try {
-                                                val number = capitulo.replace("[^\\d.]".toRegex(), "").toFloat()
+                                                val number = fromNumberJapanese(capitulo).replace("[^\\d.]".toRegex(), "").toFloat()
                                                 val titulo: Optional<Pair<Float, String>> = titulosCapitulo.stream().filter { it.key == number }.findFirst()
-                                                if (titulo.isPresent) {
+                                                if (titulo.isPresent && titulo.get().value.isNotEmpty()) {
                                                     capitulo += " - " + titulo.get().value
                                                     titulosCapitulo.remove(titulo.get())
                                                 }
