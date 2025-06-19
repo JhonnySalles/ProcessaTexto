@@ -40,9 +40,6 @@
         <slf4j.version>1.7.32</slf4j.version>
         <logback.version>1.2.0</logback.version>
         <m3agic.version>0.9.1</m3agic.version>
-        <firebase.version>9.3.0</firebase.version>
-        <grpc.version>1.62.2</grpc.version>
-        <protobuf.version>4.30.1</protobuf.version>
 
         <junit.version>5.10.2</junit.version>
         <mockito.version>5.9.0</mockito.version>
@@ -370,19 +367,19 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>${firebase.version}</version>
+            <version>9.4.3</version>
         </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-core</artifactId>
-            <version>${grpc.version}</version>
+            <version>1.69.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${protobuf.version}</version>
+            <version>4.29.3</version>
         </dependency>
 
     </dependencies>
