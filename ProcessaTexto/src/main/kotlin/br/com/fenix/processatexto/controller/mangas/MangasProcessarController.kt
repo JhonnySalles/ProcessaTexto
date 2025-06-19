@@ -155,7 +155,8 @@ class MangasProcessarController : Initializable {
         btnProcessar.accessibleText = "PROCESSAR"
         btnProcessar.text = "Processar"
         btnCarregar.isDisable = false
-        TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
+        if (TaskbarProgressbar.isSupported())
+            TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
         barraProgressoVolumes.progress = 0.0
         barraProgressoCapitulos.progress = 0.0
         barraProgressoPaginas.progress = 0.0
@@ -180,7 +181,8 @@ class MangasProcessarController : Initializable {
         btnTransferir.isDisable = true
         TABELA_ORIGEM = txtBaseOrigem.text.trim()
         TABELA_DESTINO = txtBaseDestino.text.trim()
-        if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
+        if (TaskbarProgressbar.isSupported())
+            TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
         val transferir: Task<Void> = object : Task<Void>() {
             @Override
             @Throws(Exception::class)
@@ -243,7 +245,8 @@ class MangasProcessarController : Initializable {
                     MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
                     btnTransferir.isDisable = false
                     barraProgressoVolumes.progress = 0.0
-                    TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
+                    if (TaskbarProgressbar.isSupported())
+                        TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     if (error.isNotEmpty())
                         AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
                     else
@@ -273,7 +276,8 @@ class MangasProcessarController : Initializable {
         LINGUAGEM = cbLinguagem.selectionModel.selectedItem
         barraProgressoCapitulos.progress = -1.0
         barraProgressoVolumes.progress = -1.0
-        if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
+        if (TaskbarProgressbar.isSupported())
+            TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
 
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         val carregaItens: Task<Void> = object : Task<Void>() {
@@ -301,7 +305,8 @@ class MangasProcessarController : Initializable {
                     treeBases.isDisable = false
                     barraProgressoCapitulos.progress = 0.0
                     barraProgressoVolumes.progress = 0.0
-                    TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
+                    if (TaskbarProgressbar.isSupported())
+                        TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                 }
             }
         }

@@ -118,7 +118,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                                 .forEach { capitulo ->
                                                     capitulo.paginas.stream()
                                                         .filter { p -> p.isProcessar }.collect(Collectors.toList())
-                                                        .forEach { pagina -> pagina.textos.forEach { texto -> if (texto.isProcessar) Size++ } }
+                                                        .forEach { pagina -> Size += pagina.textos.size }
                                                 }
                                         }
                                 }
@@ -133,7 +133,9 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                     if (!volume.isProcessar || volume.lingua != Language.JAPANESE) {
                                         propVolume.set(V / tabela.volumes.size)
                                         if (!volume.isProcessar)
-                                            updateMessage("IGNORADO - Manga: " + volume.manga) else updateMessage("IGNORADO - Linguagem: " + volume.lingua)
+                                            updateMessage("IGNORADO - Manga: " + volume.manga)
+                                        else
+                                            updateMessage("IGNORADO - Linguagem: " + volume.lingua)
                                         continue
                                     }
                                     vocabVolume = mutableSetOf()
@@ -141,7 +143,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                     for (capitulo in volume.capitulos) {
                                         C++
                                         if (!capitulo.isProcessar) {
-                                            updateMessage("IGNORADO - Manga: " + volume.manga + " - Capitulo " + capitulo.capitulo)
+                                            updateMessage("IGNORADO - Manga: " + volume.manga + " - Capitulo " + capitulo.capitulo.toInt())
                                             propCapitulo.set(C / volume.capitulos.size)
                                             continue
                                         }
@@ -151,10 +153,10 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                             p++
                                             updateProgress(p, capitulo.paginas.size.toLong())
                                             if (!pagina.isProcessar) {
-                                                updateMessage(("IGNORADO - Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo) + " - Página: " + pagina.nomePagina)
+                                                updateMessage(("IGNORADO - Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo.toInt()) + " - Página: " + pagina.nomePagina)
                                                 continue
                                             }
-                                            updateMessage(("Processando " + V + " de " + tabela.volumes.size + " volumes." + " Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo) + " - Página: " + pagina.nomePagina)
+                                            updateMessage(("Processando " + V.toInt() + " de " + tabela.volumes.size + " volumes." + " Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo.toInt()) + " - Página: " + pagina.nomePagina)
                                             vocabPagina = mutableSetOf()
                                             vocabValida = mutableSetOf()
                                             for (texto in pagina.textos)
@@ -380,7 +382,10 @@ class ProcessarMangas(controller: MangasProcessarController) {
         }
         Progress++
         propTabela.set(Progress.toDouble() / Size)
-        Platform.runLater { if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL) }
+        Platform.runLater {
+            if (TaskbarProgressbar.isSupported())
+                TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), Progress, Size, Type.NORMAL)
+        }
     }
 
     private var palavraValida: MutableSet<String> = mutableSetOf()
@@ -414,14 +419,15 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                         .forEach { capitulo ->
                                             capitulo.paginas.stream()
                                                 .filter { p -> p.isProcessar }.collect(Collectors.toList())
-                                                .forEach { pagina -> pagina.textos.forEach { texto -> if (texto.isProcessar) Size++ } }
+                                                .forEach { pagina -> Size += pagina.textos.size }
                                         }
                                 }
                         }
                     updateMessage("Iniciando...")
                     desativar = false
                     for (tabela in tabelas) {
-                        if (!tabela.isProcessar) continue
+                        if (!tabela.isProcessar)
+                            continue
                         palavraValida = mutableSetOf()
                         V = 0.0
                         for (volume in tabela.volumes) {
@@ -439,7 +445,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                             for (capitulo in volume.capitulos) {
                                 C++
                                 if (!capitulo.isProcessar) {
-                                    updateMessage("IGNORADO - Manga: " + volume.manga + " - Capitulo " + capitulo.capitulo)
+                                    updateMessage("IGNORADO - Manga: " + volume.manga + " - Capitulo " + capitulo.capitulo.toInt())
                                     propCapitulo.set(C / volume.capitulos.size)
                                     continue
                                 }
@@ -449,10 +455,10 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                     p++
                                     updateProgress(p, capitulo.paginas.size.toLong())
                                     if (!pagina.isProcessar) {
-                                        updateMessage(("IGNORADO - Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo) + " - Página: " + pagina.nomePagina)
+                                        updateMessage(("IGNORADO - Manga: " + volume.manga + " - Capitulo: " + capitulo.capitulo.toInt()) + " - Página: " + pagina.nomePagina)
                                         continue
                                     }
-                                    updateMessage(("Processando " + V + " de " + tabela.volumes.size + " volumes." + " Manga: " + volume.manga) + " - Capitulo: " + capitulo.capitulo + " - Página: " + pagina.nomePagina)
+                                    updateMessage(("Processando " + V.toInt() + " de " + tabela.volumes.size + " volumes." + " Manga: " + volume.manga) + " - Capitulo: " + capitulo.capitulo.toInt() + " - Página: " + pagina.nomePagina)
                                     vocabPagina = mutableSetOf()
                                     vocabValida = mutableSetOf()
                                     for (texto in pagina.textos) {

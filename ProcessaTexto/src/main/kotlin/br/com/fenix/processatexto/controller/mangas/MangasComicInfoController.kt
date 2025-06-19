@@ -230,7 +230,7 @@ class MangasComicInfoController : Initializable {
                     updateMessage("Processando itens....")
                     val callback: Callback<Array<Long>, Boolean> = Callback<Array<Long>, Boolean> { param ->
                         Platform.runLater {
-                            updateMessage("Processando itens...." + param[0] + '/' + param[1])
+                            updateMessage("Processando itens...." + param[0].toInt() + '/' + param[1].toInt())
                             updateProgress(param[0], param[1])
                             if (TaskbarProgressbar.isSupported())
                                 TaskbarProgressbar.showCustomProgress(Run.getPrimaryStage(), param[0], param[1], Type.NORMAL)
@@ -280,7 +280,8 @@ class MangasComicInfoController : Initializable {
     private var mPARAR = false
     private fun processarLista(isSelecionado: Boolean) {
         val progress = MenuPrincipalController.controller.criaBarraProgresso()
-        if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
+        if (TaskbarProgressbar.isSupported())
+            TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
         progress!!.titulo.text = "ComicInfo"
         val gerarJson: Task<Void> = object : Task<Void>() {
             @Override
