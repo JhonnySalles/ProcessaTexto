@@ -190,6 +190,7 @@ class RevisarController : Initializable {
                 error = true
             }
         } else if (corrigindo != null) {
+            corrigindo!!.ingles = txtAreaIngles.text
             corrigindo!!.portugues = texto
             try {
                 if (cbLinguagem.selectionModel.selectedItem != null && cbLinguagem.selectionModel.selectedItem.equals(Language.ENGLISH))

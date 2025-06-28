@@ -186,7 +186,7 @@ class ProcessarLegendas(controller: BaseController) {
                     else {
                         palavra = vocabularioJapones.select(m.surface(), m.dictionaryForm()).orElse(null)
                         if (palavra != null) {
-                            vocabularios += if (palavra.portugues.substring(0, 2).matches(japanese))
+                            vocabularios += if (palavra.portugues.length > 1 && palavra.portugues.substring(0, 2).matches(japanese))
                                 palavra.portugues + " "
                             else
                                 (m.dictionaryForm() + " - " + palavra.portugues) + " "
