@@ -441,16 +441,56 @@ class RevisarController : Initializable {
                     try {
                         val lista: MutableList<Triple<Vocabulario, Database, DatabaseReference>> = mutableListOf()
                         for (linguagem in dataSnapshot.children) {
-                            val database: Database = Database.valueOf(linguagem.key.uppercase(Locale.getDefault()))
-                            for (vocab in linguagem.children) {
-                                val obj: HashMap<String, String> = vocab.value as HashMap<String, String>
-                                val vocabulario = Vocabulario(obj["vocabulario"]!!, obj["portugues"]!!)
-                                lista.add(Triple(vocabulario, database, vocab.ref))
+                            if (linguagem.key.equals("excluir", ignoreCase = true))
+                                continue
+
+                            try {
+                                val database: Database = Database.valueOf(linguagem.key.uppercase(Locale.getDefault()))
+                                for (vocab in linguagem.children) {
+                                    val obj: HashMap<String, String> = vocab.value as HashMap<String, String>
+                                    val vocabulario = Vocabulario(obj["vocabulario"]!!, obj["portugues"]!!)
+                                    lista.add(Triple(vocabulario, database, vocab.ref))
+                                }
+                            } catch (e: Exception) {
+                                LOGGER.error("Erro ao obter a lista de revisão do firebase.", e)
                             }
                         }
                         Platform.runLater { processsar.setAll(lista) }
                     } catch (e: Exception) {
-                        LOGGER.error("Erro ao obter a lista de revisão do firebase.", e)
+                        LOGGER.error("Erro ao processar a lista de revisão do firebase.", e)
+                    }
+
+                    try {
+                        val excluir: MutableList<Triple<String, Database, DatabaseReference>> = mutableListOf()
+                        for (children in dataSnapshot.children) {
+                            if (children.key.equals("excluir", ignoreCase = true))
+                                for (linguagem in children.children) {
+                                    try {
+                                        val database: Database = Database.valueOf(linguagem.key.uppercase(Locale.getDefault()))
+                                        for (vocab in linguagem.children)
+                                            excluir.add(Triple(vocab.key, database, vocab.ref))
+                                    } catch (e: Exception) {
+                                        LOGGER.error("Erro ao obter a lista de exclusão do firebase.", e)
+                                    }
+                                }
+                        }
+
+                        val remover = mutableListOf<DatabaseReference>()
+                        for (vocabulario in excluir)
+                            when (vocabulario.second) {
+                                Database.INGLES -> {
+                                    vocabularioIngles.insertExclusao(vocabulario.first)
+                                    remover.add(vocabulario.third)
+                                }
+                                Database.JAPONES -> {
+                                    vocabularioJapones.insertExclusao(vocabulario.first)
+                                    remover.add(vocabulario.third)
+                                }
+                                Database.EXTERNO -> {}
+                            }
+                        remover.forEach { it.removeValueAsync() }
+                    } catch (e: Exception) {
+                        LOGGER.error("Erro ao processar a lista de exclusão do firebase.", e)
                     }
                 }
 
