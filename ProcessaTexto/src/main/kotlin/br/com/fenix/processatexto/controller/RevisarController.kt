@@ -354,7 +354,7 @@ class RevisarController : Initializable {
         else
             vocabularioJapones.select(pesquisar, pesquisar).orElse(null)
 
-        return if (corrigindo != null && corrigindo!!.portugues.isNotEmpty()) {
+        return if (corrigindo != null && (!cbCorrecao.isSelected || (cbCorrecao.isSelected && corrigindo!!.portugues.isNotEmpty()))) {
             limpaTextos()
             cbCorrecao.isSelected = true
             if (corrigindo != null) {

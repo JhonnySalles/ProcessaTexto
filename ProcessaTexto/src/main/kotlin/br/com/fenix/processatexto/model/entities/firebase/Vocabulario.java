@@ -100,7 +100,7 @@ public class Vocabulario {
 
     public static br.com.fenix.processatexto.model.entities.processatexto.Vocabulario toVocabulario(String id, HashMap<String, ?> obj) {
         return new br.com.fenix.processatexto.model.entities.processatexto.Vocabulario(UUID.fromString(id), (String) obj.get("vocabulario"), (String) obj.get("formaBasica"),
-                (String) obj.get("leitura"), (String) obj.get("leituraNovel"), (String) obj.get("portugues"), (String) obj.get("ingles"));
+                (String) obj.get("leitura"), (String) obj.get("leituraNovel"), (String) obj.get("ingles"), (String) obj.get("portugues"));
     }
 
     @Override
