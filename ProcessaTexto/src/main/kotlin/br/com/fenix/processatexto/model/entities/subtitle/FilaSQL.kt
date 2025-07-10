@@ -17,6 +17,8 @@ data class FilaSQL(
     @Column(name = "ID", nullable = false, unique = true, length = 36)
     private var id: UUID? = null,
     var sequencial: Long = 0,
+    @Column(name = "nome", nullable = false)
+    var nome: String = "",
     @Column(name = "select_sql", nullable = true)
     var select: String = "",
     @Column(name = "update_sql", nullable = true)
@@ -31,8 +33,8 @@ data class FilaSQL(
     var isLimpeza: Boolean = false,
 ) : EntityBase<UUID?, FilaSQL>() {
 
-    constructor(select: String, update: String, delete: String, linguagem: Language, isExporta: Boolean, isLimpeza: Boolean) :
-            this(null, 0L, select, update, delete) {
+    constructor(nome: String, select: String, update: String, delete: String, linguagem: Language, isExporta: Boolean, isLimpeza: Boolean) :
+            this(null, 0L, nome, select, update, delete) {
         this.linguagem = linguagem
         this.isExporta = isExporta
         this.isLimpeza = isLimpeza
@@ -48,6 +50,6 @@ data class FilaSQL(
 
     @Override
     override fun toString(): String {
-        return "FilaSQL [id=$id, select=$select, update=$update, delete=$delete, vocabulario=$vocabulario]"
+        return "FilaSQL [id=$id, nome=$nome, select=$select, update=$update, delete=$delete, vocabulario=$vocabulario]"
     }
 }

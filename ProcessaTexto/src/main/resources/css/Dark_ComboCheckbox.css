@@ -1,0 +1,74 @@
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------ Estilos dos Alertas -------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------*/
+
+.combo-box-base {
+    -fx-background-color: white;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
+
+/* --- Estilo Base do CheckBox --- */
+.check-box {
+    -fx-font-size: 14px; /* Tamanho da fonte do texto */
+    -fx-text-fill: #ffffff; /* Cor do texto da label */
+    -fx-padding: 5px 0; /* Espaçamento ao redor do checkbox */
+}
+
+/* --- Estilo da Caixa (o quadrado da checkbox) --- */
+.check-box .box {
+    -fx-background-color: transparent; /* Fundo transparente */
+    -fx-border-color: #106ebe; /* Borda cinza */
+    -fx-border-width: 2px; /* Espessura da borda */
+    -fx-border-radius: 2px; /* Cantos levemente arredondados */
+    -fx-background-radius: 2px; /* Para garantir o arredondamento mesmo sem fundo */
+    -fx-padding: 0;
+    -fx-effect: none; /* Remove qualquer sombra padrão */
+    -fx-pref-width: 18px; /* Largura da caixa */
+    -fx-pref-height: 18px; /* Altura da caixa */
+    -fx-transition: -fx-background-color 0.2s ease, -fx-border-color 0.2s ease; /* Transição suave */
+}
+
+/* --- Estilo da Caixa quando Focada --- */
+.check-box:focused .box {
+    -fx-border-color: #71afe5; /* Borda azul ao focar */
+}
+
+/* --- Estilo da Caixa quando Marcada (Selected) --- */
+.check-box:selected .box {
+    -fx-background-color: #71afe5; /* Fundo azul quando marcado */
+    -fx-border-color: #71afe5; /* Borda azul quando marcado */
+}
+
+/* --- Estilo da Marca de Seleção (o "tick") --- */
+.check-box .mark {
+    -fx-background-color: transparent; /* Transparente por padrão */
+    -fx-shape: "M4.2,10.2L1.8,7.8L0.4,9.2L4.2,13L11.8,5.4L10.4,4L4.2,10.2z"; /* Forma de tick Material Design */
+    -fx-effect: none; /* Remove qualquer sombra padrão */
+    -fx-scale-x: 0; /* Começa invisível */
+    -fx-scale-y: 0;
+    -fx-transition: -fx-scale-x 0.2s ease, -fx-scale-y 0.2s ease, -fx-background-color 0.2s ease; /* Transição de escala */
+}
+
+/* --- Estilo da Marca de Seleção quando Marcada --- */
+.check-box:selected .mark {
+    -fx-background-color: #ffffff; /* Tick branco quando marcado */
+    -fx-scale-x: 1; /* Torna o tick visível */
+    -fx-scale-y: 1;
+}
+
+/* --- Estilo quando a CheckBox está Desabilitada --- */
+.check-box:disabled {
+    -fx-opacity: 0.6; /* Torna a checkbox ligeiramente transparente */
+}
+
+.check-box:disabled .box {
+    -fx-border-color: #cccccc; /* Borda mais clara quando desabilitada */
+}
+
+.check-box:disabled:selected .box {
+    -fx-background-color: #bbbbbb; /* Fundo cinza para marcada e desabilitada */
+    -fx-border-color: #bbbbbb;
+}

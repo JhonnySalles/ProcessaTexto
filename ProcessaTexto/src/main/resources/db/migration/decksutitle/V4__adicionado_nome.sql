@@ -1,0 +1,1 @@
+ALTER TABLE _fila_sql ADD COLUMN nome VARCHAR(250) NULL AFTER sequencial;

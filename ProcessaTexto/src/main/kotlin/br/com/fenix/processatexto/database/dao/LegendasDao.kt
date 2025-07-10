@@ -46,4 +46,7 @@ interface LegendasDao {
 
     @Throws(SQLException::class)
     fun comandoSelect(): MutableList<FilaSQL>
+
+    @get:Throws(SQLException::class)
+    val nomes: List<String>
 }

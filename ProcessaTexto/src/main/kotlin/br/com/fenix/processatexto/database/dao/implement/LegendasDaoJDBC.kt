@@ -2,6 +2,7 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
+import br.com.fenix.processatexto.database.dao.implement.MangaDaoJDBC.Companion
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
@@ -21,9 +22,10 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
         private const val SELECT = "SELECT id, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario FROM %s WHERE id = ?;"
         private const val DELETE = "DELETE FROM %s WHERE Episodio = ? AND Linguagem = ?;"
 
-        private const val SELECT_LISTA_TABELAS = ("SELECT Table_Name AS Tabela "
-                + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
-                + " AND Table_Name != '_sql' GROUP BY Tabela ")
+        private const val SELECT_LISTA_TABELAS = "SELECT Table_Name AS Tabela " +
+                " FROM information_schema.tables WHERE table_schema = '%s' AND %s " +
+                " AND Table_Name != '_sql' AND Table_Name != '_fila_sql' " +
+                " GROUP BY Tabela ORDER BY Tabela"
         private const val CREATE_TABELA = "CALL create_table('%s');"
         private const val CREATE_TRIGGER_INSERT = "CREATE TRIGGER %s_insert BEFORE INSERT ON %s" +
                 "  FOR EACH ROW BEGIN" +
@@ -36,10 +38,11 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
 
-        private const val INSERT_FILA = "INSERT INTO _fila_sql (id, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-        private const val UPDATE_FILA = "UPDATE _fila_sql SET select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?"
-        private const val SELECT_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql"
-        private const val EXISTS_FILA = "SELECT id, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql WHERE delete_sql = ?"
+        private const val INSERT_FILA = "INSERT INTO _fila_sql (id, nome, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        private const val UPDATE_FILA = "UPDATE _fila_sql SET nome = ?, select_sql = ?, update_sql = ?, delete_sql = ?, vocabulario = ?, linguagem = ?, isExporta = ?, isLimpeza = ? WHERE id = ?"
+        private const val SELECT_FILA = "SELECT id, nome, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql"
+        private const val EXISTS_FILA = "SELECT id, nome, sequencial, select_sql, update_sql, delete_sql, vocabulario, linguagem, isExporta, isLimpeza FROM _fila_sql WHERE delete_sql = ?"
+        private const val SELECT_NOMES = "SELECT nome FROM _fila_sql WHERE nome != '' AND nome IS NOT NULL GROUP BY nome ORDER BY nome"
     }
 
     private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
@@ -261,6 +264,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
 
             var index = 0
             st.setString(++index, fila.getId().toString())
+            st.setString(++index, fila.nome)
             st.setString(++index, fila.select)
             st.setString(++index, fila.update)
             st.setString(++index, fila.delete)
@@ -290,6 +294,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st = conn.prepareStatement(UPDATE_FILA, Statement.RETURN_GENERATED_KEYS)
 
             var index = 0
+            st.setString(++index, fila.nome)
             st.setString(++index, fila.select)
             st.setString(++index, fila.update)
             st.setString(++index, fila.delete)
@@ -340,9 +345,9 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             while (rs.next())
                 list.add(
                     FilaSQL(
-                        UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("select_sql"),
-                        rs.getString("update_sql"), rs.getString("delete_sql"), rs.getString("vocabulario"),
-                        Language.getEnum(rs.getString("linguagem").lowercase(Locale.getDefault()))!!,
+                        UUID.fromString(rs.getString("id")), rs.getLong("sequencial"), rs.getString("nome"),
+                        rs.getString("select_sql"), rs.getString("update_sql"), rs.getString("delete_sql"),
+                        rs.getString("vocabulario"), Language.getEnum(rs.getString("linguagem").lowercase(Locale.getDefault()))!!,
                         rs.getBoolean("isExporta"), rs.getBoolean("isLimpeza")
                     )
                 )
@@ -372,5 +377,26 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             JdbcFactory.closeStatement(st)
         }
     }
+
+    override val nomes: List<String>
+        get() {
+            var st: PreparedStatement? = null
+            var rs: ResultSet? = null
+            return try {
+                st = conn.prepareStatement(SELECT_NOMES)
+                rs = st.executeQuery()
+                val list: MutableList<String> = mutableListOf()
+                while (rs.next())
+                    list.add(rs.getString("nome"))
+                list
+            } catch (e: SQLException) {
+                LOGGER.error(e.message, e)
+                LOGGER.info(st.toString())
+                throw SQLException(Mensagens.BD_ERRO_SELECT)
+            } finally {
+                JdbcFactory.closeStatement(st)
+                JdbcFactory.closeResultSet(rs)
+            }
+        }
 
 }

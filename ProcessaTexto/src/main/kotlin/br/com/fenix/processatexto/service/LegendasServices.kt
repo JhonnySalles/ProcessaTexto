@@ -22,6 +22,9 @@ class LegendasServices {
     @get:Throws(SQLException::class)
     val tabelas: List<String> get() = dao!!.tabelas
 
+    @get:Throws(SQLException::class)
+    val nomes: List<String> get() = dao!!.nomes
+
     @Throws(SQLException::class)
     private fun criarTabela(tabela: String) {
         if (dao!!.tabelas.stream().filter { t -> t.equals(tabela, ignoreCase = true) }.findFirst().isEmpty)

@@ -40,6 +40,7 @@ import javafx.scene.paint.Color
 import javafx.scene.robot.Robot
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
+import javafx.util.StringConverter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -63,6 +64,9 @@ class LegendasImportarController : Initializable, BaseController {
 
     @FXML
     private lateinit var cbBase: JFXComboBox<String>
+
+    @FXML
+    private lateinit var cbNome: JFXComboBox<String>
 
     @FXML
     private lateinit var txtPipe: JFXTextField
@@ -157,6 +161,7 @@ class LegendasImportarController : Initializable, BaseController {
         val caminho: String = txtCaminho.text.trim()
         val lingua: Language = cbLinguagem.value
         val base: String = cbBase.editor.text
+        val nomeFila: String = cbNome.editor.text
         val prefix: String = txtPrefixoSom.text.trim()
         val isVocab: Boolean = ckbVocabulario.isSelected
         val progress = MenuPrincipalController.controller.criaBarraProgresso()
@@ -282,11 +287,11 @@ class LegendasImportarController : Initializable, BaseController {
                                     var delete = "UPDATE $schema.$base SET Vocabulario = '' WHERE Vocabulario IS NOT NULL;"
 
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(FilaSQL(select, update, delete, linguagemFilaSql, isExporta = false, isLimpeza = false))
+                                        services.insertOrUpdateFila(FilaSQL(nomeFila, select, update, delete, linguagemFilaSql, isExporta = false, isLimpeza = false))
 
                                     delete = "UPDATE $schema.$base SET Vocabulario = NULL WHERE Vocabulario = '';"
                                     if (!services.existFila(delete))
-                                        services.insertOrUpdateFila(FilaSQL("", "", delete, linguagemFilaSql, isExporta = false, isLimpeza = true))
+                                        services.insertOrUpdateFila(FilaSQL(nomeFila,"", "", delete, linguagemFilaSql, isExporta = false, isLimpeza = true))
                                 }
 
                                 val pastaMidia = File(arquivo.arquivo.absolutePath.substring(0, arquivo.arquivo.absolutePath.lastIndexOf(".tsv")) + ".media")
@@ -349,6 +354,10 @@ class LegendasImportarController : Initializable, BaseController {
                         habilitaBotoes()
                         if (!desativar && !error)
                             limpar()
+
+                        if (isVocab)
+                            carregaBases()
+
                         progress.barraProgresso.progressProperty().unbind()
                         progress.log.textProperty().unbind()
                         MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
@@ -410,6 +419,7 @@ class LegendasImportarController : Initializable, BaseController {
     private fun desabilitaBotoes() {
         btnLimpar.isDisable = true
         cbBase.isDisable = true
+        cbNome.isDisable = true
         cbLinguagemFilaSql.isDisable = true
         cbLinguagem.isDisable = true
         txtPipe.isDisable = true
@@ -426,6 +436,7 @@ class LegendasImportarController : Initializable, BaseController {
     private fun habilitaBotoes() {
         btnLimpar.isDisable = false
         cbBase.isDisable = false
+        cbNome.isDisable = false
         cbLinguagemFilaSql.isDisable = false
         cbLinguagem.isDisable = false
         txtPipe.isDisable = false
@@ -507,6 +518,15 @@ class LegendasImportarController : Initializable, BaseController {
         }
     }
 
+    private fun carregaBases() {
+        try {
+            cbBase.items.setAll(services.tabelas)
+            cbNome.items.setAll(services.nomes)
+        } catch (e: Exception) {
+            LOGGER.error(e.message, e)
+        }
+    }
+
     private fun editaColunas() {
         tcMarcado.cellValueFactory = PropertyValueFactory("processar")
         tcArquivo.cellValueFactory = PropertyValueFactory("nome")
@@ -553,21 +573,20 @@ class LegendasImportarController : Initializable, BaseController {
         }
         txtCaminho.focusedProperty().addListener { _, oldPropertyValue, _ -> if (oldPropertyValue) carregaArquivos() }
 
-        try {
-            cbBase.items.setAll(services.tabelas)
-        } catch (e: Exception) {
-            LOGGER.error(e.message, e)
-        }
+        carregaBases()
 
-        val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
-        autoCompletePopup.suggestions.addAll(cbBase.items)
-        autoCompletePopup.setSelectionHandler { event -> cbBase.setValue(event.getObject()) }
+        val autoCompleteBase: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
+        autoCompleteBase.suggestions.addAll(cbBase.items)
+        autoCompleteBase.setSelectionHandler { event -> cbBase.setValue(event.getObject()) }
         cbBase.editor.textProperty().addListener { _, _, _ ->
-            autoCompletePopup.filter { item -> item.lowercase(Locale.getDefault()).contains(cbBase.editor.text.lowercase(Locale.getDefault())) }
-            if (autoCompletePopup.filteredSuggestions.isEmpty() || cbBase.showingProperty().get() || cbBase.editor.text.isEmpty())
-                autoCompletePopup.hide()
+            if (cbBase.isDisable)
+                return@addListener
+
+            autoCompleteBase.filter { item -> item.lowercase(Locale.getDefault()).contains(cbBase.editor.text.lowercase(Locale.getDefault())) }
+            if (autoCompleteBase.filteredSuggestions.isEmpty() || cbBase.showingProperty().get() || cbBase.editor.text.isEmpty())
+                autoCompleteBase.hide()
             else
-                autoCompletePopup.show(cbBase.editor)
+                autoCompleteBase.show(cbBase.editor)
         }
         cbBase.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         cbBase.focusedProperty().addListener { _, oldValue, _ ->
@@ -581,6 +600,26 @@ class LegendasImportarController : Initializable, BaseController {
                 }
             }
         }
+
+        val autoCompleteNome: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
+        autoCompleteNome.suggestions.addAll(cbNome.items)
+        autoCompleteNome.setSelectionHandler { event -> cbNome.setValue(event.getObject()) }
+        cbNome.editor.textProperty().addListener { _, _, _ ->
+            if (cbNome.isDisable)
+                return@addListener
+
+            autoCompleteNome.filter { item -> item.lowercase(Locale.getDefault()).contains(cbNome.editor.text.lowercase(Locale.getDefault())) }
+            if (autoCompleteNome.filteredSuggestions.isEmpty() || cbNome.showingProperty().get() || cbNome.editor.text.isEmpty())
+                autoCompleteNome.hide()
+            else
+                autoCompleteNome.show(cbNome.editor)
+        }
+        cbNome.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
+        cbNome.converter = object : StringConverter<String?>() {
+            override fun toString(`object`: String?): String = `object`?.lowercase(Locale.getDefault()) ?: ""
+            override fun fromString(string: String): String = string
+        }
+
         cbLinguagemFilaSql.items.addAll(Language.JAPANESE, Language.ENGLISH)
         cbLinguagem.setOnKeyPressed { ke ->
             if (ke.code.equals(KeyCode.ESCAPE))

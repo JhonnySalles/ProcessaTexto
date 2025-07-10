@@ -18,6 +18,7 @@ import com.jfoenix.controls.*
 import com.nativejavafx.taskbar.TaskbarProgressbar
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type
 import javafx.application.Platform
+import javafx.beans.InvalidationListener
 import javafx.beans.value.ChangeListener
 import javafx.collections.FXCollections
 import javafx.concurrent.Task
@@ -28,9 +29,13 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.StackPane
+import javafx.scene.robot.Robot
 import javafx.stage.FileChooser
+import javafx.util.StringConverter
+import org.controlsfx.control.CheckComboBox
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.BufferedWriter
@@ -64,22 +69,22 @@ class LegendasVocabularioController : Initializable, BaseController {
     private lateinit var btnExclusao: JFXButton
 
     @FXML
-    private lateinit var btnSalvar: JFXButton
-
-    @FXML
-    private lateinit var btnAtualizar: JFXButton
-
-    @FXML
-    private lateinit var btnDeletar: JFXButton
-
-    @FXML
     private lateinit var btnProcessar: JFXButton
 
     @FXML
     private lateinit var btnProcessarTudo: JFXButton
 
     @FXML
+    private lateinit var cbNome: JFXComboBox<String>
+
+    @FXML
     private lateinit var btnSalvarFila: JFXButton
+
+    @FXML
+    private lateinit var ccFiltrar: CheckComboBox<String>
+
+    @FXML
+    private lateinit var btnExportarFila: JFXButton
 
     @FXML
     private lateinit var btnExecutarFila: JFXButton
@@ -136,23 +141,23 @@ class LegendasVocabularioController : Initializable, BaseController {
         }
 
     private fun desabilitaBotoes() {
-        btnSalvar.isDisable = true
-        btnDeletar.isDisable = true
-        btnAtualizar.isDisable = true
+        ccFiltrar.isDisable = true
+        cbNome.isDisable = true
         btnProcessar.isDisable = true
         btnExclusao.isDisable = true
         btnSalvarFila.isDisable = true
+        btnExportarFila.isDisable = true
         cbExporta.isDisable = true
         cbLimpeza.isDisable = true
     }
 
     private fun habilitaBotoes() {
-        btnSalvar.isDisable = false
-        btnDeletar.isDisable = false
-        btnAtualizar.isDisable = false
+        ccFiltrar.isDisable = false
+        cbNome.isDisable = false
         btnProcessar.isDisable = false
         btnExclusao.isDisable = false
         btnSalvarFila.isDisable = false
+        btnExportarFila.isDisable = false
         cbExporta.isDisable = false
         cbLimpeza.isDisable = false
     }
@@ -393,9 +398,11 @@ class LegendasVocabularioController : Initializable, BaseController {
             AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar uma linguagem para gravar na lista.")
             return
         }
+
         try {
             service.insertOrUpdateFila(
                 FilaSQL(
+                    cbNome.editor.text.trim().lowercase(),
                     txtAreaSelect.text.trim(),
                     txtAreaUpdate.text.trim(),
                     txtAreaDelete.text.trim(),
@@ -404,6 +411,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                     cbLimpeza.isSelected
                 )
             )
+            carregaFiltros()
             AlertasPopup.avisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
         } catch (e: SQLException) {
             LOGGER.error(e.message, e)
@@ -432,7 +440,7 @@ class LegendasVocabularioController : Initializable, BaseController {
 
     @FXML
     private fun onBtnProcessarFila() {
-        if (btnExecutarFila.accessibleText.equals("PROCESSANDO", true)) {
+        if (btnExecutarFila.accessibleText.equals("PROCESSANDO", true) || btnExportarFila.accessibleText.equals("PROCESSANDO", true)) {
             desativar = true
             return
         }
@@ -471,11 +479,16 @@ class LegendasVocabularioController : Initializable, BaseController {
                     linguegem = cbLinguagem.selectionModel.selectedItem
                     if (linguegem != null && linguegem!! != Language.TODOS)
                         fila = fila.stream().filter { f -> f.linguagem == linguegem }.collect(Collectors.toList())
+
+                    if (ccFiltrar.checkModel.checkedItems.isNotEmpty())
+                        fila = fila.stream().filter { f -> ccFiltrar.checkModel.checkedItems.contains(f.nome) }.collect(Collectors.toList())
+
                     val temp: List<FilaSQL> = fila.stream().filter { f -> !f.isLimpeza && !f.isExporta }.collect(Collectors.toList())
                     for (select in temp) {
                         x++
                         val lang: Language = select.linguagem
                         Platform.runLater {
+                            cbNome.editor.text = select.nome
                             txtAreaSelect.text = select.select
                             txtAreaUpdate.text = select.update
                             txtAreaDelete.text = select.delete
@@ -560,6 +573,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         progress.log.textProperty().unbind()
                         MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
+                        cbNome.editor.text = ""
                         txtAreaSelect.text = ""
                         txtAreaUpdate.text = ""
                         txtAreaDelete.text = ""
@@ -576,6 +590,112 @@ class LegendasVocabularioController : Initializable, BaseController {
         processa.start()
     }
 
+    @FXML
+    private fun onBtnExportarFila() {
+        if (btnExecutarFila.accessibleText.equals("PROCESSANDO", true) || btnExportarFila.accessibleText.equals("PROCESSANDO", true)) {
+            desativar = true
+            return
+        }
+
+        if (txtCaminhoExportar.text.isEmpty()) {
+            AlertasPopup.alertaModal(stackPane, root, mutableListOf(), "Alerta", "Necessário informar um caminho para salvar o arquivo de exportação.")
+            return
+        }
+
+        if (!validaProcessarFila())
+            return
+
+        desabilitaBotoes()
+        btnProcessarTudo.isDisable = true
+        btnExportarFila.accessibleText = "PROCESSANDO"
+        btnExportarFila.text = "Pausar"
+        desativar = false
+        tbLista.items.clear()
+        txtAreaSelect.isDisable = false
+        txtAreaUpdate.isDisable = false
+        txtAreaDelete.isDisable = false
+        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        progress!!.titulo.text = "Legendas - Processar Fila"
+        val exportarFila: Task<Void> = object : Task<Void>() {
+            var lista: MutableList<Processar> = mutableListOf()
+            var fila: MutableList<FilaSQL> = mutableListOf()
+            var i: Long = 0
+            var x: Int = 0
+            val pipe: String = txtPipe.text
+            val arquivo: File? = if (txtCaminhoExportar.text.isEmpty()) null else File(txtCaminhoExportar.text)
+            var linguegem: Language? = null
+
+            @Override
+            @Throws(IOException::class, InterruptedException::class)
+            override fun call(): Void? {
+                try {
+                    fila = service.selectFila()
+                    linguegem = cbLinguagem.selectionModel.selectedItem
+                    if (linguegem != null && linguegem!! != Language.TODOS)
+                        fila = fila.stream().filter { f -> f.linguagem == linguegem }.collect(Collectors.toList())
+
+                    if (ccFiltrar.checkModel.checkedItems.isNotEmpty())
+                        fila = fila.stream().filter { f -> ccFiltrar.checkModel.checkedItems.contains(f.nome) }.collect(Collectors.toList())
+
+                    if (arquivo != null && !desativar) {
+                        var select: List<FilaSQL> = fila.stream().filter(FilaSQL::isExporta)
+                            .filter { f -> f.linguagem == Language.JAPANESE }
+                            .collect(Collectors.toList())
+                        if (select.isNotEmpty()) {
+                            val file = File(arquivo.parent, arquivo.name.substring(0, arquivo.name.lastIndexOf(".")) + " Japones" + arquivo.name.substring(arquivo.name.lastIndexOf(".")))
+                            updateMessage("Exportando arquivo " + file.name)
+                            lista = mutableListOf()
+                            for (item in select)
+                                lista.addAll(service.comandoSelect(item.select))
+                            exportar(pipe, lista, file)
+                        }
+                        select = fila.stream().filter(FilaSQL::isExporta).filter { f -> f.linguagem == Language.ENGLISH }.collect(Collectors.toList())
+                        if (select.isNotEmpty()) {
+                            val file = File(arquivo.parent, arquivo.name.substring(0, arquivo.name.lastIndexOf(".")) + " Ingles" + arquivo.name.substring(arquivo.name.lastIndexOf(".")))
+                            updateMessage("Exportando arquivo " + file.name)
+                            lista = mutableListOf()
+                            for (item in select)
+                                lista.addAll(service.comandoSelect(item.select))
+                            exportar(pipe, lista, file)
+                        }
+                        updateMessage("Executando a limpeza.")
+                        for (item in fila.stream().filter(FilaSQL::isLimpeza).collect(Collectors.toList()))
+                            service.comandoDelete(item.delete)
+
+                        Configuracao.caminhoSalvoArquivo = txtCaminhoExportar.text
+                    }
+                } catch (e: Exception) {
+                    LOGGER.error("Erro ao processar a fila", e)
+                } finally {
+                    if (!desativar)
+                        updateMessage("Concluído....")
+                    Platform.runLater {
+                        btnExportarFila.accessibleText = "PROCESSAR"
+                        btnExportarFila.text = "Exportar fila"
+                        habilitaBotoes()
+                        btnProcessarTudo.isDisable = false
+                        tbLista.isDisable = false
+                        progress.barraProgresso.progressProperty().unbind()
+                        progress.log.textProperty().unbind()
+                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
+                        cbNome.editor.text = ""
+                        txtAreaSelect.text = ""
+                        txtAreaUpdate.text = ""
+                        txtAreaDelete.text = ""
+                        txtAreaVocabulario.text = ""
+                        cbLinguagem.selectionModel.select(linguegem)
+                    }
+                }
+                return null
+            }
+        }
+        val exporta = Thread(exportarFila)
+        progress.log.textProperty().bind(exportarFila.messageProperty())
+        progress.barraProgresso.progressProperty().bind(exportarFila.progressProperty())
+        exporta.start()
+    }
+
     @Throws(IOException::class)
     private fun exportar(pipe: String, lista: List<Processar>, arquivo: File) {
         if (arquivo.exists()) arquivo.delete()
@@ -589,6 +709,18 @@ class LegendasVocabularioController : Initializable, BaseController {
                     writer.newLine()
             }
             writer.flush()
+        }
+    }
+
+    private fun carregaFiltros() {
+        try {
+            val nomes = service.nomes
+            ccFiltrar.items.clear()
+            ccFiltrar.items.addAll(nomes)
+            cbNome.items.clear()
+            cbNome.items.addAll(nomes)
+        } catch (e: Exception) {
+            LOGGER.error(e.message, e)
         }
     }
 
@@ -609,11 +741,38 @@ class LegendasVocabularioController : Initializable, BaseController {
 
     private lateinit var exportaListenner: ChangeListener<Boolean>
     private lateinit var limpezaListenner: ChangeListener<Boolean>
+    private val robot: Robot = Robot()
 
     override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
         cbLinguagem.items.addAll(Language.TODOS, Language.JAPANESE, Language.ENGLISH)
         cbLinguagem.selectionModel.selectFirst()
+        cbLinguagem.setOnKeyPressed { ke ->
+            if (ke.code.equals(KeyCode.ENTER))
+                robot.keyPress(KeyCode.TAB)
+        }
+
         linkaCelulas()
+        carregaFiltros()
+
+        val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
+        autoCompletePopup.suggestions.addAll(cbNome.items)
+        autoCompletePopup.setSelectionHandler { event -> cbNome.setValue(event.getObject()) }
+        cbNome.editor.textProperty().addListener { _, _, _ ->
+            if (cbNome.isDisable)
+                return@addListener
+
+            autoCompletePopup.filter { item -> item.lowercase(Locale.getDefault()).contains(cbNome.editor.text.lowercase(Locale.getDefault())) }
+            if (autoCompletePopup.filteredSuggestions.isEmpty() || cbNome.showingProperty().get() || cbNome.editor.text.isEmpty())
+                autoCompletePopup.hide()
+            else
+                autoCompletePopup.show(cbNome.editor)
+        }
+        cbNome.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
+        cbNome.converter = object : StringConverter<String?>() {
+            override fun toString(`object`: String?): String = `object`?.lowercase(Locale.getDefault()) ?: ""
+            override fun fromString(string: String): String = string
+        }
+
         btnProcessarTudo.accessibleText = "PROCESSAR"
         btnExecutarFila.accessibleText = "PROCESSAR"
         exportaListenner = ChangeListener<Boolean> { _, _, _ ->
@@ -642,6 +801,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                 txtAreaSelect.isDisable = true
                 txtAreaUpdate.isDisable = true
                 txtAreaDelete.isDisable = false
+                cbNome.editor.text = ""
                 txtAreaSelect.text = ""
                 txtAreaUpdate.text = ""
                 cbExporta.selectedProperty().addListener(exportaListenner)
