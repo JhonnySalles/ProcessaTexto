@@ -400,7 +400,7 @@ class MenuPrincipalController : Initializable {
             if (!sincronizacao.isSincronizando) {
                 var sinc = ""
                 for (item in observable.list)
-                    sinc += observable.list.size.toString() + " ${if(item.first == Sincronizacao.VOCABULARIO) "(Vocabulário)" else "(ComicInfo)"} "
+                    sinc += "${item.second} ${if(item.first == Sincronizacao.VOCABULARIO) "(Vocabulário)" else "(ComicInfo)"} "
 
                 Platform.runLater {
                     if (sinc.isNotEmpty()) {

@@ -505,8 +505,9 @@ class RevisarController : Initializable {
 
     private fun removeFiredac(vocabulario: Vocabulario?) {
         if (!processsar.isEmpty() && reference != null && vocabulario != null) {
-            val item: Optional<Triple<Vocabulario, Database, DatabaseReference>> =
-                processsar.parallelStream().filter { i -> i.first.vocabulario.equals(vocabulario.vocabulario, true) }.findFirst()
+            val item: Optional<Triple<Vocabulario, Database, DatabaseReference>> = processsar.parallelStream()
+                .filter { i -> i.first.vocabulario.equals(vocabulario.vocabulario, true) || i.first.vocabulario.equals(vocabulario.formaBasica, true) }
+                .findFirst()
             if (item.isPresent) {
                 processsar.remove(item.get())
                 item.get().third.removeValueAsync()
