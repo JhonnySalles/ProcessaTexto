@@ -146,7 +146,7 @@ class RevisarController : Initializable {
         try {
             database = FirebaseDatabase.getInstance("https://bilingual-reader-272ac-default-rtdb.firebaseio.com/")
         } catch (E: Exception) {
-            LOGGER.error("Erro ao carregar a instância do firebase ", E)
+            oLog.error("Erro ao carregar a instância do firebase ", E)
         }
     }
 
@@ -186,7 +186,7 @@ class RevisarController : Initializable {
                 revisados.push(Pair(palavra, cbLinguagem.selectionModel.selectedItem))
                 removeFiredac(palavra)
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 error = true
             }
         } else if (corrigindo != null) {
@@ -201,7 +201,7 @@ class RevisarController : Initializable {
                 revisados.push(Pair(corrigindo, cbLinguagem.selectionModel.selectedItem))
                 removeFiredac(corrigindo)
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 error = true
             }
         } else error = true
@@ -223,7 +223,7 @@ class RevisarController : Initializable {
             else
                 revisarJapones.delete(revisando!!)
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             error = true
         }
 
@@ -257,10 +257,10 @@ class RevisarController : Initializable {
 
         try {
             val texto =
-                Utils.normalize(ScriptGoogle.translate(Language.ENGLISH.sigla, Language.PORTUGUESE.sigla, txtAreaIngles.text, MenuPrincipalController.controller.contaGoogle))
+                Utils.normalize(ScriptGoogle.translate(Language.ENGLISH.sigla, Language.PORTUGUESE.sigla, txtAreaIngles.text, MenuPrincipalController.oController.contaGoogle))
             txtAreaPortugues.text = Utils.normalize(texto)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -331,7 +331,7 @@ class RevisarController : Initializable {
                 revisarJapones.selectQuantidadeRestante()
             lblRestantes.text = "Restante $qtd palavras."
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             lblRestantes.text = "Restante 0 palavras."
         }
         corrigindo = null
@@ -412,7 +412,7 @@ class RevisarController : Initializable {
                     limpaCampos()
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             cbCorrecao.selectedProperty().addListener(listenerCorrecao)
         }
@@ -453,12 +453,12 @@ class RevisarController : Initializable {
                                     lista.add(Triple(vocabulario, database, vocab.ref))
                                 }
                             } catch (e: Exception) {
-                                LOGGER.error("Erro ao obter a lista de revisão do firebase.", e)
+                                oLog.error("Erro ao obter a lista de revisão do firebase.", e)
                             }
                         }
                         Platform.runLater { processsar.setAll(lista) }
                     } catch (e: Exception) {
-                        LOGGER.error("Erro ao processar a lista de revisão do firebase.", e)
+                        oLog.error("Erro ao processar a lista de revisão do firebase.", e)
                     }
 
                     try {
@@ -471,7 +471,7 @@ class RevisarController : Initializable {
                                         for (vocab in linguagem.children)
                                             excluir.add(Triple(vocab.key, database, vocab.ref))
                                     } catch (e: Exception) {
-                                        LOGGER.error("Erro ao obter a lista de exclusão do firebase.", e)
+                                        oLog.error("Erro ao obter a lista de exclusão do firebase.", e)
                                     }
                                 }
                         }
@@ -491,13 +491,13 @@ class RevisarController : Initializable {
                             }
                         remover.forEach { it.removeValueAsync() }
                     } catch (e: Exception) {
-                        LOGGER.error("Erro ao processar a lista de exclusão do firebase.", e)
+                        oLog.error("Erro ao processar a lista de exclusão do firebase.", e)
                     }
                 }
 
                 @Override
                 override fun onCancelled(databaseError: DatabaseError?) {
-                    LOGGER.error("Erro ao obter a database do firebase.", databaseError)
+                    oLog.error("Erro ao obter a database do firebase.", databaseError)
                 }
             })
         }
@@ -700,7 +700,7 @@ class RevisarController : Initializable {
 
     companion object {
         public var selecionado : Boolean = false
-        private val LOGGER: Logger = LoggerFactory.getLogger(RevisarController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(RevisarController::class.java)
         val fxmlLocate: URL
             get() = RevisarController::class.java.getResource("/view/Revisar.fxml")
     }

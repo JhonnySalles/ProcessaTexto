@@ -128,7 +128,7 @@ class VincularServices {
 
     // -------------------------------------------------------------------------------------------------
     fun gerarAtributos(parse: Parse, isManga: Boolean) {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Processando atributos da imagem do arquivo " + if (isManga) "original" else "vinculado"
         val processar: Task<Void> = object : Task<Void>() {
             var I: Long = 0
@@ -181,7 +181,7 @@ class VincularServices {
             override fun succeeded() {
                 progress.barraProgresso.progressProperty().unbind()
                 progress.log.textProperty().unbind()
-                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
             }
         }
         progress.log.textProperty().bind(processar.messageProperty())

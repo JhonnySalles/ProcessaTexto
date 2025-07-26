@@ -20,7 +20,6 @@ import java.time.LocalTime
 import java.util.*
 import java.util.Date
 
-
 abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : RepositoryDao<ID, E> {
 
     private val clazzEntity: Class<E>
@@ -30,7 +29,9 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         clazzEntity = superclass.actualTypeArguments[1] as Class<E>
     }
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(RepositoryDaoBase::class.java)
+    companion object {
+        private val oLog: Logger = LoggerFactory.getLogger(RepositoryDaoBase::class.java)
+    }
 
     protected val conn: Connection = JdbcFactory.getFactory(conexao)
 
@@ -110,7 +111,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
             val rowsAffected = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(sql)
+                oLog.info(sql)
                 if (isThrowsNotUpdate)
                     throw SQLException(Mensagens.BD_ERRO_INSERT_OR_UPDATE)
             }
@@ -121,8 +122,8 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             else
                 null
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(sql)
+            oLog.error(e.message, e)
+            oLog.info(sql)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -144,7 +145,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             setParams(st, params)
             val rowsAffected = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(sql)
+                oLog.info(sql)
                 if (isThrowsNotUpdate)
                     throw SQLException(Mensagens.BD_ERRO_INSERT_OR_UPDATE)
             }
@@ -155,7 +156,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             else
                 null
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -181,7 +182,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             else
                 Optional.empty<E>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -208,7 +209,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                 list.add(toEntity(rs))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -228,7 +229,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             st = conn.prepareStatement(sql)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -248,7 +249,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             setParams(st, params)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_QUERRY)
         } finally {
             JdbcFactory.closeStatement(st)

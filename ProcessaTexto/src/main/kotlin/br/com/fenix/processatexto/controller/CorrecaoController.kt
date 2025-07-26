@@ -29,7 +29,6 @@ import java.net.URL
 import java.sql.SQLException
 import java.util.*
 
-
 class CorrecaoController : Initializable {
 
     @FXML
@@ -66,7 +65,7 @@ class CorrecaoController : Initializable {
                     Notificacoes.notificacao(Notificacao.ERRO, "Vocabulário informado não encontrado.", txtVocabulario.text)
                 }
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 Notificacoes.notificacao(Notificacao.ERRO, "Erro ao carregar vocabulário.", txtVocabulario.text)
                 txtVocabulario.unFocusColor = Color.RED
             }
@@ -86,7 +85,7 @@ class CorrecaoController : Initializable {
                 limpar()
                 txtVocabulario.requestFocus()
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar tradução.", txtTraducao.text)
             }
         } else txtVocabulario.unFocusColor = Color.RED
@@ -130,7 +129,7 @@ class CorrecaoController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(CorrecaoController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(CorrecaoController::class.java)
 
         private val STYLE_SHEET: String = AlertasPopup::class.java.getResource("/css/Dark_Theme.css").toExternalForm()
 
@@ -171,7 +170,7 @@ class CorrecaoController : Initializable {
                 nodeBlur.effect = blur
                 dialog.show()
             } catch (e: IOException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
 

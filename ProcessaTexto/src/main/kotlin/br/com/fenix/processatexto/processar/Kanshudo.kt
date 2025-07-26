@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 import java.net.URL
 
-
 object Kanshudo {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(Kanshudo::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Kanshudo::class.java)
 
     //final private static String LINK_WORD = "https://www.kanshudo.com/searchw?q={kanji}";
     private const val LINK_NAME = "https://www.kanshudo.com/searchn?q={kanji}"
@@ -29,7 +28,7 @@ object Kanshudo {
             val pagina: Document = try {
                 Jsoup.parse(URL(url).openStream(), "UTF-8", url)
             } catch (e: FileNotFoundException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 return ""
             }
             val nomes: Elements = pagina.getElementsByClass("name_readings")
@@ -48,7 +47,7 @@ object Kanshudo {
 
             resultado
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             ""
         }
     } /*private static String getSignificado(String kanji) {

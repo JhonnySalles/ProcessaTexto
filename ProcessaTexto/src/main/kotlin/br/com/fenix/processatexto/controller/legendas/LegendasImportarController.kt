@@ -164,14 +164,14 @@ class LegendasImportarController : Initializable, BaseController {
         val nomeFila: String = cbNome.editor.text
         val prefix: String = txtPrefixoSom.text.trim()
         val isVocab: Boolean = ckbVocabulario.isSelected
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Legendas - Processar arquivos"
         
         val processar: Task<Void> = object : Task<Void>() {
             var i: Long = 0
             var error = false
-            val dicionario = MenuPrincipalController.controller.dicionario
-            val modo = MenuPrincipalController.controller.modo
+            val dicionario = MenuPrincipalController.oController.dicionario
+            val modo = MenuPrincipalController.oController.modo
             val linguagemFilaSql = cbLinguagemFilaSql.selectionModel.selectedItem
             
             @Override
@@ -343,7 +343,7 @@ class LegendasImportarController : Initializable, BaseController {
                         arquivo.isProcessar = false
                     }
                 } catch (e: Exception) {
-                    LOGGER.error("Erro ao processar as legendas", e)
+                    oLog.error("Erro ao processar as legendas", e)
                     error = true
                 } finally {
                     if (!desativar)
@@ -360,7 +360,7 @@ class LegendasImportarController : Initializable, BaseController {
 
                         progress.barraProgresso.progressProperty().unbind()
                         progress.log.textProperty().unbind()
-                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     }
                 }
@@ -523,7 +523,7 @@ class LegendasImportarController : Initializable, BaseController {
             cbBase.items.setAll(services.tabelas)
             cbNome.items.setAll(services.nomes)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -645,7 +645,7 @@ class LegendasImportarController : Initializable, BaseController {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(LegendasImportarController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(LegendasImportarController::class.java)
         private const val ARQUIVO_FULL = "processados.tsv"
         val fxmlLocate: URL get() = LegendasImportarController::class.java.getResource("/view/legendas/LegendasImportar.fxml") as URL
     }

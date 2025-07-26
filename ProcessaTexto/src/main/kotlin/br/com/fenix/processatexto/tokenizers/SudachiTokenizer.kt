@@ -100,16 +100,16 @@ class SudachiTokenizer {
         var processado = ""
         vocabNovo.clear()
         repetido.clear()
-        google = MenuPrincipalController.controller.contaGoogle
+        google = MenuPrincipalController.oController.contaGoogle
         controller.setPalavra(texto[0])
         
         try {
-            FileInputStream(getPathSettings(MenuPrincipalController.controller.dicionario)).use { input ->
+            FileInputStream(getPathSettings(MenuPrincipalController.oController.dicionario)).use { input ->
                 DictionaryFactory().create("", readAll(input)).use { dict ->
                     tokenizer = dict.create()
                     i = 0
                     max = texto.size.toLong()
-                    val mode = getModo(MenuPrincipalController.controller.modo)
+                    val mode = getModo(MenuPrincipalController.oController.modo)
                     for (txt in texto) {
                         if (txt !== texto[0] && txt.isNotEmpty()) {
                             processado += processaTokenizer(mode, txt, false)
@@ -137,15 +137,15 @@ class SudachiTokenizer {
         var processado = ""
         vocabNovo.clear()
         repetido.clear()
-        google = MenuPrincipalController.controller.contaGoogle
+        google = MenuPrincipalController.oController.contaGoogle
         controller.setPalavra(texto[0])
         try {
-            FileInputStream(getPathSettings(MenuPrincipalController.controller.dicionario)).use { input ->
+            FileInputStream(getPathSettings(MenuPrincipalController.oController.dicionario)).use { input ->
                 DictionaryFactory().create("", readAll(input)).use { dict ->
                     tokenizer = dict.create()
                     i = 0
                     max = texto.size.toLong()
-                    val mode = getModo(MenuPrincipalController.controller.modo)
+                    val mode = getModo(MenuPrincipalController.oController.modo)
                     for (txt in texto) {
                         if (txt.isNotEmpty()) {
                             val tokenizer = processaTokenizer(mode, txt, false)
@@ -181,7 +181,7 @@ class SudachiTokenizer {
 
     @Throws(SQLException::class)
     private fun processaMusica() {
-        MenuPrincipalController.controller.setAviso("Sudachi - Processar música")
+        MenuPrincipalController.oController.setAviso("Sudachi - Processar música")
         val processar: Task<Void> = object : Task<Void>() {
 
             lateinit var texto: List<String>
@@ -197,9 +197,9 @@ class SudachiTokenizer {
 
                 Platform.runLater {
                     texto = controller.textoOrigem.split("\n")
-                    dictionario = MenuPrincipalController.controller.dicionario
-                    mode = getModo(MenuPrincipalController.controller.modo)
-                    google = MenuPrincipalController.controller.contaGoogle
+                    dictionario = MenuPrincipalController.oController.dicionario
+                    mode = getModo(MenuPrincipalController.oController.modo)
+                    google = MenuPrincipalController.oController.contaGoogle
                     controller.limpaVocabulario()
                     controller.desabilitaBotoes()
                 }
@@ -257,7 +257,7 @@ class SudachiTokenizer {
 
     @Throws(SQLException::class)
     private fun processaVocabulario() {
-        MenuPrincipalController.controller.setAviso("SUDACHI - Processar vocabulário obtendo frase do site Tanoshi Japanese.")
+        MenuPrincipalController.oController.setAviso("SUDACHI - Processar vocabulário obtendo frase do site Tanoshi Japanese.")
         val processar: Task<Void> = object : Task<Void>() {
             var palavra = ""
             var palavras = listOf("")
@@ -282,9 +282,9 @@ class SudachiTokenizer {
 
                 Platform.runLater {
                     palavras = controller.textoOrigem.split("\n")
-                    dictionario = MenuPrincipalController.controller.dicionario
-                    mode = getModo(MenuPrincipalController.controller.modo)
-                    google = MenuPrincipalController.controller.contaGoogle
+                    dictionario = MenuPrincipalController.oController.dicionario
+                    mode = getModo(MenuPrincipalController.oController.modo)
+                    google = MenuPrincipalController.oController.contaGoogle
                     isExcel = controller.isListaExcel
                     controller.limpaVocabulario()
                     controller.desabilitaBotoes()
@@ -307,7 +307,7 @@ class SudachiTokenizer {
                                     leitura = textos[2]
                             } else palavra = texto
                             Platform.runLater {
-                                MenuPrincipalController.controller.getLblLog().text = "Processando vocabulário $palavra - $i de $max"
+                                MenuPrincipalController.oController.getLblLog().text = "Processando vocabulário $palavra - $i de $max"
                             }
                             updateProgress(i, max)
                             atualizaBarraWindows.run()
@@ -401,7 +401,7 @@ class SudachiTokenizer {
                         controller.setVocabulario(vocabNovo)
                         controller.setTextoDestino(vocabulario)
                         controller.habilitaBotoes()
-                        MenuPrincipalController.controller.getLblLog().text = ""
+                        MenuPrincipalController.oController.getLblLog().text = ""
                     }
                     if (erro) TimeUnit.SECONDS.sleep(5)
                     Platform.runLater {
@@ -491,11 +491,11 @@ class SudachiTokenizer {
         try {
             DictionaryFactory().create(
                 "", readAll(
-                    FileInputStream(getPathSettings(MenuPrincipalController.controller.dicionario))
+                    FileInputStream(getPathSettings(MenuPrincipalController.oController.dicionario))
                 )
             ).use { dict ->
                 tokenizer = dict.create()
-                val mode = getModo(MenuPrincipalController.controller.modo)
+                val mode = getModo(MenuPrincipalController.oController.modo)
                 for (vocabulario in lista) {
                     for (mp in tokenizer!!.tokenize(mode, vocabulario.vocabulario))
                         if (mp.dictionaryForm().equals(vocabulario.vocabulario, true)) {
@@ -518,7 +518,7 @@ class SudachiTokenizer {
     }
 
     fun processaListaNovo(pesquisaSite: Boolean?) {
-        MenuPrincipalController.controller.setAviso("Sudachi - Processar lista de novos registros")
+        MenuPrincipalController.oController.setAviso("Sudachi - Processar lista de novos registros")
         val processar: Task<Void> = object : Task<Void>() {
 
             @Throws(IOException::class, InterruptedException::class)
@@ -532,7 +532,7 @@ class SudachiTokenizer {
                     max = vocabNovo.size.toLong()
                     for (item in vocabNovo) {
                         Platform.runLater {
-                            MenuPrincipalController.controller.getLblLog().text = "Processando vocabulário novo " + item.vocabulario + " - " + i + " de " + max
+                            MenuPrincipalController.oController.getLblLog().text = "Processando vocabulário novo " + item.vocabulario + " - " + i + " de " + max
                         }
                         updateProgress(i, max)
                         atualizaBarraWindows.run()

@@ -51,7 +51,7 @@ class ProcessarLegendas(controller: BaseController) {
 
     fun processarLegendas(frases: List<String>) {
         error = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Legendas - Processar"
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         val processarVocabulario = object : Task<Void>() {
@@ -61,11 +61,11 @@ class ProcessarLegendas(controller: BaseController) {
                 try {
                     DictionaryFactory().create(
                         "", SudachiTokenizer.readAll(
-                            FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.controller.dicionario))
+                            FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.oController.dicionario))
                         )
                     ).use { dict ->
                         tokenizer = dict.create()
-                        mode = SudachiTokenizer.getModo(MenuPrincipalController.controller.modo)
+                        mode = SudachiTokenizer.getModo(MenuPrincipalController.oController.modo)
 
                         var x = 0L
                         for (frase in frases) {
@@ -221,13 +221,13 @@ class ProcessarLegendas(controller: BaseController) {
 
                                 if (revisar.ingles.isNotEmpty()) {
                                     try {
-                                        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = m.surface() + " : Obtendo tradução." }
+                                        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = m.surface() + " : Obtendo tradução." }
                                         revisar.portugues = Utils.normalize(
                                             ScriptGoogle.translate(
                                                 Language.ENGLISH.sigla,
                                                 Language.PORTUGUESE.sigla,
                                                 revisar.ingles,
-                                                MenuPrincipalController.controller.contaGoogle
+                                                MenuPrincipalController.oController.contaGoogle
                                             )
                                         )
                                     } catch (e: IOException) {
@@ -254,9 +254,9 @@ class ProcessarLegendas(controller: BaseController) {
 
     private fun getSignificado(kanji: String): String {
         if (kanji.trim().isEmpty()) return ""
-        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$kanji : Obtendo significado." }
+        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$kanji : Obtendo significado." }
         var resultado = ""
-        when (MenuPrincipalController.controller.site) {
+        when (MenuPrincipalController.oController.site) {
             Site.TODOS -> {
                 resultado = TanoshiJapanese.processa(kanji)
                 if (resultado.isEmpty())
@@ -274,9 +274,9 @@ class ProcessarLegendas(controller: BaseController) {
 
     private fun getDesmembrado(palavra: String): String {
         var resultado = ""
-        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Desmembrando a palavra." }
-        resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.B), Modo.B)
-        if (resultado.isEmpty()) resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Desmembrando a palavra." }
+        resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.B), Modo.B)
+        if (resultado.isEmpty()) resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
         return resultado
     }
 
@@ -288,7 +288,7 @@ class ProcessarLegendas(controller: BaseController) {
                 if (resultado.trim().isNotEmpty())
                     desmembrado += "$palavra - $resultado; "
                 else if (modo == Modo.B) {
-                    resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+                    resultado = processaPalavras(desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
                     if (resultado.trim().isNotEmpty())
                         desmembrado += resultado
                 }
@@ -357,13 +357,13 @@ class ProcessarLegendas(controller: BaseController) {
                     } else {
                         revisar = Revisar(texto, "", "", "", revisado = false, isAnime = true, isManga = false, isNovel = false)
                         try {
-                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$texto : Obtendo tradução." }
+                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$texto : Obtendo tradução." }
                             revisar.portugues = Utils.normalize(
                                 ScriptGoogle.translate(
                                     Language.ENGLISH.sigla,
                                     Language.PORTUGUESE.sigla,
                                     texto,
-                                    MenuPrincipalController.controller.contaGoogle
+                                    MenuPrincipalController.oController.contaGoogle
                                 )
                             )
                         } catch (e: IOException) {

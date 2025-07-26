@@ -8,10 +8,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 
-
 object Configuracao {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(Configuracao::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Configuracao::class.java)
 
     private val secrets: Properties = Properties()
     private val properties: Properties = Properties()
@@ -28,7 +27,7 @@ object Configuracao {
             }
         } catch (e: IOException) {
             //Alertas.Tela_Alerta("Erro ao salvar o properties", e.message )
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -48,7 +47,7 @@ object Configuracao {
             }
         } catch (e: IOException) {
             //Alertas.Tela_Alerta("Erro ao salvar o properties", e.message )
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -64,7 +63,7 @@ object Configuracao {
                 }
         } catch (e: IOException) {
             //Alertas.Tela_Alerta("Erro ao carregar o properties", e.message )
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw Exception("Erro ao carregar o properties")
         }
     }
@@ -145,7 +144,7 @@ object Configuracao {
                 }
             } catch (e: IOException) {
                 //Alertas.Tela_Alerta("Erro ao salvar o secrets", e.message )
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
         try {
@@ -155,7 +154,7 @@ object Configuracao {
             }
         } catch (e: IOException) {
             //Alertas.Tela_Alerta("Erro ao carregar o secrets", e.message )
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw Exception("Erro ao carregar o secrets")
         }
     }

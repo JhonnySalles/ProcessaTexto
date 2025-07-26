@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory
  * @author Jhonny de Salles Noschang
  */
 object Alertas {
-    private val LOGGER: Logger = LoggerFactory.getLogger(Alertas::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Alertas::class.java)
     fun telaAlerta(titulo: String, texto: String) {
         try {
             val loader = FXMLLoader(PopupAlertaController.fxmlLocate)
@@ -41,7 +41,7 @@ object Alertas {
             stageTela.showAndWait() // Mostra a tela.
         } catch (e: Exception) {
             println("Erro ao tentar carregar o alerta.")
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 }

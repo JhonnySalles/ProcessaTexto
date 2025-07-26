@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 
-
 class NovelsProcessarController : Initializable, BaseController {
 
     @FXML
@@ -105,7 +104,7 @@ class NovelsProcessarController : Initializable, BaseController {
         if (novels == null)
             novels = ProcessarNovels(this)
         treeBases.isDisable = true
-        MenuPrincipalController.controller.getLblLog().text = "Iniciando o processamento das novels..."
+        MenuPrincipalController.oController.getLblLog().text = "Iniciando o processamento das novels..."
         novels!!.processarTabelas(TABELAS!!)
     }
 
@@ -121,7 +120,7 @@ class NovelsProcessarController : Initializable, BaseController {
     @Override
     override fun habilitar() {
         treeBases.isDisable = false
-        MenuPrincipalController.controller.getLblLog().text = ""
+        MenuPrincipalController.oController.getLblLog().text = ""
         btnProcessar.accessibleText = "PROCESSAR"
         btnProcessar.text = "Processar"
         btnCarregar.isDisable = false
@@ -145,7 +144,7 @@ class NovelsProcessarController : Initializable, BaseController {
     private var DADOS: TreeItem<Novel>? = null
 
     private fun carregar() {
-        MenuPrincipalController.controller.getLblLog().text = "Carregando dados das novels..."
+        MenuPrincipalController.oController.getLblLog().text = "Carregando dados das novels..."
         btnCarregar.isDisable = true
         btnProcessar.isDisable = true
         treeBases.isDisable = true
@@ -169,7 +168,7 @@ class NovelsProcessarController : Initializable, BaseController {
                     TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS!!, false, BASE!!, LINGUAGEM!!, NOVEL!!))
                     DADOS = treeData
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
 
                 return null
@@ -179,7 +178,7 @@ class NovelsProcessarController : Initializable, BaseController {
             override fun succeeded() {
                 Platform.runLater {
                     treeBases.setRoot(DADOS)
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
                     btnProcessar.isDisable = false
@@ -312,7 +311,7 @@ class NovelsProcessarController : Initializable, BaseController {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
         autoCompletePopup.suggestions.addAll(cbBase.items)
@@ -330,7 +329,7 @@ class NovelsProcessarController : Initializable, BaseController {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(NovelsProcessarController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(NovelsProcessarController::class.java)
         val fxmlLocate: URL get() = NovelsProcessarController::class.java.getResource("/view/novels/NovelProcessar.fxml") as URL
     }
 }

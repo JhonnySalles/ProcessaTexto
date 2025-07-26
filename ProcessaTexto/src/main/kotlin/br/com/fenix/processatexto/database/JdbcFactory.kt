@@ -11,10 +11,9 @@ import org.slf4j.LoggerFactory
 import java.sql.*
 import java.util.*
 
-
 object JdbcFactory {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(JdbcFactory::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(JdbcFactory::class.java)
 
     private var conexao: DadosConexao = DadosConexao(
         "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port,
@@ -68,7 +67,7 @@ object JdbcFactory {
         try {
             default.close()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -77,7 +76,7 @@ object JdbcFactory {
             try {
                 st.close()
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
     }
 
@@ -86,7 +85,7 @@ object JdbcFactory {
             try {
                 rs.close()
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
     }
 
@@ -124,13 +123,13 @@ object JdbcFactory {
             connection.close()
         } catch (e: ClassNotFoundException) { // Driver n�o encontrado
             println("O driver de conexão expecificado nao foi encontrado.")
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } catch (e: SQLException) {
             println("Nao foi possivel conectar ao Banco de Dados.")
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } catch (e: Exception) {
             println("Configuração não encontrada.")
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             if (connection != null)
                 connection.close()

@@ -3,8 +3,6 @@ package br.com.fenix.processatexto.model.entities
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Driver
 import jakarta.persistence.*
-import java.util.*
-
 
 @jakarta.persistence.Entity
 @Table(name = "conexoes")

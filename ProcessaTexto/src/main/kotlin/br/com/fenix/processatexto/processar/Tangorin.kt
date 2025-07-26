@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 import java.net.URL
 
-
 object Tangorin {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(Tangorin::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Tangorin::class.java)
 
     private const val LINK = "https://tangorin.com/words?search={kanji}"
     private const val LINK_NOME = "https://tangorin.com/names?search={kanji}"
@@ -30,7 +29,7 @@ object Tangorin {
             val pagina: Document = try {
                 Jsoup.parse(URL(url).openStream(), "ISO-8859-1", url)
             } catch (e: FileNotFoundException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 return ""
             }
             val grupo: Elements = pagina.getElementsByClass("results-group")
@@ -50,7 +49,7 @@ object Tangorin {
             if (retorno.contains("; ")) retorno = retorno.substring(0, retorno.lastIndexOf("; "))
             retorno
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             ""
         }
     }
@@ -62,7 +61,7 @@ object Tangorin {
             val pagina: Document = try {
                 Jsoup.parse(URL(url).openStream(), "ISO-8859-1", url)
             } catch (e: FileNotFoundException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 return ""
             }
             val grupo: Elements = pagina.getElementsByClass("results-group")
@@ -83,7 +82,7 @@ object Tangorin {
             if (retorno.contains("; ")) retorno = retorno.substring(0, retorno.lastIndexOf("; "))
             retorno
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             ""
         }
     }

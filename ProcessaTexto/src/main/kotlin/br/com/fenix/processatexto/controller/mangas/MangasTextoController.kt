@@ -267,7 +267,7 @@ class MangasTextoController : Initializable, VinculoTextoListener {
                                 controller.setDados(item, pagina)
                                 graphic = controller.root
                             } catch (e: IOException) {
-                                LOGGER.error(e.message, e)
+                                oLog.error(e.message, e)
                                 graphic = null
                             }
                         }
@@ -292,7 +292,7 @@ class MangasTextoController : Initializable, VinculoTextoListener {
                                 controller.setDados(tableRow.item)
                                 controller.hbRoot
                             } catch (e: IOException) {
-                                LOGGER.error(e.message, e)
+                                oLog.error(e.message, e)
                                 null
                             }
                         }
@@ -408,7 +408,7 @@ class MangasTextoController : Initializable, VinculoTextoListener {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasTextoController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasTextoController::class.java)
         val fxmlLocate: URL get() = MangasTextoController::class.java.getResource("/view/mangas/MangaTexto.fxml") as URL
     }
 }

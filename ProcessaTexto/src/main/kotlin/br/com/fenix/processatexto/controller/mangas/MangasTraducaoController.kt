@@ -32,10 +32,8 @@ import java.net.URL
 import java.sql.SQLException
 import java.util.*
 
-
 class MangasTraducaoController : Initializable {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(MangasTraducaoController::class.java)
 
     @FXML
     private lateinit var apRoot: AnchorPane
@@ -137,7 +135,7 @@ class MangasTraducaoController : Initializable {
     private var error: String = ""
 
     private fun traduzir() {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         PAUSAR = false
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
@@ -202,13 +200,13 @@ class MangasTraducaoController : Initializable {
                                         traducoes++
                                         if (traducoes > 3000) {
                                             traducoes = 0
-                                            MenuPrincipalController.controller.contaGoogle = Utils.next(MenuPrincipalController.controller.contaGoogle)
+                                            MenuPrincipalController.oController.contaGoogle = Utils.next(MenuPrincipalController.oController.contaGoogle)
 
                                         }
                                         textoTraduzido.texto = ScriptGoogle.translate(
                                             capitulo.lingua.sigla,
                                             Language.PORTUGUESE.sigla, texto.texto,
-                                            MenuPrincipalController.controller.contaGoogle
+                                            MenuPrincipalController.oController.contaGoogle
                                         )
 
                                         if (PAUSAR)
@@ -224,7 +222,7 @@ class MangasTraducaoController : Initializable {
                         }
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = e.message!!
                 }
                 return null
@@ -237,7 +235,7 @@ class MangasTraducaoController : Initializable {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                     if (error.isNotEmpty())
                         AlertasPopup.erroModal("Erro", error)
                     else if (!PAUSAR) {
@@ -252,7 +250,7 @@ class MangasTraducaoController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread tradução: " + super.getMessage())
+                oLog.warn("Erro na thread tradução: " + super.getMessage())
                 print("Erro na thread tradução: " + super.getMessage())
             }
         }
@@ -269,7 +267,7 @@ class MangasTraducaoController : Initializable {
     private var LINGUAGEM: Language? = null
     private var DADOS: TreeItem<Manga>? = null
     private fun carregar() {
-        MenuPrincipalController.controller.getLblLog().text = "Carregando..."
+        MenuPrincipalController.oController.getLblLog().text = "Carregando..."
 
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
@@ -293,7 +291,7 @@ class MangasTraducaoController : Initializable {
                     TABELAS = FXCollections.observableArrayList(service.selectAll(BASE!!, MANGA!!, VOLUME!!, CAPITULO!!, LINGUAGEM))
                     DADOS = treeData
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -303,7 +301,7 @@ class MangasTraducaoController : Initializable {
                 super.succeeded()
                 Platform.runLater {
                     treeBases.root = DADOS
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
@@ -315,7 +313,7 @@ class MangasTraducaoController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread de carregamento de itens: " + super.getMessage())
+                oLog.warn("Erro na thread de carregamento de itens: " + super.getMessage())
                 print("Erro na thread de carregamento de itens: " + super.getMessage())
             }
         }
@@ -419,7 +417,7 @@ class MangasTraducaoController : Initializable {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
         autoCompletePopup.suggestions.addAll(cbBase.items)
@@ -448,6 +446,7 @@ class MangasTraducaoController : Initializable {
     }
 
     companion object {
+        private val oLog: Logger = LoggerFactory.getLogger(MangasTraducaoController::class.java)
         val fxmlLocate: URL get() = MangasTraducaoController::class.java.getResource("/view/mangas/MangaTraducao.fxml") as URL
     }
 }

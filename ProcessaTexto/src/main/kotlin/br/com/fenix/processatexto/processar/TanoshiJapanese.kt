@@ -9,10 +9,9 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.regex.Pattern
 
-
 object TanoshiJapanese {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(TanoshiJapanese::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(TanoshiJapanese::class.java)
 
     private const val LINK = "https://www.tanoshiijapanese.com/dictionary/index.cfm?j={kanji}"
     private const val SITE = "https://www.tanoshiijapanese.com/"
@@ -69,7 +68,7 @@ object TanoshiJapanese {
             }
             getSignificado(campoSignificado)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             ""
         }
     }
@@ -119,7 +118,7 @@ object TanoshiJapanese {
             }
         } catch (e: Exception) {
             println(pagina.baseUri())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return ""
     }
@@ -138,7 +137,7 @@ object TanoshiJapanese {
                 }
             }
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return retorno
     }

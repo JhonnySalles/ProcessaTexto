@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 
-
 class NovelsController : Initializable {
 
     @FXML
@@ -35,7 +34,7 @@ class NovelsController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(NovelsController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(NovelsController::class.java)
         val fxmlLocate: URL get() = NovelsController::class.java.getResource("/view/novels/Novel.fxml") as URL
     }
 }

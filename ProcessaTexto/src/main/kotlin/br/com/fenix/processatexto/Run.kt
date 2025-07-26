@@ -15,10 +15,9 @@ import javafx.stage.StageStyle
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
 
-
 class Run : Application() {
 
-    private val LOGGER = LoggerFactory.getLogger(Application::class.java)
+    private val oLog = LoggerFactory.getLogger(Application::class.java)
 
     override fun start(primaryStage: Stage) {
         PRIMARY_STAGE = primaryStage
@@ -49,7 +48,7 @@ class Run : Application() {
 
             PRIMARY_STAGE.show() // Mostra a tela.
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         PRIMARY_STAGE.onCloseRequest = EventHandler { exitProcess(0) }
     }

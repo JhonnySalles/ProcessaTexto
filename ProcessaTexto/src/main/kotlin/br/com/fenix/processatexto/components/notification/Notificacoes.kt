@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 
 object Notificacoes {
-    private val LOGGER: Logger = LoggerFactory.getLogger(Notificacoes::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Notificacoes::class.java)
     private val IMG_ALERTA: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAlerta_48.png")))
     private val IMG_AVISO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoAviso_48.png")))
     private val IMG_ERRO: ImageView = ImageView(Image(AlertasPopup::class.java.getResourceAsStream("/images/alert/icoErro_48.png")))
@@ -95,7 +95,7 @@ object Notificacoes {
             CONTROLLER = loader.getController()
             ROOT_ANCHOR_PANE.children.add(NOTIFICACAO)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         TT_AP_NOTIFICACOES = TranslateTransition(Duration(500.0), NOTIFICACAO)
         TT_AP_NOTIFICACOES.onFinished = object : EventHandler<ActionEvent> {

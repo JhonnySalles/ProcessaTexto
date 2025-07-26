@@ -144,7 +144,7 @@ class MangasAjustarController : Initializable {
     private var DADOS: TreeItem<Manga>? = null
 
     private fun carregar() {
-        MenuPrincipalController.controller.getLblLog().text = "Carregando informações..."
+        MenuPrincipalController.oController.getLblLog().text = "Carregando informações..."
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
 
@@ -167,7 +167,7 @@ class MangasAjustarController : Initializable {
                     TABELAS = FXCollections.observableArrayList(service.selectTabelasJson(BASE!!, MANGA!!, VOLUME!!, CAPITULO!!, LINGUAGEM!!, ckbInverterOrdemTexto.isSelected))
                     DADOS = treeData
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     throw Exception(Mensagens.BD_ERRO_SELECT)
                 }
                 return null
@@ -178,7 +178,7 @@ class MangasAjustarController : Initializable {
                 super.succeeded()
                 Platform.runLater {
                     treeBases.root = DADOS
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
@@ -190,7 +190,7 @@ class MangasAjustarController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread de carregamento de itens: " + super.getMessage())
+                oLog.warn("Erro na thread de carregamento de itens: " + super.getMessage())
                 print("Erro na thread de carregamento de itens: " + super.getMessage())
             }
         }
@@ -199,7 +199,7 @@ class MangasAjustarController : Initializable {
     }
 
     private fun salvar() {
-        MenuPrincipalController.controller.getLblLog().text = "Salvando as informações corrigidas..."
+        MenuPrincipalController.oController.getLblLog().text = "Salvando as informações corrigidas..."
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
 
@@ -228,7 +228,7 @@ class MangasAjustarController : Initializable {
                     TABELAS.clear()
                     DADOS!!.children.clear()
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -239,7 +239,7 @@ class MangasAjustarController : Initializable {
                 Platform.runLater {
                     treeBases.root = DADOS
                     AlertasPopup.avisoModal("Aviso", "Alterações salva com sucesso.")
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
@@ -251,7 +251,7 @@ class MangasAjustarController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Falha ao executar a thread de salvamento de as informações corrigidas: " + super.getMessage())
+                oLog.warn("Falha ao executar a thread de salvamento de as informações corrigidas: " + super.getMessage())
             }
         }
         val t = Thread(carregaItens)
@@ -606,7 +606,7 @@ class MangasAjustarController : Initializable {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
 
         val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
@@ -642,7 +642,7 @@ class MangasAjustarController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasAjustarController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasAjustarController::class.java)
         val fxmlLocate: URL
             get() = MangasAjustarController::class.java.getResource("/view/mangas/MangaAjustar.fxml")
         val iconLocate: String

@@ -40,7 +40,6 @@ import java.sql.SQLException
 import java.util.*
 import java.util.stream.Collectors
 
-
 open class EstatisticaController : Initializable {
 
     @FXML
@@ -150,7 +149,7 @@ open class EstatisticaController : Initializable {
                 obsLCombinacoes = FXCollections.observableArrayList(combinacoes)
                 tbVocabulario.setItems(obsLCombinacoes)
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 AlertasPopup.erroModal(rootStackPane, root, mutableListOf(), "Não foi possível realizar a pesquisa.", e.message!!)
             }
         }
@@ -207,7 +206,7 @@ open class EstatisticaController : Initializable {
             treePalavras.setRoot(root)
             treePalavras.setShowRoot(false)
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(rootStackPane, root, mutableListOf(), "Erro ao processar vocabulario", e.message!!)
         }
     }
@@ -436,7 +435,7 @@ open class EstatisticaController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(EstatisticaController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(EstatisticaController::class.java)
         val imgAnimaBanco: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoDataBase_48.png"))
 
         val imgAnimaBancoEspera: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoDataEspera_48.png"))

@@ -31,10 +31,9 @@ import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
-
 class Utils {
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(Utils::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(Utils::class.java)
 
         val VINCULO_ITEM_FORMAT = DataFormat("custom.item.vinculo")
         val NUMERO_PAGINA_ITEM_FORMAT = DataFormat("custom.item.numero.pagina")
@@ -98,7 +97,7 @@ class Utils {
                 try {
                     parse.destroir()
                 } catch (e: IOException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
         }
 
@@ -140,13 +139,13 @@ class Utils {
 
                 md5
             } catch (e: Exception) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 throw e
             } finally {
                 try {
                     image.close()
                 } catch (e: IOException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
             }
         }

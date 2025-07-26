@@ -12,9 +12,8 @@ import javafx.stage.Stage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
 object Menu {
-    private val LOGGER: Logger = LoggerFactory.getLogger(Menu::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(Menu::class.java)
     var tela: Tela = Tela.TEXTO
 
     fun runMenu(primaryStage: Stage) {
@@ -31,7 +30,7 @@ object Menu {
             primaryStage.minHeight = 200.0
             primaryStage.show() // Mostra a tela.
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 }

@@ -38,7 +38,6 @@ import java.sql.SQLException
 import java.util.*
 import java.util.stream.Collectors
 
-
 open class FrasesAnkiController : Initializable {
 
     @FXML
@@ -136,7 +135,7 @@ open class FrasesAnkiController : Initializable {
             stage.icons.add(Image(javaClass.getResourceAsStream(EstatisticaController.iconLocate)))
             stage.show() // Mostra a tela.
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             println("Erro ao abrir a tela de estatistica.")
         }
     }
@@ -184,7 +183,7 @@ open class FrasesAnkiController : Initializable {
                 txtVocabulario.unFocusColor = Color.web("#106ebe")
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             Notificacoes.notificacao(Notificacao.ERRO, "Erro pesquisar a palavra.", palavra)
             txtVocabulario.unFocusColor = Color.RED
         }
@@ -253,7 +252,7 @@ open class FrasesAnkiController : Initializable {
                     txtVocabulario.unFocusColor = Color.LIME
                     txtVocabulario.isEditable = false
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar vocabulario.", txtVocabulario.text)
                     txtVocabulario.unFocusColor = Color.RED
                     txtVocabulario.isEditable = true
@@ -278,7 +277,7 @@ open class FrasesAnkiController : Initializable {
                 txtExclusoes.unFocusColor = Color.LIME
                 txtExclusoes.text = ""
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 Notificacoes.notificacao(Notificacao.ERRO, "Erro ao salvar vocabulário de exclusão.", txtExclusoes.text)
                 txtExclusoes.unFocusColor = Color.RED
             }
@@ -298,7 +297,7 @@ open class FrasesAnkiController : Initializable {
             val tokenizer = SudachiTokenizer()
             tokenizer.processa(this)
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao pesquisar vocabulário excluído.")
         }
     }
@@ -326,7 +325,7 @@ open class FrasesAnkiController : Initializable {
                     "Nenhum item com tradução encontrada."
                 ) else Notificacoes.notificacao(Notificacao.SUCESSO, "Salvamento texto concluído.", itensSalvo.substring(0, itensSalvo.lastIndexOf(", ")) + ".")
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 Notificacoes.notificacao(Notificacao.ERRO, "Erro.", "Erro ao salvar os novos vocabulários.")
             }
         } else Notificacoes.notificacao(Notificacao.AVISO, "Aviso.", "Lista vazia.")
@@ -429,12 +428,12 @@ open class FrasesAnkiController : Initializable {
         try {
             atualizaExclusao()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(FrasesAnkiController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(FrasesAnkiController::class.java)
         val fxmlLocate: URL get() = FrasesAnkiController::class.java.getResource("/view/FrasesAnki.fxml") as URL
         val iconLocate: String get() = "/images/icoProcessaTexto_128.png"
     }

@@ -78,7 +78,7 @@ class LegendasMarcasController : Initializable {
                 marcas += getMarca(txtAreaOriginal.text)
             txtAreaProcessado.text = "start_region_table $marcas end_region_table".trimIndent()
         } catch (ex: Exception) {
-            LOGGER.error("Erro ao processar marcas.", ex)
+            oLog.error("Erro ao processar marcas.", ex)
         }
     }
 
@@ -89,7 +89,7 @@ class LegendasMarcasController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(LegendasMarcasController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(LegendasMarcasController::class.java)
         val fxmlLocate: URL get() = LegendasMarcasController::class.java.getResource("/view/legendas/LegendasMarcas.fxml") as URL
     }
 }

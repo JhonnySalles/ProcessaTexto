@@ -11,10 +11,11 @@ import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.io.IOException
 
-
 class ProcessarPalavra {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(ProcessarPalavra::class.java)
+    companion object {
+        private val oLog: Logger = LoggerFactory.getLogger(ProcessarPalavra::class.java)
+    }
 
     private lateinit var tokenizer: Tokenizer
     private lateinit var mode: SplitMode
@@ -30,7 +31,7 @@ class ProcessarPalavra {
                 return processar(palavra)
             }
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             return mutableListOf()
         }
     }

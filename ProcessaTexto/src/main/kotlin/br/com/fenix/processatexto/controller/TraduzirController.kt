@@ -98,7 +98,7 @@ class TraduzirController : Initializable {
     @FXML
     private fun onBtnSalvar() {
         try {
-            MenuPrincipalController.controller.getLblLog().text = "Salvando...."
+            MenuPrincipalController.oController.getLblLog().text = "Salvando...."
 
             btnSalvar.isDisable = true
             btnAtualizar.isDisable = true
@@ -123,10 +123,10 @@ class TraduzirController : Initializable {
             // VocabularioServices service = new VocabularioServices();
             // service.insertOrUpdate(salvar);
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal("Erro", "Erro ao salvar as atualizações.")
         } finally {
-            MenuPrincipalController.controller.getLblLog().text = "Salvamento concluido."
+            MenuPrincipalController.oController.getLblLog().text = "Salvamento concluido."
 
             btnSalvar.isDisable = false
             btnAtualizar.isDisable = false
@@ -147,11 +147,11 @@ class TraduzirController : Initializable {
     @FXML
     private fun onBtnAtualizar() {
         try {
-            MenuPrincipalController.controller.getLblLog().text = "Atualizando....."
+            MenuPrincipalController.oController.getLblLog().text = "Atualizando....."
             tbVocabulario.items = FXCollections.observableArrayList(service.selectTraduzir(Integer.valueOf(txtQuantidadeRegistros.text)))
-            MenuPrincipalController.controller.getLblLog().text = ""
+            MenuPrincipalController.oController.getLblLog().text = ""
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal("Erro", "Erro ao pesquisar as revisões.")
         }
     }
@@ -167,7 +167,7 @@ class TraduzirController : Initializable {
             return ""
 
         var resultado = ""
-        when (MenuPrincipalController.controller.site) {
+        when (MenuPrincipalController.oController.site) {
             Site.TODOS -> {
                 resultado = TanoshiJapanese.processa(kanji)
                 if (resultado.isEmpty())
@@ -194,7 +194,7 @@ class TraduzirController : Initializable {
             if (resultado.trim().isNotEmpty())
                 desmembrado += "$palavra - $resultado; "
             else if (modo == Modo.B) {
-                resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+                resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
                 if (resultado.trim().isNotEmpty())
                     desmembrado += resultado
             }
@@ -205,9 +205,9 @@ class TraduzirController : Initializable {
     private fun getDesmembrado(palavra: String): String {
         var resultado = ""
 
-        resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.B), Modo.B)
+        resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.B), Modo.B)
         if (resultado.isEmpty())
-            resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+            resultado = processaPalavras(processar.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
 
         return resultado
     }
@@ -236,7 +236,7 @@ class TraduzirController : Initializable {
         desativar = false
         desmembrar = ckbDesmembrar.isSelected
 
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress?.run { this.titulo.text = "Tradução" }
 
         val processarTudo: Task<Void> = object : Task<Void>() {
@@ -277,11 +277,11 @@ class TraduzirController : Initializable {
                                             Language.ENGLISH.sigla,
                                             Language.PORTUGUESE.sigla,
                                             item.ingles,
-                                            MenuPrincipalController.controller.contaGoogle
+                                            MenuPrincipalController.oController.contaGoogle
                                         )
                                     )
                                 } catch (e: IOException) {
-                                    LOGGER.error(e.message, e)
+                                    oLog.error(e.message, e)
                                 }
                             }
 
@@ -291,7 +291,7 @@ class TraduzirController : Initializable {
                             break
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 } finally {
                     Platform.runLater {
                         tbVocabulario.items = FXCollections.observableArrayList(lista)
@@ -312,7 +312,7 @@ class TraduzirController : Initializable {
                         progress?.run { this.log.textProperty().unbind() }
                         progress?.run { this.barraProgresso.progressProperty().unbind() }
 
-                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
 
                         tbVocabulario.refresh()
@@ -341,13 +341,13 @@ class TraduzirController : Initializable {
                 ScriptGoogle.translate(
                     Language.ENGLISH.sigla, Language.PORTUGUESE.sigla,
                     tbVocabulario.selectionModel.selectedItem.ingles,
-                    MenuPrincipalController.controller.contaGoogle
+                    MenuPrincipalController.oController.contaGoogle
                 )
             )
 
             tbVocabulario.refresh()
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -437,7 +437,7 @@ class TraduzirController : Initializable {
                             ScriptGoogle.translate(
                                 Language.ENGLISH.sigla,
                                 Language.PORTUGUESE.sigla, e.newValue.trim(),
-                                MenuPrincipalController.controller.contaGoogle
+                                MenuPrincipalController.oController.contaGoogle
                             )
                         )
 
@@ -477,7 +477,7 @@ class TraduzirController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(TraduzirController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(TraduzirController::class.java)
 
         private var desativar = false
         private var desmembrar = false

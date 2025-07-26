@@ -11,10 +11,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-
 object JpaFactory {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(JpaFactory::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(JpaFactory::class.java)
 
     private var conexao: DadosConexao = DadosConexao(
         "jdbc:mysql://" + Configuracao.server + ":" + Configuracao.port,

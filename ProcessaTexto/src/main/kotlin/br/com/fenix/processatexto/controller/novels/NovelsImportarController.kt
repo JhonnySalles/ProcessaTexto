@@ -29,7 +29,6 @@ import java.io.IOException
 import java.net.URL
 import java.util.*
 
-
 class NovelsImportarController : Initializable, BaseController {
 
     @FXML
@@ -93,7 +92,7 @@ class NovelsImportarController : Initializable, BaseController {
         saveConfig()
         if (novels == null)
             novels = ProcessarNovels(this)
-        MenuPrincipalController.controller.getLblLog().text = "Iniciando o processamento das novels..."
+        MenuPrincipalController.oController.getLblLog().text = "Iniciando o processamento das novels..."
         novels!!.processarArquivos(File(txtCaminho.text), cbBase.editor.text, cbLinguagem.selectionModel.selectedItem, ckbFavorito.isSelected)
     }
 
@@ -117,7 +116,7 @@ class NovelsImportarController : Initializable, BaseController {
 
     @Override
     override fun habilitar() {
-        MenuPrincipalController.controller.getLblLog().text = ""
+        MenuPrincipalController.oController.getLblLog().text = ""
         btnProcessar.accessibleText = "PROCESSAR"
         btnProcessar.text = "Processar"
         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
@@ -194,7 +193,7 @@ class NovelsImportarController : Initializable, BaseController {
             }
         } catch (e: IOException) {
             Alertas.telaAlerta("Erro ao salvar o properties de configuração", e.message!!)
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -214,7 +213,7 @@ class NovelsImportarController : Initializable, BaseController {
                 }
             } catch (e: IOException) {
                 Alertas.telaAlerta("Erro ao carregar o properties de configuração", e.message!!)
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
     }
@@ -237,7 +236,7 @@ class NovelsImportarController : Initializable, BaseController {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
         autoCompletePopup.suggestions.addAll(cbBase.items)
@@ -267,7 +266,7 @@ class NovelsImportarController : Initializable, BaseController {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(NovelsImportarController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(NovelsImportarController::class.java)
         private const val CONFIG = "processa.config"
         val fxmlLocate: URL get() = NovelsImportarController::class.java.getResource("/view/novels/NovelImportar.fxml") as URL
     }

@@ -6,10 +6,9 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
 object DaoFactory {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(DaoFactory::class.java)
+    private val oLog: Logger = LoggerFactory.getLogger(DaoFactory::class.java)
 
     fun createVocabularioJaponesDao(): VocabularioDao = VocabularioJaponesDaoJDBC(Conexao.TEXTO_JAPONES)
 

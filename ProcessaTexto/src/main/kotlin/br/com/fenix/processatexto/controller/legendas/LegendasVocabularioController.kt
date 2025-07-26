@@ -18,7 +18,6 @@ import com.jfoenix.controls.*
 import com.nativejavafx.taskbar.TaskbarProgressbar
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type
 import javafx.application.Platform
-import javafx.beans.InvalidationListener
 import javafx.beans.value.ChangeListener
 import javafx.collections.FXCollections
 import javafx.concurrent.Task
@@ -195,7 +194,7 @@ class LegendasVocabularioController : Initializable, BaseController {
         }
 
         try {
-            MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Salvando as informações..."
+            MenuPrincipalController.oController.getLblLog().text = "[LEGENDAS] Salvando as informações..."
             desabilitaBotoes()
             btnProcessarTudo.isDisable = true
             if (txtAreaDelete.text.isNotEmpty() && !txtAreaDelete.text.equals("UPDATE tabela SET campo3 = '' WHERE campo3 IS NOT NULL", true))
@@ -207,10 +206,10 @@ class LegendasVocabularioController : Initializable, BaseController {
             AlertasPopup.avisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
             onBtnAtualizar()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
         } finally {
-            MenuPrincipalController.controller.getLblLog().text = ""
+            MenuPrincipalController.oController.getLblLog().text = ""
             habilitaBotoes()
             btnProcessarTudo.isDisable = false
         }
@@ -224,11 +223,11 @@ class LegendasVocabularioController : Initializable, BaseController {
         }
 
         try {
-            MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Atualizando...."
+            MenuPrincipalController.oController.getLblLog().text = "[LEGENDAS] Atualizando...."
             tbLista.setItems(FXCollections.observableArrayList(service.comandoSelect(txtAreaSelect.text)))
-            MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Concluido...."
+            MenuPrincipalController.oController.getLblLog().text = "[LEGENDAS] Concluido...."
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao realizar a pesquisa.")
         }
     }
@@ -241,13 +240,13 @@ class LegendasVocabularioController : Initializable, BaseController {
         }
 
         try {
-            MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Iniciando o delete...."
+            MenuPrincipalController.oController.getLblLog().text = "[LEGENDAS] Iniciando o delete...."
             service.comandoDelete(txtAreaDelete.text)
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar as atualizações.")
         } finally {
-            MenuPrincipalController.controller.getLblLog().text = "[LEGENDAS] Delete do vocabulario concluido."
+            MenuPrincipalController.oController.getLblLog().text = "[LEGENDAS] Delete do vocabulario concluido."
         }
     }
 
@@ -272,8 +271,8 @@ class LegendasVocabularioController : Initializable, BaseController {
             if (cbLinguagem.selectionModel.selectedItem == null || cbLinguagem.selectionModel.selectedItem.equals(Language.TODOS))
                 cbLinguagem.selectionModel.select(Language.JAPANESE) else linguagem = cbLinguagem.selectionModel.selectedItem
             tbLista.selectionModel.selectedItem.vocabulario = getVocabulario(
-                MenuPrincipalController.controller.dicionario,
-                MenuPrincipalController.controller.modo, linguagem,
+                MenuPrincipalController.oController.dicionario,
+                MenuPrincipalController.oController.modo, linguagem,
                 tbLista.selectionModel.selectedItem.original
             )
 
@@ -300,14 +299,14 @@ class LegendasVocabularioController : Initializable, BaseController {
         txtAreaVocabulario.text = ""
         desativar = false
         processar.vocabulario.clear()
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Legendas - Processar Vocabulario"
 
         val processarTudo: Task<Void> = object : Task<Void>() {
 
             var lista: MutableList<Processar> = mutableListOf()
-            val dicionario = MenuPrincipalController.controller.dicionario
-            val modo = MenuPrincipalController.controller.modo
+            val dicionario = MenuPrincipalController.oController.dicionario
+            val modo = MenuPrincipalController.oController.modo
             var i: Long = 0
 
             @Override
@@ -335,7 +334,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                             break
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 } finally {
                     Platform.runLater { tbLista.setItems(FXCollections.observableArrayList(lista)) }
                     Platform.runLater {
@@ -346,7 +345,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         tbLista.isDisable = false
                         progress.barraProgresso.progressProperty().unbind()
                         progress.log.textProperty().unbind()
-                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                         txtAreaVocabulario.text = processar.vocabulario.stream().collect(Collectors.joining("\n"))
                         tbLista.refresh()
@@ -371,7 +370,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                 vocabularioJapones.insertExclusao(txtAreaVocabulario.text.split("\n"))
             txtAreaVocabulario.text = ""
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar a exclusao.")
         }
     }
@@ -414,7 +413,7 @@ class LegendasVocabularioController : Initializable, BaseController {
             carregaFiltros()
             AlertasPopup.avisoModal(stackPane, root, mutableListOf(), "Salvo", "Salvo com sucesso.")
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal(stackPane, root, mutableListOf(), "Erro", "Erro ao salvar ao salvar a fila.")
         }
     }
@@ -457,14 +456,14 @@ class LegendasVocabularioController : Initializable, BaseController {
         txtAreaSelect.isDisable = false
         txtAreaUpdate.isDisable = false
         txtAreaDelete.isDisable = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Legendas - Processar Fila"
         val processarFila: Task<Void> = object : Task<Void>() {
 
             var lista: MutableList<Processar> = mutableListOf()
             var fila: MutableList<FilaSQL> = mutableListOf()
-            val dicionario = MenuPrincipalController.controller.dicionario
-            val modo = MenuPrincipalController.controller.modo
+            val dicionario = MenuPrincipalController.oController.dicionario
+            val modo = MenuPrincipalController.oController.modo
             var i: Long = 0
             var x: Int = 0
             val pipe: String = txtPipe.text
@@ -523,7 +522,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                             select.vocabulario = processar.vocabulario.stream().collect(Collectors.joining("\n"))
                             service.insertOrUpdateFila(select)
                         } catch (e: SQLException) {
-                            LOGGER.error(e.message, e)
+                            oLog.error(e.message, e)
                         }
                     }
 
@@ -559,7 +558,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         Configuracao.caminhoSalvoArquivo = txtCaminhoExportar.text
                     }
                 } catch (e: Exception) {
-                    LOGGER.error("Erro ao processar a fila", e)
+                    oLog.error("Erro ao processar a fila", e)
                 } finally {
                     if (!desativar)
                         updateMessage("Concluído....")
@@ -571,7 +570,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         tbLista.isDisable = false
                         progress.barraProgresso.progressProperty().unbind()
                         progress.log.textProperty().unbind()
-                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                         cbNome.editor.text = ""
                         txtAreaSelect.text = ""
@@ -614,7 +613,7 @@ class LegendasVocabularioController : Initializable, BaseController {
         txtAreaSelect.isDisable = false
         txtAreaUpdate.isDisable = false
         txtAreaDelete.isDisable = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Legendas - Processar Fila"
         val exportarFila: Task<Void> = object : Task<Void>() {
             var lista: MutableList<Processar> = mutableListOf()
@@ -665,7 +664,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         Configuracao.caminhoSalvoArquivo = txtCaminhoExportar.text
                     }
                 } catch (e: Exception) {
-                    LOGGER.error("Erro ao processar a fila", e)
+                    oLog.error("Erro ao processar a fila", e)
                 } finally {
                     if (!desativar)
                         updateMessage("Concluído....")
@@ -677,7 +676,7 @@ class LegendasVocabularioController : Initializable, BaseController {
                         tbLista.isDisable = false
                         progress.barraProgresso.progressProperty().unbind()
                         progress.log.textProperty().unbind()
-                        MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                        MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                         TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                         cbNome.editor.text = ""
                         txtAreaSelect.text = ""
@@ -720,7 +719,7 @@ class LegendasVocabularioController : Initializable, BaseController {
             cbNome.items.clear()
             cbNome.items.addAll(nomes)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -819,7 +818,7 @@ class LegendasVocabularioController : Initializable, BaseController {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(LegendasVocabularioController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(LegendasVocabularioController::class.java)
         private var desativar = false
         val fxmlLocate: URL get() = LegendasVocabularioController::class.java.getResource("/view/legendas/LegendasVocabulario.fxml") as URL
     }

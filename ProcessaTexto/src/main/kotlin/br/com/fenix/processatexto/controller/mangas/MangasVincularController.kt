@@ -303,7 +303,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                     limpar()
                     Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Arquivo deletado com sucesso.")
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     AlertasPopup.erroModal("Erro ao deletar", e.message!!)
                 }
                 return false
@@ -575,7 +575,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             refreshListener = controlador
             Animacao().abrirPane(controller.stackPane, newRoot)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -627,7 +627,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 desabilita()
-                val progress = MenuPrincipalController.controller.criaBarraProgresso()
+                val progress = MenuPrincipalController.oController.criaBarraProgresso()
                 progress!!.titulo.text = "Vinculando legendas"
 
                 if (TaskbarProgressbar.isSupported())
@@ -843,7 +843,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 Platform.runLater { setLista(vinculo.vinculados, vinculo.naoVinculados) }
                             }
                         } catch (e: java.lang.Exception) {
-                            LOGGER.error(e.message, e)
+                            oLog.error(e.message, e)
                             error = e.message
                         }
                         return null
@@ -853,7 +853,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                         Platform.runLater {
                             progress.barraProgresso.progressProperty().unbind()
                             progress.log.textProperty().unbind()
-                            MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                            MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                             TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                             if (error!!.isNotEmpty())
                                 AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", (error)!!)
@@ -865,13 +865,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
                     override fun failed() {
                         super.failed()
-                        LOGGER.warn("Falha ao executar a thread de vincular a legenda: " + super.getMessage())
+                        oLog.warn("Falha ao executar a thread de vincular a legenda: " + super.getMessage())
                         Platform.runLater {
                             progress.barraProgresso.progressProperty().unbind()
                             progress.log.textProperty().unbind()
-                            MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                            MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                             TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                            MenuPrincipalController.controller.getLblLog().text = ""
+                            MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
                             EXECUCOES.endProcess()
@@ -965,7 +965,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             image = Image(imput)
             dupla = image.width / image.height > 0.9
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return Pair(image, Atributos(dupla!!, md5, ""))
     }
@@ -979,7 +979,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
                 override fun call(abort: Boolean): Boolean {
                     desabilita()
-                    val progress = MenuPrincipalController.controller.criaBarraProgresso()
+                    val progress = MenuPrincipalController.oController.criaBarraProgresso()
                     progress!!.titulo.text = "Vinculando legendas"
                     if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
                     val carregar: Task<Void> = object : Task<Void>() {
@@ -1100,7 +1100,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                     }
                                 }
                             } catch (e: Exception) {
-                                LOGGER.error(e.message, e)
+                                oLog.error(e.message, e)
                                 error = e.message!!
                             }
                             return null
@@ -1112,13 +1112,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 service.gerarAtributos(parse, isManga)
                                 progress.barraProgresso.progressProperty().unbind()
                                 progress.log.textProperty().unbind()
-                                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                                 TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
 
                                 if (error.isNotEmpty())
                                     AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", error)
 
-                                MenuPrincipalController.controller.getLblLog().text = ""
+                                MenuPrincipalController.oController.getLblLog().text = ""
                                 habilita()
                                 refreshTabelas(Tabela.VINCULADOS)
                                 EXECUCOES.endProcess()
@@ -1128,13 +1128,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                         @Override
                         override fun failed() {
                             super.failed()
-                            LOGGER.warn("Falha ao executar a thread de carregar arquivos: " + super.getMessage())
+                            oLog.warn("Falha ao executar a thread de carregar arquivos: " + super.getMessage())
                             Platform.runLater {
                                 progress.barraProgresso.progressProperty().unbind()
                                 progress.log.textProperty().unbind()
-                                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                                 TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                                MenuPrincipalController.controller.getLblLog().text = ""
+                                MenuPrincipalController.oController.getLblLog().text = ""
                                 habilita()
                                 refreshTabelas(Tabela.VINCULADOS)
                                 EXECUCOES.endProcess()
@@ -1155,7 +1155,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 desabilita()
-                val progress = MenuPrincipalController.controller.criaBarraProgresso()
+                val progress = MenuPrincipalController.oController.criaBarraProgresso()
                 progress!!.titulo.text = "Carregando dados."
                 if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
                 val carregar: Task<Void> = object : Task<Void>() {
@@ -1226,9 +1226,9 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                         Platform.runLater {
                             progress.barraProgresso.progressProperty().unbind()
                             progress.log.textProperty().unbind()
-                            MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                            MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                             TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                            MenuPrincipalController.controller.getLblLog().text = ""
+                            MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
                             EXECUCOES.endProcess()
@@ -1238,13 +1238,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                     @Override
                     override fun failed() {
                         super.failed()
-                        LOGGER.warn("Falha ao executar a thread de carregamento de dados: " + super.getMessage())
+                        oLog.warn("Falha ao executar a thread de carregamento de dados: " + super.getMessage())
                         Platform.runLater {
                             progress.barraProgresso.progressProperty().unbind()
                             progress.log.textProperty().unbind()
-                            MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                            MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                             TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                            MenuPrincipalController.controller.getLblLog().text = ""
+                            MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
                             EXECUCOES.endProcess()
@@ -1300,7 +1300,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                 return true
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return false
     }
@@ -1336,7 +1336,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                     }
                 }
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
         return carregado
@@ -1357,7 +1357,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             service.salvar(cbBase.selectionModel.selectedItem, vinculo)
             Notificacoes.notificacao(Notificacao.AVISO, "Concluido", "Salvo com sucesso.")
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             AlertasPopup.erroModal("Erro ao salvar", e.message!!)
         }
     }
@@ -1414,7 +1414,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         try {
             service.createTabelas(base)
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             println("Erro ao consultar as sugestões de mangas.")
         }
         selectionaManga(autoCompleteMangaOriginal, cbLinguagemOrigem, txtMangaOriginal)
@@ -1428,7 +1428,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             autoComplete.suggestions.addAll(mangas)
             manga.text = ""
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             println("Erro ao consultar as sugestões de mangas.")
         }
     }
@@ -1521,7 +1521,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             controller.setDados(tableRow.item)
                             controller.root
                         } catch (e: IOException) {
-                            LOGGER.error(e.message, e)
+                            oLog.error(e.message, e)
                             null
                         }
                     }
@@ -1545,7 +1545,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             HBox.setHgrow(controller.root, Priority.ALWAYS)
                             controller.root
                         } catch (e: IOException) {
-                            LOGGER.error(e.message, e)
+                            oLog.error(e.message, e)
                             null
                         }
                     }
@@ -1572,7 +1572,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                         try {
                             mLLoader.load()
                         } catch (e: IOException) {
-                            LOGGER.error(e.message, e)
+                            oLog.error(e.message, e)
                         }
                         val controller = mLLoader.getController() as MangasVincularCelulaPequenaController
                         controller.setDados(item)
@@ -1593,7 +1593,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         cbBase.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             if (newValue.isNotEmpty()) {
@@ -1643,7 +1643,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasVincularController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasVincularController::class.java)
         private const val FAST: Int = 200
         private const val SLOW: Int = 500
         val fxmlLocate: URL get() = MangasVincularController::class.java.getResource("/view/mangas/MangaVincular.fxml") as URL

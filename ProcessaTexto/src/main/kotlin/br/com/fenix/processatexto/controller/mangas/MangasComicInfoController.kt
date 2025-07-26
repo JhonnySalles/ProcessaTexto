@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.components.CheckBoxTreeTableCellCustom
 import br.com.fenix.processatexto.components.notification.AlertasPopup
 import br.com.fenix.processatexto.controller.MenuPrincipalController
 import br.com.fenix.processatexto.model.entities.comicinfo.BaseLista
-import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.entities.comicinfo.MAL
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.comicinfo.ProcessaComicInfo
@@ -18,7 +17,6 @@ import com.nativejavafx.taskbar.TaskbarProgressbar
 import com.nativejavafx.taskbar.TaskbarProgressbar.Type
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.concurrent.Task
@@ -218,7 +216,7 @@ class MangasComicInfoController : Initializable {
     private fun cancelar() = ProcessaComicInfo.cancelar()
 
     private fun processar() {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
 
@@ -239,7 +237,7 @@ class MangasComicInfoController : Initializable {
                     }
                     ProcessaComicInfo.processa(cbLinguagem.value, txtCaminho.text, txtDescricaoCapitulo.text, cbIgnorarVinculoSalvo.isSelected, callback)
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -254,7 +252,7 @@ class MangasComicInfoController : Initializable {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                 }
             }
 
@@ -264,7 +262,7 @@ class MangasComicInfoController : Initializable {
                 ativaCampos()
                 btnProcessarArquivos.accessibleText = "PROCESSAR"
                 btnProcessarArquivos.text = "Processar comic info"
-                LOGGER.warn("Erro na thread ComicInfo: " + super.getMessage())
+                oLog.warn("Erro na thread ComicInfo: " + super.getMessage())
                 println("Erro na thread ComicInfo: " + super.getMessage())
             }
         }
@@ -279,7 +277,7 @@ class MangasComicInfoController : Initializable {
 
     private var mPARAR = false
     private fun processarLista(isSelecionado: Boolean) {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
         progress!!.titulo.text = "ComicInfo"
@@ -315,7 +313,7 @@ class MangasComicInfoController : Initializable {
                             break
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -331,7 +329,7 @@ class MangasComicInfoController : Initializable {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                 }
             }
 
@@ -342,7 +340,7 @@ class MangasComicInfoController : Initializable {
                 configuraTabela()
                 btnSalvarMarcados.accessibleText = "PROCESSAR"
                 btnSalvarMarcados.text = "Processar Marcados"
-                LOGGER.warn("Erro na thread ComicInfo: " + super.getMessage())
+                oLog.warn("Erro na thread ComicInfo: " + super.getMessage())
                 println("Erro na thread ComicInfo: " + super.getMessage())
             }
         }
@@ -356,7 +354,7 @@ class MangasComicInfoController : Initializable {
     }
 
     private fun validar() {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         if (TaskbarProgressbar.isSupported())
             TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
 
@@ -378,7 +376,7 @@ class MangasComicInfoController : Initializable {
                     }
                     ProcessaComicInfo.validar(cbLinguagem.value, txtCaminho.text, callback)
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -393,7 +391,7 @@ class MangasComicInfoController : Initializable {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                 }
             }
 
@@ -403,7 +401,7 @@ class MangasComicInfoController : Initializable {
                 ativaCampos()
                 btnValidarComicInfo.accessibleText = "VALIDAR"
                 btnValidarComicInfo.text = "Validar comic info"
-                LOGGER.warn("Erro na thread ComicInfo: " + super.getMessage())
+                oLog.warn("Erro na thread ComicInfo: " + super.getMessage())
                 println("Erro na thread ComicInfo: " + super.getMessage())
             }
         }
@@ -420,9 +418,9 @@ class MangasComicInfoController : Initializable {
         try {
             Desktop.getDesktop().browse(URI("https://myanimelist.net/manga/$id"))
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } catch (e: URISyntaxException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
     }
 
@@ -469,7 +467,7 @@ class MangasComicInfoController : Initializable {
         try {
             mDADOS = treeData
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         treeTabela.root = mDADOS
     }
@@ -708,7 +706,7 @@ class MangasComicInfoController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasComicInfoController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasComicInfoController::class.java)
         val fxmlLocate: URL get() = MangasComicInfoController::class.java.getResource("/view/mangas/MangaComicInfo.fxml") as URL
         var selecionado = false
     }

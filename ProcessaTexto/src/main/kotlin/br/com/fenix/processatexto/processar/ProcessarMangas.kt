@@ -80,7 +80,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
 
     fun processarTabelasJapones(tabelas: List<MangaTabela>) {
         error = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Mangas - Processar vocabulário"
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         val processarTabela: Task<Void> = object : Task<Void>() {
@@ -91,11 +91,11 @@ class ProcessarMangas(controller: MangasProcessarController) {
                     try {
                         DictionaryFactory().create(
                             "",
-                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.controller.dicionario)))
+                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.oController.dicionario)))
                         ).use { dict ->
                             tokenizer = dict.create()
-                            mode = SudachiTokenizer.getModo(MenuPrincipalController.controller.modo)
-                            siteDicionario = MenuPrincipalController.controller.site
+                            mode = SudachiTokenizer.getModo(MenuPrincipalController.oController.modo)
+                            siteDicionario = MenuPrincipalController.oController.site
 
                             validaHistorico = mutableSetOf()
 
@@ -214,7 +214,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                 progress.log.textProperty().unbind()
                 controller.habilitar()
 
-                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
             }
 
             @Override
@@ -236,7 +236,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
 
     private fun getSignificado(kanji: String): String {
         if (kanji.trim().isEmpty()) return ""
-        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$kanji : Obtendo significado." }
+        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$kanji : Obtendo significado." }
         var resultado = ""
         when (siteDicionario) {
             Site.TODOS -> {
@@ -256,10 +256,10 @@ class ProcessarMangas(controller: MangasProcessarController) {
 
     private fun getDesmembrado(palavra: String): String {
         var resultado: String
-        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Desmembrando a palavra." }
-        resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.B), Modo.B)
+        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Desmembrando a palavra." }
+        resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.B), Modo.B)
         if (resultado.isEmpty()) resultado =
-            processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+            processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
         return resultado
     }
 
@@ -274,7 +274,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                 if (resultado.trim().isNotEmpty())
                     desmembrado += "$palavra - $resultado; "
                 else if (modo == Modo.B) {
-                    resultado = processaPalavras(original, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+                    resultado = processaPalavras(original, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
                     if (resultado.trim().isNotEmpty())
                         desmembrado += resultado
                 }
@@ -327,7 +327,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                         var revisar = serviceJaponesRevisar.select(m.surface(), m.dictionaryForm()).orElse(null)
                         if (revisar == null) {
                             revisar = Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), "", revisado = false, isAnime = false, isManga = true, isNovel = false)
-                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = m.surface() + " : Vocabulário novo." }
+                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = m.surface() + " : Vocabulário novo." }
                             revisar.ingles = getSignificado(revisar.vocabulario)
 
                             if (revisar.ingles.isEmpty() && !revisar.formaBasica.equals(revisar.vocabulario, ignoreCase = true))
@@ -341,17 +341,17 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                     traducoes++
                                     if (traducoes > 3000) {
                                         traducoes = 0
-                                        MenuPrincipalController.controller.contaGoogle = Utils.next(MenuPrincipalController.controller.contaGoogle)
+                                        MenuPrincipalController.oController.contaGoogle = Utils.next(MenuPrincipalController.oController.contaGoogle)
                                     }
 
-                                    Platform.runLater { MenuPrincipalController.controller.getLblLog().text = m.surface() + " : Obtendo tradução." }
+                                    Platform.runLater { MenuPrincipalController.oController.getLblLog().text = m.surface() + " : Obtendo tradução." }
 
                                     revisar.portugues = Utils.normalize(
                                         ScriptGoogle.translate(
                                             Language.ENGLISH.sigla,
                                             Language.PORTUGUESE.sigla,
                                             revisar.ingles,
-                                            MenuPrincipalController.controller.contaGoogle
+                                            MenuPrincipalController.oController.contaGoogle
                                         )
                                     )
 
@@ -360,7 +360,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                 }
                             }
                             serviceJaponesRevisar.insert(revisar)
-                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "" }
+                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "" }
                         } else {
                             if (!revisar.isManga) {
                                 revisar.isManga = true
@@ -392,7 +392,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
 
     fun processarTabelasIngles(tabelas: List<MangaTabela>) {
         error = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Mangas - Processar vocabulário"
         // Criacao da thread para que esteja validando a conexao e nao trave a tela.
         val processarTabela: Task<Void> = object : Task<Void>() {
@@ -506,24 +506,24 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                                         var revisar: Revisar? = serviceInglesRevisar.select(palavra).orElse(null)
                                                         if (revisar == null) {
                                                             revisar = Revisar(palavra, revisado = false, isAnime = false, isManga = true, isNovel = false)
-                                                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Vocabulário novo." }
+                                                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Vocabulário novo." }
 
                                                             if (revisar.vocabulario.isNotEmpty()) {
                                                                 try {
                                                                     traducoes++
                                                                     if (traducoes > 3000) {
                                                                         traducoes = 0
-                                                                        MenuPrincipalController.controller.contaGoogle = Utils.next(MenuPrincipalController.controller.contaGoogle)
+                                                                        MenuPrincipalController.oController.contaGoogle = Utils.next(MenuPrincipalController.oController.contaGoogle)
                                                                     }
                                                                     Platform.runLater {
-                                                                        MenuPrincipalController.controller.getLblLog().text = "$palavra : Obtendo tradução."
+                                                                        MenuPrincipalController.oController.getLblLog().text = "$palavra : Obtendo tradução."
                                                                     }
                                                                     revisar.portugues = Utils.normalize(
                                                                         ScriptGoogle.translate(
                                                                             Language.ENGLISH.sigla,
                                                                             Language.PORTUGUESE.sigla,
                                                                             revisar.vocabulario,
-                                                                            MenuPrincipalController.controller.contaGoogle
+                                                                            MenuPrincipalController.oController.contaGoogle
                                                                         )
                                                                     )
                                                                 } catch (e: IOException) {
@@ -531,7 +531,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                                                                 }
                                                             }
                                                             serviceInglesRevisar.insert(revisar)
-                                                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "" }
+                                                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "" }
                                                         } else {
                                                             if (!revisar.isManga) {
                                                                 revisar.isManga = true
@@ -607,7 +607,7 @@ class ProcessarMangas(controller: MangasProcessarController) {
                 progress.log.textProperty().unbind()
                 controller.habilitar()
 
-                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
             }
 
             @Override

@@ -243,7 +243,7 @@ class MenuPrincipalController : Initializable {
             return cnt
         } catch (e: IOException) {
             println("Erro ao criar barra de progresso.")
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return null
     }
@@ -368,13 +368,13 @@ class MenuPrincipalController : Initializable {
             pop!!.setOnShowing { cntConfiguracao.carregar() }
             pop!!.root.stylesheets.add(MenuPrincipalController::class.java.getResource("/css/Dark_PopOver.css").toExternalForm())
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         return this
     }
 
     override fun initialize(arg0: URL?, arg1: ResourceBundle?) {
-        controller = this
+        oController = this
         scpBarraProgress.managedProperty().bind(scpBarraProgress.visibleProperty())
         progressBarVisible(false)
         animacao.animaImageBanco(imgConexaoBase, imgAnimaBanco, imgAnimaBancoEspera)
@@ -424,9 +424,9 @@ class MenuPrincipalController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MenuPrincipalController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MenuPrincipalController::class.java)
 
-        lateinit var controller: MenuPrincipalController
+        lateinit var oController: MenuPrincipalController
             private set
 
         val imgAnimaBanco: Image = Image(Animacao::class.java.getResourceAsStream("/images/bd/icoDataBase_48.png"))

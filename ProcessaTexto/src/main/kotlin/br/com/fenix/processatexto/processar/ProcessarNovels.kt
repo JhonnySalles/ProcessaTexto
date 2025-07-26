@@ -50,7 +50,9 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class ProcessarNovels(controller: BaseController) {
 
-    private val LOGGER: Logger = LoggerFactory.getLogger(ProcessarNovels::class.java)
+    companion object {
+        private val oLog: Logger = LoggerFactory.getLogger(ProcessarNovels::class.java)
+    }
 
     private val LOGFILE = "log.txt"
 
@@ -300,7 +302,7 @@ class ProcessarNovels(controller: BaseController) {
                 if (series != null && series.length > 0)
                     novel.serie = series.item(0).textContent
             } catch (e: Exception) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
         return novel
@@ -405,14 +407,14 @@ class ProcessarNovels(controller: BaseController) {
                     writer.flush()
                 }
             } catch (e: Exception) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
     }
 
     private var LOG: File? = null
     fun processarArquivos(caminho: File, tabela: String?, linguagem: Language, favorito: Boolean) {
         error = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Novels - Processar arquivos"
         val processarArquivos: Task<Void> = object : Task<Void>() {
 
@@ -430,11 +432,11 @@ class ProcessarNovels(controller: BaseController) {
                     try {
                         DictionaryFactory().create(
                             "",
-                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.controller.dicionario)))
+                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.oController.dicionario)))
                         ).use { dict ->
                             tokenizer = dict.create()
-                            mode = SudachiTokenizer.getModo(MenuPrincipalController.controller.modo)
-                            siteDicionario = MenuPrincipalController.controller.site
+                            mode = SudachiTokenizer.getModo(MenuPrincipalController.oController.modo)
+                            siteDicionario = MenuPrincipalController.oController.site
 
                             validaHistorico = mutableSetOf()
                             propTexto.set(.0)
@@ -538,7 +540,7 @@ class ProcessarNovels(controller: BaseController) {
                             }
                         }
                     } catch (e: IOException) {
-                        LOGGER.error(e.message, e)
+                        oLog.error(e.message, e)
                         error = true
                         addLog("Erro ao processar o arquivo.")
                         addLog(e.message!!)
@@ -548,7 +550,7 @@ class ProcessarNovels(controller: BaseController) {
                         }
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = true
                     addLog("Erro ao processar o arquivo.")
                     addLog(e.message!!)
@@ -581,13 +583,13 @@ class ProcessarNovels(controller: BaseController) {
 
                 progress.log.textProperty().unbind()
                 controller.habilitar()
-                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
             }
 
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread de processamento da novel: " + super.getMessage())
+                oLog.warn("Erro na thread de processamento da novel: " + super.getMessage())
                 addLog("Erro na thread de processamento da novel: " + super.getMessage())
             }
         }
@@ -604,7 +606,7 @@ class ProcessarNovels(controller: BaseController) {
 
     fun processarTabelas(tabelas: List<NovelTabela>) {
         error = false
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Novels - Processar tabelas"
         val processar: Task<Void> = object : Task<Void>() {
 
@@ -615,12 +617,12 @@ class ProcessarNovels(controller: BaseController) {
                     try {
                         DictionaryFactory().create(
                             "",
-                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.controller.dicionario)))
+                            SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.oController.dicionario)))
                         ).use { dict ->
                             tokenizer = dict.create()
-                            mode = SudachiTokenizer.getModo(MenuPrincipalController.controller.modo)
+                            mode = SudachiTokenizer.getModo(MenuPrincipalController.oController.modo)
 
-                            siteDicionario = MenuPrincipalController.controller.site
+                            siteDicionario = MenuPrincipalController.oController.site
                             validaHistorico = mutableSetOf()
 
                             Progress = 0
@@ -682,7 +684,7 @@ class ProcessarNovels(controller: BaseController) {
                             }
                         }
                     } catch (e: IOException) {
-                        LOGGER.error(e.message, e)
+                        oLog.error(e.message, e)
                         error = true
                         addLog("Erro ao processar as novels.")
                         addLog(e.message!!)
@@ -692,7 +694,7 @@ class ProcessarNovels(controller: BaseController) {
                         }
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = true
                     addLog("Erro ao processar as novels.")
                     addLog(e.message!!)
@@ -721,13 +723,13 @@ class ProcessarNovels(controller: BaseController) {
                 controller.barraProgresso.progressProperty().unbind()
                 progress.log.textProperty().unbind()
                 controller.habilitar()
-                MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
             }
 
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread de processamento da novel: " + super.getMessage())
+                oLog.warn("Erro na thread de processamento da novel: " + super.getMessage())
                 addLog("Erro na thread de processamento da novel: " + super.getMessage())
             }
         }
@@ -744,11 +746,11 @@ class ProcessarNovels(controller: BaseController) {
         try {
             DictionaryFactory().create(
                 "",
-                SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.controller.dicionario)))
+                SudachiTokenizer.readAll(FileInputStream(SudachiTokenizer.getPathSettings(MenuPrincipalController.oController.dicionario)))
             ).use { dict ->
                 tokenizer = dict.create()
-                mode = SudachiTokenizer.getModo(MenuPrincipalController.controller.modo)
-                siteDicionario = MenuPrincipalController.controller.site
+                mode = SudachiTokenizer.getModo(MenuPrincipalController.oController.modo)
+                siteDicionario = MenuPrincipalController.oController.site
 
                 validaHistorico = mutableSetOf()
                 desativar = false
@@ -778,7 +780,7 @@ class ProcessarNovels(controller: BaseController) {
                 volume.processado = true
             }
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             error = false
         }
     }
@@ -805,10 +807,10 @@ class ProcessarNovels(controller: BaseController) {
 
     private fun getDesmembrado(palavra: String): String {
         var resultado: String
-        Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Desmembrando a palavra." }
-        resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.B), Modo.B)
+        Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Desmembrando a palavra." }
+        resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.B), Modo.B)
         if (resultado.isEmpty())
-            resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+            resultado = processaPalavras(palavra, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
         return resultado
     }
 
@@ -823,13 +825,13 @@ class ProcessarNovels(controller: BaseController) {
                 if (resultado.trim().isNotEmpty())
                     desmembrado += "$palavra - $resultado; "
                 else if (modo == Modo.B) {
-                    resultado = processaPalavras(original, desmembra.processarDesmembrar(palavra, MenuPrincipalController.controller.dicionario, Modo.A), Modo.A)
+                    resultado = processaPalavras(original, desmembra.processarDesmembrar(palavra, MenuPrincipalController.oController.dicionario, Modo.A), Modo.A)
                     if (resultado.trim().isNotEmpty())
                         desmembrado += resultado
                 }
             }
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             desmembrado = ""
         }
         return desmembrado
@@ -902,7 +904,7 @@ class ProcessarNovels(controller: BaseController) {
                         var revisar: Revisar? = serviceJaponesRevisar.select(m.surface(), m.dictionaryForm()).orElse(null)
                         if (revisar == null) {
                             revisar = Revisar(m.surface(), m.dictionaryForm(), m.readingForm(), leitura, revisado = false, isAnime = false, isManga = false, isNovel = true)
-                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = m.surface() + " : Vocabulário novo." }
+                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = m.surface() + " : Vocabulário novo." }
                             serviceJaponesRevisar.insert(revisar)
                             revisar.ingles = getSignificado(revisar.vocabulario)
 
@@ -917,19 +919,19 @@ class ProcessarNovels(controller: BaseController) {
                                     traducoes++
                                     if (traducoes > 3000) {
                                         traducoes = 0
-                                        MenuPrincipalController.controller.contaGoogle = Utils.next(MenuPrincipalController.controller.contaGoogle)
+                                        MenuPrincipalController.oController.contaGoogle = Utils.next(MenuPrincipalController.oController.contaGoogle)
                                     }
-                                    Platform.runLater { MenuPrincipalController.controller.getLblLog().text = m.surface() + " : Obtendo tradução." }
+                                    Platform.runLater { MenuPrincipalController.oController.getLblLog().text = m.surface() + " : Obtendo tradução." }
                                     revisar.portugues = Utils.normalize(
                                         ScriptGoogle.translate(
                                             Language.ENGLISH.sigla,
                                             Language.PORTUGUESE.sigla,
                                             revisar.ingles,
-                                            MenuPrincipalController.controller.contaGoogle
+                                            MenuPrincipalController.oController.contaGoogle
                                         )
                                     )
                                 } catch (e: IOException) {
-                                    LOGGER.error(e.message, e)
+                                    oLog.error(e.message, e)
                                     if (vocabErros.containsKey(m.dictionaryForm()))
                                         vocabErros.put(m.dictionaryForm(), vocabErros[m.dictionaryForm()]!! + 1)
                                     else
@@ -942,7 +944,7 @@ class ProcessarNovels(controller: BaseController) {
                                     vocabErros[m.dictionaryForm()] = 1
                             }
                             serviceJaponesRevisar.update(revisar)
-                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "" }
+                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "" }
                         } else {
                             if (!revisar.isNovel) {
                                 revisar.isNovel = true
@@ -1022,7 +1024,7 @@ class ProcessarNovels(controller: BaseController) {
                                 var revisar = serviceInglesRevisar.select(palavra).orElse(null)
                                 if (revisar == null) {
                                     revisar = Revisar(palavra, revisado = false, isAnime = false, isManga = false, isNovel = true)
-                                    Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Vocabulário novo." }
+                                    Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Vocabulário novo." }
                                     addLog("$palavra : Vocabulário novo.")
 
                                     if (revisar.vocabulario.isNotEmpty()) {
@@ -1030,24 +1032,24 @@ class ProcessarNovels(controller: BaseController) {
                                             traducoes++
                                             if (traducoes > 3000) {
                                                 traducoes = 0
-                                                MenuPrincipalController.controller.contaGoogle = Utils.next(MenuPrincipalController.controller.contaGoogle)
+                                                MenuPrincipalController.oController.contaGoogle = Utils.next(MenuPrincipalController.oController.contaGoogle)
                                             }
-                                            Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "$palavra : Obtendo tradução." }
+                                            Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "$palavra : Obtendo tradução." }
                                             addLog("$palavra : Obtendo tradução.")
                                             revisar.portugues = Utils.normalize(
                                                 ScriptGoogle.translate(
                                                     Language.ENGLISH.sigla,
                                                     Language.PORTUGUESE.sigla,
                                                     revisar.vocabulario,
-                                                    MenuPrincipalController.controller.contaGoogle
+                                                    MenuPrincipalController.oController.contaGoogle
                                                 )
                                             )
                                         } catch (e: IOException) {
-                                            LOGGER.error(e.message, e)
+                                            oLog.error(e.message, e)
                                         }
                                     }
                                     serviceInglesRevisar.insert(revisar)
-                                    Platform.runLater { MenuPrincipalController.controller.getLblLog().text = "" }
+                                    Platform.runLater { MenuPrincipalController.oController.getLblLog().text = "" }
                                 } else {
                                     if (!revisar.isNovel) {
                                         revisar.isNovel = true
@@ -1089,31 +1091,31 @@ class ProcessarNovels(controller: BaseController) {
                 ).use { dict ->
                     tokenizer = dict.create()
                     mode = SplitMode.A
-                    LOGGER.info("Consultando a correção...")
+                    oLog.info("Consultando a correção...")
                     val lista: List<NovelTabela> = serviceNovel.selectTabelas(todos = true, isLike = false, base = "", linguagem = Language.JAPANESE, novel = "")
-                    LOGGER.info("Iniciando a correção...")
+                    oLog.info("Iniciando a correção...")
                     for (novel in lista) {
                         val oldBase: String = novel.base
-                        LOGGER.info("Corrigindo a base $oldBase")
+                        oLog.info("Corrigindo a base $oldBase")
                         for (volume in novel.volumes) {
                             val newBase: String = getBase(Language.JAPANESE, volume.titulo)
                             if (oldBase.equals(newBase, true))
                                 continue
 
-                            LOGGER.info("Corrigindo a novel " + volume.titulo)
+                            oLog.info("Corrigindo a novel " + volume.titulo)
                             serviceNovel.salvarVolume(newBase, volume)
                             serviceNovel.delete(oldBase, volume)
-                            LOGGER.info("Concluido a correção da novel " + volume.titulo)
+                            oLog.info("Concluido a correção da novel " + volume.titulo)
                         }
                     }
-                    LOGGER.info("Concluido a correção das novels.")
+                    oLog.info("Concluido a correção das novels.")
                 }
             } catch (e: IOException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
                 error = false
             }
         } catch (ex: Exception) {
-            LOGGER.error("Erro ao corrigir as listas", ex)
+            oLog.error("Erro ao corrigir as listas", ex)
         }
     }
 }

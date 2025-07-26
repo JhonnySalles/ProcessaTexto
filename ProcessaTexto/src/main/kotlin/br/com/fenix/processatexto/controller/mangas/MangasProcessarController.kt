@@ -31,10 +31,7 @@ import java.net.URL
 import java.sql.SQLException
 import java.util.*
 
-
 class MangasProcessarController : Initializable {
-
-    private val LOGGER: Logger = LoggerFactory.getLogger(MangasProcessarController::class.java)
 
     @FXML
     private lateinit var apRoot: AnchorPane
@@ -127,7 +124,7 @@ class MangasProcessarController : Initializable {
         btnCarregar.isDisable = true
         if (mangas == null) mangas = ProcessarMangas(this)
         treeBases.isDisable = true
-        MenuPrincipalController.controller.getLblLog().text = "Iniciando o processamento dos mangas..."
+        MenuPrincipalController.oController.getLblLog().text = "Iniciando o processamento dos mangas..."
         when (cbLinguagem.selectionModel.selectedItem) {
             Language.ENGLISH -> mangas!!.processarTabelasIngles(TABELAS)
             Language.JAPANESE -> mangas!!.processarTabelasJapones(TABELAS)
@@ -151,7 +148,7 @@ class MangasProcessarController : Initializable {
 
     fun habilitar() {
         treeBases.isDisable = false
-        MenuPrincipalController.controller.getLblLog().text = ""
+        MenuPrincipalController.oController.getLblLog().text = ""
         btnProcessar.accessibleText = "PROCESSAR"
         btnProcessar.text = "Processar"
         btnCarregar.isDisable = false
@@ -174,7 +171,7 @@ class MangasProcessarController : Initializable {
             return
         }
 
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         progress!!.titulo.text = "Mangas - Transferencia"
         progress.log.text = "Transferindo dados...."
 
@@ -228,10 +225,10 @@ class MangasProcessarController : Initializable {
                         }
                     }
                 } catch (e: SQLException) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = e.message!!
                 } catch (e: Error) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = e.message!!
                 }
                 return null
@@ -242,7 +239,7 @@ class MangasProcessarController : Initializable {
                 Platform.runLater {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                     btnTransferir.isDisable = false
                     barraProgressoVolumes.progress = 0.0
                     if (TaskbarProgressbar.isSupported())
@@ -266,7 +263,7 @@ class MangasProcessarController : Initializable {
     private var LINGUAGEM: Language? = null
     private var DADOS: TreeItem<Manga>? = null
     private fun carregar() {
-        MenuPrincipalController.controller.getLblLog().text = "Carregando dados dos mangas..."
+        MenuPrincipalController.oController.getLblLog().text = "Carregando dados dos mangas..."
         btnCarregar.isDisable = true
         btnProcessar.isDisable = true
         treeBases.isDisable = true
@@ -289,7 +286,7 @@ class MangasProcessarController : Initializable {
                     TABELAS = FXCollections.observableArrayList(service.selectTabelas(!PROCESSADOS!!, false, BASE!!, LINGUAGEM!!, MANGA!!))
                     DADOS = treeData
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -298,7 +295,7 @@ class MangasProcessarController : Initializable {
             override fun succeeded() {
                 Platform.runLater {
                     treeBases.setRoot(DADOS)
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
                     btnProcessar.isDisable = false
@@ -441,7 +438,7 @@ class MangasProcessarController : Initializable {
         try {
             cbBase.items.setAll(service.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
 
         val autoCompletePopup: JFXAutoCompletePopup<String> = JFXAutoCompletePopup()
@@ -460,6 +457,7 @@ class MangasProcessarController : Initializable {
     }
 
     companion object {
+        private val oLog: Logger = LoggerFactory.getLogger(MangasProcessarController::class.java)
         val fxmlLocate: URL get() = MangasProcessarController::class.java.getResource("/view/mangas/MangaProcessar.fxml") as URL
     }
 }

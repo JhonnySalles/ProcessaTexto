@@ -71,7 +71,7 @@ class MangasComicInfoMalId : Initializable {
                         txtNome.text = consulta.nome
                         imagem.image = consulta.imagem!!.image
                     } catch (e: Exception) {
-                        LOGGER.error(e.message, e)
+                        oLog.error(e.message, e)
                     }
                 }
             }
@@ -86,7 +86,7 @@ class MangasComicInfoMalId : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasComicInfoMalId::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasComicInfoMalId::class.java)
 
         private val STYLE_SHEET: String = AlertasPopup::class.java.getResource("/css/Dark_Theme.css").toExternalForm()
         private lateinit var btnConfirmar: JFXButton
@@ -129,7 +129,7 @@ class MangasComicInfoMalId : Initializable {
                 nodeBlur.effect = blur
                 dialog.show()
             } catch (e: IOException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
 

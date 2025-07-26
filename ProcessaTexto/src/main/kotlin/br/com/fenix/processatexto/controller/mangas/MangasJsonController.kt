@@ -260,11 +260,11 @@ class MangasJsonController : Initializable {
         if (arquivo != null) {
             val json = File(localJson)
             val comando = ("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
-            LOGGER.info("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
+            oLog.info("rar a -ma4 -ep1 " + '"' + arquivo.path + '"' + " " + '"' + json.path + '"')
             try {
                 val rt: Runtime = Runtime.getRuntime()
                 val proc: Process = rt.exec(comando)
-                LOGGER.info("Resultado: " + proc.waitFor())
+                oLog.info("Resultado: " + proc.waitFor())
                 var resultado = ""
                 val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
                 var s: String? = null
@@ -272,18 +272,18 @@ class MangasJsonController : Initializable {
                     resultado += "$s"
 
                 if (resultado.isNotEmpty())
-                    LOGGER.info("Output comand:\n$resultado")
+                    oLog.info("Output comand:\n$resultado")
                 s = null
                 resultado = ""
                 val stdError = BufferedReader(InputStreamReader(proc.errorStream))
                 while (stdError.readLine().also { s = it } != null)
                     resultado += "$s".trimIndent()
                 if (resultado.isNotEmpty()) {
-                    LOGGER.info("Error comand: $resultado Necessário adicionar o rar no path e reiniciar a aplicação.")
+                    oLog.info("Error comand: $resultado Necessário adicionar o rar no path e reiniciar a aplicação.")
                 } else if (excluirAoInserir)
                     json.delete()
             } catch (e: Exception) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
         }
     }
@@ -296,7 +296,7 @@ class MangasJsonController : Initializable {
     private var excluirAoInserir: Boolean = false
 
     private fun gerar() {
-        val progress = MenuPrincipalController.controller.criaBarraProgresso()
+        val progress = MenuPrincipalController.oController.criaBarraProgresso()
         isSepararCapitulo = ckbSepararPorCapitulos.isSelected
         destino = txtCaminhoSalvar.text
         PAUSAR = false
@@ -393,7 +393,7 @@ class MangasJsonController : Initializable {
                         if (PAUSAR) break
                     }
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                     error = e.message!!
                 }
                 return null
@@ -406,7 +406,7 @@ class MangasJsonController : Initializable {
                     progress.barraProgresso.progressProperty().unbind()
                     progress.log.textProperty().unbind()
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
-                    MenuPrincipalController.controller.destroiBarraProgresso(progress, "")
+                    MenuPrincipalController.oController.destroiBarraProgresso(progress, "")
                     if (error.isNotEmpty())
                         AlertasPopup.erroModal("Erro", error)
                     else
@@ -418,7 +418,7 @@ class MangasJsonController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread gerar json: " + super.getMessage())
+                oLog.warn("Erro na thread gerar json: " + super.getMessage())
                 habilitar()
             }
         }
@@ -435,7 +435,7 @@ class MangasJsonController : Initializable {
     private var LINGUAGEM: Language? = null
     private var DADOS: TreeItem<Manga>? = null
     private fun carregar() {
-        MenuPrincipalController.controller.getLblLog().text = "Carregando json..."
+        MenuPrincipalController.oController.getLblLog().text = "Carregando json..."
         if (TaskbarProgressbar.isSupported()) TaskbarProgressbar.showIndeterminateProgress(Run.getPrimaryStage())
         btnCarregar.isDisable = true
         btnGerarJson.isDisable = true
@@ -473,7 +473,7 @@ class MangasJsonController : Initializable {
                     }
                     DADOS = treeData
                 } catch (e: Exception) {
-                    LOGGER.error(e.message, e)
+                    oLog.error(e.message, e)
                 }
                 return null
             }
@@ -483,7 +483,7 @@ class MangasJsonController : Initializable {
                 super.succeeded()
                 Platform.runLater {
                     treeBases.setRoot(DADOS)
-                    MenuPrincipalController.controller.getLblLog().text = ""
+                    MenuPrincipalController.oController.getLblLog().text = ""
                     TaskbarProgressbar.stopProgress(Run.getPrimaryStage())
                     ckbMarcarTodos.isSelected = true
                     btnCarregar.isDisable = false
@@ -495,7 +495,7 @@ class MangasJsonController : Initializable {
             @Override
             override fun failed() {
                 super.failed()
-                LOGGER.warn("Erro na thread de carregamento de itens: " + super.getMessage())
+                oLog.warn("Erro na thread de carregamento de itens: " + super.getMessage())
                 habilitar()
             }
         }
@@ -677,7 +677,7 @@ class MangasJsonController : Initializable {
         try {
             cbBase.items.setAll(serviceManga.tabelas)
         } catch (e: Exception) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         }
         cbBase.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             if (newValue.isNotEmpty()) {
@@ -717,7 +717,7 @@ class MangasJsonController : Initializable {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(MangasJsonController::class.java)
+        private val oLog: Logger = LoggerFactory.getLogger(MangasJsonController::class.java)
         val fxmlLocate: URL get() = MangasJsonController::class.java.getResource("/view/mangas/MangaJson.fxml") as URL
     }
 }
