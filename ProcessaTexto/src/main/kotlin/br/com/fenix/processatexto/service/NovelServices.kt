@@ -2,10 +2,10 @@ package br.com.fenix.processatexto.service
 
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.dao.NovelDao
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelTabela
 import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import java.util.*

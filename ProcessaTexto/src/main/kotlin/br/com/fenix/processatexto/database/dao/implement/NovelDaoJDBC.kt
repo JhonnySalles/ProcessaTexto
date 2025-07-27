@@ -3,15 +3,11 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.NovelDao
 import br.com.fenix.processatexto.database.dao.VocabularioDao
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapa
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapitulo
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelTexto
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
+import br.com.fenix.processatexto.model.entities.novelextractor.*
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.model.messages.Mensagens
-import org.jisho.textosJapones.model.entities.novelextractor.*
 import org.slf4j.LoggerFactory
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream

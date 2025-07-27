@@ -7,7 +7,6 @@ import br.com.fenix.processatexto.model.enums.Language
 import com.google.gson.annotations.Expose
 import java.util.*
 
-
 data class MangaCapitulo(
     private var id: UUID? = null,
     @Expose override var manga: String = "",

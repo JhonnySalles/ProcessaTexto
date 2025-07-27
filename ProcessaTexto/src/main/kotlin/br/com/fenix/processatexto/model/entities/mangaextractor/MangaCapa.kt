@@ -6,7 +6,6 @@ import br.com.fenix.processatexto.model.enums.Language
 import java.awt.image.BufferedImage
 import java.util.*
 
-
 data class MangaCapa(
     private var id: UUID? = null,
     override var manga: String = "",

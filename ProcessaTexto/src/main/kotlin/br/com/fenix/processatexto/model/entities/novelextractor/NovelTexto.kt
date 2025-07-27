@@ -3,7 +3,6 @@ package br.com.fenix.processatexto.model.entities.novelextractor
 import com.google.gson.annotations.Expose
 import java.util.*
 
-
 data class NovelTexto(
     var id: UUID? = null,
     @Expose var texto: String = "",

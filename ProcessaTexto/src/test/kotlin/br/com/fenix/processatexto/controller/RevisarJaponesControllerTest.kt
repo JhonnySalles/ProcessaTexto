@@ -8,7 +8,10 @@ import br.com.fenix.processatexto.service.RevisarJaponesServices
 import br.com.fenix.processatexto.service.VocabularioBaseServices
 import br.com.fenix.processatexto.service.VocabularioJaponesServices
 import javafx.stage.Stage
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
 import org.testfx.framework.junit5.ApplicationExtension

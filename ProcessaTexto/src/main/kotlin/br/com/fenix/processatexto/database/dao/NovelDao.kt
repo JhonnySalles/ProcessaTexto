@@ -1,13 +1,9 @@
 package br.com.fenix.processatexto.database.dao
 
 import br.com.fenix.processatexto.model.entities.mangaextractor.*
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapa
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelCapitulo
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelTexto
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
+import br.com.fenix.processatexto.model.entities.novelextractor.*
 import br.com.fenix.processatexto.model.entities.processatexto.VocabularioExterno
 import br.com.fenix.processatexto.model.enums.Language
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela
 import java.sql.SQLException
 import java.util.*
 

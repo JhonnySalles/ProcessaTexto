@@ -3,7 +3,6 @@ package br.com.fenix.processatexto.model.entities
 import br.com.fenix.processatexto.model.enums.Language
 import java.util.*
 
-
 open class Manga(
     open var base: String = "",
     open var manga: String = "",

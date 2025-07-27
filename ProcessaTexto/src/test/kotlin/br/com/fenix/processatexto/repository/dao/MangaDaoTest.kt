@@ -4,7 +4,7 @@ import br.com.fenix.processatexto.TestsConfig
 import br.com.fenix.processatexto.database.DaoFactory
 import br.com.fenix.processatexto.database.dao.MangaDao
 import br.com.fenix.processatexto.mock.MockManga
-import br.com.fenix.processatexto.model.entities.mangaextractor.*
+import br.com.fenix.processatexto.model.entities.mangaextractor.MangaVolume
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks

@@ -1,7 +1,6 @@
-package org.jisho.textosJapones.model.entities.novelextractor
+package br.com.fenix.processatexto.model.entities.novelextractor
 
 import br.com.fenix.processatexto.model.entities.Novel
-import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 
 data class NovelTabela(
     val volumes: MutableList<NovelVolume> = mutableListOf()

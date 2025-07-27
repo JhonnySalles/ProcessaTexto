@@ -1,9 +1,10 @@
 package br.com.fenix.processatexto.service
 
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import java.util.*
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)

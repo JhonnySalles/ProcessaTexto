@@ -2,7 +2,6 @@ package br.com.fenix.processatexto.model.entities.mangaextractor
 
 import br.com.fenix.processatexto.model.entities.Manga
 
-
 data class MangaTabela(
     var volumes: MutableList<MangaVolume> = mutableListOf(),
     var vinculados: MutableList<MangaVinculo> = mutableListOf(),

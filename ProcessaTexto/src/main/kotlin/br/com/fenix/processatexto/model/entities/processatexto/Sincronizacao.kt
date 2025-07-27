@@ -2,9 +2,11 @@ package br.com.fenix.processatexto.model.entities.processatexto
 
 import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.enums.Conexao
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
 import java.time.LocalDateTime
-import java.util.*
 
 
 @Entity

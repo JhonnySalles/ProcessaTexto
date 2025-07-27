@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.model.entities.Manga
 import com.google.gson.annotations.Expose
 import java.util.*
 
-
 data class MangaTexto(
     private var id: UUID? = null,
     @Expose override var texto: String = "",

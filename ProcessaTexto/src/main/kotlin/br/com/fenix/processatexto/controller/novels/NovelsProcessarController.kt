@@ -5,6 +5,7 @@ import br.com.fenix.processatexto.components.CheckBoxTreeTableCellCustom
 import br.com.fenix.processatexto.controller.BaseController
 import br.com.fenix.processatexto.controller.MenuPrincipalController
 import br.com.fenix.processatexto.model.entities.Novel
+import br.com.fenix.processatexto.model.entities.novelextractor.NovelTabela
 import br.com.fenix.processatexto.model.entities.novelextractor.NovelVolume
 import br.com.fenix.processatexto.model.enums.Language
 import br.com.fenix.processatexto.processar.ProcessarNovels
@@ -25,7 +26,6 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.StackPane
 import javafx.scene.robot.Robot
-import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL

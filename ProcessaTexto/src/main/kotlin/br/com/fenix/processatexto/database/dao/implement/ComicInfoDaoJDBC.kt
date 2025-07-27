@@ -3,9 +3,9 @@ package br.com.fenix.processatexto.database.dao.implement
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.ComicInfoDao
 import br.com.fenix.processatexto.database.dao.RepositoryDaoBase
-import br.com.fenix.processatexto.model.enums.comicinfo.AgeRating
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import br.com.fenix.processatexto.model.enums.Conexao
+import br.com.fenix.processatexto.model.enums.comicinfo.AgeRating
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import org.slf4j.LoggerFactory
