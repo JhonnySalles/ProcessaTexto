@@ -13,10 +13,11 @@ import java.sql.*
 import java.time.LocalDateTime
 import java.util.*
 
-
 class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?, ComicInfo>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(ComicInfoDaoJDBC::class.java)
+
         private const val INSERT: String = "INSERT IGNORE INTO comicinfo (id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE: String = "UPDATE comicinfo SET comic = ?, idMal = ?, series = ?, title = ?, publisher = ?, genre = ?, imprint = ?, seriesGroup = ?, storyArc = ?, maturityRating = ?, alternativeSeries = ?, language = ? WHERE id = ?;"
         private const val SELECT: String = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo"
@@ -26,8 +27,6 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
         private const val SELECT_BY_ID_OR_COMIC = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE id = ? OR (language = ? AND (UPPER(comic) LIKE ? or UPPER(series) LIKE ? or UPPER(title) LIKE ?));"
         private const val SELECT_ENVIO = "SELECT id, comic, idMal, series, title, publisher, genre, imprint, seriesGroup, storyArc, maturityRating, alternativeSeries, language FROM comicinfo WHERE atualizacao >= ?"
     }
-
-    private val LOGGER = LoggerFactory.getLogger(ComicInfoDaoJDBC::class.java)
 
     override fun toEntity(rs: ResultSet): ComicInfo = ComicInfo(
         UUID.fromString(rs.getString("id")), rs.getLong("idMal"), rs.getString("comic"), rs.getString("title"), rs.getString("series"), rs.getString("publisher"),
@@ -78,12 +77,12 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -118,12 +117,12 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
             st.setString(++index, obj.getId().toString())
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 //throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -144,7 +143,7 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
             else
                 Optional.empty<ComicInfo>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -169,7 +168,7 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
             else
                 Optional.empty<ComicInfo>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -189,7 +188,7 @@ class ComicInfoDaoJDBC(conexao: Conexao) : ComicInfoDao, RepositoryDaoBase<UUID?
                 list.add(toEntity(rs))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)

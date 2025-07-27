@@ -16,10 +16,11 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.util.*
 
-
 class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDaoBase<UUID?, Vocabulario>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(VocabularioJaponesDaoJDBC::class.java)
+
         private const val INSERT = "INSERT IGNORE INTO vocabulario (id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles) VALUES (?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE vocabulario SET forma_basica = ?, leitura = ?, leitura_novel = ?, portugues = ?, ingles = ? WHERE vocabulario = ?;"
         private const val DELETE = "DELETE FROM vocabulario WHERE vocabulario = ?;"
@@ -34,8 +35,6 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
         private const val SELECT_ENVIO = "SELECT id, vocabulario, forma_basica, leitura, leitura_novel, portugues, ingles FROM vocabulario WHERE atualizacao >= ?;"
         private const val SELECT_ENVIO_EXCLUSAO = "SELECT palavra FROM exclusao WHERE atualizacao >= ?;"
     }
-
-    private val LOGGER = LoggerFactory.getLogger(VocabularioJaponesDaoJDBC::class.java)
 
     @get:Override
     override val tipo: Database get() = Database.JAPONES
@@ -73,8 +72,8 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             st.setString(++index, obj.ingles)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -97,8 +96,8 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
 
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -113,12 +112,12 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             st.setString(1, obj.vocabulario)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_DELETE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -144,7 +143,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -170,7 +169,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             } else
                 Optional.of(Vocabulario(vocabulario))
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -196,7 +195,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -222,7 +221,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -239,7 +238,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             rs = st.executeQuery()
             rs.next()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             false
         } finally {
             JdbcFactory.closeStatement(st)
@@ -255,8 +254,8 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             st.setString(1, palavra)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -275,7 +274,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
                 list.add(rs.getString("palavra"))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -302,7 +301,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -323,7 +322,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
                 list.add(rs.getString(1))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -342,7 +341,7 @@ class VocabularioJaponesDaoJDBC(conexao: Conexao) : VocabularioDao, RepositoryDa
             rs = st.executeQuery()
             rs.next()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             false
         } finally {
             JdbcFactory.closeStatement(st)

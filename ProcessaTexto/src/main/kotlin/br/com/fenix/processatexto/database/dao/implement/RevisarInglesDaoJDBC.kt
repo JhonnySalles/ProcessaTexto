@@ -14,10 +14,11 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.util.*
 
-
 class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUID?, Revisar>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(RevisarInglesDaoJDBC::class.java)
+
         private const val INSERT = "INSERT IGNORE INTO revisar (id, vocabulario, leitura, portugues, revisado, isAnime, isManga) VALUES (?,?,?,?,?,?,?);"
         private const val UPDATE = "UPDATE revisar SET leitura = ?, portugues = ?, revisado = ?, isAnime = ?, isManga = ? WHERE vocabulario = ?;"
         private const val DELETE = "DELETE FROM revisar WHERE vocabulario = ?;"
@@ -35,8 +36,6 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
         private const val SET_ISMANGA = "UPDATE revisar SET isManga = ? WHERE vocabulario = ?;"
         private const val SET_ISNOVEL = "UPDATE revisar SET isNovel = ? WHERE vocabulario = ?;"
     }
-
-    private val LOGGER = LoggerFactory.getLogger(RevisarInglesDaoJDBC::class.java)
 
     @get:Override
     override val tipo: Database get() = Database.INGLES
@@ -75,8 +74,8 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setBoolean(7, obj.isManga)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -96,8 +95,8 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(6, obj.vocabulario)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -112,12 +111,12 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(1, obj.vocabulario)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_DELETE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -132,8 +131,8 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(1, vocabulario)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -163,7 +162,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -191,7 +190,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -219,7 +218,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -246,7 +245,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -264,7 +263,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             if (rs.next())
                 return true
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             JdbcFactory.closeStatement(st)
             JdbcFactory.closeResultSet(rs)
@@ -284,7 +283,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             else
                 ""
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             ""
         } finally {
             JdbcFactory.closeStatement(st)
@@ -304,7 +303,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
                 list.add(rs.getString(1))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -322,7 +321,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             if (rs.next())
                 return rs.getString("Quantidade")
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -369,7 +368,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -388,7 +387,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(1, vocabulario)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             JdbcFactory.closeStatement(st)
         }
@@ -403,7 +402,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(2, obj.vocabulario)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             JdbcFactory.closeStatement(st)
         }
@@ -418,7 +417,7 @@ class RevisarInglesDaoJDBC(conexao: Conexao) : RevisarDao, RepositoryDaoBase<UUI
             st.setString(2, obj.vocabulario)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
         } finally {
             JdbcFactory.closeStatement(st)
         }

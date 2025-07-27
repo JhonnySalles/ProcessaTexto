@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import java.sql.SQLException
 import java.util.*
 
-
 interface SincronizacaoDao {
     @Throws(SQLException::class)
     fun insert(obj: Sincronizacao) : Conexao

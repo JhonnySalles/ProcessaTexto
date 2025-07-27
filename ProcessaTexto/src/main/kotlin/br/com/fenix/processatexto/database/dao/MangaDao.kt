@@ -6,7 +6,6 @@ import br.com.fenix.processatexto.model.enums.Language
 import java.sql.SQLException
 import java.util.*
 
-
 interface MangaDao  {
     @Throws(SQLException::class)
     fun updateVolume(base: String, obj: MangaVolume)

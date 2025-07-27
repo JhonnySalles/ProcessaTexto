@@ -22,12 +22,11 @@ import java.util.*
 import javax.imageio.ImageIO
 import kotlin.RuntimeException as RuntimeException1
 
-
 class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
-    private val LOGGER = LoggerFactory.getLogger(NovelDaoJDBC::class.java)
-
     companion object {
+        private val oLog = LoggerFactory.getLogger(NovelDaoJDBC::class.java)
+
         private const val CREATE_TABELA = "CALL create_table('%s');"
         private const val DROP_TABELA = "CALL drop_table('%s');"
         private const val TABELA_VOLUME = "_volumes"
@@ -114,8 +113,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 st.executeUpdate()
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -145,8 +144,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -162,8 +161,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st.setString(1, id.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -188,8 +187,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 vocab.select(rs.getString("id_vocabulario")).ifPresent { list.add(it as VocabularioExterno) }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -236,8 +235,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -271,8 +270,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -293,8 +292,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 list.add(NovelTexto(UUID.fromString(rs.getString("id")), rs.getString("texto"), rs.getInt("sequencia")))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -323,11 +322,11 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException1(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -360,8 +359,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -391,8 +390,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -423,8 +422,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -451,8 +450,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -487,8 +486,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -516,13 +515,13 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             }
             println(stVocabulario.toString())
             println(stVolume.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stVocabulario)
             JdbcFactory.closeStatement(stVolume)
@@ -537,8 +536,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st.setString(1, obj.getId().toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE_CANCEL)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -553,7 +552,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             stVolume.executeUpdate()
         } catch (e: SQLException) {
             println(stVolume.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(stVolume)
@@ -582,7 +581,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 obj.capa?.let {
@@ -594,8 +593,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 obj.getId()!!
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -620,7 +619,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 insertVocabulario(base, null, obj.id, obj.vocabularios)
@@ -629,8 +628,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 obj.id!!
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -651,13 +650,13 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
                 obj.id!!
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -701,16 +700,16 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
                 obj.id!!
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException1(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -724,8 +723,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -734,8 +733,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -751,8 +750,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(CREATE_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -765,8 +764,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome + TABELA_VOCABULARIO, nome + TABELA_VOCABULARIO))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -781,8 +780,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st.setString(1, id.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -801,8 +800,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 tabela = rs.getString("Tabela")
             tabela
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -819,8 +818,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
             st = conn.prepareStatement(String.format(DROP_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -841,8 +840,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                     list.add(rs.getString("Tabela"))
                 list
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
-                LOGGER.info(st.toString())
+                oLog.error(e.message, e)
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_SELECT)
             } finally {
                 JdbcFactory.closeStatement(st)

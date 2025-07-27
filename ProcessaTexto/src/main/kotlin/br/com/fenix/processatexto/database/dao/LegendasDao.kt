@@ -6,7 +6,6 @@ import br.com.fenix.processatexto.model.entities.subtitle.Legenda
 import java.sql.SQLException
 import java.util.*
 
-
 interface LegendasDao {
     @get:Throws(SQLException::class)
     val tabelas: List<String>

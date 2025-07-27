@@ -7,7 +7,6 @@ import br.com.fenix.processatexto.model.enums.Language
 import java.sql.SQLException
 import java.util.*
 
-
 interface VincularDao : RepositoryDao<UUID?, Vinculo> {
     @Throws(SQLException::class)
     fun update(base: String, obj: Vinculo)

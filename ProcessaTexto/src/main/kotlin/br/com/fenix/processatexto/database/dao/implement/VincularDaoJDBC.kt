@@ -20,10 +20,11 @@ import java.sql.Statement
 import java.util.*
 import java.util.stream.Collectors
 
-
 class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, Vinculo>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(VincularDaoJDBC::class.java)
+
         private const val INSERT_VINCULO =
             "INSERT INTO %s_vinculo (volume, original_arquivo, original_linguagem, id_volume_original, vinculado_arquivo, vinculado_linguagem, id_volume_vinculado, data_criacao, ultima_alteracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE_VINCULO =
@@ -114,8 +115,6 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                 + "AND Table_Name LIKE '%%_vinculo' AND %s GROUP BY Tabela ")
     }
 
-    private val LOGGER = LoggerFactory.getLogger(VincularDaoJDBC::class.java)
-
     private val BASE_MANGA: String
     private val mangaDao = DaoFactory.createMangaDao()
 
@@ -163,7 +162,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setBoolean(++index, pagina.isImagemDupla)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 val rs: ResultSet = st.generatedKeys
@@ -171,8 +170,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                     pagina.setId(rs.getLong(1))
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -200,7 +199,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 val rs: ResultSet = st.generatedKeys
@@ -208,8 +207,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                     pagina.setId(rs.getLong(1))
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -237,7 +236,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 val rs: ResultSet = st.generatedKeys
@@ -260,14 +259,14 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } catch (e1: SQLException) {
                 e1.printStackTrace()
             }
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(st)
         }
@@ -322,8 +321,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -348,8 +347,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -384,7 +383,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             volumeOriginal = null
@@ -446,7 +445,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             volumeOriginal = null
@@ -482,7 +481,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             volumeOriginal = null
@@ -520,7 +519,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             volumeOriginal = null
@@ -569,7 +568,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             volumeOriginal = null
@@ -587,12 +586,12 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setString(1, idVinculo.toString())
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_DELETE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -607,8 +606,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setString(1, idVinculo.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -627,7 +626,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             st.setString(1, obj.getId().toString())
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_DELETE)
             }
             conn.commit()
@@ -637,14 +636,14 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } catch (e1: SQLException) {
                 e1.printStackTrace()
             }
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(st)
         }
@@ -696,7 +695,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_UPDATE)
             } else {
                 val rs: ResultSet = st.generatedKeys
@@ -704,8 +703,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                     pagina.setId(rs.getLong(1))
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -736,7 +735,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_UPDATE)
             } else {
                 for (pagina in obj.vinculados)
@@ -752,14 +751,14 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             } catch (e1: SQLException) {
                 e1.printStackTrace()
             }
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(st)
         }
@@ -774,8 +773,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             rs = st.executeQuery()
             rs.next()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -792,8 +791,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             if (!rs.next())
                 return false
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -812,8 +811,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             )
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -830,8 +829,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             )
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -847,8 +846,8 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             )
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -872,7 +871,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
                 list.add(rs.getString("Manga"))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -940,7 +939,7 @@ class VincularDaoJDBC(conexao: Conexao) : VincularDao, RepositoryDaoBase<UUID?, 
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)

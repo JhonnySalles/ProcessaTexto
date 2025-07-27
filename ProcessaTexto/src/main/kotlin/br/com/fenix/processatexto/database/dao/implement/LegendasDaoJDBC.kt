@@ -2,7 +2,6 @@ package br.com.fenix.processatexto.database.dao.implement
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.database.dao.LegendasDao
-import br.com.fenix.processatexto.database.dao.implement.MangaDaoJDBC.Companion
 import br.com.fenix.processatexto.model.entities.processatexto.Processar
 import br.com.fenix.processatexto.model.entities.subtitle.FilaSQL
 import br.com.fenix.processatexto.model.entities.subtitle.Legenda
@@ -13,10 +12,11 @@ import org.slf4j.LoggerFactory
 import java.sql.*
 import java.util.*
 
-
 class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
+
         private const val INSERT = "INSERT INTO %s (ID, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE = "UPDATE %s SET Episodio = ?, Linguagem = ?, TempoInicial = ?, TempoFinal = ?, Texto = ?, Traducao = ?, Vocabulario = ? WHERE id = ?;"
         private const val SELECT = "SELECT id, Episodio, Linguagem, TempoInicial, TempoFinal, Texto, Traducao, Vocabulario FROM %s WHERE id = ?;"
@@ -45,8 +45,6 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
         private const val SELECT_NOMES = "SELECT nome FROM _fila_sql WHERE nome != '' AND nome IS NOT NULL GROUP BY nome ORDER BY nome"
     }
 
-    private val LOGGER = LoggerFactory.getLogger(LegendasDaoJDBC::class.java)
-
     private val conn: Connection = JdbcFactory.getFactory(conexao)
 
     private val connDeckSubtitle = JdbcFactory.getFactory(Conexao.DECKSUBTITLE)
@@ -73,8 +71,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                     list.add(rs.getString("Tabela"))
                 list
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
-                LOGGER.info(st.toString())
+                oLog.error(e.message, e)
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_SELECT)
             } finally {
                 JdbcFactory.closeStatement(st)
@@ -90,8 +88,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st = connDeckSubtitle.prepareStatement(String.format(CREATE_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -100,8 +98,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st = connDeckSubtitle.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -110,8 +108,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st = connDeckSubtitle.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -128,8 +126,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st.setString(++index, obj.linguagem.sigla.uppercase(Locale.getDefault()))
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -155,12 +153,12 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st.setString(++index, obj.vocabulario)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -183,8 +181,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st.setString(++index, obj.getId().toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -208,8 +206,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             else
                 Optional.empty<Legenda>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -226,8 +224,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st.setString(2, obj.id)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -246,8 +244,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                 list.add(Processar(rs.getString(1), rs.getString(2)))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -275,12 +273,12 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -306,8 +304,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
 
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -325,8 +323,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             rs = st.executeQuery()
             rs.next()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -353,8 +351,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -370,8 +368,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
             st = conn.prepareStatement(delete, Statement.RETURN_GENERATED_KEYS)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -390,8 +388,8 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                     list.add(rs.getString("nome"))
                 list
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
-                LOGGER.info(st.toString())
+                oLog.error(e.message, e)
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_SELECT)
             } finally {
                 JdbcFactory.closeStatement(st)

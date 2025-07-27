@@ -17,12 +17,11 @@ import java.sql.*
 import java.util.*
 import javax.imageio.ImageIO
 
-
 class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
-    private val LOGGER = LoggerFactory.getLogger(MangaDaoJDBC::class.java)
-
     companion object {
+        private val oLog = LoggerFactory.getLogger(MangaDaoJDBC::class.java)
+
         private const val CREATE_TABELA = "CALL create_table('%s');"
         private const val DROP_TABELA = "CALL drop_table('%s');"
         private const val TABELA_VOLUME = "_volumes"
@@ -125,8 +124,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             insertVocabulario(base, obj.getId(), null, null, obj.vocabularios)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -153,8 +152,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -182,8 +181,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -209,8 +208,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 st.executeUpdate()
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -230,8 +229,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(1, id.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -256,8 +255,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 list.add(vocab.select(rs.getString("id_vocabulario")).get() as VocabularioExterno)
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -281,12 +280,12 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             insertVocabulario(base, null, null, obj.getId(), obj.vocabularios)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -311,12 +310,12 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -343,15 +342,15 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -367,8 +366,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(1, obj.getId().toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE_CANCEL)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -398,8 +397,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -441,8 +440,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -471,8 +470,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -506,8 +505,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -546,8 +545,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -575,8 +574,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -603,8 +602,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -631,8 +630,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -662,8 +661,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 )
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -690,11 +689,11 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             } else
                 null
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -712,7 +711,7 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(1, manga)
             st.setInt(2, volume)
             st.setString(3, linguagem.sigla)
-            LOGGER.info(st.toString())
+            oLog.info(st.toString())
             rs = st.executeQuery()
             if (rs.next())
                 Optional.of(
@@ -727,8 +726,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             else
                 Optional.empty<MangaVolume>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -758,8 +757,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -789,8 +788,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -817,8 +816,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -848,11 +847,11 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             } else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -883,8 +882,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -908,8 +907,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list.toList()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -949,8 +948,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -979,13 +978,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             println(stVocabulario.toString())
             println(stVolume.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stVocabulario)
             JdbcFactory.closeStatement(stVolume)
@@ -1032,13 +1031,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stCapitulo.toString())
             println(stCapa.toString())
             println(stVolume.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stTexto)
             JdbcFactory.closeStatement(stPagina)
@@ -1076,13 +1075,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             println(stTexto.toString())
             println(stPagina.toString())
             println(stCapitulo.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stTexto)
             JdbcFactory.closeStatement(stPagina)
@@ -1113,13 +1112,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             println(stTexto.toString())
             println(stPagina.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stTexto)
             JdbcFactory.closeStatement(stPagina)
@@ -1145,13 +1144,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 e1.printStackTrace()
             }
             println(stTexto.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stTexto)
         }
@@ -1175,13 +1174,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 e1.printStackTrace()
             }
             println(stCapa.toString())
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             try {
                 conn.autoCommit = true
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
+                oLog.error(e.message, e)
             }
             JdbcFactory.closeStatement(stCapa)
         }
@@ -1204,15 +1203,15 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 insertVocabulario(base, obj.getId(), null, null, obj.vocabularios)
                 obj.getId()!!
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1239,15 +1238,15 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 insertVocabulario(base, null, obj.getId(), null, obj.vocabularios)
                 obj.getId()!!
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1270,15 +1269,15 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else {
                 insertVocabulario(base, null, null, obj.getId(), obj.vocabularios)
                 obj.getId()!!
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1304,13 +1303,13 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
                 obj.getId()!!
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1341,16 +1340,16 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             } else
                 obj.getId()!!
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } catch (e: IOException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw RuntimeException(e)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1377,8 +1376,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1402,8 +1401,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                 list.add(rs.getString("Tabela"))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1418,8 +1417,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_INSERT, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1428,8 +1427,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1447,8 +1446,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1462,8 +1461,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(CREATE_TRIGGER_UPDATE, nome + TABELA_VOCABULARIO, nome + TABELA_VOCABULARIO))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1480,8 +1479,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st = conn.prepareStatement(String.format(DROP_TABELA, nome))
             st.execute()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_CREATE_DATABASE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1497,8 +1496,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             st.setString(1, id.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1525,8 +1524,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
             }
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -1548,8 +1547,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
                     list.add(rs.getString("Tabela"))
                 list
             } catch (e: SQLException) {
-                LOGGER.error(e.message, e)
-                LOGGER.info(st.toString())
+                oLog.error(e.message, e)
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_SELECT)
             } finally {
                 JdbcFactory.closeStatement(st)

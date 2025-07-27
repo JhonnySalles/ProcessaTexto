@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.model.enums.Database
 import java.sql.SQLException
 import java.util.*
 
-
 interface RevisarDao : RepositoryDao<UUID?, Revisar> {
     val tipo: Database
 

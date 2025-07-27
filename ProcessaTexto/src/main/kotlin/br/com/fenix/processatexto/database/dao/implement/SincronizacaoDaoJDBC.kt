@@ -14,17 +14,16 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.util.*
 
-
 class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBase<Conexao, Sincronizacao>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
+
         private const val INSERT = "INSERT INTO sincronizacao (conexao, envio, recebimento) VALUES (?,?,?);"
         private const val UPDATE = "UPDATE sincronizacao SET envio = ?, recebimento = ? WHERE conexao = ?;"
         private const val SELECT = "SELECT conexao, envio, recebimento FROM sincronizacao WHERE conexao = ?;"
         private const val DELETE = "DELETE FROM sincronizacao WHERE conexao = ?;"
     }
-
-    private val LOGGER = LoggerFactory.getLogger(SincronizacaoDaoJDBC::class.java)
 
     @Throws(SQLException::class)
     override fun insert(obj: Sincronizacao) : Conexao {
@@ -38,13 +37,13 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
             return obj.conexao
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -62,8 +61,8 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
             st.setString(++index, obj.conexao.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -78,8 +77,8 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
             st.setString(1, obj.conexao.toString())
             st.executeUpdate()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -104,7 +103,7 @@ class SincronizacaoDaoJDBC(conexao: Conexao) : SincronizacaoDao, RepositoryDaoBa
                 ) else
                 Optional.empty()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)

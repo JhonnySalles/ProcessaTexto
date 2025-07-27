@@ -4,7 +4,6 @@ import br.com.fenix.processatexto.model.entities.processatexto.Kanji
 import java.sql.SQLException
 import java.util.*
 
-
 interface KanjiDao : RepositoryDao<UUID?, Kanji> {
     @Throws(SQLException::class)
     fun select(kanji: String): Optional<Kanji>

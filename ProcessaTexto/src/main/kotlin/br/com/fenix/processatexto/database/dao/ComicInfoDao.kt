@@ -5,7 +5,6 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.util.*
 
-
 interface ComicInfoDao : RepositoryDao<UUID?, ComicInfo> {
     @Throws(SQLException::class)
     fun save(obj: ComicInfo)

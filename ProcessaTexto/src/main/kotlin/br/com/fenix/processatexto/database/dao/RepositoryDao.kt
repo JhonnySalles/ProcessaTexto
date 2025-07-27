@@ -3,7 +3,6 @@ package br.com.fenix.processatexto.database.dao
 import br.com.fenix.processatexto.model.entities.EntityBase
 import java.util.*
 
-
 interface RepositoryDao<ID, E : EntityBase<ID, E>> {
 
     fun beginTransaction()

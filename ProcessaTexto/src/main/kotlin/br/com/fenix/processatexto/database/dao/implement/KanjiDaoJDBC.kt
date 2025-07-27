@@ -12,14 +12,13 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.*
 
-
 class KanjiDaoJDBC(conexao: Conexao) : KanjiDao, RepositoryDaoBase<UUID?, Kanji>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(KanjiDaoJDBC::class.java)
+
         private const val SELECT = "SELECT id, kanji, palavra, significado FROM kanjax_pt WHERE kanji = ?;"
     }
-
-    private val LOGGER = LoggerFactory.getLogger(KanjiDaoJDBC::class.java)
 
     override fun toEntity(rs: ResultSet): Kanji = Kanji(UUID.fromString(rs.getString("id")),
         rs.getString("kanji"), rs.getString("palavra"), rs.getString("significado")
@@ -44,8 +43,8 @@ class KanjiDaoJDBC(conexao: Conexao) : KanjiDao, RepositoryDaoBase<UUID?, Kanji>
             else
                 Optional.empty<Kanji>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)

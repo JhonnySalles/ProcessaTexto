@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.model.enums.Conexao
 import java.sql.ResultSet
 import java.util.*
 
-
 open class RepositoryDaoSimples<ID, E : EntityBase<ID, E>>(conexao: Conexao) : RepositoryDaoBase<ID, E>(conexao) {
 
     override fun toEntity(rs: ResultSet): E {

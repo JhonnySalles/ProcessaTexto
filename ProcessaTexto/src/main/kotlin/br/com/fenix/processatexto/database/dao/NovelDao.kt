@@ -11,7 +11,6 @@ import org.jisho.textosJapones.model.entities.novelextractor.NovelTabela
 import java.sql.SQLException
 import java.util.*
 
-
 interface NovelDao  {
 
     @Throws(SQLException::class)

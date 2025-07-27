@@ -5,7 +5,6 @@ import br.com.fenix.processatexto.model.entities.processatexto.japones.Estatisti
 import java.sql.SQLException
 import java.util.*
 
-
 interface EstatisticaDao : RepositoryDao<UUID?, Estatistica> {
     @Throws(SQLException::class)
     fun save(obj: Estatistica)

@@ -14,10 +14,11 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.util.*
 
-
 class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<UUID?, Estatistica>(conexao) {
 
     companion object {
+        private val oLog = LoggerFactory.getLogger(EstatisticaDaoJDBC::class.java)
+
         private const val INSERT = "INSERT IGNORE INTO estatistica (id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
         private const val UPDATE = "UPDATE estatistica SET tipo = ?, quantidade = ?, percentual = ?, media = ?, percentual_medio = ?, cor_sequencial = ? WHERE kanji = ? AND leitura = ? ;"
         private const val DELETE = "DELETE FROM estatistica WHERE kanji = ? AND leitura = ? ;"
@@ -26,8 +27,6 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
         private const val SELECT_ALL = "SELECT id, kanji, leitura, tipo, quantidade, percentual, media, percentual_medio, cor_sequencial FROM estatistica WHERE 1 > 0;"
         private const val PESQUISA = "SELECT id, sequencia, word, read_info, frequency, tabela FROM words_kanji_info WHERE word LIKE "
     }
-
-    private val LOGGER = LoggerFactory.getLogger(EstatisticaDaoJDBC::class.java)
 
     override fun toEntity(rs: ResultSet): Estatistica = Estatistica(
         UUID.fromString(rs.getString("id")), rs.getString("kanji"), rs.getString("tipo"), rs.getString("leitura"),
@@ -68,12 +67,12 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_INSERT)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_INSERT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -98,12 +97,12 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
 
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 //throw SQLException(Mensagens.BD_ERRO_UPDATE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_UPDATE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -119,12 +118,12 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
             st.setString(2, obj.leitura)
             val rowsAffected: Int = st.executeUpdate()
             if (rowsAffected < 1) {
-                LOGGER.info(st.toString())
+                oLog.info(st.toString())
                 throw SQLException(Mensagens.BD_ERRO_DELETE)
             }
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
-            LOGGER.info(st.toString())
+            oLog.error(e.message, e)
+            oLog.info(st.toString())
             throw SQLException(Mensagens.BD_ERRO_DELETE)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -145,7 +144,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
             else
                 Optional.empty<Estatistica>()
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -165,7 +164,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
                 list.add(toEntity(rs))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -186,7 +185,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
                 list.add(toEntity(rs))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)
@@ -206,7 +205,7 @@ class EstatisticaDaoJDBC(conexao: Conexao) : EstatisticaDao, RepositoryDaoBase<U
                 list.add(EstatisticaController.Tabela(rs.getString("word"), rs.getString("read_info"), rs.getString("tabela"), true))
             list
         } catch (e: SQLException) {
-            LOGGER.error(e.message, e)
+            oLog.error(e.message, e)
             throw SQLException(Mensagens.BD_ERRO_SELECT)
         } finally {
             JdbcFactory.closeStatement(st)

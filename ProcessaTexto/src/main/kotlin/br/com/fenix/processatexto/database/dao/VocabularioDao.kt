@@ -6,7 +6,6 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.util.*
 
-
 interface VocabularioDao : RepositoryDao<UUID?, Vocabulario> {
     val tipo: Database
 
