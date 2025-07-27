@@ -1,6 +1,7 @@
 package br.com.fenix.processatexto.model.entities.comicinfo
 
 import br.com.fenix.processatexto.model.entities.EntityBase
+import br.com.fenix.processatexto.model.enums.comicinfo.AgeRating
 import br.com.fenix.processatexto.model.enums.comicinfo.Manga
 import br.com.fenix.processatexto.model.enums.comicinfo.YesNo
 import jakarta.persistence.*

@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.model.entities.firebase;
 
-import br.com.fenix.processatexto.model.entities.comicinfo.AgeRating;
+import br.com.fenix.processatexto.model.enums.comicinfo.AgeRating;
 
 import java.util.HashMap;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package br.com.fenix.processatexto.model.entities.comicinfo
+package br.com.fenix.processatexto.model.enums.comicinfo
 
 
 enum class AgeRating(val descricao: String) {

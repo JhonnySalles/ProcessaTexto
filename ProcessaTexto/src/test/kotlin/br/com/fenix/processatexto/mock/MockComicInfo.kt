@@ -1,6 +1,6 @@
 package br.com.fenix.processatexto.mock
 
-import br.com.fenix.processatexto.model.entities.comicinfo.AgeRating
+import br.com.fenix.processatexto.model.enums.comicinfo.AgeRating
 import br.com.fenix.processatexto.model.entities.comicinfo.ComicInfo
 import org.junit.jupiter.api.Assertions.*
 import java.util.*
