@@ -58,13 +58,12 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.util.*
 
-
 class MangasVincularController : Initializable, VinculoListener, VinculoServiceListener {
 
-    private val ON_DRAG_INICIADO: PseudoClass = PseudoClass.getPseudoClass("drag-iniciado")
-    private val ON_DRAG_SELECIONADO: PseudoClass = PseudoClass.getPseudoClass("drag-selecionado")
+    private val pscOnDragIniciado: PseudoClass = PseudoClass.getPseudoClass("drag-iniciado")
+    private val pscOnDragSelecionado: PseudoClass = PseudoClass.getPseudoClass("drag-selecionado")
 
-    private val EXECUCOES = ListaExecucoes()
+    private val oExecucoes = ListaExecucoes()
 
     @FXML
     private lateinit var apRoot: AnchorPane
@@ -168,8 +167,8 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     @FXML
     private lateinit var lvCapitulosVinculado: ListView<String>
 
-    private lateinit var autoCompleteMangaOriginal: JFXAutoCompletePopup<String>
-    private lateinit var autoCompleteMangaVinculado: JFXAutoCompletePopup<String>
+    private val auConMangaOriginal: JFXAutoCompletePopup<String> = JFXAutoCompletePopup<String>()
+    private val auConMangaVinculado: JFXAutoCompletePopup<String> = JFXAutoCompletePopup<String>()
     private var automatico = false
 
     private var arquivoOriginal: File? = null
@@ -210,13 +209,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     fun getCapitulosVinculado(): Map<String, Int> = capitulosVinculado
 
-    fun getAutoCompleteMangaOriginal(): JFXAutoCompletePopup<String> = autoCompleteMangaOriginal
+    fun getAutoCompleteMangaOriginal(): JFXAutoCompletePopup<String> = auConMangaOriginal
 
-    fun getAutoCompleteMangaVinculado(): JFXAutoCompletePopup<String> = autoCompleteMangaVinculado
+    fun getAutoCompleteMangaVinculado(): JFXAutoCompletePopup<String> = auConMangaVinculado
 
     @FXML
     private fun onBtnCarregarLegendas() {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 if (carregar()) {
                     vincularLegenda(true)
@@ -283,7 +282,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     @FXML
     private fun onBtnLimpar() {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 limpar()
                 return false
@@ -293,7 +292,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     @FXML
     private fun onBtnDeletar() {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 if (cbBase.selectionModel.selectedItem == null || vinculo == null)
                     return false
@@ -313,7 +312,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     @FXML
     private fun onBtnSalvar() {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 if (valida())
                     salvar()
@@ -324,7 +323,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     @FXML
     private fun onBtnRecarregar() {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 if (recarregar()) {
                     vincularLegenda(true)
@@ -467,15 +466,15 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     override fun onDragStart() {
         apDragScroolUp.isVisible = true
         apDragScroolDown.isVisible = true
-        lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_INICIADO, true)
+        lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragIniciado, true)
     }
 
     @Override
     override fun onDragEnd() {
         apDragScroolUp.isVisible = false
         apDragScroolDown.isVisible = false
-        lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_SELECIONADO, false)
-        lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_INICIADO, false)
+        lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragSelecionado, false)
+        lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragIniciado, false)
     }
 
     @get:Override
@@ -532,7 +531,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     }
 
     private fun limpar() {
-        EXECUCOES.abortProcess()
+        oExecucoes.abortProcess()
         cbLinguagemVinculado.selectionModel.select(Language.PORTUGUESE)
         cbLinguagemOrigem.selectionModel.select(Language.JAPANESE)
         txtArquivoOriginal.text = ""
@@ -624,7 +623,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         if (vinculado.isEmpty())
             return
 
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 desabilita()
                 val progress = MenuPrincipalController.oController.criaBarraProgresso()
@@ -859,7 +858,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 AlertasPopup.erroModal(controller.stackPane, controller.root, mutableListOf(), "Erro", (error)!!)
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
-                            EXECUCOES.endProcess()
+                            oExecucoes.endProcess()
                         }
                     }
 
@@ -874,7 +873,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
-                            EXECUCOES.endProcess()
+                            oExecucoes.endProcess()
                         }
                     }
                 }
@@ -976,7 +975,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
         val parse: Parse = Utils.criaParse(arquivo)
         if (parse != null) {
-            EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+            oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
                 override fun call(abort: Boolean): Boolean {
                     desabilita()
                     val progress = MenuPrincipalController.oController.criaBarraProgresso()
@@ -1121,7 +1120,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 MenuPrincipalController.oController.getLblLog().text = ""
                                 habilita()
                                 refreshTabelas(Tabela.VINCULADOS)
-                                EXECUCOES.endProcess()
+                                oExecucoes.endProcess()
                             }
                         }
 
@@ -1137,7 +1136,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                                 MenuPrincipalController.oController.getLblLog().text = ""
                                 habilita()
                                 refreshTabelas(Tabela.VINCULADOS)
-                                EXECUCOES.endProcess()
+                                oExecucoes.endProcess()
                             }
                         }
                     }
@@ -1152,7 +1151,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
     }
 
     private fun carregaDados(arquivo: File?, isManga: Boolean) {
-        EXECUCOES.addExecucao(object : ListaExecucoes.LambdaFunction {
+        oExecucoes.addExecucao(object : ListaExecucoes.LambdaFunction {
             override fun call(abort: Boolean): Boolean {
                 desabilita()
                 val progress = MenuPrincipalController.oController.criaBarraProgresso()
@@ -1231,7 +1230,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
-                            EXECUCOES.endProcess()
+                            oExecucoes.endProcess()
                         }
                     }
 
@@ -1247,7 +1246,7 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
                             MenuPrincipalController.oController.getLblLog().text = ""
                             habilita()
                             refreshTabelas(Tabela.VINCULADOS)
-                            EXECUCOES.endProcess()
+                            oExecucoes.endProcess()
                         }
                     }
                 }
@@ -1376,38 +1375,38 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
 
     private val acMangaOriginal: InvalidationListener = InvalidationListener {
         if (cbBase.items.isEmpty()) cbBase.unFocusColor = Color.RED
-        autoCompleteMangaOriginal
+        auConMangaOriginal
             .filter { string -> string.lowercase(Locale.getDefault()).contains(txtMangaOriginal.text.lowercase(Locale.getDefault())) }
-        if (autoCompleteMangaOriginal.filteredSuggestions.isEmpty() || txtMangaOriginal.text.isEmpty()
+        if (auConMangaOriginal.filteredSuggestions.isEmpty() || txtMangaOriginal.text.isEmpty()
             || automatico
-        ) autoCompleteMangaOriginal.hide() else autoCompleteMangaOriginal.show(txtMangaOriginal)
+        ) auConMangaOriginal.hide() else auConMangaOriginal.show(txtMangaOriginal)
     }
     private val acMangaVinculado: InvalidationListener = InvalidationListener {
         if (cbBase.items.isEmpty()) cbBase.unFocusColor = Color.RED
-        autoCompleteMangaVinculado
+        auConMangaVinculado
             .filter { string -> string.lowercase(Locale.getDefault()).contains(txtMangaVinculado.text.lowercase(Locale.getDefault())) }
-        if (autoCompleteMangaVinculado.filteredSuggestions.isEmpty() || txtMangaVinculado.text.isEmpty()
+        if (auConMangaVinculado.filteredSuggestions.isEmpty() || txtMangaVinculado.text.isEmpty()
             || automatico
-        ) autoCompleteMangaVinculado.hide() else autoCompleteMangaVinculado.show(txtMangaVinculado)
+        ) auConMangaVinculado.hide() else auConMangaVinculado.show(txtMangaVinculado)
     }
 
     fun setAutoCompleteListener(isClear: Boolean) {
         if (isClear) {
             txtMangaOriginal.textProperty().removeListener(acMangaOriginal)
             txtMangaVinculado.textProperty().removeListener(acMangaVinculado)
-            autoCompleteMangaOriginal.setSelectionHandler(null)
-            autoCompleteMangaVinculado.setSelectionHandler(null)
+            auConMangaOriginal.setSelectionHandler(null)
+            auConMangaVinculado.setSelectionHandler(null)
         } else {
             txtMangaOriginal.textProperty().addListener(acMangaOriginal)
             txtMangaVinculado.textProperty().addListener(acMangaVinculado)
-            autoCompleteMangaOriginal.setSelectionHandler { event -> txtMangaOriginal.text = event.getObject() }
-            autoCompleteMangaVinculado.setSelectionHandler { event -> txtMangaVinculado.text = event.getObject() }
+            auConMangaOriginal.setSelectionHandler { event -> txtMangaOriginal.text = event.getObject() }
+            auConMangaVinculado.setSelectionHandler { event -> txtMangaVinculado.text = event.getObject() }
         }
     }
 
     private fun selecionaBase(base: String?) {
-        autoCompleteMangaOriginal.suggestions.clear()
-        autoCompleteMangaVinculado.suggestions.clear()
+        auConMangaOriginal.suggestions.clear()
+        auConMangaVinculado.suggestions.clear()
         if (base == null || base.isEmpty())
             return
 
@@ -1415,10 +1414,10 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             service.createTabelas(base)
         } catch (e: SQLException) {
             oLog.error(e.message, e)
-            println("Erro ao consultar as sugestões de mangas.")
+            println("Erro ao criar a tabela.")
         }
-        selectionaManga(autoCompleteMangaOriginal, cbLinguagemOrigem, txtMangaOriginal)
-        selectionaManga(autoCompleteMangaVinculado, cbLinguagemVinculado, txtMangaVinculado)
+        selectionaManga(auConMangaOriginal, cbLinguagemOrigem, txtMangaOriginal)
+        selectionaManga(auConMangaVinculado, cbLinguagemVinculado, txtMangaVinculado)
     }
 
     private fun selectionaManga(autoComplete: JFXAutoCompletePopup<String>, linguagem: JFXComboBox<Language>, manga: JFXTextField) {
@@ -1480,13 +1479,13 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
             event.consume()
         }
         lvPaginasNaoVinculadas.setOnDragEntered { event ->
-            lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_SELECIONADO, true)
-            lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_INICIADO, false)
+            lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragSelecionado, true)
+            lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragIniciado, false)
             event.consume()
         }
         lvPaginasNaoVinculadas.setOnDragExited { event ->
-            lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_SELECIONADO, false)
-            lvPaginasNaoVinculadas.pseudoClassStateChanged(ON_DRAG_INICIADO, true)
+            lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragSelecionado, false)
+            lvPaginasNaoVinculadas.pseudoClassStateChanged(pscOnDragIniciado, true)
             event.consume()
         }
         lvPaginasNaoVinculadas.setOnDragDropped { event ->
@@ -1616,16 +1615,14 @@ class MangasVincularController : Initializable, VinculoListener, VinculoServiceL
         cbBase.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         txtMangaOriginal.focusTraversableProperty().addListener { _, oldValue, _ -> if (oldValue) txtMangaOriginal.unFocusColor = Color.web("#106ebe") }
         txtMangaOriginal.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        autoCompleteMangaOriginal = JFXAutoCompletePopup<String>()
         txtMangaVinculado.focusTraversableProperty().addListener { _, oldValue, _ -> if (oldValue) txtMangaVinculado.unFocusColor = Color.web("#106ebe") }
         txtMangaVinculado.onKeyPressed = EventHandler { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        autoCompleteMangaVinculado = JFXAutoCompletePopup<String>()
         setAutoCompleteListener(false)
         spnVolume.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         cbLinguagemOrigem.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        cbLinguagemOrigem.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(autoCompleteMangaOriginal, cbLinguagemOrigem, txtMangaOriginal) }
+        cbLinguagemOrigem.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(auConMangaOriginal, cbLinguagemOrigem, txtMangaOriginal) }
         cbLinguagemVinculado.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
-        cbLinguagemVinculado.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(autoCompleteMangaVinculado, cbLinguagemVinculado, txtMangaVinculado) }
+        cbLinguagemVinculado.selectionModel.selectedItemProperty().addListener { _, _, _ -> selectionaManga(auConMangaVinculado, cbLinguagemVinculado, txtMangaVinculado) }
         txtArquivoOriginal.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         txtArquivoVinculado.setOnKeyPressed { ke -> if (ke.code.equals(KeyCode.ENTER)) robot.keyPress(KeyCode.TAB) }
         preparaCelulas()
