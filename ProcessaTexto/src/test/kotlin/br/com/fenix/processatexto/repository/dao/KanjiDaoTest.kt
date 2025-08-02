@@ -30,7 +30,7 @@ class KanjiDaoTest : TestBaseDao<UUID?, Kanji>() {
     @Order(10)
     fun testSelectKanji() {
         lastEntity = input.mockEntity()
-        repository.insert(lastEntity!!)
+        repository.insert(lastEntity!!, isThrowsNotInsert = true)
         lastList.add(lastEntity!!)
         val entitie = (repository as KanjiDao).select(lastEntity!!.kanji)
         Assertions.assertTrue(entitie.isPresent)

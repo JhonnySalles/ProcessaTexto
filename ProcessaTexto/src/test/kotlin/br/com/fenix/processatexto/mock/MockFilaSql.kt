@@ -28,17 +28,17 @@ class MockFilaSql : MockJpaBase<UUID?, FilaSQL>() {
 
     override fun updateEntityById(lastId: UUID?): FilaSQL {
         return FilaSQL(
-            lastId, Random.nextLong(1, 10000), "select_sql" + "---",
+            lastId, Random.nextLong(1, 10000), "nome" + "---","select_sql" + "---",
             "update_sql" + "---", "delete_sql" + "---", "vocabulario" + "---",
-            Language.ENGLISH, false, true
+            Language.ENGLISH, isExporta = false, isLimpeza = true
         )
     }
 
     override fun mockEntity(id: UUID?): FilaSQL {
         return FilaSQL(
-            id, 0, "select_sql",
+            id, 0, "nome","select_sql",
             "update_sql", "delete_sql", "vocabulario",
-            Language.PORTUGUESE, true, false
+            Language.PORTUGUESE, isExporta = true, isLimpeza = false
         )
     }
 

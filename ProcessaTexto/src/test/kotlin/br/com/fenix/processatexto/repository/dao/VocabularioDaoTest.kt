@@ -82,7 +82,7 @@ abstract class VocabularioDaoTest(var conexao: Conexao) : TestBaseDao<UUID?, Voc
     @Test
     @Order(15)
     open fun testDelete() {
-        (repository as VocabularioDao).insert(lastEntity!!)
+        (repository as VocabularioDao).insert(lastEntity!!, isThrowsNotInsert = true)
         (repository as VocabularioDao).delete(lastEntity!!)
         val entity = (repository as VocabularioDao).select(lastEntity!!.getId()!!)
         Assertions.assertTrue(entity.isEmpty)

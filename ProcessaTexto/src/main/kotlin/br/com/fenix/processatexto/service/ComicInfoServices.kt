@@ -22,7 +22,7 @@ class ComicInfoServices {
         if (saved.isEmpty || saved.get().getId() == null) {
             if (comic.getId() == null)
                 comic.setId(UUID.randomUUID())
-            comicInfoDao.insert(comic)
+            comicInfoDao.insert(comic, isThrowsNotInsert = true)
         } else {
             comic.setId(saved.get().getId())
             comicInfoDao.update(comic, isThrowsNotUpdate = false)

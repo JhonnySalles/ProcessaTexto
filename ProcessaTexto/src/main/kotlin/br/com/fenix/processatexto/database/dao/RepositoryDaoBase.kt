@@ -2,6 +2,7 @@ package br.com.fenix.processatexto.database.dao
 
 import br.com.fenix.processatexto.database.JdbcFactory
 import br.com.fenix.processatexto.model.entities.EntityBase
+import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Conexao
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
@@ -297,7 +298,7 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @return retorna um id do registro gerado
      * @throws SQLException caso o sql esteja errado ou não tenha nenhuma linha alterada
      */
-    override fun insert(obj: E) : ID? {
+    override fun insert(obj: E, isThrowsNotInsert: Boolean) : ID? {
         val parametros = getParametros(obj)
         var colunas = ""
         var valores = ""
@@ -315,6 +316,8 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                 id as ID
             else if (generate != null)
                 toID(generate)
+            else if (isThrowsNotInsert)
+                throw SQLException(Mensagens.BD_ERRO_INSERT)
             else
                 null
     }
@@ -339,7 +342,38 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
 
         val sql = String.format(UPDATE, getTabela(obj), colunas.substringBeforeLast(","), chaves.substringBeforeLast(" AND "))
         //LOGGER.info("Gerado SQL Update: $sql")
-        toID(query(sql, parametros, isThrowsNotUpdate))
+        try {
+            toID(query(sql, parametros, isThrowsNotUpdate))
+        } catch (e : Exception) {
+            if (isThrowsNotUpdate)
+                throw SQLException(Mensagens.BD_ERRO_UPDATE, e)
+        }
+    }
+
+    /**
+     * Deleta um objeto no banco de dados pelo id, caso não informmado será utilizado pela tag @Id.
+     * @param id id do registro a ser excluido
+     * @param column campo no banco referente ao id, padrão (id)
+     * @throws SQLException caso o sql esteja errado ou não tenha nenhuma linha alterada
+     */
+    override fun delete(obj: E, isThrowsNotDelete: Boolean) {
+        val condicao = mutableMapOf<String, Any?>()
+        val ids = getIds(obj)
+        var chaves = ""
+        for (param in ids.keys) {
+            chaves += "$param = ? AND "
+            condicao["id_$param"] = ids[param]
+        }
+
+        val sql = String.format(DELETE, getTabela(obj), chaves.substringBeforeLast(" AND "))
+        //LOGGER.info("Gerado SQL Delete: $sql")
+
+        try {
+            query(sql, condicao, isThrowsNotDelete)
+        } catch (e : Exception) {
+            if (isThrowsNotDelete)
+                throw SQLException(Mensagens.BD_ERRO_DELETE, e)
+        }
     }
 
     /**

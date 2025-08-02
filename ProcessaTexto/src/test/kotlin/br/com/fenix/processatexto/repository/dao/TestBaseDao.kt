@@ -56,7 +56,7 @@ abstract class TestBaseDao<ID, E : EntityBase<ID, E>> {
     open fun testInsert() {
         lastId = null
         lastEntity = input.mockEntity(lastId)
-        lastId = repository.insert(lastEntity!!)
+        lastId = repository.insert(lastEntity!!, isThrowsNotInsert = true)
         Assertions.assertNotNull(lastId)
     }
 

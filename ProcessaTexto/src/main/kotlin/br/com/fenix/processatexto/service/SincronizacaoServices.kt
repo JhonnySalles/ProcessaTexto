@@ -403,7 +403,7 @@ class SincronizacaoServices(controller: MenuPrincipalController) : TimerTask() {
                     comic.get().merge(sinc)
                     daoComicInfo.update(comic.get(), isThrowsNotUpdate = false)
                 } else
-                    daoComicInfo.insert(sinc)
+                    daoComicInfo.insert(sinc, isThrowsNotInsert = true)
                 comicInfo += sinc.comic + ", "
             }
 
