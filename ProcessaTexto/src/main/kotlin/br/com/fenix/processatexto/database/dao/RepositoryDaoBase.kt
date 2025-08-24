@@ -1,9 +1,11 @@
 package br.com.fenix.processatexto.database.dao
 
 import br.com.fenix.processatexto.database.JdbcFactory
+import br.com.fenix.processatexto.model.entities.Condicao
 import br.com.fenix.processatexto.model.entities.EntityBase
 import br.com.fenix.processatexto.model.entities.processatexto.Vocabulario
 import br.com.fenix.processatexto.model.enums.Conexao
+import br.com.fenix.processatexto.model.enums.Igualdade
 import br.com.fenix.processatexto.model.messages.Mensagens
 import br.com.fenix.processatexto.util.Utils
 import jakarta.persistence.Column
@@ -40,7 +42,9 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
     private val UPDATE : String = "UPDATE %s SET %s WHERE %s"
     private val DELETE : String = "DELETE FROM %s WHERE %s"
     private val SELECT : String = "SELECT %s FROM %s "
-    private val SELECT_BY_ID : String = SELECT + " WHERE %s "
+    private val WHERE : String = " WHERE %s "
+    private val ORDER : String = " ORDER BY %s "
+    private val PAGE : String = " LIMIT %d,%d"
 
     abstract fun toEntity(rs: ResultSet): E
 
@@ -98,6 +102,8 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
                 }
         }
     }
+
+    private fun toParams(params: Map<String, Condicao?>) = params.map { it.key to it.value?.valor }.toMap()
 
     /**
      * Executa uma query no banco, no qual poderá ser um insert ou update
@@ -404,7 +410,17 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
      * @return retorna um objeto se encontrado
      * @throws SQLException caso o sql esteja errado
      */
-    override fun find(id: ID, column: String): Optional<E> {
+    override fun find(id: ID, column: String): Optional<E> = find(id, column, Igualdade.IGUAL)
+
+    /**
+     * Localiza um registro e retorna o objeto selecionado, caso não informmado será utilizado pela tag @Id.
+     * @param id id do objeto
+     * @param column campo no banco referente ao id, padrão (id)
+     * @param igualdade campo no banco referente a condição para a consulta da coluna e id
+     * @return retorna um objeto se encontrado
+     * @throws SQLException caso o sql esteja errado
+     */
+    override fun find(id: ID, column: String, igualdade: Igualdade): Optional<E> {
         val entity = clazzEntity.newInstance()
         val parametros = getParametros(entity)
         var campos = ""
@@ -412,16 +428,39 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
             campos += "$param,"
 
         var condicao = Pair(column, id)
-        var chave = "$column = ?"
+        var chave = "$column ${igualdade.valor} ?"
         if (column.isEmpty()) {
             val ids = getIds(entity)
             val campo = ids.keys.first()
-            chave = "$campo = ?"
+            chave = "$campo ${igualdade.valor} ?"
             condicao = Pair(campo, id)
         }
-        val sql = String.format(SELECT_BY_ID, campos.substringBeforeLast(","), getTabela(entity), chave)
+
+        val sql = String.format(SELECT + WHERE, campos.substringBeforeLast(","), getTabela(entity), chave)
         //LOGGER.info("Gerado SQL Select By Id: $sql")
         return queryEntity(sql, mapOf(condicao))
+    }
+
+    /**
+     * Localiza um registro e retorna o objeto selecionado, caso não informmado será utilizado pela tag @Id.
+     * @param params lista de campos para a pesquisa
+     * @return retorna um objeto se encontrado
+     * @throws SQLException caso o sql esteja errado
+     */
+    override fun find(params: Map<String, Condicao>): Optional<E> {
+        val entity = clazzEntity.newInstance()
+        val parametros = getParametros(entity)
+        var campos = ""
+        for (param in parametros.keys)
+            campos += "$param,"
+
+        var condicao = "1>0 AND "
+        for (column in params)
+            condicao += "${column.key} ${(column.value.igualdade ?: Igualdade.IGUAL).valor} ? AND "
+
+        val sql = String.format(SELECT + WHERE, campos.substringBeforeLast(","), getTabela(entity), condicao.substringBeforeLast(" AND "))
+        //LOGGER.info("Gerado SQL Select: $sql")
+        return queryEntity(sql, toParams(params))
     }
 
     /**
@@ -439,6 +478,28 @@ abstract class RepositoryDaoBase<ID, E : EntityBase<ID, E>>(conexao: Conexao) : 
         val sql = String.format(SELECT, campos.substringBeforeLast(","), getTabela(entity))
         //LOGGER.info("Gerado SQL Select: $sql")
         return queryList(sql, mapOf())
+    }
+
+    /**
+     * Localiza um registro e retorna o objeto selecionado, caso não informmado será utilizado pela tag @Id.
+     * @param params parametros do objeto a ser localizado
+     * @return retorna um objeto se encontrado
+     * @throws SQLException caso o sql esteja errado
+     */
+    override fun findAll(params: Map<String, Condicao>): List<E> {
+        val entity = clazzEntity.newInstance()
+        val parametros = getParametros(entity)
+        var campos = ""
+        for (param in parametros.keys)
+            campos += "$param,"
+
+        var condicao = "1>0 AND "
+        for (column in params)
+            condicao += "${column.key} ${(column.value.igualdade ?: Igualdade.IGUAL).valor} ? AND "
+
+        val sql = String.format(SELECT + WHERE, campos.substringBeforeLast(","), getTabela(entity), condicao.substringBeforeLast(" AND "))
+        //LOGGER.info("Gerado SQL Select: $sql")
+        return queryList(sql, toParams(params))
     }
 
 }
