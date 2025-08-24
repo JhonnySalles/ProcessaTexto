@@ -72,11 +72,11 @@ CREATE TABLE revisar (
     ingles        longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     portugues     longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     revisado      tinyint(1) DEFAULT '0',
-    aparece       INT                                                           DEFAULT '0',
+    aparece       INT        DEFAULT '0',
     isanime       tinyint(1) DEFAULT '0',
     ismanga       tinyint(1) DEFAULT '0',
     isnovel       tinyint(1) DEFAULT '0',
-    atualizacao   datetime                                                      DEFAULT CURRENT_TIMESTAMP,
+    atualizacao   datetime   DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ( vocabulario ),
     key           vocabulario (vocabulario, forma_basica)
 ) ENGINE = INNODB
