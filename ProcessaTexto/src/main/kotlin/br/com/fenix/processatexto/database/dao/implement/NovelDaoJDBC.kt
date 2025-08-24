@@ -25,11 +25,13 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
 
         private const val CREATE_TABELA = "CALL create_table('%s');"
         private const val DROP_TABELA = "CALL drop_table('%s');"
+
         private const val TABELA_VOLUME = "_volumes"
         private const val TABELA_CAPITULO = "_capitulos"
         private const val TABELA_TEXTO = "_textos"
         private const val TABELA_VOCABULARIO = "_vocabularios"
         private const val TABELA_CAPA = "_capas"
+
         private const val CREATE_TRIGGER_INSERT = "CREATE TRIGGER tr_%s_insert BEFORE INSERT ON %s" +
                 "  FOR EACH ROW BEGIN" +
                 "    IF (NEW.id IS NULL OR NEW.id = '') THEN" +
@@ -40,26 +42,26 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
                 "  FOR EACH ROW BEGIN" +
                 "    SET new.Atualizacao = NOW();" +
                 "  END"
-        private const val INSERT_VOLUMES =
-            "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, serie, descricao, autor, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
+
+        private const val INSERT_VOLUMES = "INSERT INTO %s_volumes (id, novel, titulo, titulo_alternativo, serie, descricao, autor, editora, volume, linguagem, arquivo, is_processado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
         private const val INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem) VALUES (?,?,?,?,?,?,?,?)"
         private const val INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)"
         private const val INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)"
         private const val DELETE_VOLUMES = "CALL delete_volume('%s', '%s');"
-        private const val SELECT_VOLUMES =
-            "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor,VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado" +
+
+        private const val SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado" +
                     " FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume"
         private const val SELECT_CAPITULOS = ("SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem "
                 + "FROM %s_capitulos CAP WHERE id_volume = ? AND %s GROUP BY CAP.id ORDER BY CAP.linguagem, CAP.volume")
         private const val SELECT_TEXTOS = "SELECT id, sequencia, texto FROM %s_textos WHERE id_capitulo = ? "
         private const val SELECT_CAPA = "SELECT id, novel, volume, linguagem, arquivo, extensao, capa FROM %s_capas WHERE id_volume = ? "
-        private const val FIND =
-            "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL"
+
+        private const val FIND = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL"
         private const val FIND_VOLUME = "$FIND WHERE novel = ? AND volume = ? AND linguagem = ? LIMIT 1"
         private const val FIND_ARQUIVO = "$FIND WHERE arquivo = ? AND linguagem = ? LIMIT 1"
-        private const val SELECT_VOLUME =
-            "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?"
+        private const val SELECT_VOLUME = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado FROM %s_volumes VOL WHERE id = ?"
         private const val SELECT_CAPITULO = "SELECT CAP.id, CAP.novel, CAP.volume, CAP.capitulo, CAP.descricao, CAP.sequencia, CAP.linguagem FROM %s_capitulos CAP WHERE id = ?"
+
         private const val UPDATE_VOLUMES_CANCEL = "UPDATE %s_volumes SET is_processado = 0 WHERE id = ?"
         private const val SELECT_TABELAS = ("SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
                 + "FROM information_schema.tables WHERE table_schema = '%s' AND Table_Name NOT LIKE '%%exemplo%%' "
@@ -67,6 +69,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
         private const val SELECT_LISTA_TABELAS = ("SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela "
                 + " FROM information_schema.tables WHERE table_schema = '%s' AND %s "
                 + " AND Table_Name LIKE '%%_volumes%%' GROUP BY Tabela ")
+
         private const val DELETE_VOCABULARIO = "DELETE FROM %s_vocabularios WHERE %s = ?;"
         private const val INSERT_VOCABULARIO = ("INSERT INTO %s_vocabularios (%s, id_vocabulario) "
                 + " VALUES (?,?);")
