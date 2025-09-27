@@ -1,10 +1,10 @@
 CREATE TABLE _sql (
-    sequencial  int NOT NULL AUTO_INCREMENT,
-    tipo        enum ('INSERT','SELECT','CREATE','UPDATE') DEFAULT NULL,
-    descricao   varchar(250)                               DEFAULT NULL,
-    texto       longtext,
-    atualizacao datetime                                   DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (sequencial)
+    sequencial INT NOT NULL AUTO_INCREMENT,
+    tipo ENUM ('INSERT','SELECT','CREATE','UPDATE') DEFAULT NULL,
+    descricao VARCHAR(250) DEFAULT NULL,
+    texto LONGTEXT,
+    atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ( sequencial )
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb3;
 
@@ -20,30 +20,33 @@ VALUES (1, 'SELECT', 'Validar a diferença de tempo', 'SELECT\r\n  TB.*, \r\n  A
        (9, 'UPDATE', 'Limpeza vocabulario vazio', 'UPDATE decksubtitle.amagami_ss SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.amagami_ss_antigo SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.bakemonogatari SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.fatestay_night_unlimited SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.kakegurui SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.mahouka_koukou_no_rettousei SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.re_zero_kara_hajimeru_isekai_seikatsu SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\nUPDATE decksubtitle.otome_game_no_hametsu SET Vocabulario = NULL WHERE Vocabulario = \'\';\r\n', '2023-08-06 17:10:11');
 
 CREATE TABLE _fila_sql (
-    id          VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    sequencial  INT NOT NULL AUTO_INCREMENT,
-    select_sql  LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-    update_sql  LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-    delete_sql  LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+    id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    sequencial INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(250),
+    select_sql LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+    update_sql LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+    delete_sql LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci,
     vocabulario LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    linguagem   VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    isExporta   TINYINT(1) DEFAULT '0',
-    isLimpeza   TINYINT(1) DEFAULT '0',
-    atualizacao DATETIME                                                     DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (sequencial)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    linguagem VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    isExporta TINYINT(1) DEFAULT '0',
+    isLimpeza TINYINT(1) DEFAULT '0',
+    atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ( sequencial )
+) ENGINE = INNODB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE exemplo (
-    id           varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    Episodio     int                                                          DEFAULT NULL,
-    Linguagem    varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    TempoInicial varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    TempoFinal   varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    Texto        longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    Traducao     longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    Vocabulario  longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    Atualizacao  datetime                                                     DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    Episodio INT DEFAULT NULL,
+    Linguagem VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    TempoInicial VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    TempoFinal VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    Texto LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    Traducao LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    Vocabulario LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    Atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ( id )
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
