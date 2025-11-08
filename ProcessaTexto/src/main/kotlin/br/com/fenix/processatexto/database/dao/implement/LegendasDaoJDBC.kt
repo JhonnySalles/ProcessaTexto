@@ -26,7 +26,7 @@ class LegendasDaoJDBC(conexao: Conexao, base: String) : LegendasDao {
                 " FROM information_schema.tables WHERE table_schema = '%s' AND %s " +
                 " AND Table_Name != '_sql' AND Table_Name != '_fila_sql' " +
                 " GROUP BY Tabela ORDER BY Tabela"
-        private const val CREATE_TABELA = "CALL create_table('%s');"
+        private const val CREATE_TABELA = "CALL sp_create_table('%s');"
         private const val CREATE_TRIGGER_INSERT = "CREATE TRIGGER %s_insert BEFORE INSERT ON %s" +
                 "  FOR EACH ROW BEGIN" +
                 "    IF (NEW.id IS NULL OR NEW.id = '') THEN" +

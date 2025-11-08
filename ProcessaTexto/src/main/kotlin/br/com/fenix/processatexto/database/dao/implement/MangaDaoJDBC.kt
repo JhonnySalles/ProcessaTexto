@@ -22,8 +22,8 @@ class MangaDaoJDBC(conexao: Conexao, base: String) : MangaDao {
     companion object {
         private val oLog = LoggerFactory.getLogger(MangaDaoJDBC::class.java)
 
-        private const val CREATE_TABELA = "CALL create_table('%s');"
-        private const val DROP_TABELA = "CALL drop_table('%s');"
+        private const val CREATE_TABELA = "CALL sp_create_table('%s');"
+        private const val DROP_TABELA = "CALL sp_drop_table('%s');"
         private const val TABELA_VOLUME = "_volumes"
         private const val TABELA_CAPITULO = "_capitulos"
         private const val TABELA_PAGINA = "_paginas"

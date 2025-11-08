@@ -23,8 +23,8 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
     companion object {
         private val oLog = LoggerFactory.getLogger(NovelDaoJDBC::class.java)
 
-        private const val CREATE_TABELA = "CALL create_table('%s');"
-        private const val DROP_TABELA = "CALL drop_table('%s');"
+        private const val CREATE_TABELA = "CALL sp_create_table('%s');"
+        private const val DROP_TABELA = "CALL sp_drop_table('%s');"
 
         private const val TABELA_VOLUME = "_volumes"
         private const val TABELA_CAPITULO = "_capitulos"
@@ -47,7 +47,7 @@ class NovelDaoJDBC(conexao: Conexao, base: String) : NovelDao {
         private const val INSERT_CAPITULOS = "INSERT INTO %s_capitulos (id, id_volume, novel, volume, capitulo, descricao, sequencia, linguagem) VALUES (?,?,?,?,?,?,?,?)"
         private const val INSERT_TEXTO = "INSERT INTO %s_textos (id, id_capitulo, sequencia, texto) VALUES (?,?,?,?)"
         private const val INSERT_CAPA = "INSERT INTO %s_capas (id, id_volume, novel, volume, linguagem, arquivo, extensao, capa) VALUES (?,?,?,?,?,?,?,?)"
-        private const val DELETE_VOLUMES = "CALL delete_volume('%s', '%s');"
+        private const val DELETE_VOLUMES = "CALL sp_delete_volume('%s', '%s');"
 
         private const val SELECT_VOLUMES = "SELECT VOL.id, VOL.novel, VOL.titulo, VOL.titulo_alternativo, VOL.serie, VOL.descricao, VOL.editora, VOL.autor, VOL.volume, VOL.linguagem, VOL.arquivo, VOL.is_favorito, VOL.is_Processado" +
                     " FROM %s_volumes VOL WHERE %s GROUP BY VOL.id ORDER BY VOL.novel, VOL.linguagem, VOL.volume"

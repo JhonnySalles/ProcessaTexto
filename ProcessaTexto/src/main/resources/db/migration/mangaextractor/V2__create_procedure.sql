@@ -1,8 +1,7 @@
 DELIMITER $$
 
-CREATE DEFINER=`admin`@`%` PROCEDURE `create_table`(IN _tablename VARCHAR(100))
+CREATE PROCEDURE `sp_create_table`(IN _tablename VARCHAR(100))
 BEGIN
-
 	SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_volumes (
 	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 	  manga VARCHAR(250) DEFAULT NULL,
@@ -111,13 +110,11 @@ BEGIN
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
-
 END$$
 
 
-CREATE DEFINER=`admin`@`%` PROCEDURE `drop_table`(IN _tablename VARCHAR(100))
+CREATE PROCEDURE `sp_drop_table`(IN _tablename VARCHAR(100))
 BEGIN
-
     SET @sql = CONCAT('DROP TABLE IF EXISTS ',_tablename,'_vocabularios;');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
@@ -147,11 +144,10 @@ BEGIN
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
-
 END$$
 
 
-CREATE DEFINER=`admin`@`%` PROCEDURE `delete_volume`(IN _tablename VARCHAR(100), _IdsVolume VARCHAR(900))
+CREATE PROCEDURE `sp_delete_volume`(IN _tablename VARCHAR(100), _IdsVolume VARCHAR(900))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -200,13 +196,11 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 
     COMMIT;
-
 END$$
 
 
-CREATE DEFINER=`admin`@`%` PROCEDURE `delete_capitulos`(IN _tablename VARCHAR(100), _IdsCapitulo VARCHAR(900))
+CREATE PROCEDURE `sp_delete_capitulos`(IN _tablename VARCHAR(100), _IdsCapitulo VARCHAR(900))
 BEGIN
-
     DECLARE done BOOLEAN DEFAULT FALSE;
     DECLARE id VARCHAR(36);
     DECLARE cur CURSOR FOR SELECT Caps FROM viewcap;
@@ -273,7 +267,45 @@ BEGIN
     END IF;
 
     DROP VIEW IF EXISTS viewcap;
+END$$
 
+
+CREATE PROCEDURE `sp_list_tables`(IN _database VARCHAR(255))
+BEGIN
+    SELECT REPLACE(Table_Name, '_volumes', '') AS Tabela
+    FROM information_schema.tables
+    WHERE Table_Schema = _database AND Table_Name LIKE '%_volumes%';
+END$$
+
+
+CREATE PROCEDURE `sp_exists_volume`(IN _tablename VARCHAR(255), IN _idvolume VARCHAR(36))
+BEGIN
+    IF fn_table_exists(DATABASE(), _tablename) THEN
+        SET @sql = CONCAT( 'SELECT ID FROM `', CONCAT(REPLACE(_tablename, '_volumes', ''), '_volumes'), '` WHERE id = ?' );
+        PREPARE stmt FROM @sql;
+        SET @id = _idvolume;
+        EXECUTE stmt USING @id;
+        DEALLOCATE PREPARE stmt;
+
+        IF @v_count_dynamic > 0 THEN
+            SELECT TRUE AS 'exists';
+        ELSE
+            SELECT FALSE AS 'exists';
+        END IF;
+    ELSE
+        SELECT FALSE AS 'exists';
+    END IF;
+END$$
+
+
+CREATE PROCEDURE `sp_sincronizacao`(IN _data DATETIME)
+BEGIN
+    SELECT REPLACE(information_schema.tb.Table_Name, '_volumes', '') AS tabela, MAX(information_schema.aux.Update_Time) AS ultima_sincronizacao
+      FROM information_schema.TABLES tb
+      JOIN information_schema.TABLES aux ON aux.Table_Schema = tb.Table_Schema AND aux.Table_Name LIKE CONCAT(REPLACE(tb.Table_Name, '_volumes', ''), '_%')
+     WHERE tb.Table_Schema = DATABASE() AND tb.Table_Name LIKE '%\\_volumes'
+     GROUP BY tabela
+    HAVING _data IS NULL OR ultima_sincronizacao > _data OR ultima_sincronizacao IS NULL;
 END$$
 
 DELIMITER ;
