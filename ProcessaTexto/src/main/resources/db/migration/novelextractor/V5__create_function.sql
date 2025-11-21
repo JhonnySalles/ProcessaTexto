@@ -1,6 +1,6 @@
 DELIMITER $$
 
-CREATE FUNCTION `fn_vocabulary_exists`(IN _database VARCHAR(255), IN _table VARCHAR(255))
+CREATE FUNCTION `fn_vocabulary_exists`(_database VARCHAR(255), _table VARCHAR(255))
     RETURNS BOOLEAN
     DETERMINISTIC READS SQL DATA
 BEGIN
