@@ -3,22 +3,23 @@ DELIMITER $$
 CREATE PROCEDURE `sp_create_table`(IN _tablename VARCHAR(100))
 BEGIN
 	SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_volumes (
-	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-	  novel VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-	  serie VARCHAR(250) DEFAULT NULL,
-	  titulo VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-	  titulo_alternativo VARCHAR(250) DEFAULT NULL,
-	  descricao LONGTEXT,
-	  arquivo VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-	  editora VARCHAR(250) DEFAULT NULL,
-	  autor VARCHAR(900) DEFAULT NULL,
-	  volume FLOAT DEFAULT NULL,
-	  linguagem VARCHAR(4) DEFAULT NULL,
-	  is_favorito TINYINT(1) DEFAULT "0",
-	  is_processado TINYINT(1) DEFAULT "0",
-	  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-	  PRIMARY KEY (id)
-	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
+          id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+          novel VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+          serie VARCHAR(250) DEFAULT NULL,
+          titulo VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+          titulo_alternativo VARCHAR(250) DEFAULT NULL,
+          descricao LONGTEXT,
+          arquivo VARCHAR(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+          editora VARCHAR(250) DEFAULT NULL,
+          autor VARCHAR(900) DEFAULT NULL,
+          volume FLOAT DEFAULT NULL,
+          linguagem VARCHAR(4) DEFAULT NULL,
+          is_favorito TINYINT(1) DEFAULT "0",
+          is_processado TINYINT(1) DEFAULT "0",
+          atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (id),
+          KEY idx_sync (atualizacao, id)
+        ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
@@ -35,6 +36,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_volumes_fk (id_volume),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_volumes_capas_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
@@ -53,6 +55,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_volumes_fk (id_volume),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_volumes_capitulos_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
@@ -67,6 +70,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_capitulos_fk (id_capitulo),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_capitulos_textos_fk FOREIGN KEY (id_capitulo) REFERENCES ',_tablename,'_capitulos (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;

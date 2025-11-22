@@ -3,16 +3,17 @@ DELIMITER $$
 CREATE PROCEDURE `sp_create_table`(IN _tablename VARCHAR(100))
 BEGIN
 	SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS ',_tablename,'_volumes (
-	  id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-	  manga VARCHAR(250) DEFAULT NULL,
-	  volume INT(4) DEFAULT NULL,
-	  linguagem VARCHAR(4) DEFAULT NULL,
-	  arquivo VARCHAR(250) DEFAULT NULL,
-	  vocabulario LONGTEXT,
-	  is_processado TINYINT(1) DEFAULT "0",
-	  atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-	  PRIMARY KEY (id)
-	) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
+          id VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+          manga VARCHAR(250) DEFAULT NULL,
+          volume INT(4) DEFAULT NULL,
+          linguagem VARCHAR(4) DEFAULT NULL,
+          arquivo VARCHAR(250) DEFAULT NULL,
+          vocabulario LONGTEXT,
+          is_processado TINYINT(1) DEFAULT "0",
+          atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (id),
+          KEY idx_sync (atualizacao, id)
+        ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
@@ -29,6 +30,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_volumes_fk (id_volume),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_volumes_capas_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
@@ -49,6 +51,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_volumes_fk (id_volume),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_volumes_capitulos_fk FOREIGN KEY (id_volume) REFERENCES ',_tablename,'_volumes (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
@@ -66,6 +69,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_capitulos_fk (id_capitulo),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_capitulos_paginas_fk FOREIGN KEY (id_capitulo) REFERENCES ',_tablename,'_capitulos (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
@@ -86,6 +90,7 @@ BEGIN
           atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (id),
           KEY ',_tablename,'_paginas_fk (id_pagina),
+          KEY idx_sync (atualizacao, id),
           CONSTRAINT ',_tablename,'_paginas_textos_fk FOREIGN KEY (id_pagina) REFERENCES ',_tablename,'_paginas (id) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
     PREPARE stmt FROM @sql;
